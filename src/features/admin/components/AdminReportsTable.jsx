@@ -13,7 +13,7 @@ import { REPORT_STATUS_OPTIONS } from '@/shared/constants/reports.js';
 
 const PAGE_SIZE = 20;
 
-export function AdminReportsTable({ rightContainer = null }) {
+export function AdminReportsTable({ rightContainer = null, initialFilters = {} }) {
   const { user: currentUser } = useAuthContext();
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
@@ -21,7 +21,11 @@ export function AdminReportsTable({ rightContainer = null }) {
   const [unblock, setUnblock] = useState(null);
   const [unsuspend, setUnsuspend] = useState(null);
   const [saving, setSaving] = useState(false);
-  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({ query: '', status: '' });
+  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
+    query: '',
+    status: '',
+    ...initialFilters,
+  });
 
   const fetchList = useCallback(
     () => listReports({ page, pageSize: PAGE_SIZE, status: applied.status || undefined, query: applied.query }),

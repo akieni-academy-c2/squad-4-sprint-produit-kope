@@ -21,7 +21,9 @@ function fallbackPortrait(seed) {
 
 
 function coverImage(item, homePreview) {
-  if (homePreview) return fallbackPortrait(item.id);
+  // En avant-première (accueil), le visuel est fourni par l'appelant depuis les
+  // images locales ; le portrait généré ne sert que de repli.
+  if (homePreview) return item.previewImage || fallbackPortrait(item.id);
   return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id);
 }
 
@@ -75,8 +77,13 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-1.5 text-[12px] text-gray-700">
                 {cnt > 0 ? (
-                  <span className="font-semibold text-gray-900">
-                    <Star size={12} className="fill-amber-400 text-amber-400" aria-hidden /> {avg.toFixed(1)} · {cnt} avis
+                  // `whitespace-nowrap` : dans une carte étroite, l'étoile restait
+                  // seule sur sa ligne et la moyenne passait à la suivante.
+                  <span className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-gray-900">
+                    <Star size={12} className="shrink-0 fill-amber-400 text-amber-400" aria-hidden />
+                    <span>
+                      {avg.toFixed(1)} · {cnt} avis
+                    </span>
                   </span>
                 ) : (
                   <>

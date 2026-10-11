@@ -230,12 +230,20 @@ const REVIEWS_POOL = [
   { rating: 5, comment: 'Devis détaillé, respect des délais, résultat impeccable.' },
 ];
 
+/**
+ * Avis masqués par un administrateur, par identifiant.
+ *
+ * `mockReviewsFor` régénère la liste à chaque lecture : sans ce registre, un
+ * avis masqué réapparaîtrait aussitôt et le filtre « Masqués » resterait vide.
+ */
+const MOCK_HIDDEN_REVIEWS = new Set();
+
 export function mockReviewsFor(proId) {
   return REVIEWS_POOL.map((r, i) => ({
     id: proId * 100 + i,
     rating: r.rating,
     comment: r.comment,
-    isHidden: false,
+    isHidden: MOCK_HIDDEN_REVIEWS.has(proId * 100 + i),
     createdAt: new Date(Date.now() - (proId + i) * 86400000 * 3).toISOString(),
     client: {
       firstName: FIRST[(proId + i) % FIRST.length],
@@ -243,6 +251,17 @@ export function mockReviewsFor(proId) {
       avatarUrl: IMAGES[(proId + i + 5) % IMAGES.length],
     },
   }));
+}
+
+export function mockSetReviewHidden(id, hidden) {
+  const numeric = Number(id);
+  const belongsToKnownPro = MOCK_PROS.some((p) => Math.floor(numeric / 100) === p.id);
+  if (!belongsToKnownPro || numeric % 100 >= REVIEWS_POOL.length)
+    throw new Error('Avis introuvable');
+
+  if (hidden) MOCK_HIDDEN_REVIEWS.add(numeric);
+  else MOCK_HIDDEN_REVIEWS.delete(numeric);
+  return { id: numeric, hidden: Boolean(hidden) };
 }
 
 export function toSearchItem(p) {
@@ -577,7 +596,10 @@ export function mockAdminReviews({ page = 1, pageSize = 20, hidden, query = '' }
 
 const MOCK_ADMINS = [
   {
-    id: 1,
+    // 901 et non 1 : les professionnels occupent déjà les identifiants 1..N et
+    // deux comptes de même identifiant rendaient le blocage ambigu (l'action
+    // visait l'administrateur au lieu du professionnel).
+    id: 901,
     role: 'admin',
     firstName: 'Admin',
     lastName: 'Kopé',
@@ -589,7 +611,7 @@ const MOCK_ADMINS = [
   },
 ];
 
-export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '' } = {}) {
+export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '', blocked } = {}) {
   const pros = MOCK_PROS.map((p) => ({
     id: p.id,
     role: 'professional',
@@ -599,13 +621,16 @@ export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '' } = {
     avatarUrl: p.avatarUrl,
     phone: p.phone,
     createdAt: new Date(Date.now() - (p.id + 1) * 86400000 * 3).toISOString(),
-    blockedAt: null,
+    // Lu sur le professionnel : un compte bloqué (à la main ou par le seuil de
+    // signalements) doit apparaître bloqué dans la liste des utilisateurs.
+    blockedAt: p.blockedAt ?? null,
   }));
   let rows = [...pros, ...MOCK_CLIENTS, ...MOCK_ADMINS].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   );
   const q = String(query || '').trim().toLowerCase();
   if (role) rows = rows.filter((u) => u.role === role);
+  if (typeof blocked === 'boolean') rows = rows.filter((u) => Boolean(u.blockedAt) === blocked);
   if (q)
     rows = rows.filter((u) =>
       [u.firstName, u.lastName, u.displayName, u.phone].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)),
@@ -627,23 +652,34 @@ export function mockSetUserBlocked(actorId, id, blocked) {
   const user = findMockUser(id);
   if (!user) throw new Error('Utilisateur introuvable');
 
-  const persist = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : null;
+  // `findMockUser` renvoie une copie pour un professionnel : l'écriture doit
+  // viser la collection d'origine, sinon le blocage est perdu au rechargement.
+  const store = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : MOCK_PROS;
+  const target = store.find((u) => u.id === Number(id));
+  if (!target) throw new Error('Utilisateur introuvable');
+
   if (blocked && user.role === 'admin') {
     const others = MOCK_ADMINS.filter((a) => a.id !== Number(id) && !a.blockedAt);
     if (others.length === 0) throw new Error('Impossible de bloquer le dernier administrateur actif');
   }
-  if (persist) persist.find((u) => u.id === Number(id)).blockedAt = blocked ? new Date().toISOString() : null;
-  return { id: Number(id), role: user.role, blockedAt: blocked ? new Date().toISOString() : null };
+  target.blockedAt = blocked ? new Date().toISOString() : null;
+  return { id: Number(id), role: user.role, blockedAt: target.blockedAt };
 }
 
 export function mockSetUserSuspended(actorId, id, suspended) {
   if (Number(actorId) === Number(id)) throw new Error('Vous ne pouvez pas suspendre votre propre compte');
-  const pro = MOCK_PROS.find((p) => String(p.id) === String(id));
-  if (!pro) throw new Error('Utilisateur introuvable');
+  const user = findMockUser(id);
+  if (!user) throw new Error('Utilisateur introuvable');
 
-  pro.suspendedAt = suspended ? pro.suspendedAt || new Date().toISOString() : null;
-  pro.blockedAt = suspended ? pro.blockedAt || new Date().toISOString() : null;
-  return { id: Number(id), role: 'professional', blockedAt: pro.blockedAt, suspendedAt: pro.suspendedAt };
+  const store = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : MOCK_PROS;
+  const target = store.find((u) => u.id === Number(id));
+  if (!target) throw new Error('Utilisateur introuvable');
+
+  // Le serveur suspend ET bloque : une suspension implique la perte d'accès,
+  // et la lever redonne l'accès.
+  target.suspendedAt = suspended ? new Date().toISOString() : null;
+  target.blockedAt = suspended ? new Date().toISOString() : null;
+  return { id: Number(id), role: user.role, blockedAt: target.blockedAt, suspendedAt: target.suspendedAt };
 }
 
 export function mockCreateAdmin({ firstName, lastName, phone }) {
@@ -689,10 +725,20 @@ export function mockAdminStats() {  const published = MOCK_PROS.filter((p) => pr
     reviewsHidden: reviews.filter((r) => r.isHidden).length,
     ratingAverage,
     contacts: 2,
+    reportsPending: MOCK_REPORTS.filter((r) => r.status === 'pending').length,
+    usersBlocked: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS].flat().filter((u) => u.blockedAt).length,
+    usersSuspended: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS].flat().filter((u) => u.suspendedAt).length,
     recentProfessionals: [...MOCK_PROS]
       .slice(-5)
       .reverse()
-      .map((p) => ({ id: p.id, displayName: p.displayName, trade: p.trade, createdAt: new Date(Date.now() - p.id * 86400000).toISOString() })),
+      .map((p) => ({
+        id: p.id,
+        displayName: p.displayName,
+        trade: p.trade,
+        phone: p.phone,
+        avatarUrl: p.avatarUrl,
+        createdAt: new Date(Date.now() - p.id * 86400000).toISOString(),
+      })),
   };
 }
 
@@ -752,9 +798,12 @@ export function mockReorderTradeCategories(ids) {
 
 export function mockCreateTrade(payload) {
   const { name, categoryId = null } = payload || {};
+  const clean = String(name || '').trim();
+  if (MOCK_TRADES.some((t) => t.name.toLowerCase() === clean.toLowerCase()))
+    throw new Error('Ce métier existe déjà');
   const id = Math.max(0, ...MOCK_TRADES.map((t) => t.id)) + 1;
   const createdAt = new Date().toISOString();
-  const item = { id, name: String(name).trim(), categoryId: categoryId == null ? null : Number(categoryId), createdAt, professionals: 0 };
+  const item = { id, name: clean, categoryId: categoryId == null ? null : Number(categoryId), createdAt, professionals: 0 };
   MOCK_TRADES.push({ id, name: item.name, categoryId: item.categoryId, createdAt });
   return item;
 }
@@ -839,11 +888,14 @@ export function mockReorderCities(ids) {
 
 export function mockCreateZone(payload) {
   const { name, cityId = null } = payload || {};
+  const clean = String(name || '').trim();
+  if (MOCK_ZONES.some((z) => z.name.toLowerCase() === clean.toLowerCase()))
+    throw new Error('Cette zone existe déjà');
   const id = Math.max(0, ...MOCK_ZONES.map((z) => z.id)) + 1;
   const createdAt = new Date().toISOString();
   const item = {
     id,
-    name: String(name).trim(),
+    name: clean,
     cityId: cityId == null ? null : Number(cityId),
     createdAt,
   };

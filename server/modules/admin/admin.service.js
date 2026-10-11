@@ -31,13 +31,13 @@ export async function listReviews(query) {
 }
 
 export async function listUsers(query) {
+  const filters = { role: query.role, q: query.q, blocked: query.blocked };
   const rows = await repository.listUsers({
+    ...filters,
     limit: query.pageSize,
     offset: offsetOf(query),
-    role: query.role,
-    q: query.q,
   });
-  return paginateSafely(rows, query, () => repository.countUsers({ role: query.role, q: query.q }));
+  return paginateSafely(rows, query, () => repository.countUsers(filters));
 }
 
 export async function setUserBlocked(actorId, id, blocked) {
@@ -98,6 +98,10 @@ export async function getStats() {
     reviewsHidden: stats.reviewsHidden,
     ratingAverage: stats.ratingAverage,
     contacts: stats.contacts,
+    // File de modération, pour la vue d'ensemble.
+    reportsPending: stats.reportsPending ?? 0,
+    usersBlocked: stats.usersBlocked ?? 0,
+    usersSuspended: stats.usersSuspended ?? 0,
     recentProfessionals: recent,
   };
 }

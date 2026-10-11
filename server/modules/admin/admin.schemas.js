@@ -43,6 +43,14 @@ export const listReviewsQuerySchema = paginationSchema.extend({
 
 export const listUsersQuerySchema = paginationSchema.extend({
   role: z.preprocess(emptyToUndefined, z.enum(['client', 'professional', 'admin']).optional()),
+  blocked: z.preprocess(
+    (value) => {
+      if (value === 'true') return true;
+      if (value === 'false') return false;
+      return undefined;
+    },
+    z.boolean().optional(),
+  ),
   q: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional()),
 });
 

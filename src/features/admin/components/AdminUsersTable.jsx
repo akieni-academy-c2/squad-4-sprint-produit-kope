@@ -4,7 +4,13 @@ import { AdminFilterGroup, AdminFilterPanel, AdminSectionLayout } from './AdminS
 import { AdminConfirmModal } from './AdminConfirmModal.jsx';
 import { AdminUserRow } from './users/AdminUserRow.jsx';
 import { CreateAdminForm } from './users/CreateAdminForm.jsx';
-import { EMPTY_ADMIN, ROLE_OPTIONS, toAdminPayload, validateAdminDraft } from './users/adminUserOptions.js';
+import {
+  BLOCKED_OPTIONS,
+  EMPTY_ADMIN,
+  ROLE_OPTIONS,
+  toAdminPayload,
+  validateAdminDraft,
+} from './users/adminUserOptions.js';
 import { useAdminPage } from '../hooks/useAdminPage.js';
 import { useAdminFilters } from '../hooks/useAdminFilters.js';
 import { useAdminList } from '../hooks/useAdminList.js';
@@ -14,11 +20,16 @@ import { createAdmin, listUsers, setUserBlocked } from '../services/admin.servic
 
 const PAGE_SIZE = 100;
 
-export function AdminUsersTable({ rightContainer = null }) {
+export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) {
   const { user: currentUser } = useAuthContext();
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
-  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({ query: '', role: '' });
+  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
+    query: '',
+    role: '',
+    blocked: '',
+    ...initialFilters,
+  });
 
   const [confirm, setConfirm] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -26,8 +37,15 @@ export function AdminUsersTable({ rightContainer = null }) {
   const [formError, setFormError] = useState('');
 
   const fetchList = useCallback(
-    () => listUsers({ page, pageSize: PAGE_SIZE, role: applied.role, query: applied.query }),
-    [page, applied.role, applied.query],
+    () =>
+      listUsers({
+        page,
+        pageSize: PAGE_SIZE,
+        role: applied.role,
+        query: applied.query,
+        blocked: applied.blocked === '' ? undefined : applied.blocked === 'true',
+      }),
+    [page, applied.role, applied.query, applied.blocked],
   );
   const { data, loading, error, reload } = useAdminList(fetchList);
 
@@ -113,6 +131,19 @@ export function AdminUsersTable({ rightContainer = null }) {
             options={ROLE_OPTIONS}
             className="w-full"
             aria-label="Filtrer par rôle"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Statut">
+          <CustomSelect
+            value={draft.blocked}
+            onChange={(v) => {
+              set('blocked', v, { immediate: true });
+              setPage(1);
+            }}
+            options={BLOCKED_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par statut de blocage"
           />
         </AdminFilterGroup>
       </form>

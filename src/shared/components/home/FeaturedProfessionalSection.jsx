@@ -7,6 +7,7 @@ import { ProfessionalCard } from '@/features/professionals/components/Profession
 import { searchProfessionals } from '@/features/search/services/search.service.js';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
 import { ROUTES } from '@/shared/lib/constants.js';
+import { FEATURED_FACES } from '@/shared/content/homeImages.js';
 
 const HIGHLIGHT_COUNT = 3;
 
@@ -42,9 +43,13 @@ export function FeaturedProfessionalSection() {
             ? Array.from({ length: HIGHLIGHT_COUNT }, (_, index) => (
                 <Skeleton key={index} className="h-64 w-full" />
               ))
-            : professionals.map((professional) => (
+            : professionals.map((professional, index) => (
                 <div key={professional.id} className="flex h-full flex-col">
-                  <ProfessionalCard mode="grid" item={professional} homePreview />
+                  <ProfessionalCard
+                    mode="grid"
+                    item={{ ...professional, previewImage: FEATURED_FACES[index % FEATURED_FACES.length] }}
+                    homePreview
+                  />
                 </div>
               ))}
         </div>

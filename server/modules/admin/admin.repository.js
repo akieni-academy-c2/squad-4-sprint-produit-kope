@@ -118,7 +118,7 @@ export async function setReviewHidden(id, hidden, db = pool) {
   return rowCount > 0;
 }
 
-export async function listUsers({ limit, offset, role, q }, db = pool) {
+export async function listUsers({ limit, offset, role, q, blocked }, db = pool) {
   const { rows } = await db.query(
     `SELECT u.id, u.role, u.phone,
             u.first_name AS "firstName",
@@ -133,14 +133,15 @@ WHERE ($1::user_role IS NULL OR u.role = $1::user_role)
             OR u.first_name ILIKE '%' || $2 || '%'
             OR u.last_name ILIKE '%' || $2 || '%'
             OR u.phone ILIKE '%' || $2 || '%')
+       AND ($5::boolean IS NULL OR (u.blocked_at IS NOT NULL) = $5)
      ORDER BY u.created_at DESC, u.id DESC
      LIMIT $3 OFFSET $4`,
-    [role ?? null, q ?? null, limit, offset],
+    [role ?? null, q ?? null, limit, offset, blocked ?? null],
   );
   return rows;
 }
 
-export async function countUsers({ role, q }, db = pool) {
+export async function countUsers({ role, q, blocked }, db = pool) {
   const { rows } = await db.query(
     `SELECT COUNT(*)::int AS count
        FROM users u
@@ -148,8 +149,9 @@ export async function countUsers({ role, q }, db = pool) {
         AND ($2::text IS NULL
              OR u.first_name ILIKE '%' || $2 || '%'
              OR u.last_name ILIKE '%' || $2 || '%'
-             OR u.phone ILIKE '%' || $2 || '%')`,
-    [role ?? null, q ?? null],
+             OR u.phone ILIKE '%' || $2 || '%')
+        AND ($3::boolean IS NULL OR (u.blocked_at IS NOT NULL) = $3)`,
+    [role ?? null, q ?? null, blocked ?? null],
   );
   return Number(rows[0]?.count ?? 0);
 }
@@ -168,7 +170,12 @@ export async function countStats(db = pool) {
         (SELECT COUNT(*)::int FROM reviews) AS "reviews",
         (SELECT COUNT(*)::int FROM reviews WHERE is_hidden) AS "reviewsHidden",
         (SELECT COALESCE(ROUND(AVG(rating), 1)::float8, 0) FROM reviews WHERE NOT is_hidden) AS "ratingAverage",
-        (SELECT COUNT(*)::int FROM contacts) AS "contacts"`,
+        (SELECT COUNT(*)::int FROM contacts) AS "contacts",
+        -- File de modération : sans ce compteur, la vue d'ensemble ne montre
+        -- jamais ce qui attend une décision.
+        (SELECT COUNT(*)::int FROM account_reports WHERE status = 'pending') AS "reportsPending",
+        (SELECT COUNT(*)::int FROM users WHERE blocked_at IS NOT NULL) AS "usersBlocked",
+        (SELECT COUNT(*)::int FROM users WHERE suspended_at IS NOT NULL) AS "usersSuspended"`,
   );
   return rows[0];
 }
@@ -178,6 +185,8 @@ export async function listRecentProfessionals(limit = 5, db = pool) {
     `SELECT p.user_id AS id,
             p.display_name AS "displayName",
             t.name AS trade,
+            u.phone,
+            u.avatar_url AS "avatarUrl",
             u.created_at AS "createdAt"
        FROM professionals p
        JOIN users u ON u.id = p.user_id

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  BLOCKED_OPTIONS,
   EMPTY_ADMIN,
   MIN_PASSWORD_LENGTH,
   ROLE_LABELS,
@@ -80,5 +81,17 @@ describe('options de rôle', () => {
 
   it('démarre sur un brouillon vide', () => {
     expect(Object.values(EMPTY_ADMIN).every((v) => v === '')).toBe(true);
+  });
+});
+
+describe('options de statut de blocage', () => {
+  it('propose « tous les statuts » en premier, puis actifs et bloqués', () => {
+    expect(BLOCKED_OPTIONS[0]).toEqual({ value: '', label: 'Tous les statuts' });
+    expect(BLOCKED_OPTIONS.map((o) => o.value)).toEqual(['', 'false', 'true']);
+  });
+
+  it('convertit la valeur du filtre en booléen pour l’API', () => {
+    const toBlocked = (value) => (value === '' ? undefined : value === 'true');
+    expect(BLOCKED_OPTIONS.map((o) => toBlocked(o.value))).toEqual([undefined, false, true]);
   });
 });

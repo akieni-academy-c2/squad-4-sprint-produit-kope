@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as adminRepository from '../server/modules/admin/admin.repository.js';
+import { countStats, countUsers, listUsers } from '../server/modules/admin/admin.repository.js';
+import { getStats } from '../server/modules/admin/admin.service.js';
 import {
   categorySchema,
   citySchema,
@@ -73,6 +76,14 @@ describe('admin schemas', () => {
     expect(listUsersQuerySchema.safeParse({ role: 'professional' }).success).toBe(true);
     expect(listUsersQuerySchema.safeParse({ role: 'admin' }).success).toBe(true);
     expect(listUsersQuerySchema.safeParse({ role: 'root' }).success).toBe(false);
+  });
+
+  it('listUsersQuerySchema convertit le filtre blocked', () => {
+    expect(listUsersQuerySchema.safeParse({}).data.blocked).toBeUndefined();
+    expect(listUsersQuerySchema.safeParse({ blocked: 'true' }).data.blocked).toBe(true);
+    expect(listUsersQuerySchema.safeParse({ blocked: 'false' }).data.blocked).toBe(false);
+    expect(listUsersQuerySchema.safeParse({ blocked: '' }).data.blocked).toBeUndefined();
+    expect(listUsersQuerySchema.safeParse({ blocked: 'oui' }).data.blocked).toBeUndefined();
   });
 
   it('tradeItemSchema exige un nom non vide', () => {
@@ -156,6 +167,24 @@ describe('admin mock - blocage et administrateurs', () => {
   it('refuse de bloquer son propre compte', () => {
     const admin = mockAdminUsers({ pageSize: 50 }).items.find((u) => u.role === 'admin');
     expect(() => mockSetUserBlocked(admin.id, admin.id, true)).toThrow();
+  });
+
+  it('filtre les utilisateurs par statut de blocage', () => {
+    const all = mockAdminUsers({ pageSize: 50 });
+    expect(all.items.every((u) => u.blockedAt === null)).toBe(true);
+
+    const active = mockAdminUsers({ pageSize: 50, blocked: false });
+    expect(active.total).toBe(all.total);
+
+    const blocked = mockAdminUsers({ pageSize: 50, blocked: true });
+    expect(blocked.total).toBe(0);
+
+    const target = all.items.find((u) => u.role === 'client');
+    mockSetUserBlocked(1, target.id, true);
+    const onlyBlocked = mockAdminUsers({ pageSize: 50, blocked: true });
+    expect(onlyBlocked.items.map((u) => u.id)).toEqual([target.id]);
+    expect(mockAdminUsers({ pageSize: 50, blocked: false }).total).toBe(all.total - 1);
+    mockSetUserBlocked(1, target.id, false);
   });
 
   it('crée un administrateur et refuse un numéro déjà utilisé', () => {
@@ -297,5 +326,103 @@ describe('admin mock - villes et arrondissements', () => {
     const ids = MOCK_CITIES.map((c) => c.id);
     mockReorderCities([...ids].reverse());
     expect(MOCK_CITIES.map((c) => c.id)).toEqual([...ids].reverse());
+  });
+});
+
+function fakeDb() {
+  const calls = [];
+  return {
+    calls,
+    db: {
+      query: async (sql, params) => {
+        calls.push({ sql, params });
+        return { rows: [] };
+      },
+    },
+  };
+}
+
+describe('admin stats — file de modération', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('compte les signalements en attente, les comptes bloqués et suspendus', async () => {
+    const { db, calls } = fakeDb();
+
+    await countStats(db);
+
+    const sql = calls[0].sql;
+    expect(sql).toContain("FROM account_reports WHERE status = 'pending'");
+    expect(sql).toContain('FROM users WHERE blocked_at IS NOT NULL');
+    expect(sql).toContain('FROM users WHERE suspended_at IS NOT NULL');
+  });
+
+  it('expose les nouveaux compteurs dans la vue d’ensemble', async () => {
+    vi.spyOn(adminRepository, 'countStats').mockResolvedValue({
+      users: 5,
+      clients: 3,
+      professionals: 2,
+      published: 1,
+      hidden: 0,
+      total: 2,
+      reviews: 4,
+      reviewsHidden: 1,
+      ratingAverage: 4.5,
+      contacts: 2,
+      reportsPending: 7,
+      usersBlocked: 2,
+      usersSuspended: 1,
+    });
+    vi.spyOn(adminRepository, 'listRecentProfessionals').mockResolvedValue([]);
+
+    const stats = await getStats();
+
+    expect(stats.reportsPending).toBe(7);
+    expect(stats.usersBlocked).toBe(2);
+    expect(stats.usersSuspended).toBe(1);
+    expect(stats.incomplete).toBe(1);
+  });
+
+  it('retombe sur zéro quand un compteur manque', async () => {
+    vi.spyOn(adminRepository, 'countStats').mockResolvedValue({
+      users: 5,
+      clients: 3,
+      professionals: 2,
+      published: 1,
+      hidden: 0,
+      total: 2,
+      reviews: 4,
+      reviewsHidden: 1,
+      ratingAverage: 4.5,
+      contacts: 2,
+    });
+    vi.spyOn(adminRepository, 'listRecentProfessionals').mockResolvedValue([]);
+
+    const stats = await getStats();
+
+    expect(stats.reportsPending).toBe(0);
+    expect(stats.usersBlocked).toBe(0);
+    expect(stats.usersSuspended).toBe(0);
+  });
+});
+
+describe('admin repository - filtre blocked', () => {
+  it('propose les comptes bloqués quand blocked vaut true', async () => {
+    const { db, calls } = fakeDb();
+    await listUsers({ limit: 10, offset: 0, role: null, q: null, blocked: true }, db);
+    expect(calls[0].sql).toContain('(u.blocked_at IS NOT NULL) = $5');
+    expect(calls[0].params).toEqual([null, null, 10, 0, true]);
+  });
+
+  it('ne filtre pas quand blocked est absent', async () => {
+    const { db, calls } = fakeDb();
+    await listUsers({ limit: 10, offset: 0, role: 'client', q: 'a' }, db);
+    expect(calls[0].params).toEqual(['client', 'a', 10, 0, null]);
+  });
+
+  it('applique le même filtre au comptage', async () => {
+    const { db, calls } = fakeDb();
+    await countUsers({ role: null, q: null, blocked: false }, db);
+    expect(calls[0].sql).toContain('(u.blocked_at IS NOT NULL) = $3');
+    expect(calls[0].params).toEqual([null, null, false]);
   });
 });

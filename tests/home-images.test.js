@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { IMAGES, reserveImage } from '../src/shared/assets/placeholders.js';
-import { HOME_RESERVED } from '../src/shared/content/homeImages.js';
+import { FEATURED_FACES, HOME_RESERVED } from '../src/shared/content/homeImages.js';
 
 /**
  * Visuels de la page d'accueil.
@@ -41,5 +41,12 @@ describe('Visuels de la page d\'accueil', () => {
 
   it('reste déterministe pour un même libellé', () => {
     expect(reserveImage('meme-libel')).toBe(reserveImage('meme-libel'));
+  });
+
+  it('donne trois visages distincts à la section des professionnels mis en avant', () => {
+    // Une seule carte affichée deux fois, et la section répète un visage.
+    expect(FEATURED_FACES).toHaveLength(3);
+    expect(new Set(FEATURED_FACES).size).toBe(3);
+    for (const face of FEATURED_FACES) expect(IMAGES).toContain(face);
   });
 });

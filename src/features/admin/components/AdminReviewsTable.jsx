@@ -22,11 +22,15 @@ const VISIBILITY_OPTIONS = [
   { value: 'true', label: 'Masqués' },
 ];
 
-export function AdminReviewsTable({ rightContainer = null }) {
+export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }) {
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
   const [confirm, setConfirm] = useState(null);
-  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({ query: '', hidden: '' });
+  const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
+    query: '',
+    hidden: '',
+    ...initialFilters,
+  });
 
   const fetchList = useCallback(
     () =>

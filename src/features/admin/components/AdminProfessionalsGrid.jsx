@@ -18,7 +18,7 @@ import { CITIES, DEFAULT_CITY } from '@/shared/lib/constants.js';
 
 const PAGE_SIZE = 100;
 
-export function AdminProfessionalsGrid({ rightContainer = null }) {
+export function AdminProfessionalsGrid({ rightContainer = null, initialFilters = {} }) {
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
   const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
@@ -26,6 +26,7 @@ export function AdminProfessionalsGrid({ rightContainer = null }) {
     status: '',
     sort: 'name',
     city: DEFAULT_CITY,
+    ...initialFilters,
   });
   const [confirm, setConfirm] = useState(null);
 

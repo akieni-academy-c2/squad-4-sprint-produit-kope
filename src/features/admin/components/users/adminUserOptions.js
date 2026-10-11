@@ -19,6 +19,12 @@ export const ROLE_OPTIONS = [
   { value: ROLES.ADMIN, label: 'Administrateurs' },
 ];
 
+export const BLOCKED_OPTIONS = [
+  { value: '', label: 'Tous les statuts' },
+  { value: 'false', label: 'Actifs' },
+  { value: 'true', label: 'Bloqués' },
+];
+
 export const EMPTY_ADMIN = { firstName: '', lastName: '', phone: '', password: '' };
 
 export const MIN_PASSWORD_LENGTH = 8;

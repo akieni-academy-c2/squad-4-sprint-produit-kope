@@ -22,6 +22,9 @@ const STATS = {
   reviewsHidden: 1,
   ratingAverage: 4.2,
   contacts: 7,
+  reportsPending: 3,
+  usersBlocked: 4,
+  usersSuspended: 1,
 };
 
 /** Sessions ouvertes dans la base de test, par identifiant de cookie. */
@@ -139,6 +142,10 @@ describe('intégration HTTP', () => {
       expect(stats.incomplete).toBe(4);
       expect(stats.published).toBe(9);
       expect(stats.hidden).toBe(2);
+      // File de modération : les nouveaux compteurs transitent aussi.
+      expect(stats.reportsPending).toBe(3);
+      expect(stats.usersBlocked).toBe(4);
+      expect(stats.usersSuspended).toBe(1);
     });
 
     it('refuse une session client sur une route admin', async () => {

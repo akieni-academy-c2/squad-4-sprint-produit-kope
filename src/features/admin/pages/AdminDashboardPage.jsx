@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
 import { cn } from '@/shared/utils';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
@@ -35,8 +35,19 @@ const FILTERED_SECTIONS = ['professionals', 'reviews', 'reports', 'trades', 'zon
 
 export function AdminDashboardPage() {
   const [section, setSection] = useState('overview');
+  const [sectionFilters, setSectionFilters] = useState({});
   const [rightEl, setRightEl] = useState(null);
   const withFilters = FILTERED_SECTIONS.includes(section);
+
+  // Une vue d'ensemble n'a de valeur que si elle mène au travail à faire :
+  // chaque KPI ouvre sa section déjà filtrée. `key` force le remontage, sinon
+  // les filtres d'initialisation ne s'appliqueraient jamais au second passage.
+  const openSection = useCallback((id, filters = {}) => {
+    setSectionFilters(filters);
+    setSection(id);
+  }, []);
+
+  const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
 
   return (
     <div className="container-kop page-padding pb-24 lg:pb-8">
@@ -50,18 +61,26 @@ export function AdminDashboardPage() {
         )}
       >
         <aside className="hidden lg:block lg:sticky lg:top-23">
-          <SidebarNav items={SECTIONS} active={section} onChange={setSection} ariaLabel="Sections d'administration" />
+          <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
         <section className="min-w-0">
           <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
-          {section === 'overview' && <AdminStats />}
-          {section === 'professionals' && <AdminProfessionalsGrid rightContainer={rightEl} />}
-          {section === 'reviews' && <AdminReviewsTable rightContainer={rightEl} />}
-          {section === 'reports' && <AdminReportsTable rightContainer={rightEl} />}
-          {section === 'trades' && <AdminTradesBoard rightContainer={rightEl} />}
-          {section === 'zones' && <AdminZonesBoard rightContainer={rightEl} />}
-          {section === 'users' && <AdminUsersTable rightContainer={rightEl} />}
+          {section === 'overview' && <AdminStats onNavigate={openSection} />}
+          {section === 'professionals' && (
+            <AdminProfessionalsGrid key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
+          )}
+          {section === 'reviews' && (
+            <AdminReviewsTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
+          )}
+          {section === 'reports' && (
+            <AdminReportsTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
+          )}
+          {section === 'trades' && <AdminTradesBoard key={mountKey} rightContainer={rightEl} />}
+          {section === 'zones' && <AdminZonesBoard key={mountKey} rightContainer={rightEl} />}
+          {section === 'users' && (
+            <AdminUsersTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
+          )}
         </section>
 
         <aside
@@ -71,7 +90,7 @@ export function AdminDashboardPage() {
         />
       </div>
 
-      <BottomNav items={SECTIONS} active={section} onChange={setSection} ariaLabel="Sections d'administration" />
+      <BottomNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
     </div>
   );
 }

@@ -24,6 +24,7 @@ import {
   mockReorderTrades,
   mockReorderZones,
   mockResolveReport,
+  mockSetReviewHidden,
   mockSetUserBlocked,
   mockSetUserSuspended,
   mockUpdateCity,
@@ -87,7 +88,7 @@ export function listReviews({ page = 1, pageSize = 20, hidden, query = '' } = {}
 export function setReviewHidden(reviewId, hidden) {
   return callApi(
     () => api.patchJson(`/admin/reviews/${reviewId}/visibility`, { hidden: Boolean(hidden) }),
-    async () => ({ id: reviewId, isHidden: Boolean(hidden) }),
+    async () => mockSetReviewHidden(reviewId, hidden),
   );
 }
 
@@ -117,15 +118,16 @@ export function setUserSuspended(actorId, id, suspended) {
   );
 }
 
-export function listUsers({ page = 1, pageSize = 20, role = '', query = '' } = {}) {
+export function listUsers({ page = 1, pageSize = 20, role = '', query = '', blocked } = {}) {
   return callApi(
     () => {
       const params = { page, pageSize };
       if (role) params.role = role;
       if (query) params.q = query;
+      if (typeof blocked === 'boolean') params.blocked = String(blocked);
       return api.get('/admin/users', params);
     },
-    async () => mockAdminUsers({ page, pageSize, role, query }),
+    async () => mockAdminUsers({ page, pageSize, role, query, blocked }),
   );
 }
 

@@ -6,7 +6,9 @@ export function listReviews(professionalId, { page = 1, pageSize = 10 } = {}) {
   return callApi(
     () => api.get(`/professionals/${professionalId}/reviews`, { page, pageSize }),
     async () => {
-      const all = mockReviewsFor(professionalId);
+      // Un avis masqué par un administrateur n'est ni affiché ni compté, comme
+      // côté serveur.
+      const all = mockReviewsFor(professionalId).filter((r) => !r.isHidden);
       const items = all.slice((page - 1) * pageSize, page * pageSize);
       const average = all.length
         ? Math.round((all.reduce((s, r) => s + r.rating, 0) / all.length) * 10) / 10
