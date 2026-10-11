@@ -7,10 +7,9 @@ import { ROUTES } from '@/shared/lib/constants.js';
 import { getStats } from '../services/admin.service.js';
 import { cn, formatDateFr } from '@/shared/utils';
 
-const RECENT_COUNT = 3;
+const RECENT_COUNT = 4;
 
-// Teintes des panneaux : elles se distinguent entre elles, les cartes de
-// valeur qu'ils contiennent restent blanches.
+
 const GROUP_TONES = {
   default: 'border-[#e2e8e5] bg-white',
   primary: 'border-primary-600 bg-primary-500',
@@ -131,7 +130,7 @@ function RecentProfessionals({ items, onOpenAll }) {
 
   return (
     <>
-      <ul className="space-y-2">
+      <ul className="space-y-2 ">
         {items.map((p) => (
           <li key={p.id}>
             <article className="flex items-center gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 transition hover:border-primary-200 hover:shadow-sm">
@@ -181,10 +180,7 @@ function RecentProfessionals({ items, onOpenAll }) {
   );
 }
 
-/**
- * Vue d'ensemble : d'abord ce qui attend une décision, puis l'état de la
- * plateforme groupé par thème. Chaque KPI ouvre la section concernée.
- */
+
 export function AdminOverview({ stats, onNavigate = () => {} }) {
   const avg = Number(stats?.ratingAverage ?? 0);
   const visibleReviews = Math.max(0, (stats?.reviews ?? 0) - (stats?.reviewsHidden ?? 0));
@@ -192,7 +188,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[18px] border border-amber-200 bg-amber-50/70 p-4">
+      <section className="rounded-lg border border-amber-200 bg-amber-50/70 p-4">
         <div className="flex items-center gap-2">
           <CalendarClock size={16} className="text-amber-700" aria-hidden />
           <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-amber-800">À traiter</h3>
@@ -219,7 +215,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
         </div>
       </section>
 
-      <Group title="Plateforme" tone="primary">
+      <Group title="Plateforme">
         <div className="grid gap-3 sm:grid-cols-3">
           <KpiCard
             label="Utilisateurs"
@@ -245,7 +241,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
         <PublicationRate stats={stats} />
       </Group>
 
-      <Group title="Modération" tone="danger">
+      <Group title="Modération">
         <div className="grid gap-3 sm:grid-cols-3">
           <KpiCard
             label="Signalements en attente"
@@ -272,7 +268,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
       </Group>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Group title="Clients" tone="teal">
+        <Group title="Clients" >
           <div className="grid gap-3 sm:grid-cols-2">
             <KpiCard
               label="Clients"
@@ -301,7 +297,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
           </div>
         </Group>
 
-        <Group title="Derniers professionnels inscrits" tone="neutral">
+        <Group title="Derniers professionnels inscrits" >
           <RecentProfessionals items={recentProfessionals} onOpenAll={() => onNavigate('professionals')} />
         </Group>
       </div>
