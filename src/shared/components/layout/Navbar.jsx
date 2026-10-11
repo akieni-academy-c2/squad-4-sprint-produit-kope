@@ -13,18 +13,11 @@ import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 import { Drill, Search, CircleHelp, Briefcase, LogOut } from 'lucide-react';
 
 const NAV = [
-  { to: ROUTES.SEARCH,         label: 'Trouver un professionnel', icon: Search },
-  { to: ROUTES.HOW_IT_WORKS,   label: 'Comment ça marche',      icon: CircleHelp },
-  { to: ROUTES.REGISTER_PRO,   label: 'Devenir Prestataire',    icon: Briefcase },
+  { to: ROUTES.SEARCH, label: 'Trouver un professionnel', icon: Search },
+  { to: ROUTES.HOW_IT_WORKS, label: 'Comment ça marche', icon: CircleHelp },
+  { to: ROUTES.REGISTER_PRO, label: 'Devenir Prestataire', icon: Briefcase },
 ];
 
-/**
- * Liens réservés aux visiteurs non connectés.
- *
- * Connecté, la navigation se réduit à la recherche : « Comment ça marche »
- * décrit un service dont l'utilisateur a déjà fait l'expérience, et « Devenir
- * prestataire » n'a de sens que tant qu'on n'a pas de compte.
- */
 const HIDDEN_WHEN_CONNECTED = new Set([ROUTES.HOW_IT_WORKS, ROUTES.REGISTER_PRO]);
 
 export function Navbar() {
@@ -34,8 +27,6 @@ export function Navbar() {
 
   const navItems = user ? NAV.filter((item) => !HIDDEN_WHEN_CONNECTED.has(item.to)) : NAV;
 
-  // Connecté, le logo ouvre le point d'entrée du rôle plutôt que la home :
-  // c'est le retour le plus utile depuis n'importe quelle page.
   const logoHref = landingHrefFor(user);
 
   return (
@@ -54,56 +45,50 @@ export function Navbar() {
 
         <div className="ml-auto hidden md:flex items-center gap-2">
           <nav aria-label="Navigation principale" className="hidden items-center gap-6 lg:flex">
-          {navItems.map((item) => {
-            // « Devenir prestataire » ouvre une modale : un bouton, pas un lien.
-            if (item.to === ROUTES.REGISTER_PRO)
-              return (
-                <button
-                  key={item.to}
-                  type="button"
-                  onClick={() => openModal('register-pro')}
-                  className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
-                >
-                  {item.label}
-                </button>
-              );
+            {navItems.map((item) => {
+              if (item.to === ROUTES.REGISTER_PRO)
+                return (
+                  <button
+                    key={item.to}
+                    type="button"
+                    onClick={() => openModal('register-pro')}
+                    className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
+                  >
+                    {item.label}
+                  </button>
+                );
+                
+              if (item.to === ROUTES.SEARCH && user)
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-gray-300 bg-white/25 px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
+                  >
+                    <Search size={16} aria-hidden />
+                    {item.label}
+                  </NavLink>
+                );
 
-            // Connecté, la recherche devient l'action principale de la barre :
-            // un bouton marqué avec son icône, plutôt qu'un lien parmi d'autres.
-            // Un NavLink et non un button : l'apparence est celle d'un bouton,
-            // mais la cible reste un lien — clic droit, ouverture dans un
-            // onglet et aperçu d'URL dans la barre d'état continuent de marcher.
-            if (item.to === ROUTES.SEARCH && user)
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className="inline-flex items-center gap-2 rounded-[10px] border border-gray-300 bg-white/25 px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
+                  className={({ isActive }) =>
+                    cn(
+                      'relative rounded-[10px] px-3 py-2 text-sm font-semibold transition',
+                      isActive
+                        ? 'text-primary-500 nav-link-active'
+                        : 'text-gray-700 hover:text-gray-900',
+                    )
+                  }
                 >
-                  <Search size={16} aria-hidden />
                   {item.label}
                 </NavLink>
               );
-
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  cn(
-                    'relative rounded-[10px] px-3 py-2 text-sm font-semibold transition',
-                    isActive
-                      ? 'text-primary-500 nav-link-active'
-                      : 'text-gray-700 hover:text-gray-900',
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </nav>
-        <span className='opacity-30'>|</span>
+            })}
+          </nav>
+          <span className='opacity-30'>|</span>
           {!loading && !user && (
             <>
               <Button variant="outline" size="sm" onClick={() => openModal('login')}>

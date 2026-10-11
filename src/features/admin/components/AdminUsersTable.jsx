@@ -147,7 +147,7 @@ export function AdminUsersTable({ rightContainer = null }) {
           total={total}
           onPageChange={changePage}
           variant="summary"
-          className="mt-4"
+          className="mt-4 bg-white py-2 px-4 rounded-md border border-gray-200"
         />
 
         <CreateAdminForm

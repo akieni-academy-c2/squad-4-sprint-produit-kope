@@ -15,14 +15,14 @@ const FIELDS = [
 ];
 
 export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOpen, onCancel }) {
-  // Bouton actif seulement si les quatre champs respectent les règles.
+
   const { ready } = useFormReadiness(createAdminSchema, draft ?? {}, {
     rules: { password: PASSWORD_RULES },
   });
 
   if (!draft)
     return (
-      <Button variant="secondary" size="sm" className="mt-4" onClick={onOpen}>
+      <Button hidden variant="secondary" size="sm" className="mt-4" onClick={onOpen}>
         <Plus className="h-4 w-4" />
         Nouvel administrateur
       </Button>

@@ -15,7 +15,7 @@ export function Tooltip({ content, children, side = 'top', className, contentCla
       <span
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute z-50 w-max max-w-[220px] rounded-md bg-gray-900 px-2.5 py-1.5 text-center text-[11px] font-semibold leading-tight text-white opacity-0 shadow-md transition-opacity duration-150',
+          'pointer-events-none absolute z-50 w-max max-w-55 rounded-md bg-gray-900 px-2.5 py-1.5 text-center text-[11px] font-semibold leading-tight text-white opacity-0 shadow-md transition-opacity duration-150',
           'group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100',
           SIDES[side] || SIDES.top,
           contentClassName,

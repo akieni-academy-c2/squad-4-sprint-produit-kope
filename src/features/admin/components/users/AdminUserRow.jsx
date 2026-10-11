@@ -58,12 +58,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
               <span className="truncate">{user.phone}</span>
             </p>
           )}
-          {user.createdAt && (
-            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-              <Calendar className="h-3.5 w-3.5 shrink-0" />
-              Inscrit le {formatDateFr(user.createdAt)}
-            </p>
-          )}
+          
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-1">
@@ -74,7 +69,15 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
         </div>
       </div>
 
-      <div className="-mx-4 -mb-4 flex items-center justify-end gap-1 border-t border-gray-100 bg-gray-50/80 px-4 py-1.5">
+      <div className="  flex items-center justify-between gap-1 border-t border-gray-100 bg-gray-50/80 p-4 ">
+        {user.createdAt && (
+            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+              <Calendar className="h-3.5 w-3.5 shrink-0" />
+              Inscrit le {formatDateFr(user.createdAt)}
+            </p>
+          )}
+
+
         {isSelf ? (
           <span className="text-xs text-gray-400">Votre compte</span>
         ) : blocked ? (
@@ -82,23 +85,24 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
             <Button
               size="icon-sm"
               variant="ghost"
-              className="text-primary-600 hover:bg-mint-100"
+              className="bg-gray-300/20! border-gray-200/60! border "
               onClick={() => onToggleBlock(user, false)}
               aria-label={`Débloquer ${name}`}
             >
-              <Check className="h-3.5 w-3.5" />
+              <Check className="size-3.5"  />
             </Button>
           </Tooltip>
         ) : (
-          <Tooltip content="Bloquer le compte">
+          <Tooltip side='' content="Bloquer le compte">
             <Button
-              size="icon-sm"
+              size="sm"
               variant="ghost"
-              className="text-rose-600 hover:bg-rose-50"
+              className="bg-gray-200/20! rounded-md! text-xs! border-gray-200! border text-red-500"
               onClick={() => onToggleBlock(user, true)}
               aria-label={`Bloquer ${name}`}
             >
-              <Ban className="h-3.5 w-3.5" />
+              Bloquer
+              <Ban className="size-3.5" />
             </Button>
           </Tooltip>
         )}

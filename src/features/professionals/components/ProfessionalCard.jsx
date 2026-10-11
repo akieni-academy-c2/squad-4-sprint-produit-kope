@@ -19,17 +19,7 @@ function fallbackPortrait(seed) {
   )}`;
 }
 
-/**
- * Image de la carte.
- *
- * `homePreview` force un visuel généré : l'accueil ne doit dépendre ni du
- * service de portraits ni du stock local, déjà consommé par le héros, les
- * catégories et les deux sections de mise en avant. Le visuel est dérivé de
- * l'identifiant, donc distinct d'un professionnel à l'autre.
- *
- * Partout ailleurs, la photo du professionnel sert — c'est elle que la
- * recherche en démonstration doit montrer.
- */
+
 function coverImage(item, homePreview) {
   if (homePreview) return fallbackPortrait(item.id);
   return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id);
@@ -42,14 +32,14 @@ function Availability({ isAvailable }) {
 
 function ProfileMedia({ item, homePreview }) {
   return (
-    <div className="aspect-[4/5] w-full shrink-0 self-start overflow-hidden bg-gray-100 sm:w-[170px]">
+    <div className="aspect-4/5 w-full shrink-0 self-start overflow-hidden bg-gray-100 sm:w-42.5">
       <UserAvatar
         src={homePreview ? fallbackPortrait(item.id) : item.avatarUrl || item.image || null}
         name={item.displayName}
         rounded="rounded-none"
         iconSize={40}
-        className="h-full w-full"
-        fallbackClassName="h-full w-full bg-gray-100 text-gray-300"
+        className="size-full  group-hover:scale-120 transition-all duration-300"
+        fallbackClassName="size-full bg-primary-400/40 text-primary-600"
       />
     </div>
   );
@@ -109,7 +99,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
     <li>
       <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
         <Card className={cn(
-          'flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white transition hover:border-primary-200 hover:shadow-sm sm:flex-row',
+          'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
         )}>
         <ProfileMedia item={item} homePreview={homePreview} />
         <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">

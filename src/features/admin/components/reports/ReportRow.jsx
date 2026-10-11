@@ -11,7 +11,7 @@ const STATUS_BADGES = {
 
 export function ReportRow({ report, onResolve, onDismiss }) {
   return (
-    <li className="space-y-2 rounded-sm bg-gray-50/80 p-3">
+    <li className="space-y-2 rounded-sm bg-gray-100/80 p-3 ">
       <div className="flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-gray-700 ring-1 ring-gray-200">
           <Flag size={11} aria-hidden />
@@ -23,7 +23,7 @@ export function ReportRow({ report, onResolve, onDismiss }) {
       </div>
 
       {report.message && (
-        <p className="whitespace-pre-wrap border-l-2 border-primary-300 pl-3 text-sm leading-6 text-gray-700">
+        <p className="whitespace-pre-wrap border-l-2 border-primary-300 bg-white py-1.5 px-3 text-sm leading-6 text-gray-700">
           {report.message}
         </p>
       )}
@@ -41,17 +41,18 @@ export function ReportRow({ report, onResolve, onDismiss }) {
         </div>
 
         {report.status === 'pending' && (
-          <div className="flex gap-1">
+          <div className="flex gap-1 items-center px-1 bg-gray-200/20 border border-gray-200 rounded-md">
             <Button size="icon-sm" variant="ghost" onClick={() => onDismiss(report)} aria-label="Rejeter le signalement">
-              <X className="h-3.5 w-3.5 text-rose-600" />
+              <X className="size-3.5 text-rose-600" />
             </Button>
+            <span className='border h-2 border-gray-200'></span>
             <Button
               size="icon-sm"
               variant="ghost"
               onClick={() => onResolve(report)}
               aria-label="Marquer le signalement comme traité"
             >
-              <Check className="h-3.5 w-3.5 text-primary-600" />
+              <Check className="size-3.5 text-primary-600" />
             </Button>
           </div>
         )}

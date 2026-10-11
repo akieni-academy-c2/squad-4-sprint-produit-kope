@@ -4,10 +4,6 @@ import { Button, Tooltip, UserAvatar } from '@/shared/components/ui';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { ReportRow } from './ReportRow.jsx';
 
-/**
- * Groupe de signalements rattachés à un même professionnel :
- * en-tête avec son état de modération, puis la liste des signalements.
- */
 export function ReportGroup({ group, onResolveReport, onDismissReport, onUnblock, onUnsuspend }) {
   const { professionalId, professionalName, professionalSuspendedAt, professionalBlockedAt } = group;
 
