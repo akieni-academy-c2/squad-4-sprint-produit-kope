@@ -4,7 +4,6 @@ export const ROLES = {
   ADMIN: 'admin',
 };
 
-export const COUNTRIES = ['Congo'];
 export const CITIES = ['Brazzaville'];
 export const DEFAULT_COUNTRY = 'Congo';
 export const DEFAULT_CITY = 'Brazzaville';

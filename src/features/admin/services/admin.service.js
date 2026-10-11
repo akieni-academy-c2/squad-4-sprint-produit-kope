@@ -47,7 +47,6 @@ export function listPros({
   status = '',
   sort = 'name',
   city = '',
-  country = '',
 } = {}) {
   return callApi(
     () => {
@@ -56,10 +55,9 @@ export function listPros({
       if (status) params.status = status;
       if (sort && sort !== 'name') params.sort = sort;
       if (city) params.city = city;
-      if (country) params.country = country;
       return api.get('/admin/professionals', params);
     },
-    async () => mockAdminProfessionals({ page, pageSize, query, status, sort, city, country }),
+    async () => mockAdminProfessionals({ page, pageSize, query, status, sort, city }),
   );
 }
 

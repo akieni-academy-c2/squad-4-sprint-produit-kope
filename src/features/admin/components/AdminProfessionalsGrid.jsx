@@ -14,7 +14,7 @@ import { useAdminFilters } from '../hooks/useAdminFilters.js';
 import { useAdminList } from '../hooks/useAdminList.js';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { listPros, setProHidden } from '../services/admin.service.js';
-import { CITIES, COUNTRIES, DEFAULT_CITY, DEFAULT_COUNTRY } from '@/shared/lib/constants.js';
+import { CITIES, DEFAULT_CITY } from '@/shared/lib/constants.js';
 
 const PAGE_SIZE = 100;
 
@@ -26,7 +26,6 @@ export function AdminProfessionalsGrid({ rightContainer = null }) {
     status: '',
     sort: 'name',
     city: DEFAULT_CITY,
-    country: DEFAULT_COUNTRY,
   });
   const [confirm, setConfirm] = useState(null);
 
@@ -39,9 +38,8 @@ export function AdminProfessionalsGrid({ rightContainer = null }) {
         status: applied.status,
         sort: applied.sort,
         city: applied.city,
-        country: applied.country,
       }),
-    [page, applied.query, applied.status, applied.sort, applied.city, applied.country],
+    [page, applied.query, applied.status, applied.sort, applied.city],
   );
   const { data, loading, error, reload } = useAdminList(fetchList);
 
@@ -108,18 +106,6 @@ export function AdminProfessionalsGrid({ rightContainer = null }) {
               options={CITIES.map((c) => ({ value: c, label: c }))}
               className="w-full"
               aria-label="Filtrer par ville"
-            />
-          </AdminFilterField>
-          <AdminFilterField label="Pays">
-            <CustomSelect
-              value={draft.country}
-              onChange={(v) => {
-                set('country', v, { immediate: true });
-                setPage(1);
-              }}
-              options={COUNTRIES.map((c) => ({ value: c, label: c }))}
-              className="w-full"
-              aria-label="Filtrer par pays"
             />
           </AdminFilterField>
         </AdminFilterGroup>

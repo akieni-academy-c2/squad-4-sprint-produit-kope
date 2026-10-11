@@ -27,7 +27,6 @@ export const listProfessionalsQuerySchema = paginationSchema.extend({
   status: z.preprocess(emptyToUndefined, z.enum(['published', 'incomplete', 'hidden']).optional()),
   sort: z.preprocess(emptyToUndefined, z.enum(['name', 'recent']).optional()),
   city: z.preprocess(emptyToUndefined, z.string().trim().max(80).optional()),
-  country: z.preprocess(emptyToUndefined, z.string().trim().max(80).optional()),
 });
 
 export const listReviewsQuerySchema = paginationSchema.extend({

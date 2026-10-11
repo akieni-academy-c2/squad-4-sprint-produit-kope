@@ -46,12 +46,19 @@ describe('admin schemas', () => {
     expect(listProfessionalsQuerySchema.safeParse({ status: 'inconnu' }).success).toBe(false);
   });
 
-  it('listProfessionalsQuerySchema accepte ville et pays', () => {
-    const parsed = listProfessionalsQuerySchema.safeParse({ city: 'Brazzaville', country: 'Congo' });
+  it('listProfessionalsQuerySchema accepte la ville', () => {
+    const parsed = listProfessionalsQuerySchema.safeParse({ city: 'Brazzaville' });
     expect(parsed.success).toBe(true);
     expect(parsed.data.city).toBe('Brazzaville');
-    expect(parsed.data.country).toBe('Congo');
     expect(listProfessionalsQuerySchema.safeParse({ city: '' }).data.city).toBeUndefined();
+  });
+
+  it('listProfessionalsQuerySchema ignore le filtre pays, retiré', () => {
+    // Zod retire les clés inconnues plutôt que de rejeter : `country` ne peut
+    // donc plus atteindre le repository.
+    const parsed = listProfessionalsQuerySchema.safeParse({ country: 'Congo' });
+    expect(parsed.success).toBe(true);
+    expect(parsed.data.country).toBeUndefined();
   });
 
   it('listReviewsQuerySchema convertit le filtre hidden', () => {
@@ -150,11 +157,11 @@ describe('admin mock - blocage et administrateurs', () => {
 });
 
 describe('admin mock - filtres professionnels', () => {
-  it('filtre par ville et pays', () => {
+  it('filtre par ville', () => {
     const all = mockAdminProfessionals({ pageSize: 50 });
     expect(all.total).toBeGreaterThan(0);
 
-    const brazza = mockAdminProfessionals({ pageSize: 50, city: 'Brazzaville', country: 'Congo' });
+    const brazza = mockAdminProfessionals({ pageSize: 50, city: 'Brazzaville' });
     expect(brazza.total).toBe(all.total);
 
     const elsewhere = mockAdminProfessionals({ pageSize: 50, city: 'Pointe-Noire' });

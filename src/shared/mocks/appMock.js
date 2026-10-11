@@ -281,7 +281,7 @@ function proStatus(p) {
   return complete ? 'published' : 'incomplete';
 }
 
-export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', status, sort, city, country } = {}) {
+export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', status, sort, city } = {}) {
   const q = String(query || '').trim().toLowerCase();
   let rows = MOCK_PROS.map((p) => ({
     id: p.id,
@@ -297,7 +297,6 @@ export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', st
   if (q) rows = rows.filter((p) => p.displayName.toLowerCase().includes(q) || (p.trade || '').toLowerCase().includes(q) || p.phone.includes(q));
   if (status) rows = rows.filter((p) => p.status === status);
   if (city) rows = rows.filter((p) => p.city === city);
-  if (country) rows = rows.filter((p) => p.country === country);
   rows = [...rows].sort((a, b) =>
     sort === 'recent'
       ? new Date(b.createdAt) - new Date(a.createdAt)
