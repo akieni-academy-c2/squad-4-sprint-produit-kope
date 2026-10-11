@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Espace administration et comptes personnels : sans intérêt dans un moteur de
+# recherche, et leur indexation exposerait des identifiants d'url.
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth/me
+Disallow: /forbidden

@@ -12,6 +12,7 @@ import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { ProfileAvatarCard } from './profile/ProfileAvatarCard.jsx';
 import { ProfileDetails } from './profile/ProfileDetails.jsx';
 import { ProfileEditForm } from './profile/ProfileEditForm.jsx';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { extractInitial, getFullName } from './profile/profileForm.js';
 
 export function ProfileEditor({ profile, user, onUpdated }) {
@@ -35,6 +36,11 @@ export function ProfileEditor({ profile, user, onUpdated }) {
     initial,
     async (data) => updateMyProfile(data),
   );
+
+  // Bouton actif seulement si le formulaire est valide ET modifié :
+  // « Enregistrer » ne doit pas envoyer un PUT identique au profil existant.
+  const { ready, dirty } = useFormReadiness(updateProfileSchema, values);
+  const canSubmit = ready && dirty;
 
   const onSubmit = async (e) => {
     const res = await handleSubmit(e);
@@ -117,6 +123,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
           loadingRefs={loadingRefs}
           account={{ firstName, lastName, phone }}
           onAccountField={setAccountField}
+          canSubmit={canSubmit}
         />
       ) : (
         <ProfileDetails profile={profile} user={user} />

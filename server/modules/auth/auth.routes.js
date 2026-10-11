@@ -20,7 +20,7 @@ router.post('/auth/register/professional', rateLimit({ max: 10, key: 'register' 
 router.post('/auth/become-professional', requireAuth, validate(becomeProfessionalSchema), controller.becomeProfessional);
 router.post('/auth/login', rateLimit({ max: 10, key: 'login' }), validate(loginSchema), controller.login);
 router.post('/auth/logout', controller.logout);
-router.get('/auth/me', requireAuth, controller.me);
+router.get('/auth/me', controller.me);
 router.put('/auth/me', requireAuth, validate(updateAccountSchema), controller.updateAccount);
 router.put('/auth/password', requireAuth, rateLimit({ max: 10, key: 'password' }), validate(changePasswordSchema), controller.changePassword);
 router.post('/auth/avatar', requireAuth, upload.single('avatar'), controller.uploadAvatar);

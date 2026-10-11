@@ -1,5 +1,6 @@
 import { Search, Star, Phone, User, Image as ImageIcon, MapPin } from 'lucide-react';
 import { SplitShowcase } from '@/shared/components/sections/SplitShowcase.jsx';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { ClientCTA } from '@/shared/components/home/ClientCTA.jsx';
 import { ProCTA } from '@/shared/components/home/ProCTA.jsx';
 import hero from '@/shared/assets/hero.png';
@@ -18,6 +19,7 @@ const PRO_STEPS = [
 ];
 
 export function HowItWorksPage() {
+  usePageTitle('Comment ça marche');
   return (
     <div>
       <section className="relative overflow-hidden bg-kop-mint py-8 lg:py-16">

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/Button.jsx';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 
 export function NotFoundPage() {
+  usePageTitle('Page introuvable');
   return (
     <div className="mx-auto flex min-h-[55vh] max-w-xl flex-col items-center justify-center text-center">
       <p className="text-sm font-semibold text-primary-600">Erreur 404</p>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
@@ -13,6 +13,7 @@ import { Card } from '@/shared/components/ui/Card.jsx';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { useForm } from '@/shared/hooks/useForm.js';
 import { becomeProfessionalSchema } from '@/shared/utils/validators.js';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { becomeProfessional } from '../services/auth.service.js';
 import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -34,6 +35,11 @@ export function BecomeProForm({ bare = false } = {}) {
     INITIAL,
     async (data) => becomeProfessional(data),
   );
+
+  // Étape 1 : nom affiché, métier et zones doivent être valides pour continuer.
+  const step1Schema = useMemo(() => becomeProfessionalSchema.pick(STEP1_FIELDS), []);
+  const { ready: step1Ready } = useFormReadiness(step1Schema, values);
+  const { ready: allReady } = useFormReadiness(becomeProfessionalSchema, values);
 
   const goNext = () => {
     const r = becomeProfessionalSchema.pick(STEP1_FIELDS).safeParse(values);
@@ -117,7 +123,7 @@ export function BecomeProForm({ bare = false } = {}) {
               value={values.zoneIds || []}
               onChange={(ids) => setField('zoneIds', ids)}
             />
-            <Button type="button" onClick={goNext} size="lg" className="w-full">
+            <Button type="button" onClick={goNext} disabled={!step1Ready} size="lg" className="w-full">
               Suivant
             </Button>
           </>
@@ -167,7 +173,7 @@ export function BecomeProForm({ bare = false } = {}) {
               <Button type="button" variant="secondary" size="lg" onClick={() => setStep(1)} className="w-1/2">
                 Précédent
               </Button>
-              <Button type="submit" loading={submitting} size="lg" className="w-1/2">
+              <Button type="submit" loading={submitting} disabled={!allReady} size="lg" className="w-1/2">
                 Valider
               </Button>
             </div>

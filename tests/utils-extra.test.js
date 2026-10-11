@@ -42,7 +42,7 @@ describe('registerClientSchema', () => {
       firstName: 'Awa',
       lastName: 'Diop',
       phone: '06 123 45 67',
-      password: 'motdepasse1',
+      password: 'Motdepasse1',
       consent: true,
     });
     expect(r.success).toBe(true);
@@ -52,7 +52,7 @@ describe('registerClientSchema', () => {
       firstName: 'Awa',
       lastName: 'Diop',
       phone: '06 123 45 67',
-      password: 'motdepasse1',
+      password: 'Motdepasse1',
       consent: false,
     });
     expect(r.success).toBe(false);

@@ -61,7 +61,7 @@ export function LoginForm({ bare = false } = {}) {
       <p className=" text-sm mb-8 text-gray-500">
         Accédez à votre espace client, professionnel ou administrateur.
       </p>
-      <form className=" space-y-5" onSubmit={onSubmit} noValidate>
+      <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit} noValidate>
         {(globalError || errors._global) && (
           <div role="alert" className="rounded-[16px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {globalError || errors._global}

@@ -112,11 +112,23 @@ describe('admin schemas', () => {
   });
 
   it('createAdminSchema valide les identifiants', () => {
-    const base = { firstName: 'Ada', lastName: 'Kopé', phone: '+242061234567', password: 'motdepasse1' };
+    const base = { firstName: 'Ada', lastName: 'Kopé', phone: '+242061234567', password: 'Motdepasse1' };
     expect(createAdminSchema.safeParse(base).success).toBe(true);
     expect(createAdminSchema.safeParse({ ...base, firstName: '  ' }).success).toBe(false);
     expect(createAdminSchema.safeParse({ ...base, phone: '123' }).success).toBe(false);
-    expect(createAdminSchema.safeParse({ ...base, password: 'court' }).success).toBe(false);
+    expect(createAdminSchema.safeParse({ ...base, password: 'Court1' }).success).toBe(false);
+  });
+
+  it('createAdminSchema exige un nom de personne réel', () => {
+    const base = { firstName: 'Ada', lastName: 'Kopé', phone: '+242061234567', password: 'Motdepasse1' };
+    // Chiffres et symboles refusés dans un nom de personne.
+    expect(createAdminSchema.safeParse({ ...base, firstName: 'Ada123' }).success).toBe(false);
+    expect(createAdminSchema.safeParse({ ...base, firstName: '<script>' }).success).toBe(false);
+    expect(createAdminSchema.safeParse({ ...base, lastName: '@@@' }).success).toBe(false);
+    // Tirets et apostrophes acceptés, accents tolérés.
+    expect(createAdminSchema.safeParse({ ...base, firstName: 'Jean-Pierre' }).success).toBe(true);
+    expect(createAdminSchema.safeParse({ ...base, lastName: "O'Brien" }).success).toBe(true);
+    expect(createAdminSchema.safeParse({ ...base, lastName: 'Kopé' }).success).toBe(true);
   });
 
   it('reorderSchema exige une liste d’identifiants', () => {

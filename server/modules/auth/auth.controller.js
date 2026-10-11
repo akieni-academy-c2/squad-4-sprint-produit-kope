@@ -55,8 +55,18 @@ export async function logout(req, res, next) {
   });
 }
 
+/**
+ * « Qui suis-je ? » — répond 200 avec `user: null` quand aucune session n'est
+ * ouverte. Un 401 ici était le comportement normal d'un visiteur non connecté,
+ * mais il affichait une erreur rouge dans la console du navigateur et le faisait
+ * passer pour un défaut. Aucun risque : la route ne renvoie que la session de
+ * l'appelant.
+ */
 export async function me(req, res, next) {
-  const user = await service.getCurrentUser(currentUser(req).id);
+  const identity = currentUser(req);
+  if (!identity) return res.json({ user: null });
+
+  const user = await service.getCurrentUser(identity.id);
   // Compte supprimé depuis : on ferme la session.
   if (!user) return logout(req, res, next);
 

@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Lock, LockOpen } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { changePassword } from '../services/auth.service.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
-import { Input } from '@/shared/components/ui/Input.jsx';
+import { PasswordInput } from '@/shared/components/ui/PasswordInput.jsx';
+import { checkPassword, FIELD_STATUS, PASSWORD_RULES, useFieldStatus } from '@/shared/hooks/useFieldStatus.js';
 
 export function ChangePasswordForm({ bare = false } = {}) {
   const { toast } = useNotification();
@@ -14,12 +14,25 @@ export function ChangePasswordForm({ bare = false } = {}) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+
+  const passwordCheck = useMemo(() => checkPassword(newPassword), [newPassword]);
+  const newStatus = useFieldStatus(null, newPassword, { rules: PASSWORD_RULES });
+
+  const confirmStatus = useMemo(() => {
+    if (!confirmPassword) return { status: FIELD_STATUS.IDLE, missing: 0, total: 1 };
+    const matches = confirmPassword === newPassword;
+    return { status: matches ? FIELD_STATUS.OK : FIELD_STATUS.NEAR, missing: matches ? 0 : 1, total: 1 };
+  }, [confirmPassword, newPassword]);
+
+  // Bouton actif seulement quand les trois champs sont conformes.
+  const ready =
+    currentPassword.length > 0 &&
+    newStatus.status === FIELD_STATUS.OK &&
+    confirmStatus.status === FIELD_STATUS.OK;
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!ready) return;
     if (newPassword !== confirmPassword) {
       toast({ message: 'Les deux mots de passe ne correspondent pas.', type: 'error' });
       return;
@@ -45,57 +58,48 @@ export function ChangePasswordForm({ bare = false } = {}) {
       <p className="mb-6 mt-2 text-sm text-gray-500">Votre session reste active sur cet appareil. Les autres appareils seront invalidés.</p>
       <form className="space-y-5" onSubmit={onSubmit} noValidate>
         <FormField label="Mot de passe actuel" id="change-current">
-          <div className="relative">
-            <Input id="change-current" type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required placeholder="Votre mot de passe actuel" />
-            <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
-              type="button"
-              aria-label="Afficher le mot de passe"
-              onClick={() => setShowCurrent((v) => !v)}
-            >
-              {showCurrent ? (
-                <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
-              ) : (
-                <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />
-              )}
-            </button>
-          </div>
+          <PasswordInput
+            id="change-current"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
+            placeholder="Votre mot de passe actuel"
+          />
         </FormField>
-        <FormField label="Nouveau mot de passe" id="change-new" help="Au moins 8 caractères.">
-          <div className="relative">
-            <Input id="change-new" type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} placeholder="8 caractères minimum" />
-            <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
-              type="button"
-              aria-label="Afficher le mot de passe"
-              onClick={() => setShowNew((v) => !v)}
-            >
-              {showNew ? (
-                <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
-              ) : (
-                <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />
-              )}
-            </button>
-          </div>
+
+        <FormField
+          label="Nouveau mot de passe"
+          id="change-new"
+          liveStatus={newStatus}
+          passwordRules={newPassword ? passwordCheck.rules : null}
+        >
+          <PasswordInput
+            id="change-new"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            success={newStatus.status === FIELD_STATUS.OK}
+            required
+            placeholder="Au moins 8 caractères"
+          />
         </FormField>
-        <FormField label="Confirmer le nouveau mot de passe" id="change-confirm">
-          <div className="relative">
-            <Input id="change-confirm" type={showConfirm ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="Confirmez le nouveau mot de passe" />
-            <button
-              className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
-              type="button"
-              aria-label="Afficher le mot de passe"
-              onClick={() => setShowConfirm((v) => !v)}
-            >
-              {showConfirm ? (
-                <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
-              ) : (
-                <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />
-              )}
-            </button>
-          </div>
+
+        <FormField
+          label="Confirmer le nouveau mot de passe"
+          id="change-confirm"
+          liveStatus={confirmStatus}
+          hint="Les deux saisies doivent être identiques"
+        >
+          <PasswordInput
+            id="change-confirm"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            success={confirmStatus.status === FIELD_STATUS.OK}
+            required
+            placeholder="Confirmez le nouveau mot de passe"
+          />
         </FormField>
-        <Button type="submit" loading={loading} variant="primary" className="w-full">Mettre à jour</Button>
+
+        <Button type="submit" loading={loading} disabled={!ready} variant="primary" className="w-full">Mettre à jour</Button>
       </form>
     </div>
   );

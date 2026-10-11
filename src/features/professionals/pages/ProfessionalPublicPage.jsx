@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { ROLES } from '@/shared/lib/constants.js';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { PhotoLightbox } from '../components/public/PhotoLightbox.jsx';
 import { PublicProfileMobileIntro } from '../components/public/PublicProfileMobileIntro.jsx';
 import { PublicProfileSidebar } from '../components/public/PublicProfileSidebar.jsx';
@@ -43,6 +44,12 @@ export function ProfessionalPublicPage() {
   const canReviewState = useAsyncData(() => canReview(id), [id, user?.id]);
   // Une seule requête pour les deux emplacements (desktop et mobile).
   const compactReviews = useAsyncData(() => listReviews(id, { page: 1, pageSize: 3 }), [id]);
+
+  // Appelé avant le retour anticipé (un hook ne peut pas être conditionnel),
+  // mais après detail : la vue dérivée n'existe qu'ensuite.
+  usePageTitle(
+    detail.data ? `${detail.data.profile?.trade?.name ?? 'Professionnel'} à Brazzaville` : 'Professionnel',
+  );
 
   if (detail.loading || detail.error)
     return (

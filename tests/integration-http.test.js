@@ -122,6 +122,14 @@ describe('intégration HTTP', () => {
       expect((await get('/api/admin/stats', asSession('inexistant'))).status).toBe(401);
     });
 
+    it('/auth/me répond 200 sans session, plutôt que 401', async () => {
+      // « Qui suis-je ? » sans session est une réponse normale, pas une erreur :
+      // un 401 affichait une alerte rouge dans la console pour tout visiteur.
+      const res = await get('/api/auth/me');
+      expect(res.status).toBe(200);
+      await expect(res.json()).resolves.toEqual({ user: null });
+    });
+
     it('accepte une session administrateur', async () => {
       const res = await get('/api/admin/stats', asSession('session-admin'));
       expect(res.status).toBe(200);

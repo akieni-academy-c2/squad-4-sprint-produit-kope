@@ -7,6 +7,8 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.service.js';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
+import { updateAccountSchema } from '@/shared/utils/validators.js';
 import { BecomeProCard } from './BecomeProCard.jsx';
 
 function Field({ label, value, onChange }) {
@@ -48,8 +50,14 @@ export function ClientProfileSection({ user }) {
 
   const name = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || '-';
 
+  // Formulaire de modification : le bouton n'est actif que si les valeurs
+  // sont valides ET différentes de celles enregistrées.
+  const { ready, dirty } = useFormReadiness(updateAccountSchema, { firstName, lastName, phone });
+  const canSubmit = ready && dirty;
+
   const save = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setSaving(true);
     try {
       await updateAccount({ firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() });
@@ -135,11 +143,11 @@ export function ClientProfileSection({ user }) {
 
         {editing ? (
           <form onSubmit={save} className="grid gap-4 px-5 py-5 sm:grid-cols-2">
-            <Field label="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <Field label="Nom" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <Field label="Prénom(s)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <Field label="Nom(s)" value={lastName} onChange={(e) => setLastName(e.target.value)} />
             <Field label="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
             <div className="sm:col-span-2">
-              <Button type="submit" loading={saving}>Enregistrer</Button>
+              <Button type="submit" loading={saving} disabled={!canSubmit}>Enregistrer</Button>
             </div>
           </form>
         ) : (

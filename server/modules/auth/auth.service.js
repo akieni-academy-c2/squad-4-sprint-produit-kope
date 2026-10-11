@@ -8,19 +8,26 @@ import * as sessions from './sessions.repository.js';
 
 const BCRYPT_ROUNDS = 10;
 const DUPLICATE_PHONE = 'Ce numéro est déjà utilisé';
+const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
 const INVALID_CREDENTIALS = 'Numéro ou mot de passe incorrect';
 const ACCOUNT_BLOCKED = 'Ce compte a été bloqué par un administrateur. Contactez le support.';
 
 const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', BCRYPT_ROUNDS);
 
+/** Traduit une violation d'unicité en message exploitable. */
+function rethrowDuplicate(err) {
+  if (err.code !== '23505') throw err;
+  // Le nom du champ est dans l'erreur PostgreSQL ; on n'expose que le nôtre.
+  if (err.constraint === 'professionals_display_name_unique' || err.detail?.includes('display_name'))
+    throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
+  throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });
+}
+
 async function insertUser(data, db) {
   try {
     return await repository.createUser(data, db);
   } catch (err) {
-    if (err.code === '23505') 
-      throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });
-    
-    throw err;
+    rethrowDuplicate(err);
   }
 }
 
@@ -34,12 +41,16 @@ export async function registerClient({ firstName, lastName, phone, password }) {
 export async function registerProfessional({ displayName, phone, password, tradeId, zoneIds }) {
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  return withTransaction(async (tx) => {
-    const user = await insertUser({ role: 'professional', phone, passwordHash }, tx);
-    await professionalsRepository.create({ userId: user.id, displayName, tradeId }, tx);
-    await professionalsRepository.replaceZones(user.id, zoneIds, tx);
-    return { ...user, displayName };
-  });
+  try {
+    return await withTransaction(async (tx) => {
+      const user = await insertUser({ role: 'professional', phone, passwordHash }, tx);
+      await professionalsRepository.create({ userId: user.id, displayName, tradeId }, tx);
+      await professionalsRepository.replaceZones(user.id, zoneIds, tx);
+      return { ...user, displayName };
+    });
+  } catch (err) {
+    rethrowDuplicate(err);
+  }
 }
 
 /** US-03 */
@@ -97,9 +108,6 @@ export async function updateAccount(userId, { firstName, lastName, phone }) {
   try {
     return await repository.updateAccount(userId, { firstName, lastName, phone });
   } catch (err) {
-    if (err.code === '23505') 
-      throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });
-    
-    throw err;
+    rethrowDuplicate(err);
   }
 }

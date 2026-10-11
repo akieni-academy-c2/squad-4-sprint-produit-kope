@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { idSchema, paginationSchema, passwordSchema, phoneSchema, requiredText } from '../../utils/commonSchemas.js';
+import { idSchema, paginationSchema, passwordSchema, personNameSchema, phoneSchema, requiredText } from '../../utils/commonSchemas.js';
 
 const emptyToUndefined = (value) => (value === '' || value == null ? undefined : value);
 
@@ -12,8 +12,8 @@ export const userSuspendedSchema = z.object({
 });
 
 export const createAdminSchema = z.object({
-  firstName: requiredText(60, 'Le prénom est obligatoire'),
-  lastName: requiredText(60, 'Le nom est obligatoire'),
+  firstName: personNameSchema,
+  lastName: personNameSchema,
   phone: phoneSchema,
   password: passwordSchema,
 });

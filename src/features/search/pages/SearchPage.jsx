@@ -9,8 +9,10 @@ import { Search } from 'lucide-react';
 import { SearchResults } from '../components/SearchResults.jsx';
 import { useSearch } from '../hooks/useSearch.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 
 export function SearchPage() {
+  usePageTitle('Rechercher un professionnel');
   const [params, setParams] = useSearchParams();
   const { trade, zone, page, q, available, minRating, minExperience } = Object.fromEntries(params.entries());
   const [sort, setSort] = useState(params.get('sort') || 'recommended');
@@ -78,6 +80,12 @@ export function SearchPage() {
           </aside>
 
           <section className="min-w-0 space-y-5">
+            {/* Cette page n'avait aucun titre principal : un `h1` par page est
+                attendu pour les lecteurs d'écran et pour le référencement. */}
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
+              {trade || zone ? 'Professionnels' : 'Trouver un professionnel'}
+            </h1>
+
             {results?.total > 0 && (
               <div>
                 <p className="text-md font-semibold uppercase tracking-[0.12em]">

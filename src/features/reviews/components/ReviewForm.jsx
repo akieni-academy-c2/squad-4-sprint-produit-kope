@@ -16,17 +16,14 @@ export function ReviewForm({ professionalId, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  // Une note est obligatoire, le commentaire est facultatif mais borné.
+  const commentTooLong = comment.length > MAX;
+  const canSubmit = rating >= 1 && rating <= 5 && !commentTooLong;
+
   const submit = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setError(null);
-    if (!rating || rating < 1 || rating > 5) {
-      setError('Donnez une note entre 1 et 5 étoiles.');
-      return;
-    }
-    if (comment.length > MAX) {
-      setError(`Commentaire limité à ${MAX} caractères.`);
-      return;
-    }
     setSubmitting(true);
     try {
       await createReview(professionalId, { rating: Number(rating), comment: comment.trim() || null });
@@ -78,7 +75,7 @@ export function ReviewForm({ professionalId, onSuccess }) {
         )}
 
         <div className="flex items-center justify-end gap-3">
-          <Button type="submit" loading={submitting} size="lg">
+          <Button type="submit" loading={submitting} disabled={!canSubmit} size="lg">
             Publier mon avis
           </Button>
         </div>

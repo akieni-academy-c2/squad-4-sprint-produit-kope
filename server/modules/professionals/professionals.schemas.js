@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { phoneSchema, zoneIdsSchema, requiredText, idSchema } from '../../utils/commonSchemas.js';
+import { displayNameSchema, phoneSchema, zoneIdsSchema, idSchema } from '../../utils/commonSchemas.js';
 
 /** US-04 */
 export const updateProfileSchema = z.object({
-  displayName: requiredText(100, 'Le nom affiché est obligatoire'),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
   description: z
     .string({ error: 'La description est obligatoire' })

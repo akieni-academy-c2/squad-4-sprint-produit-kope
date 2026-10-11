@@ -33,6 +33,7 @@ export function ProfileEditForm({
   loadingRefs,
   account,
   onAccountField,
+  canSubmit = true,
 }) {
   const descLen = String(values.description ?? '').length;
 
@@ -40,8 +41,8 @@ export function ProfileEditForm({
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <ProfileSection title="Informations personnelles">
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextInput id="pe-firstName" label="Prénom" value={account.firstName} onChange={(e) => onAccountField('firstName', e.target.value)} />
-          <TextInput id="pe-lastName" label="Nom" value={account.lastName} onChange={(e) => onAccountField('lastName', e.target.value)} />
+          <TextInput id="pe-firstName" label="Prénom(s)" value={account.firstName} onChange={(e) => onAccountField('firstName', e.target.value)} />
+          <TextInput id="pe-lastName" label="Nom(s)" value={account.lastName} onChange={(e) => onAccountField('lastName', e.target.value)} />
         </div>
         <div className="mt-4">
           <FormField
@@ -157,7 +158,7 @@ export function ProfileEditForm({
       </ProfileSection>
 
       <div className="flex justify-end gap-3 pt-1">
-        <Button type="submit" loading={submitting} size="md">Enregistrer</Button>
+        <Button type="submit" loading={submitting} disabled={!canSubmit} size="md">Enregistrer</Button>
       </div>
     </form>
   );

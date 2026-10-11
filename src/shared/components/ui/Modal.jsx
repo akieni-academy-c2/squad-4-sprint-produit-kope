@@ -45,7 +45,12 @@ export function Modal({
         aria-labelledby={title ? titleId : undefined}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'w-full max-h-[90vh] overflow-y-auto bg-white shadow-[var(--shadow-pop)] transition-opacity duration-300',
+// Sur mobile la modale est une feuille ancrée en bas, comme les sheets Apple :
+// elle grandit avec le contenu jusqu'à 90dvh et laisse toujours une bande de
+// page visible au-dessus — le repère visuel qui dit « c'est une surcouche ».
+// Le breakpoint `sm` reste inchangé : sur desktop la modale est centrée et
+// sa hauteur suit son contenu, sans plafond.
+'w-full max-h-[90dvh] overflow-y-auto overscroll-contain bg-white shadow-[var(--shadow-pop)] transition-opacity duration-300 sm:max-h-none',
           radiusTop,
           radiusMain,
           show ? 'opacity-100' : 'opacity-0',
@@ -62,7 +67,7 @@ export function Modal({
             {description && <p className="mt-1 text-sm text-gray-600">{description}</p>}
           </div>
         )}
-        {children && <div className="px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">{children}</div>}
+        {children && <div className="px-4 py-3 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-5 sm:py-4">{children}</div>}
         {actions && (
           <div className="flex flex-col-reverse gap-2 border-t border-gray-100 px-5 py-3 sm:flex-row sm:justify-end">
             {actions}

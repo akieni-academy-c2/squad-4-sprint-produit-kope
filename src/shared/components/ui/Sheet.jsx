@@ -31,9 +31,12 @@ export function Sheet({ open, onOpenChange, side = 'right', children }) {
         role="dialog"
         aria-modal="true"
         className={cn(
+          // Même contrat que Modal : hauteur bornée et défilement interne.
+          // Sans cela, un formulaire long est tronqué sur iOS, qui ne réduit
+          // pas la page sous le clavier.
           side === 'bottom'
-            ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col rounded-t-3xl bg-white p-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-2xl transition-transform duration-300'
-            : 'absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col bg-white shadow-2xl',
+            ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-2xl transition-transform duration-300'
+            : 'absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col overflow-y-auto overscroll-contain bg-white shadow-2xl',
           show
             ? side === 'bottom' ? 'translate-y-0' : 'translate-x-0'
             : side === 'bottom' ? 'translate-y-full' : 'translate-x-full',

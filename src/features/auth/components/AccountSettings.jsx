@@ -69,10 +69,10 @@ export function AccountSettings({ user, passwordOnly = false }) {
         <Card className="p-6">
           <h3 className="text-base font-bold text-gray-900">Informations personnelles</h3>
           <form onSubmit={submitName} className="mt-4 grid gap-4 sm:grid-cols-2">
-            <FormField label="Prénom" id="acc-firstname">
+            <FormField label="Prénom(s)" id="acc-firstname">
               <Input id="acc-firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
             </FormField>
-            <FormField label="Nom" id="acc-lastname">
+            <FormField label="Nom(s)" id="acc-lastname">
               <Input id="acc-lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
             </FormField>
             <FormField label="Téléphone" id="acc-phone">

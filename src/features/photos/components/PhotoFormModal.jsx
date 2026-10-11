@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/Dialog.jsx';
 import { addPhotoSchema, validateFrontend } from '@/shared/utils/validators.js';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 
 /** Formulaire d'ajout / modification d'une réalisation. */
 export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, remaining }) {
@@ -34,8 +35,14 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
     reset();
   };
 
+  // Bouton actif seulement si les champs sont valides et, en création,
+  // si une image a été choisie : inutile d'envoyer un formulaire incomplet.
+  const { ready } = useFormReadiness(addPhotoSchema, { title, description });
+  const canSubmit = ready && Boolean(photo || file);
+
   const submit = async (e) => {
     e?.preventDefault?.();
+    if (!canSubmit) return;
     const check = validateFrontend(addPhotoSchema, { title, description });
     if (!check.success) {
       setErrors(check.errors);
@@ -134,7 +141,7 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
             <Button type="button" variant="ghost" size="md" onClick={close} disabled={submitting}>
               Annuler
             </Button>
-            <Button type="submit" size="md" loading={submitting}>
+            <Button type="submit" size="md" loading={submitting} disabled={!canSubmit}>
               {photo ? 'Enregistrer' : 'Publier la photo'}
             </Button>
           </DialogFooter>

@@ -1,19 +1,33 @@
-import { Input } from './Input.jsx';
 import { useState } from 'react';
 import { Lock, LockOpen } from 'lucide-react';
+import { Input } from './Input.jsx';
 
-export function PasswordInput(props) {
-  const [show, setShow] = useState(false);
+/**
+ * Champ de mot de passe avec bascule de visibilité. Factorise le bouton
+ * « œil », qui était recopié dans chaque formulaire.
+ */
+export function PasswordInput({ id, value, onChange, error, success, ...rest }) {
+  const [visible, setVisible] = useState(false);
+
   return (
     <div className="relative">
-      <Input {...props} type={show ? 'text' : 'password'} />
+      <Input
+        id={id}
+        type={visible ? 'text' : 'password'}
+        value={value}
+        onChange={onChange}
+        error={error}
+        success={success}
+        {...rest}
+      />
       <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
         type="button"
-        aria-label={show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-        onClick={() => setShow(!show)}
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+        aria-pressed={visible}
+        className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
       >
-        {show ? (
+        {visible ? (
           <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
         ) : (
           <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />

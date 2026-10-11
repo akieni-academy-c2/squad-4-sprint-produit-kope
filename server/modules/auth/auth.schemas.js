@@ -1,16 +1,18 @@
 import { z } from 'zod';
 import {
   consentSchema,
+  displayNameSchema,
   idSchema,
   passwordSchema,
+  personNameSchema,
   phoneSchema,
-  requiredText,
   zoneIdsSchema,
 } from '../../utils/commonSchemas.js';
 
 /** US-01 */
-export const registerClientSchema = z.object({  firstName: requiredText(100),
-  lastName: requiredText(100),
+export const registerClientSchema = z.object({
+  firstName: personNameSchema,
+  lastName: personNameSchema,
   phone: phoneSchema,
   password: passwordSchema,
   consent: consentSchema,
@@ -18,7 +20,7 @@ export const registerClientSchema = z.object({  firstName: requiredText(100),
 
 /** US-02 */
 export const registerProfessionalSchema = z.object({
-  displayName: requiredText(100),
+  displayName: displayNameSchema,
   phone: phoneSchema,
   password: passwordSchema,
   tradeId: idSchema('Choisissez un métier'),
@@ -27,7 +29,7 @@ export const registerProfessionalSchema = z.object({
 });
 
 export const becomeProfessionalSchema = z.object({
-  displayName: requiredText(100),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un metier'),
   zoneIds: zoneIdsSchema,
   yearsExperience: z.coerce
@@ -49,8 +51,8 @@ export const loginSchema = z.object({
 });
 
 export const updateAccountSchema = z.object({
-  firstName: requiredText(100).optional(),
-  lastName: requiredText(100).optional(),
+  firstName: personNameSchema.optional(),
+  lastName: personNameSchema.optional(),
   phone: phoneSchema.optional(),
 });
 
