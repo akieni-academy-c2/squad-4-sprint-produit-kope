@@ -70,9 +70,6 @@ export function AdminSectionLayout({
         </Button>
       </div>
 
-      {/* `children` est toujours dans la même position du DOM : le passage de
-          `rightContainer` de null à l'élément réel ne le démonte donc plus,
-          ce qui déclenchait un second appel API. */}
       <div className="min-w-0">{children}</div>
       {rightContainer ? (
         createPortal(filters(searchId), rightContainer)

@@ -7,13 +7,6 @@ import {
   destinationIndex as entryDestination,
 } from './catalog/catalogUtils.js';
 
-/**
- * État et actions du tableau de catalogue.
- *
- * Le composant ne fait plus que rendre : ici vivent le chargement, le
- * glisser-déposer et les mutations. L'algorithme d'aperçu reste dans
- * `catalogUtils`, où il est pur et testable sans React.
- */
 export function useCatalogBoard({
   groupByKey = 'groupId',
   groupNoun = 'groupe',
@@ -78,8 +71,6 @@ export function useCatalogBoard({
   );
   const grouped = groupItems(visibleItems, groups, groupByKey);
 
-  // Un filtre actif rend l'ordre affiché trompeur : le réordonnancement est
-  // alors refusé plutôt que d'appliquer un rang calculé sur une liste réduite.
   const canReorder = !search && !groupFilter;
   const draggingItem = drag?.kind === 'item' ? items.find((i) => i.id === drag.id) : null;
 
@@ -174,8 +165,6 @@ export function useCatalogBoard({
     }
   };
 
-  // Mise à jour optimiste : l'élément change de colonne tout de suite, la
-  // persistance suit. `reorderItems` reçoit les ids du groupe cible.
   const dropItem = (itemId, targetKey, index) => {
     const moved = items.find((i) => i.id === itemId);
     if (!moved) return;

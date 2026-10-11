@@ -57,7 +57,7 @@ export function AdminCatalogBoard({
     displayEntries, cardsOf, doDelete, itemHandlers, groupHandlers,
   } = board;
 
-  const filters = (
+  const renderFilters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
       <form onSubmit={submitSearch} className="divide-y divide-gray-100">
         <AdminFilterGroup title="Recherche">
@@ -120,7 +120,7 @@ export function AdminCatalogBoard({
       total={items.length}
       noun={itemNoun}
       dirty={dirty}
-      filters={filters}
+      filters={renderFilters}
       searchId={searchId}
     >
       <DataState loading={loading} error={error}>

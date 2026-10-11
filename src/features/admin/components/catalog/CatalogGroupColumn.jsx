@@ -3,10 +3,6 @@ import { Button, Tooltip } from '@/shared/components/ui';
 import { cn } from '@/shared/utils';
 import { InlineInput } from './InlineInput.jsx';
 
-/**
- * Colonne d'un groupe du catalogue : en-tête déplaçable, elements (dont
- * emplacements réservés) et champ d'ajout rapide.
- */
 export function CatalogGroupColumn({
   group,
   groupKey,

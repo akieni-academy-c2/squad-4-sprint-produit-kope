@@ -30,11 +30,6 @@ export function groupItems(items, groups, groupByKey) {
   return map;
 }
 
-/**
- * Entrées affichées d'un groupe pendant un déplacement.
- * La carte déplacée reste montée dans sa liste (`gap` ou `dragging`) et la
- * position d'arrivée est matérialisée par une copie distincte (`preview`).
- */
 export function displayEntries(cards, draggingItem, preview, groupKey) {
   if (!draggingItem) return cards.map((item) => ({ item, state: 'normal', entryKey: item.id }));
 
@@ -58,7 +53,6 @@ export function displayEntries(cards, draggingItem, preview, groupKey) {
   return entries;
 }
 
-/** Convertit un index d'entrée (liste incluant le trou) en index de destination. */
 export function destinationIndex(cards, entryIndex, draggingItem) {
   const gapAt = cards.findIndex((i) => draggingItem && i.id === draggingItem.id);
   if (gapAt < 0) return entryIndex;

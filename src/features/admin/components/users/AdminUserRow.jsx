@@ -5,10 +5,6 @@ import { ROLES, ROUTES } from '@/shared/lib/constants.js';
 import { formatDateFr } from '@/shared/utils';
 import { getUserName, ROLE_LABELS, ROLE_VARIANTS } from './adminUserOptions.js';
 
-/**
- * Ligne utilisateur : identité cliquable pour un professionnel, badges de rôle
- * et action de blocage. Le professionnel est le seul à avoir une fiche publique.
- */
 export function AdminUserRow({ user, isSelf, onToggleBlock }) {
   const name = getUserName(user);
   const blocked = Boolean(user.blockedAt);

@@ -21,10 +21,6 @@ function ItemFooter({ item }) {
   );
 }
 
-/**
- * Carte d'un élément du catalogue. Trois états visuels : normal, emplacement
- * réservé (`gap`) et clone suivant le glissement (`preview`).
- */
 export function CatalogItemCard({
   entry,
   index,

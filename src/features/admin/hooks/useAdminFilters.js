@@ -1,9 +1,5 @@
 import { useState } from 'react';
 
-/**
- * Filtres d'un tableau admin : brouillon (saisie) et valeurs appliquées à la requête.
- * Toute modification du brouillon renvoie à la page 1.
- */
 export function useAdminFilters(initial = {}) {
   const [draft, setDraft] = useState(initial);
   const [applied, setApplied] = useState(initial);
