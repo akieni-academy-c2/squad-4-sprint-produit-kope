@@ -3,11 +3,12 @@ import { beforeAll, beforeEach, afterAll, describe, expect, it, vi } from 'vites
 /**
  * Tests d'intégration HTTP : le vrai serveur Express est démarré sur un port
  * éphémère et interrogé en HTTP. Couvre la chaîne complète
- * route → middleware → validation Zod → service → repository, qui n'était
- * jamais exercée (aucun test ne sortait du HTTP).
+ * route → middleware → session → service → repository.
  *
  * Seul le pool PostgreSQL est simulé : le SQL lui-même est déjà couvert
- * unitairement avec un faux `db.query` (tests/reviews-backend, admin-backend…).
+ * unitairement et par tests/sql-live.test.js.
+ *
+ * L'authentification passe par la session (cookie `sid`), comme en production.
  */
 
 const STATS = {
@@ -23,6 +24,14 @@ const STATS = {
   contacts: 7,
 };
 
+/** Sessions ouvertes dans la base de test, par identifiant de cookie. */
+const openSessions = {
+  'session-admin': { id: 1, role: 'admin' },
+  'session-client': { id: 5, role: 'client' },
+  'session-backdated-admin': { id: 3, role: 'admin' },
+  'session-suspended-admin': { id: 4, role: 'admin' },
+};
+
 /** État des comptes en base, indexé par id : chaque test décrit le compte qu'il utilise. */
 const accountStates = new Map();
 const activeAdmin = { role: 'admin', blockedAt: null, suspendedAt: null };
@@ -34,8 +43,12 @@ function fakePool() {
       return { query: fakePool().query, release() {} };
     },
     async query(sql, params = []) {
-      // Requêtes du store de session (connect-pg-simple) : aucune session active.
-      if (/session/i.test(sql)) return { rows: [], rowCount: 0 };
+      // Store de session (connect-pg-simple) : lecture d'une session ouverte.
+      if (/FROM\s+"?session"?/i.test(sql) && /\bsid\b/i.test(sql)) {
+        const user = openSessions[params[0]];
+        if (!user) return { rows: [], rowCount: 0 };
+        return { rows: [{ sess: JSON.stringify({ user, cookie: {} }) }], rowCount: 1 };
+      }
 
       if (sql.includes('SELECT role, blocked_at')) {
         const state = accountStates.get(Number(params[0])) ?? activeAdmin;
@@ -62,15 +75,12 @@ vi.mock('../server/db/pool.js', () => {
   };
 });
 
-const { signToken } = await import('../server/utils/tokens.js');
-const { env } = await import('../server/config/env.js');
 const { default: app } = await import('../server/app.js');
+const { env } = await import('../server/config/env.js');
+const { sign } = await import('cookie-signature');
 
 let server;
 let baseUrl;
-
-const token = (payload, secret = env.ACCESS_TOKEN_SECRET) =>
-  signToken(payload, secret, 3600);
 
 beforeAll(async () => {
   await new Promise((resolve) => {
@@ -87,6 +97,13 @@ beforeEach(() => {
   accountStates.clear();
 });
 
+/**
+ * express-session ignore un cookie qui ne commence pas par « s: » ou dont la
+ * signature ne correspond pas : le store n'est même pas interrogé. On
+ * reproduit donc exactement le format produit par le serveur.
+ */
+const asSession = (sid) => ({ Cookie: `sid=s:${sign(sid, env.SESSION_SECRET)}` });
+
 const get = (path, headers = {}) => fetch(`${baseUrl}${path}`, { headers });
 const post = (path, body, headers = {}) =>
   fetch(`${baseUrl}${path}`, {
@@ -96,43 +113,17 @@ const post = (path, body, headers = {}) =>
   });
 
 describe('intégration HTTP', () => {
-  describe('protection des routes admin', () => {
-    it('refuse sans jeton', async () => {
-      const res = await get('/api/admin/stats');
-      expect(res.status).toBe(401);
+  describe('authentification par session', () => {
+    it('refuse sans session', async () => {
+      expect((await get('/api/admin/stats')).status).toBe(401);
     });
 
-    it('refuse un client sur une route admin', async () => {
-      accountStates.set(5, { role: 'client', blockedAt: null, suspendedAt: null });
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 5, role: 'client' })}` });
-      expect(res.status).toBe(403);
-      await expect(res.json()).resolves.toMatchObject({ message: 'Accès refusé' });
+    it('refuse un identifiant de session inconnu', async () => {
+      expect((await get('/api/admin/stats', asSession('inexistant'))).status).toBe(401);
     });
 
-    it('refuse un administrateur bloqué', async () => {
-      accountStates.set(3, { role: 'admin', blockedAt: new Date(), suspendedAt: null });
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 3, role: 'admin' })}` });
-      expect(res.status).toBe(403);
-      await expect(res.json()).resolves.toMatchObject({ message: /bloqué/i });
-    });
-
-    it('refuse un administrateur suspendu', async () => {
-      accountStates.set(4, { role: 'admin', blockedAt: null, suspendedAt: new Date() });
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 4, role: 'admin' })}` });
-      expect(res.status).toBe(403);
-      await expect(res.json()).resolves.toMatchObject({ message: /suspendu/i });
-    });
-
-    it('applique le rôle en base et non celui du token', async () => {
-      // Token émis du temps où le compte était administrateur, puis rétrogradé.
-      accountStates.set(6, { role: 'client', blockedAt: null, suspendedAt: null });
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 6, role: 'admin' })}` });
-      expect(res.status).toBe(403);
-    });
-
-    it('accepte un administrateur et renvoie des statistiques exploitables', async () => {
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 1, role: 'admin' })}` });
-
+    it('accepte une session administrateur', async () => {
+      const res = await get('/api/admin/stats', asSession('session-admin'));
       expect(res.status).toBe(200);
       const stats = await res.json();
       // countStats ne renvoie pas de clé `incomplete` : le calcul doit rester un nombre.
@@ -142,27 +133,57 @@ describe('intégration HTTP', () => {
       expect(stats.hidden).toBe(2);
     });
 
-    it('envoie les en-têtes de sécurité', async () => {
-      const res = await get('/api/admin/stats', { Authorization: `Bearer ${token({ sub: 1, role: 'admin' })}` });
+    it('refuse une session client sur une route admin', async () => {
+      accountStates.set(5, { role: 'client', blockedAt: null, suspendedAt: null });
+      const res = await get('/api/admin/stats', asSession('session-client'));
+      expect(res.status).toBe(403);
+      await expect(res.json()).resolves.toMatchObject({ message: 'Accès refusé' });
+    });
 
-      expect(res.headers.get('x-content-type-options')).toBe('nosniff');
-      expect(res.headers.get('x-frame-options')).toBe('DENY');
-      expect(res.headers.get('x-powered-by')).toBeNull();
+    it('refuse un administrateur bloqué', async () => {
+      accountStates.set(3, { role: 'admin', blockedAt: new Date(), suspendedAt: null });
+      const res = await get('/api/admin/stats', asSession('session-backdated-admin'));
+      expect(res.status).toBe(403);
+      await expect(res.json()).resolves.toMatchObject({ message: /bloqué/i });
+    });
+
+    it('refuse un administrateur suspendu', async () => {
+      accountStates.set(4, { role: 'admin', blockedAt: null, suspendedAt: new Date() });
+      const res = await get('/api/admin/stats', asSession('session-suspended-admin'));
+      expect(res.status).toBe(403);
+      await expect(res.json()).resolves.toMatchObject({ message: /suspendu/i });
+    });
+
+    it('applique le rôle en base et non celui mémorisé en session', async () => {
+      // Rétrogradé depuis l'ouverture de la session.
+      accountStates.set(1, { role: 'client', blockedAt: null, suspendedAt: null });
+      const res = await get('/api/admin/stats', asSession('session-admin'));
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe('les tokens ont disparu', () => {
+    it('la route de refresh n existe plus', async () => {
+      const res = await post('/api/auth/refresh', { refreshToken: 'peu importe' });
+      expect(res.status).toBe(404);
+    });
+
+    it('la connexion ne renvoie aucun token', async () => {
+      const res = await post('/api/auth/login', { phone: '060000000', password: 'mauvais' });
+      const body = await res.json();
+      expect(body.accessToken).toBeUndefined();
+      expect(body.refreshToken).toBeUndefined();
+    });
+
+    it('un en-tête Authorization ne donne aucun accès', async () => {
+      // Aucun jeton n'est émis : un Bearer fabriqué ne doit rien ouvrir.
+      const res = await get('/api/admin/stats', { Authorization: 'Bearer a.b.c' });
+      expect(res.status).toBe(401);
     });
   });
 
   describe('validation des requêtes', () => {
-    it('rejette un refreshToken de type invalide', async () => {
-      const res = await post('/api/auth/refresh', { refreshToken: 42 });
-      expect(res.status).toBe(400);
-    });
-
-    it('rejette un refreshToken absent', async () => {
-      const res = await post('/api/auth/refresh', {});
-      expect(res.status).toBe(401);
-    });
-
-    it('rejette un corps illisible sur une route authentifiée', async () => {
+    it('rejette un corps illisible', async () => {
       const res = await fetch(`${baseUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,9 +194,7 @@ describe('intégration HTTP', () => {
     });
 
     it('valide les paramètres de liste', async () => {
-      const res = await get('/api/admin/professionals?page=0', {
-        Authorization: `Bearer ${token({ sub: 1, role: 'admin' })}`,
-      });
+      const res = await get('/api/admin/professionals?page=0', asSession('session-admin'));
       expect(res.status).toBe(400);
     });
   });
@@ -185,6 +204,15 @@ describe('intégration HTTP', () => {
       const res = await get('/api/inexistant');
       expect(res.status).toBe(404);
       await expect(res.json()).resolves.toEqual({ message: 'Route introuvable' });
+    });
+  });
+
+  describe('en-têtes de sécurité', () => {
+    it('sont appliqués', async () => {
+      const res = await get('/api/admin/stats', asSession('session-admin'));
+      expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(res.headers.get('x-frame-options')).toBe('DENY');
+      expect(res.headers.get('x-powered-by')).toBeNull();
     });
   });
 });

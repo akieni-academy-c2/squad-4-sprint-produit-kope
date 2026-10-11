@@ -4,7 +4,7 @@ import { ApiError } from '../../utils/ApiError.js';
 import { normalizePhone } from '../../utils/phone.js';
 import * as repository from './auth.repository.js';
 import * as professionalsRepository from '../professionals/professionals.repository.js';
-import * as refreshTokensRepository from './refreshTokens.repository.js';
+import * as sessions from './sessions.repository.js';
 
 const BCRYPT_ROUNDS = 10;
 const DUPLICATE_PHONE = 'Ce numéro est déjà utilisé';
@@ -78,7 +78,7 @@ export function getCurrentUser(userId) {
   return repository.findById(userId);
 }
 
-export async function changePassword(userId, { currentPassword, newPassword }) {
+export async function changePassword(userId, { currentPassword, newPassword }, currentSessionId) {
   const passwordHash = await repository.getPasswordHash(userId);
   if (!passwordHash) throw ApiError.notFound('Compte introuvable');
 
@@ -89,7 +89,8 @@ export async function changePassword(userId, { currentPassword, newPassword }) {
 
   const newHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
   await repository.updatePasswordHash(userId, newHash);
-  await refreshTokensRepository.revokeAllForUser(userId);
+  // Un mot de passe changé doit couper les autres sessions ouvertes.
+  await sessions.destroyUserSessions(userId, { exceptSessionId: currentSessionId });
 }
 
 export async function updateAccount(userId, { firstName, lastName, phone }) {

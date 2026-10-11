@@ -3,7 +3,7 @@ import { ApiError } from '../../utils/ApiError.js';
 import { offsetOf, paginateSafely } from '../../utils/pagination.js';
 import * as repository from './admin.repository.js';
 import * as catalogRepository from './catalog.repository.js';
-import * as refreshTokensRepository from '../auth/refreshTokens.repository.js';
+
 
 const BCRYPT_ROUNDS = 10;
 
@@ -14,8 +14,11 @@ export async function listProfessionals(query) {
     q: query.q,
     status: query.status,
     sort: query.sort,
+    city: query.city,
   });
-  return paginateSafely(rows, query, () => repository.countProfessionals({ q: query.q, status: query.status }));
+  return paginateSafely(rows, query, () =>
+    repository.countProfessionals({ q: query.q, status: query.status, city: query.city }),
+  );
 }
 
 export async function listReviews(query) {
@@ -49,7 +52,8 @@ export async function setUserBlocked(actorId, id, blocked) {
 
   const updated = await repository.setUserBlocked(id, blocked);
   if (!updated) throw ApiError.notFound('Utilisateur introuvable');
-  if (blocked) await refreshTokensRepository.revokeAllForUser(id);
+  // La session est conservée : `loadActiveUser` refusera chaque requête avec
+  // un 403 motivé, ce qui est plus clair pour l'utilisateur qu'une déconnexion.
   return updated;
 }
 
@@ -66,7 +70,6 @@ export async function setUserSuspended(actorId, id, suspended) {
   if (!updated) throw ApiError.notFound('Utilisateur introuvable');
   // Une suspension imply le blocage ; lever la suspension redonne aussi l'accès.
   await repository.setUserBlocked(id, suspended);
-  if (suspended) await refreshTokensRepository.revokeAllForUser(id);
   return updated;
 }
 

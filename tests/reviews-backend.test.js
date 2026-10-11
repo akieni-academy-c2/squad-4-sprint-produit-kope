@@ -11,8 +11,6 @@ import * as professionalsRepository from '../server/modules/professionals/profes
 import reviewsRoutes from '../server/modules/reviews/reviews.routes.js';
 import { requireRole } from '../server/middlewares/requireRole.js';
 import { getAccountState } from '../server/modules/auth/auth.repository.js';
-import { env } from '../server/config/env.js';
-import { signToken } from '../server/utils/tokens.js';
 
 describe('US-15 reviews backend', () => {
   it('returns recent visible reviews with only the client first name and last initial', async () => {
@@ -80,7 +78,7 @@ describe('Un professionnel peut aussi laisser un avis', () => {
     expect(layer).toBeTruthy();
 
     const mw = requireRole('client', 'professional');
-    const req = { headers: { authorization: `Bearer ${signToken({ sub: 25, role: 'professional' }, env.ACCESS_TOKEN_SECRET, 3600)}` } };
+    const req = { session: { user: { id: 25, role: 'professional' } } };
     // Le rôle relu en base fait foi.
     getAccountState.mockResolvedValue({ role: 'professional', blockedAt: null, suspendedAt: null });
     await expect(

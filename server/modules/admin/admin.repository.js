@@ -1,6 +1,6 @@
 import { pool } from '../../db/pool.js';
 
-export async function listProfessionals({ limit, offset, q, status, sort }, db = pool) {
+export async function listProfessionals({ limit, offset, q, status, sort, city }, db = pool) {
   const orderBy = sort === 'recent' ? 'u.created_at DESC, p.user_id DESC' : 'p.display_name, p.user_id';
   const { rows } = await db.query(
     `SELECT p.user_id AS id,
@@ -24,14 +24,21 @@ export async function listProfessionals({ limit, offset, q, status, sort }, db =
              OR ($2 = 'hidden' AND p.is_hidden)
              OR ($2 = 'published' AND NOT p.is_hidden AND v.user_id IS NOT NULL)
              OR ($2 = 'incomplete' AND NOT p.is_hidden AND v.user_id IS NULL))
+        AND ($3::text IS NULL OR EXISTS (
+              SELECT 1
+                FROM professional_zones pz
+                JOIN zones z ON z.id = pz.zone_id
+                JOIN cities c ON c.id = z.city_id
+               WHERE pz.professional_id = p.user_id
+                 AND c.name = $3))
       ORDER BY ${orderBy}
-      LIMIT $3 OFFSET $4`,
-    [q ?? null, status ?? null, limit, offset],
+      LIMIT $4 OFFSET $5`,
+    [q ?? null, status ?? null, city ?? null, limit, offset],
   );
   return rows;
 }
 
-export async function countProfessionals({ q, status }, db = pool) {
+export async function countProfessionals({ q, status, city }, db = pool) {
   const { rows } = await db.query(
     `SELECT COUNT(*)::int AS count
        FROM professionals p
@@ -43,8 +50,15 @@ export async function countProfessionals({ q, status }, db = pool) {
         AND ($2::text IS NULL
              OR ($2 = 'hidden' AND p.is_hidden)
              OR ($2 = 'published' AND NOT p.is_hidden AND v.user_id IS NOT NULL)
-             OR ($2 = 'incomplete' AND NOT p.is_hidden AND v.user_id IS NULL))`,
-    [q ?? null, status ?? null],
+             OR ($2 = 'incomplete' AND NOT p.is_hidden AND v.user_id IS NULL))
+        AND ($3::text IS NULL OR EXISTS (
+              SELECT 1
+                FROM professional_zones pz
+                JOIN zones z ON z.id = pz.zone_id
+                JOIN cities c ON c.id = z.city_id
+               WHERE pz.professional_id = p.user_id
+                 AND c.name = $3))`,
+    [q ?? null, status ?? null, city ?? null],
   );
   return Number(rows[0]?.count ?? 0);
 }

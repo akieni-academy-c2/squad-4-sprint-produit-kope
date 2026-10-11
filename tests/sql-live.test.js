@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import pg from 'pg';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { listUsers, countUsers, listTrades, listZones, listCities, listTradeCategories } from '../server/modules/admin/admin.repository.js';
+import { listUsers, countUsers, listTrades, listZones, listCities, listTradeCategories, listProfessionals, countProfessionals } from '../server/modules/admin/admin.repository.js';
 import { getAccountState } from '../server/modules/auth/auth.repository.js';
 import { consumeRateLimitSlot, purgeRateLimits } from '../server/utils/rateLimitStore.js';
 
@@ -109,6 +109,58 @@ describe.skipIf(!enabled)('SQL reel', () => {
 
     it('liste les catégories de métiers', async () => {
       await expect(listTradeCategories(pool)).resolves.toBeInstanceOf(Array);
+    });
+  });
+
+  describe('filtre par ville', () => {
+    // Le sélecteur « Ville » était exposé dans l'interface mais la requête SQL
+    // n'utilisait pas le paramètre : le filtre ne faisait rien.
+    it('filtre réellement sur la ville', async () => {
+      const all = await listProfessionals({ limit: 100, offset: 0, q: null, status: null, sort: null, city: null }, pool);
+      const rows = await listProfessionals(
+        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Brazzaville' },
+        pool,
+      );
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows.length).toBeLessThanOrEqual(all.length);
+    });
+
+    it('une ville inconnue ne renvoie rien', async () => {
+      const rows = await listProfessionals(
+        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Ville-Inexistante' },
+        pool,
+      );
+      expect(rows).toEqual([]);
+      expect(await countProfessionals({ q: null, status: null, city: 'Ville-Inexistante' }, pool)).toBe(0);
+    });
+
+    it('la liste et le compte concordent', async () => {
+      const city = 'Brazzaville';
+      const rows = await listProfessionals(
+        { limit: 100, offset: 0, q: null, status: null, sort: null, city },
+        pool,
+      );
+      const count = await countProfessionals({ q: null, status: null, city }, pool);
+      const total = Number(rows[0]?.total ?? 0);
+      expect(total).toBe(count);
+    });
+
+    it('chaque professionnel rendu appartient bien à la ville', async () => {
+      const rows = await listProfessionals(
+        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Brazzaville' },
+        pool,
+      );
+      const ids = rows.map((r) => r.id);
+      const { rows: check } = await pool.query(
+        // DISTINCT : un professionnel peut couvrir plusieurs zones de la ville.
+        `SELECT DISTINCT p.user_id FROM professionals p
+           JOIN professional_zones pz ON pz.professional_id = p.user_id
+           JOIN zones z ON z.id = pz.zone_id
+           JOIN cities c ON c.id = z.city_id
+          WHERE c.name = $1 AND p.user_id = ANY($2::bigint[])`,
+        ['Brazzaville', ids.map(Number)],
+      );
+      expect(check.length).toBe(ids.length);
     });
   });
 

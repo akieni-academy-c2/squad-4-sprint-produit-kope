@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { LifeBuoy, Mail, Phone } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
 import { SUSPENDED_EVENT } from '@/shared/lib/api.js';
-import { SUPPORT_EMAIL, SUPPORT_MAILTO, SUPPORT_PHONE } from '@/shared/constants/support.js';
+import { SUPPORT_EMAIL, SUPPORT_MAILTO, SUPPORT_PHONE, SUPPORT_TEL } from '@/shared/constants/support.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 
 /**
@@ -30,7 +30,7 @@ export function SuspensionNotice() {
           <Button as="a" href={SUPPORT_MAILTO} variant="secondary">
             <Mail size={16} aria-hidden /> Contester par email
           </Button>
-          <Button as="a" href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`} variant="primary">
+          <Button as="a" href={SUPPORT_TEL} variant="primary">
             <Phone size={16} aria-hidden /> Appeler le service client
           </Button>
         </>
@@ -63,10 +63,7 @@ export function SuspensionNotice() {
               Téléphone
             </dt>
             <dd>
-              <a
-                href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}
-                className="font-semibold text-primary-700 hover:underline"
-              >
+              <a href={SUPPORT_TEL} className="font-semibold text-primary-700 hover:underline">
                 {SUPPORT_PHONE}
               </a>
             </dd>

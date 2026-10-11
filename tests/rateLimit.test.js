@@ -8,7 +8,6 @@ beforeAll(() => {
 });
 
 const { rateLimit } = await import('../server/middlewares/rateLimit.js');
-const { hashToken } = await import('../server/modules/auth/refreshTokens.repository.js');
 
 function mockRes() {
   const res = {};
@@ -69,14 +68,3 @@ describe('rateLimit', () => {
   });
 });
 
-describe('hashToken', () => {
-  it('produit un sha256 hex de 64 caractères', () => {
-    const h = hashToken('mon-token');
-    expect(h).toMatch(/^[a-f0-9]{64}$/);
-  });
-
-  it('est déterministe et sensible au token', () => {
-    expect(hashToken('a')).toBe(hashToken('a'));
-    expect(hashToken('a')).not.toBe(hashToken('b'));
-  });
-});
