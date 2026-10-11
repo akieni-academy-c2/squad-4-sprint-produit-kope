@@ -133,10 +133,10 @@ function RecentProfessionals({ items, onOpenAll }) {
       <ul className="space-y-2 ">
         {items.map((p) => (
           <li key={p.id}>
-            <article className="flex items-center gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 transition hover:border-primary-200 hover:shadow-sm">
+            <article className="flex flex-col gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 transition hover:border-primary-200 hover:shadow-sm sm:flex-row sm:items-center">
               <Link
                 to={ROUTES.PROFESSIONAL(p.id)}
-                className="shrink-0 rounded-full transition hover:opacity-80"
+                className="shrink-0 self-start rounded-full transition hover:opacity-80 sm:self-auto"
                 aria-label={`Voir la fiche publique de ${p.displayName}`}
               >
                 <UserAvatar
@@ -160,7 +160,7 @@ function RecentProfessionals({ items, onOpenAll }) {
                   )}
                 </p>
               </div>
-              <div className="flex shrink-0 flex-col items-end gap-1">
+              <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end">
                 <Badge variant="info">Professionnel</Badge>
                 <span className="text-[11px] text-gray-500">Inscrit le {formatDateFr(p.createdAt)}</span>
               </div>

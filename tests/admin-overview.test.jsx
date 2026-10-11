@@ -118,16 +118,16 @@ describe('Vue d’ensemble — mise en page', () => {
     expect(html).toContain('9 profil');
   });
 
-  it('affiche les trois derniers professionnels inscrits, en cartes utilisateur', () => {
+  it('affiche les quatre derniers professionnels inscrits, en cartes utilisateur', () => {
     const list = html.slice(html.indexOf('Derniers professionnels inscrits'));
 
-    // Trois items, pas cinq.
+    // Quatre items, pas cinq.
     expect(list).toContain('Atelier Kengo');
     expect(list).toContain('Plomberie Kope');
     expect(list).toContain('Briques du Sud');
-    expect(list).not.toContain('Cuisine Mabanga');
+    expect(list).toContain('Cuisine Mabanga');
     expect(list).not.toContain('Atelier Lumière');
-    expect((list.match(/<article /g) || []).length).toBe(3);
+    expect((list.match(/<article /g) || []).length).toBe(4);
 
     // Carte utilisateur : avatar, métier + téléphone, badge de rôle et date.
     expect(list).toContain('h-10 w-10');
@@ -139,14 +139,22 @@ describe('Vue d’ensemble — mise en page', () => {
     expect(list).toContain('Voir tous les professionnels');
   });
 
-  it('teinte chaque panneau avec une couleur franche et laisse les cartes de valeur blanches', () => {
-    expect(html).toContain('border-primary-600 bg-primary-500');
-    expect(html).toContain('border-danger-500 bg-danger-500');
-    expect(html).toContain('border-teal-600 bg-teal-500');
-    expect(html).toContain('border-gray-600 bg-gray-500');
-    // Les titres de panneau passent en blanc sur fond coloré.
-    expect((html.match(/text-white/g) || []).length).toBe(4);
-    // Les KPI et les cartes d'inscrits gardent leur fond blanc.
+  it('ordonne les cartes des derniers inscrits en colonne sur mobile puis en ligne à partir de sm', () => {
+    const list = html.slice(html.indexOf('Derniers professionnels inscrits'));
+
+    // Par défaut (mobile) : pile verticale ; à partir de sm : ligne comme avant.
+    expect(list).toContain('flex flex-col gap-3');
+    expect(list).toContain('sm:flex-row sm:items-center');
+    // L'avatar et le bloc badge/date restent alignés à gauche en mobile.
+    expect(list).toContain('self-start');
+    expect(list).toContain('items-start gap-1 sm:items-end');
+  });
+
+  it('laisse les panneaux sans teinte et les cartes de valeur blanches', () => {
+    // Les teintes ont été retirées des panneaux : tous les groupes partagent
+    // le même style neutre, les cartes de valeur restent blanches.
+    expect(html).toContain('border-[#e2e8e5] bg-white');
+    expect(html).not.toContain('text-white');
     expect((html.match(/bg-white/g) || []).length).toBeGreaterThan(5);
   });
 });
