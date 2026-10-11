@@ -31,7 +31,9 @@ export async function getSummary(professionalId, db = pool) {
 export async function listByProfessional(professionalId, { limit, offset }, db = pool) {
   const { rows } = await db.query(
     `SELECT r.id, r.rating, r.comment, r.created_at AS "createdAt",
+            r.client_id AS "clientId",
             json_build_object(
+              'id', u.id,
               'firstName', u.first_name,
               'lastName', COALESCE(UPPER(LEFT(u.last_name, 1)), ''),
               'avatarUrl', u.avatar_url

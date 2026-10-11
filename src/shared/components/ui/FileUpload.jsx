@@ -73,7 +73,14 @@ export function FileUpload({
                 <p className="text-xs text-gray-500">{formatSize(value.size)}</p>
               )}
               <div className="mt-1 flex flex-col items-center  w-fit absolute top-0 right-0">
-                <Button size="sm" variant="ghost" onClick={pick} disabled={disabled}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={pick}
+                  disabled={disabled}
+                  aria-label="Changer le fichier"
+                  title="Changer le fichier"
+                >
                   <Edit size={16} aria-hidden className="inline" />
                 </Button>
                 <Button
@@ -84,6 +91,8 @@ export function FileUpload({
                     setFileError('');
                   }}
                   disabled={disabled}
+                  aria-label="Retirer le fichier"
+                  title="Retirer le fichier"
                 >
                   <Trash2 size={16} aria-hidden className="inline" />
                 </Button>

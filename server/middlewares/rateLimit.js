@@ -35,8 +35,13 @@ async function resolveStore() {
 }
 
 // Balayage horaire des compteurs expirés.
+// `resolveStore()` est appelé à chaque tour : sans cela la condition restait
+// fausse tant qu'aucune requête rate-limitée n'était passée, et le nettoyage
+// ne démarrait jamais.
 setInterval(() => {
-  if (store === 'postgres') purgeRateLimits().catch(() => {});
+  resolveStore()
+    .then((resolved) => (resolved === 'postgres' ? purgeRateLimits() : null))
+    .catch(() => {});
 }, 60 * 60_000).unref?.();
 
 function consumeInMemory(id, windowMs, max) {
@@ -53,16 +58,30 @@ async function isAllowed(id, windowMs, max) {
   if ((await resolveStore()) !== 'postgres') return consumeInMemory(id, windowMs, max);
 
   try {
-    return (await consumeRateLimitSlot(id)) <= max;
+    return (await consumeRateLimitSlot(id, windowMs)) <= max;
   } catch {
     // Base indisponible : on ne bloque pas l'utilisateur pour autant.
     return consumeInMemory(id, windowMs, max);
   }
 }
 
-export function rateLimit({ windowMs = 15 * 60_000, max = 20, key = 'default' } = {}) {
+/**
+ * Identifie l'appelant.
+ *
+ * Par défaut l'IP. `byUser` préfère l'identifiant de session quand il existe :
+ * un routeur d'entreprise, un réseau partagé ou unefamille entière partagent
+ * une IP, et le compteur IP les punit tous ensemble. `fallbackToIp` garde la
+ * protection pour les visiteurs non connectés.
+ */
+function identify(req, byUser) {
+  if (!byUser) return `ip:${req.ip}`;
+  const userId = req.user?.id ?? req.session?.user?.id;
+  return userId != null ? `user:${userId}` : `ip:${req.ip}`;
+}
+
+export function rateLimit({ windowMs = 15 * 60_000, max = 20, key = 'default', byUser = false } = {}) {
   return async (req, res, next) => {
-    const allowed = await isAllowed(`${key}:${req.ip}`, windowMs, max);
+    const allowed = await isAllowed(`${key}:${identify(req, byUser)}`, windowMs, max);
 
     if (!allowed) {
       res.set('Retry-After', String(Math.ceil(windowMs / 1000)));

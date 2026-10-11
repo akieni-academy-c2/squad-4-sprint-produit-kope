@@ -1,0 +1,25 @@
+{
+  "name": "KOP — Annuaire des artisans du Congo",
+  "short_name": "KOP",
+  "description": "Trouvez un artisan du bâtiment vérifié à Brazzaville : plombier, électricien, maçon, menuisier.",
+  "lang": "fr-CG",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2d5c4a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

@@ -20,9 +20,6 @@ vi.mock('../src/shared/context/AuthContext.jsx', () => ({
 vi.mock('../src/shared/context/AuthModalContext.jsx', () => ({
   useAuthModal: () => ({ open: vi.fn() }),
 }));
-vi.mock('../src/features/professionals/components/PhotoGallery.jsx', () => ({
-  PhotoGallery: () => null,
-}));
 vi.mock('../src/features/reviews/components/index.js', () => ({
   RatingSummary: () => null,
   ReviewList: () => null,

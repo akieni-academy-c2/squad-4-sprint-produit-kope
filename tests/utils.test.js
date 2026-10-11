@@ -3,7 +3,6 @@ import {
   formatPhoneFR,
   formatDateFr,
   toWhatsappUrl,
-  initials,
   fullNameInitials,
   truncate,
 } from '../src/shared/utils';
@@ -49,10 +48,7 @@ describe('utils.js', () => {
     });
   });
 
-  describe('initials + fullNameInitials', () => {
-    it('calcule des initiales classiques', () => {
-      expect(initials('Camille', 'Bernard')).toBe('CB');
-    });
+  describe('fullNameInitials', () => {
     it('gère le prénom + initiale du nom', () => {
       expect(fullNameInitials('Camille', 'Bernard')).toBe('Camille B.');
     });

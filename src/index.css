@@ -1,5 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Moo+Lah+Lah&display=swap');
 @import "tailwindcss";
+
+/* Les polices sont déclarées dans index.html, pas ici.
+   Un `@import url()` en tête de CSS est bloquant : le navigateur découvre la
+   feuille de style seulement après avoir téléchargé celle de Google Fonts,
+   puis découvre les polices en second. Les balises <link> du <head> permettent
+   au navigateur de paralléliser et, avec `display=swap`, d'afficher le texte
+   tout de suite. */
 
 @layer font {
   .moo-lah-lah-regular {

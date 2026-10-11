@@ -1,8 +1,18 @@
-import { isValidElement, cloneElement } from 'react';
+import { isValidElement, cloneElement, useId, useContext, createContext } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/utils';
 import { useOverlay } from './useOverlay.js';
+
+/**
+ * Relie `DialogTitle` à son `DialogContent`.
+ *
+ * `role="dialog"` sans `aria-labelledby` est annoncé par un lecteur d'écran
+ * comme « dialogue » tout court : l'utilisateur ne sait pas ce qui vient de
+ * s'ouvrir. Le contexte fournit l'id sans obliger chaque appelant à le
+ * propager à la main.
+ */
+const DialogLabelContext = createContext(null);
 
 export function Dialog({ open, onOpenChange, children }) {
   const { render, show, panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
@@ -35,26 +45,34 @@ export function Dialog({ open, onOpenChange, children }) {
 }
 
 export function DialogContent({ className, children, onClose, ref: forwardedRef }) {
+  const labelId = useId();
+
   return (
     <div
       ref={forwardedRef}
       role="dialog"
       aria-modal="true"
+      // L'id est celui que `DialogTitle` reprend via le contexte. Tous les
+      // usages déclarent un titre : sans lui, `aria-labelledby` pointerait
+      // dans le vide et le dialogue n'aurait pas de nom du tout.
+      aria-labelledby={labelId}
       className={cn(
         'relative w-full rounded-t-3xl bg-white p-2 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-(--shadow-pop) animate-scale-in sm:rounded-3xl',
         className,
       )}
       onClick={(e) => e.stopPropagation()}
     >
-      {children}
-      <button
-        type="button"
-        aria-label="Fermer"
-        className="absolute cursor-pointer right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
-        onClick={() => onClose?.()}
-      >
-        <X size={16} aria-hidden />
-      </button>
+      <DialogLabelContext.Provider value={labelId}>
+        {children}
+        <button
+          type="button"
+          aria-label="Fermer"
+          className="absolute cursor-pointer right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
+          onClick={() => onClose?.()}
+        >
+          <X size={16} aria-hidden />
+        </button>
+      </DialogLabelContext.Provider>
     </div>
   );
 }
@@ -64,8 +82,13 @@ export function DialogHeader({ className, children }) {
 }
 
 export function DialogTitle({ className, children }) {
+  const labelId = useContext(DialogLabelContext);
+
   return (
-    <h2 className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900', className)}>
+    <h2
+      id={labelId ?? undefined}
+      className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900', className)}
+    >
       {children}
     </h2>
   );

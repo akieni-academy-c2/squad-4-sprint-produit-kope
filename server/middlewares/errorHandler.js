@@ -1,7 +1,14 @@
 const PG_ERRORS = {
-  '23505': [409, 'Cette valeur existe déjà'],               
-  '23503': [400, 'Référence invalide (métier, zone…)'],    
-  '23514': [400, 'Données invalides'],                      
+  '23505': [409, 'Cette valeur existe déjà'],
+  '23503': [400, 'Référence invalide (métier, zone…)'],
+  '23514': [400, 'Données invalides'],
+  // Valeur hors plage pour le type : un identifiant trop grand pour un
+  // smallint, une longueur de chaîne dépassée. Donnée invalide, pas panne.
+  '22003': [400, 'Valeur hors limites'],
+  // Type incompatible à la conversion : ex. (sess->'user'->>'id')::bigint
+  // sur une session au format inattendu.
+  '22P02': [400, 'Format de donnée invalide'],
+  '22001': [400, 'Valeur trop longue'],
 };
 export function errorHandler(err, req, res, next) {
   if (res.headersSent) return next(err);

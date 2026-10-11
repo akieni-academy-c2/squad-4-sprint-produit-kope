@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from '@/shared/components/ui/Dialog.jsx';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { LoginForm } from '../pages/LoginPage.jsx';
@@ -10,6 +10,13 @@ import { mockImage, LOGIN_IMAGE_PROMPT } from '@/shared/mocks/images.js';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { User } from 'lucide-react';
+
+const DIALOG_LABEL = {
+  login: 'Connexion',
+  register: 'Inscription',
+  pro: 'Devenir professionnel',
+  password: 'Changer le mot de passe',
+};
 
 export function AuthModal() {
   const { mode, close } = useAuthModal();
@@ -31,6 +38,10 @@ export function AuthModal() {
   return (
     <Dialog open={mode != null} onOpenChange={(o) => !o && close()}>
       <DialogContent className="max-w-4xl p-2 " onClose={close}>
+        {/* Nom accessible du dialogue. Le titre est déjà porté visuellement par
+            chaque formulaire ; celui-ci le déclare une seule fois pour le lecteur
+            d'écran, qui doit savoir quelle fenêtre vient de s'ouvrir. */}
+        <DialogTitle className="sr-only">{DIALOG_LABEL[mode] ?? 'Compte'}</DialogTitle>
         <div className="grid lg:grid-cols-2 lg:items-start min-h-140">
           <aside className="relative hidden h-full lg:flex flex-col justify-between gap-3 overflow-hidden rounded-[16px] bg-radial from-[#28604B] to-[#183E30] p-2 text-white">
             <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 640 960" preserveAspectRatio="xMidYMid slice" fill="none">

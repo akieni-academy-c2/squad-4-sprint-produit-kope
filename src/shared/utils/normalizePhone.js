@@ -18,28 +18,6 @@ export function normalizePhone(raw) {
   return `+242${digits}`;
 }
 
-/** Indicatif mobile attendu : 04, 05 ou 06. */
-export const MOBILE_PREFIX_RE = /^0[456]/;
-
-/**
- * Ne garde que les chiffres nationaux (9 au maximum), sans indicatif.
- * Utilisé par le champ de saisie à préfixe fixe.
- */
-export function toNationalDigits(raw) {
-  return String(raw ?? '')
-    .replace(/\D/g, '')
-    .replace(/^242/, '')
-    .slice(0, 9);
-}
-
-/** Affichage par blocs : 06 889 88 88. */
-export function formatNational(digits) {
-  const d = String(digits ?? '').slice(0, 9);
-  if (!d) return '';
-  const parts = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)];
-  return parts.filter(Boolean).join(' ');
-}
-
 /**
  * Une saisie contenant autre chose que des chiffres (ou un préfixe interdit)
  * ne deviendra jamais valide en ajoutant des caractères : c'est une erreur,

@@ -20,7 +20,7 @@ export function stripCountryCode(raw) {
 
 /** Chiffres nationaux seuls (9 maximum), indicatif retiré. */
 export function toNational(raw) {
-  return String(raw ?? '')
+  return String(stripCountryCode(raw))
     .replace(/\D/g, '')
     .replace(/^242/, '')
     .slice(0, 9);

@@ -36,9 +36,16 @@ export const displayNameSchema = z
     'Lettres, chiffres et la ponctuation . \' & / + _ - uniquement',
   );
 
-/** Identifiant numérique  */
+/**
+ * Identifiant numérique
+ *
+ * Borné à 32767 : trades, zones, villes et catégories sont des `smallint`.
+ * Sans cette borne, `?trade=99999` passait la validation et PostgreSQL
+ * échouait sur le cast en 22003 — un 500 sur une route publique, là où la
+ * seule réponse correcte est « aucun résultat ».
+ */
 export const idSchema = (message = 'Identifiant invalide') =>
-  z.coerce.number({ error: message }).int(message).positive(message);
+  z.coerce.number({ error: message }).int(message).positive(message).max(32767, message);
 
 /** Numéro de téléphone  */
 export const phoneSchema = z
@@ -85,6 +92,9 @@ export const zoneIdsSchema = z
 export const idParamSchema = z.object({ id: idSchema() });
 
 export const paginationSchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
+  // `page` est bornée : OFFSET vaut (page - 1) * pageSize. Sans plafond,
+  // `?page=1000000` impose à PostgreSQL de parcourir puis jeter 100 millions
+  // de lignes avant d'en renvoyer 20.
+  page: z.coerce.number().int().min(1).max(1000, 'Page trop élevée').default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });

@@ -226,8 +226,4 @@ export const listZones = zoneService.list;
 export const createZone = zoneService.create;
 export const updateZone = zoneService.update;
 export const deleteZone = zoneService.remove;
-
-export async function reorderZones(ids) {
-  await repository.reorderZones(ids);
-  return { ids };
-}
+export const reorderZones = zoneService.reorder;

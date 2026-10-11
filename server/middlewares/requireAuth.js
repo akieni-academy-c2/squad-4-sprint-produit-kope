@@ -1,9 +1,9 @@
 import { ApiError } from '../utils/ApiError.js';
-import { resolveUser, loadActiveUser } from './identity.js';
+import { currentUser, loadActiveUser } from './identity.js';
 
 export async function requireAuth(req, res, next) {
   try {
-    const identity = resolveUser(req);
+    const identity = currentUser(req);
     if (!identity) throw ApiError.unauthorized();
 
     // Un compte bloqué ou suspendu remonte une 403 : on ne la transforme pas en 401.

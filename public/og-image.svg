@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="KOP — Annuaire des artisans du Congo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#142a21"/>
+      <stop offset="100%" stop-color="#2d5c4a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- repère visuel discret, sans image bitmap -->
+  <g fill="#ffffff" opacity="0.05">
+    <circle cx="1080" cy="110" r="190"/>
+    <circle cx="1080" cy="110" r="130"/>
+  </g>
+
+  <rect x="90" y="196" width="112" height="10" rx="5" fill="#548c68"/>
+
+  <text x="90" y="330" font-family="Inter, system-ui, sans-serif" font-size="104" font-weight="800" fill="#ffffff" letter-spacing="-3">KOP</text>
+
+  <text x="90" y="404" font-family="Inter, system-ui, sans-serif" font-size="46" font-weight="600" fill="#d5e4da">Annuaire des artisans</text>
+
+  <text x="90" y="474" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="400" fill="#a9c7b4">Plombier · Électricien · Maçon · Menuisier</text>
+
+  <text x="90" y="536" font-family="Inter, system-ui, sans-serif" font-size="27" font-weight="500" fill="#7faa8e">Congo — Brazzaville</text>
+</svg>

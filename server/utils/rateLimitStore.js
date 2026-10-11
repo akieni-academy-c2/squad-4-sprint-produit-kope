@@ -11,13 +11,20 @@
  */
 import { pool } from '../db/pool.js';
 
-const WINDOW_SECONDS = 15 * 60;
+const DEFAULT_WINDOW_MS = 15 * 60_000;
 
 /**
  * Consomme un jeton pour `key`.
- * Renvoie le nombre de tentatives restantes dans la fenêtre courante.
+ * Renvoie le nombre de tentatives consommées dans la fenêtre courante.
+ *
+ * `windowMs` est fourni par l'appelant : la fenêtre était figée à 15 minutes,
+ * ce qui rendait toute configuration par route inopérante — l'en-tête
+ * Retry-After annonçait la fenêtre demandée alors que le compteur suivait
+ * celle du store.
  */
-export async function consumeRateLimitSlot(key, db = pool) {
+export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db = pool) {
+  const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
+
   const { rows } = await db.query(
     `INSERT INTO rate_limits (key, window_start, count)
           VALUES ($1, now(), 1)
@@ -31,7 +38,7 @@ export async function consumeRateLimitSlot(key, db = pool) {
                       ELSE rate_limits.window_start
                     END
       RETURNING count`,
-    [key, String(WINDOW_SECONDS)],
+    [key, String(windowSeconds)],
   );
   return rows[0].count;
 }
