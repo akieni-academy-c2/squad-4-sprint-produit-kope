@@ -1,7 +1,6 @@
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { fullNameInitials } from '@/shared/utils';
 
-/** En-tête d'un avis : photo de l'auteur et prénom + initiale. */
 export function ReviewAuthor({ review, className = 'h-8 w-8' }) {
   const first = review.client?.firstName;
   const last = review.client?.lastName;

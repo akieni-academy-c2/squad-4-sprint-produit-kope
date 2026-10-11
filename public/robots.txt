@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+# Ce fichier sert en développement. En production, vite.config.js le réécrit
+# au build avec l'URL absolue du sitemap, que la spécification exige.
+#
 # Espace administration et comptes personnels : sans intérêt dans un moteur de
 # recherche, et leur indexation exposerait des identifiants d'url.
 Disallow: /admin

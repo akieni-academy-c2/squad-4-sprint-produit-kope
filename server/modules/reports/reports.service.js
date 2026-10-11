@@ -5,7 +5,6 @@ import * as repository from './reports.repository.js';
 import * as professionalsRepository from '../professionals/professionals.repository.js';
 import * as adminRepository from '../admin/admin.repository.js';
 
-/** Seuils déclenchés par le nombre de signalements reçus. */
 export const autoBlockThreshold = () => env.AUTO_BLOCK_REPORTS_THRESHOLD;
 export const autoSuspendThreshold = () => env.AUTO_SUSPEND_REPORTS_THRESHOLD;
 

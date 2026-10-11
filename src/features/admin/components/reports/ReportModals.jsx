@@ -1,6 +1,5 @@
 import { AdminConfirmModal } from '../AdminConfirmModal.jsx';
 
-/** Les trois confirmations de la file de signalements (traitement, blocage, suspension). */
 export function ReportModals({ confirm, onCancelConfirm, onConfirmReport, unblock, onCancelUnblock, onConfirmUnblock, unsuspend, onCancelUnsuspend, onConfirmUnsuspend, saving }) {
   const resolving = confirm?.action === 'resolve';
 

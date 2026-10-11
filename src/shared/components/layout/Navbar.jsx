@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { UserMenu } from './UserMenu.jsx';
-import { displayNameFor, roleLabel, dashboardHref } from '@/shared/utils/userMenuUtils.js';
+import { DemoRoleSwitcher } from './DemoRoleSwitcher.jsx';
+import { displayNameFor, roleLabel, dashboardHref, landingHrefFor } from '@/shared/utils/userMenuUtils.js';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
@@ -17,19 +18,30 @@ const NAV = [
   { to: ROUTES.REGISTER_PRO,   label: 'Devenir Prestataire',    icon: Briefcase },
 ];
 
+/**
+ * Liens réservés aux visiteurs non connectés.
+ *
+ * Connecté, la navigation se réduit à la recherche : « Comment ça marche »
+ * décrit un service dont l'utilisateur a déjà fait l'expérience, et « Devenir
+ * prestataire » n'a de sens que tant qu'on n'a pas de compte.
+ */
+const HIDDEN_WHEN_CONNECTED = new Set([ROUTES.HOW_IT_WORKS, ROUTES.REGISTER_PRO]);
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user, loading, logout } = useAuthContext();
   const { open: openModal } = useAuthModal();
 
-  // Un utilisateur déjà pro (ou admin) ne peut/ne doit pas devenir prestataire
-  const showBecomePro = !user || (user.role !== 'professional' && user.role !== 'admin');
-  const navItems = showBecomePro ? NAV : NAV.filter((item) => item.to !== ROUTES.REGISTER_PRO);
+  const navItems = user ? NAV.filter((item) => !HIDDEN_WHEN_CONNECTED.has(item.to)) : NAV;
+
+  // Connecté, le logo ouvre le point d'entrée du rôle plutôt que la home :
+  // c'est le retour le plus utile depuis n'importe quelle page.
+  const logoHref = landingHrefFor(user);
 
   return (
     <header className={`sticky top-0 z-40 border-b  border-gray-100 bg-white/85 backdrop-blur`}>
-      <div className="container-kop flex h-(--header-height) items-center justify-between gap-4">
-        <Link to={ROUTES.HOME} className="flex items-center gap-2 focus-ring rounded-xl p-1 -ml-1 shrink-0 text-primary-500">
+      <div className="container-kop flex h-(--header-height) items-center gap-2 sm:gap-4">
+        <Link to={logoHref} className="flex items-center gap-2 focus-ring rounded-xl p-1 -ml-1 shrink-0 text-primary-500">
           <span aria-hidden className="flex items-center gap-1.5">
             <Drill size={20} />
             <span className="font-extrabold moo-lah-lah-regular tracking-tight text-[27px]  -ml-0.5">
@@ -38,19 +50,42 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-2">
+        <DemoRoleSwitcher />
+
+        <div className="ml-auto hidden md:flex items-center gap-2">
           <nav aria-label="Navigation principale" className="hidden items-center gap-6 lg:flex">
-          {navItems.map((item) =>
-            item.to === ROUTES.REGISTER_PRO ? (
-              <button
-                key={item.to}
-                type="button"
-                onClick={() => openModal('register-pro')}
-                className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
-              >
-                {item.label}
-              </button>
-            ) : (
+          {navItems.map((item) => {
+            // « Devenir prestataire » ouvre une modale : un bouton, pas un lien.
+            if (item.to === ROUTES.REGISTER_PRO)
+              return (
+                <button
+                  key={item.to}
+                  type="button"
+                  onClick={() => openModal('register-pro')}
+                  className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
+                >
+                  {item.label}
+                </button>
+              );
+
+            // Connecté, la recherche devient l'action principale de la barre :
+            // un bouton marqué avec son icône, plutôt qu'un lien parmi d'autres.
+            // Un NavLink et non un button : l'apparence est celle d'un bouton,
+            // mais la cible reste un lien — clic droit, ouverture dans un
+            // onglet et aperçu d'URL dans la barre d'état continuent de marcher.
+            if (item.to === ROUTES.SEARCH && user)
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className="inline-flex items-center gap-2 rounded-[10px] border border-gray-300 bg-white/25 px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
+                >
+                  <Search size={16} aria-hidden />
+                  {item.label}
+                </NavLink>
+              );
+
+            return (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -65,8 +100,8 @@ export function Navbar() {
               >
                 {item.label}
               </NavLink>
-            ),
-          )}
+            );
+          })}
         </nav>
         <span className='opacity-30'>|</span>
           {!loading && !user && (
@@ -102,24 +137,40 @@ export function Navbar() {
       <Sheet open={open} onOpenChange={setOpen}>
         <div className="flex h-full flex-col">
           <div className="border-b border-gray-100 px-5 pb-5 pt-6">
-            <Link to={ROUTES.HOME} onClick={() => setOpen(false)} className="flex items-center gap-2 text-primary-500">
+            <Link to={logoHref} onClick={() => setOpen(false)} className="flex items-center gap-2 text-primary-500">
               <Drill size={20} aria-hidden />
               <span className="font-extrabold moo-lah-lah-regular tracking-tight text-[24px]">KOP</span>
             </Link>
           </div>
           <nav aria-label="Navigation mobile" className="flex-1 space-y-1 overflow-y-auto p-4">
-            {navItems.map((item) =>
-              item.to === ROUTES.REGISTER_PRO ? (
-                <button
-                  key={item.to}
-                  type="button"
-                  onClick={() => { setOpen(false); openModal('register-pro'); }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50 hover:text-gray-900"
-                >
-                  <item.icon size={18} aria-hidden className="text-gray-400" />
-                  {item.label}
-                </button>
-              ) : (
+            {navItems.map((item) => {
+              if (item.to === ROUTES.REGISTER_PRO)
+                return (
+                  <button
+                    key={item.to}
+                    type="button"
+                    onClick={() => { setOpen(false); openModal('register-pro'); }}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-gray-700 transition hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    <item.icon size={18} aria-hidden className="text-gray-400" />
+                    {item.label}
+                  </button>
+                );
+
+              if (item.to === ROUTES.SEARCH && user)
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl border border-gray-300 bg-white/25 px-3 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <Search size={18} aria-hidden />
+                    {item.label}
+                  </NavLink>
+                );
+
+              return (
                 <NavLink
                   key={item.to}
                   to={item.to}
@@ -134,11 +185,11 @@ export function Navbar() {
                     )
                   }
                 >
-                  <item.icon size={18} aria-hidden className={cn('text-gray-400')} />
+                  <item.icon size={18} aria-hidden className="text-gray-400" />
                   {item.label}
                 </NavLink>
-              ),
-            )}
+              );
+            })}
           </nav>
           <div className="border-t border-gray-100 p-4">
             {loading ? (

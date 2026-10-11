@@ -1,3 +1,5 @@
+import { env } from '../config/env.js';
+import { ApiError } from '../utils/ApiError.js';
 import { consumeRateLimitSlot, purgeRateLimits, rateLimitTableExists } from '../utils/rateLimitStore.js';
 
 /** Repli mémoire : utilisé si RATE_LIMIT_STORE=memory ou si la table n'est pas migrée. */
@@ -17,12 +19,11 @@ setInterval(() => {
 let store = null;
 let checked = false;
 
-/** Résout le store une fois pour le process, en tolérant l'absence de la table. */
 async function resolveStore() {
   if (checked) return store;
   checked = true;
 
-  if (process.env.RATE_LIMIT_STORE === 'memory') {
+  if (env.RATE_LIMIT_STORE === 'memory') {
     store = 'memory';
     console.warn('[rate-limit] RATE_LIMIT_STORE=memory : limite ineffective en déploiement serverless');
     return store;
@@ -53,7 +54,6 @@ function consumeInMemory(id, windowMs, max) {
   return true;
 }
 
-/** Vrai si la tentative est autorisée, en base si possible, en mémoire sinon. */
 async function isAllowed(id, windowMs, max) {
   if ((await resolveStore()) !== 'postgres') return consumeInMemory(id, windowMs, max);
 
@@ -85,8 +85,8 @@ export function rateLimit({ windowMs = 15 * 60_000, max = 20, key = 'default', b
 
     if (!allowed) {
       res.set('Retry-After', String(Math.ceil(windowMs / 1000)));
-      return res.status(429).json({ message: 'Trop de tentatives, réessayez plus tard' });
+      throw ApiError.tooManyRequests();
     }
-    return next();
+    next();
   };
 }

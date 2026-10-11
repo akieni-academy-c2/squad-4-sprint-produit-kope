@@ -25,4 +25,4 @@ const png = await sharp(svg, { density: 144 })
 
 await writeFile(pngPath, png);
 
-console.log(`og-image.png écrit — ${(png.length / 1024).toFixed(1)} Ko (1200x630)`);
+console.log(`og-image.png écrit - ${(png.length / 1024).toFixed(1)} Ko (1200x630)`);

@@ -23,9 +23,9 @@ export function NotificationProvider({ children }) {
     ({ message, type = 'info', duration = 3500 }) => {
       const id = ++uid;
       setToasts((list) => [...list, { id, message, type }]);
-      if (duration > 0) 
+      if (duration > 0)
         setTimeout(() => remove(id), duration);
-      
+
       return id;
     },
     [remove],

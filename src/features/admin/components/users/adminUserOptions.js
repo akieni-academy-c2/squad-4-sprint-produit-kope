@@ -23,12 +23,10 @@ export const EMPTY_ADMIN = { firstName: '', lastName: '', phone: '', password: '
 
 export const MIN_PASSWORD_LENGTH = 8;
 
-/** Nom affichable d'un compte, avec repli sur son identifiant. */
 export function getUserName(user) {
   return user.displayName || [user.firstName, user.lastName].filter(Boolean).join(' ') || `#${user.id}`;
 }
 
-/** Contrôles du formulaire de création d'administrateur. */
 export function validateAdminDraft(draft) {
   if (!draft.firstName.trim() || !draft.lastName.trim() || !draft.phone.trim())
     return 'Prénom, nom et numéro sont obligatoires';
@@ -37,7 +35,6 @@ export function validateAdminDraft(draft) {
   return null;
 }
 
-/** Nettoie les valeurs avant envoi. */
 export function toAdminPayload(draft) {
   return {
     firstName: draft.firstName.trim(),

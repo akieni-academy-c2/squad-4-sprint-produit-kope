@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { RootLayout } from '@/shared/components/layout/RootLayout.jsx';
+import { HomeRoute } from './HomeRoute.jsx';
 import { RoleRoute } from './RoleRoute.jsx';
 import { ROLES, ROUTES } from '@/shared/lib/constants.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <Suspense fallback={<PageSkeleton />}><RouteErrorPage /></Suspense>,
     children: [
-      { index: true, element: page(<HomePage />) },
+      { index: true, element: <HomeRoute>{page(<HomePage />)}</HomeRoute> },
       { path: ROUTES.HOW_IT_WORKS, element: page(<HowItWorksPage />) },
       { path: ROUTES.SEARCH, element: page(<SearchPage />) },
       { path: '/professionals/:id', element: page(<ProfessionalPublicPage />) },

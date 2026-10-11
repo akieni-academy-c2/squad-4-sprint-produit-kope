@@ -47,7 +47,7 @@ export function Modal({
         className={cn(
 // Sur mobile la modale est une feuille ancrée en bas, comme les sheets Apple :
 // elle grandit avec le contenu jusqu'à 90dvh et laisse toujours une bande de
-// page visible au-dessus — le repère visuel qui dit « c'est une surcouche ».
+// page visible au-dessus - le repère visuel qui dit « c'est une surcouche ».
 // Le breakpoint `sm` reste inchangé : sur desktop la modale est centrée et
 // sa hauteur suit son contenu, sans plafond.
 'w-full max-h-[90dvh] overflow-y-auto overscroll-contain bg-white shadow-[var(--shadow-pop)] transition-opacity duration-300 sm:max-h-none',

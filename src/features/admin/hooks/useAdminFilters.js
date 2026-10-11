@@ -10,7 +10,6 @@ export function useAdminFilters(initial = {}) {
 
   const dirty = Object.keys(initial).some((key) => String(draft[key] ?? '') !== String(initial[key] ?? ''));
 
-  /** Met à jour le brouillon ; `immediate` applique aussi (sélecteurs). */
   const set = (key, value, { immediate = false } = {}) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
     if (immediate) setApplied((prev) => ({ ...prev, [key]: value }));

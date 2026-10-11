@@ -5,7 +5,6 @@ import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { REPORT_REASON_OPTIONS } from '@/shared/constants/reports.js';
 import { reportProfessional } from '../services/professionals.service.js';
 
-/** Formulaire de signalement d'un profil, ouvert depuis la fiche publique. */
 export function ReportDialog({ open, onClose, professionalId }) {
   const { toast } = useNotification();
   const [reason, setReason] = useState('');

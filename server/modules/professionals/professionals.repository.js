@@ -60,7 +60,6 @@ export async function setAvailability(userId, isAvailable, db = pool) {
   );
 }
 
-/** Profil du propriétaire */
 export async function findOwnProfile(userId, db = pool) {
   const { rows } = await db.query(
     `SELECT p.user_id AS id,

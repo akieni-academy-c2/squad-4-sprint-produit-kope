@@ -173,11 +173,33 @@ describe('admin mock - filtres professionnels', () => {
     const all = mockAdminProfessionals({ pageSize: 50 });
     expect(all.total).toBeGreaterThan(0);
 
-    const brazza = mockAdminProfessionals({ pageSize: 50, city: 'Brazzaville' });
-    expect(brazza.total).toBe(all.total);
+    // Les profils viennent du catalogue de personas, dont les villes varient.
+    // Le filtre doit discriminer sans que le test dépende d'une ville précise :
+    // le catalogue est régénérable et sa répartition change.
+    const cities = [...new Set(all.items.map((p) => p.city))];
+    expect(cities.length).toBeGreaterThan(1);
 
-    const elsewhere = mockAdminProfessionals({ pageSize: 50, city: 'Pointe-Noire' });
-    expect(elsewhere.total).toBe(0);
+    for (const city of cities) {
+      const filtered = mockAdminProfessionals({ pageSize: 50, city });
+
+      expect(filtered.total).toBeGreaterThan(0);
+      expect(filtered.items.every((p) => p.city === city)).toBe(true);
+    }
+
+    // Une ville absente du catalogue ne renvoie rien.
+    expect(mockAdminProfessionals({ pageSize: 50, city: 'Ville-Inexistante' }).total).toBe(0);
+  });
+
+  it('couvre tous les profils par la somme des villes', () => {
+    const all = mockAdminProfessionals({ pageSize: 50 });
+    const cities = [...new Set(all.items.map((p) => p.city))];
+
+    const covered = cities.reduce(
+      (sum, city) => sum + mockAdminProfessionals({ pageSize: 50, city }).total,
+      0,
+    );
+
+    expect(covered).toBe(all.total);
   });
 
   it('filtre par statut et trie par nom', () => {

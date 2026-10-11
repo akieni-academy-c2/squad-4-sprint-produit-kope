@@ -18,7 +18,6 @@ export function stripCountryCode(raw) {
   return value;
 }
 
-/** Chiffres nationaux seuls (9 maximum), indicatif retiré. */
 export function toNational(raw) {
   return String(stripCountryCode(raw))
     .replace(/\D/g, '')
@@ -26,7 +25,6 @@ export function toNational(raw) {
     .slice(0, 9);
 }
 
-/** Affichage par blocs : 06 889 88 88. */
 export function formatPhoneDisplay(raw) {
   const digits = toNational(raw);
   if (!digits) return '';

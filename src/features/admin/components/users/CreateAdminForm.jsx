@@ -14,7 +14,6 @@ const FIELDS = [
   { key: 'password', placeholder: 'Mot de passe (8 caractères min.)', type: 'password' },
 ];
 
-/** Formulaire de création d'un compte administrateur, et son bouton d'ouverture. */
 export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOpen, onCancel }) {
   // Bouton actif seulement si les quatre champs respectent les règles.
   const { ready } = useFormReadiness(createAdminSchema, draft ?? {}, {

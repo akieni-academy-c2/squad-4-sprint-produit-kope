@@ -3,7 +3,7 @@
  * Exporté pour que le formulaire affiche la même indication que le serveur.
  */
 export const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
-export const MOBILE_HINT = '9 chiffres commençant par 04, 05 ou 06 — ex. 06 12 34 56 7';
+export const MOBILE_HINT = '9 chiffres commençant par 04, 05 ou 06 - ex. 06 12 34 56 7';
 
 export function normalizePhone(raw) {
   if (raw == null) return null;

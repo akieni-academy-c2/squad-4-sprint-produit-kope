@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { formatDateFr, truncate } from '@/shared/utils';
 import { ROUTES } from '@/shared/lib/constants.js';
 
 const VISIBLE_PHOTOS = 6;
 
-/** Galerie des réalisations : fil d'Ariane, cartes cliquables et bouton « Voir plus ». */
 export function RealizationsSection({ photos, displayName, tradeName, localisation, breadcrumbTrade, onOpenPhoto }) {
   return (
     <section className="space-y-6">
@@ -50,12 +50,13 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
                       aria-label={`Ouvrir la photo ${index + 1}`}
                       className="group block w-full overflow-hidden rounded-sm border border-gray-200 bg-white text-left transition hover:border-primary-200 hover:shadow-sm focus-ring"
                     >
-                      <img
-                        src={photo.thumbUrl || photo.url}
-                        alt={title || 'Réalisation'}
-                        loading="lazy"
-                        className="aspect-[4/3] w-full bg-gray-100 object-cover transition duration-500 group-hover:scale-[1.02]"
-                      />
+                      <ImageWithSkeleton
+                          src={photo.thumbUrl || photo.url}
+                          alt={title || 'Réalisation'}
+                          ratio="aspect-[4/3]"
+                          skeletonClassName="bg-gray-100"
+                          className="transition duration-500 group-hover:scale-[1.02]"
+                        />
                       <div className="space-y-1 p-4">
                         <p className="text-sm font-bold text-gray-900">{truncate(captionLine1, 90)}</p>
                         {captionLine2 && (

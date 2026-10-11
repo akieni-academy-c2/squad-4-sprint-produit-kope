@@ -7,7 +7,7 @@ describe('US-13 professional ranking', () => {
   it('orders by availability, exact visible-review average, then profile update time', async () => {
     const db = { query: vi.fn().mockResolvedValue({ rows: [] }) };
 
-    await searchPublished({ tradeId: 2, zoneId: 5, limit: 10, offset: 20 }, db);
+    await searchPublished({ tradeId: 2, zoneId: 5, cityId: null, limit: 10, offset: 20 }, db);
 
     const [query, params] = db.query.mock.calls[0];
     expect(query).toMatch(
@@ -15,7 +15,7 @@ describe('US-13 professional ranking', () => {
     );
     expect(query).toContain('ROUND(AVG(r.rating), 1)::float8 AS "ratingAverage"');
     expect(query).toContain('LEFT JOIN reviews r ON r.professional_id = p.user_id AND NOT r.is_hidden');
-    expect(params).toEqual([2, 5, null, null, null, null, 10, 20]);
+    expect(params).toEqual([2, 5, null, null, null, null, 10, 20, null]);
   });
 
   it('updates the profile timestamp when availability changes', async () => {

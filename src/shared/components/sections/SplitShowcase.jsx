@@ -1,14 +1,16 @@
 import { cn } from '@/shared/utils';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 
 export function SplitShowcase({ eyebrow, title, intro, imageSrc, imageAlt, caption, captionAlign = 'left', items, reverse = false, bg = 'bg-kop-mint', sectionClassName }) {
   const visual = (
-    <div className="relative rounded-[16px] overflow-hidden">
-      <img
+    <div className="relative">
+      <ImageWithSkeleton
         src={imageSrc}
         alt={imageAlt || ''}
-        loading="lazy"
-        className="w-full h-85 sm:h-100 object-cover bg-accent-500/30"
+        ratio="h-85 sm:h-100"
+        className="bg-accent-500/30"
+        frameClassName="rounded-[16px]"
       />
       {caption && <FloatingCaption align={captionAlign} title={caption[0]} subtitle={caption[1]} />}
     </div>

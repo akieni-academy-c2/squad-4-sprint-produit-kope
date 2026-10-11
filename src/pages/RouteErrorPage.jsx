@@ -2,9 +2,12 @@ import { Link, useRouteError } from 'react-router-dom';
 import { TriangleAlert } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 
 export function RouteErrorPage() {
   const error = useRouteError();
+
+  usePageTitle('Erreur');
   const status = error?.status;
   const message =
     error?.data?.message ||

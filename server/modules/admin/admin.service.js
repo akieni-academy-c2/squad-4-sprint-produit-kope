@@ -3,9 +3,8 @@ import { ApiError } from '../../utils/ApiError.js';
 import { offsetOf, paginateSafely } from '../../utils/pagination.js';
 import * as repository from './admin.repository.js';
 import * as catalogRepository from './catalog.repository.js';
+import { env } from '../../config/env.js';
 
-
-const BCRYPT_ROUNDS = 10;
 
 export async function listProfessionals(query) {
   const rows = await repository.listProfessionals({
@@ -41,7 +40,6 @@ export async function listUsers(query) {
   return paginateSafely(rows, query, () => repository.countUsers({ role: query.role, q: query.q }));
 }
 
-/** Bloque ou débloque un compte utilisateur. */
 export async function setUserBlocked(actorId, id, blocked) {
   if (Number(actorId) === Number(id)) throw ApiError.badRequest('Vous ne pouvez pas bloquer votre propre compte');
 
@@ -73,9 +71,8 @@ export async function setUserSuspended(actorId, id, suspended) {
   return updated;
 }
 
-/** Crée un compte administrateur. */
 export async function createAdmin({ firstName, lastName, phone, password }) {
-  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
   try {
     return await repository.createAdminUser({ firstName, lastName, phone, passwordHash });
   } catch (err) {

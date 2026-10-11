@@ -15,7 +15,6 @@ const GROUP_TINTS = [
   { band: 'bg-[#8a7d58]', dot: 'bg-[#d8d0b6]' },
 ];
 
-/** Attribue une teinte stable à un groupe, selon son nom. */
 export function tintFor(name) {
   let hash = 0;
   const seed = String(name || '');
@@ -25,7 +24,6 @@ export function tintFor(name) {
 
 export const usedBy = (count) => `Utilisé par ${count} pro${count > 1 ? 's' : ''}`;
 
-/** Regroupe les éléments par groupe ; un groupe sans élément donne une liste vide. */
 export function groupItems(items, groups, groupByKey) {
   const map = new Map(groups.map((g) => [groupKeyOf(g.id), []]));
   for (const item of items) map.get(groupKeyOf(item[groupByKey]))?.push(item);

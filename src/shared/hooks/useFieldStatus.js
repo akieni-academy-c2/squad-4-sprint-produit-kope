@@ -22,7 +22,6 @@ export const PASSWORD_RULES = [
 
 export const PASSWORD_MAX = 72;
 
-/** Chaque règle annotée de son résultat pour un affichage direct. */
 export function checkPassword(value) {
   const v = String(value ?? '');
   const rules = PASSWORD_RULES.map((rule) => ({ ...rule, passed: rule.test(v) }));
@@ -44,7 +43,7 @@ export const FIELD_STATUS = {
  * `validate` reçoit la valeur et renvoie soit `null` (correct), soit un
  * message. `rules` distingue « il manque une exigence » d'une saisie fausse :
  * des lettres dans un numéro de téléphone ne sont pas un presque, c'est une
- * erreur — l''utilisateur ne pourra jamais valider en ajoutant un chiffre.
+ * erreur - l''utilisateur ne pourra jamais valider en ajoutant un chiffre.
  *
  * Rien n'est affiché tant que le champ est vide : reprocher une erreur avant
  * même la première frappe est le meilleur moyen d'agacer.

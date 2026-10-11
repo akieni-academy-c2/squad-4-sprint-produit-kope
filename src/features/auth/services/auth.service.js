@@ -1,6 +1,7 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { getDemoUser, setDemoUser } from '@/shared/mocks/appMock.js';
+import { getDemoUser, setDemoUser, MOCK_PROS } from '@/shared/mocks/appMock.js';
+import { ROUTES, ROLES } from '@/shared/lib/constants.js';
 
 export function registerClient(payload) {
   return callApi(
@@ -79,6 +80,63 @@ export function getCurrentUser() {
   );
 }
 
+/**
+ * Profils de démonstration, par rôle.
+ *
+ * Les écrans client, professionnel et administrateur ne lisent pas les mêmes
+ * données : sans ces comptes, les tester demande trois inscriptions et trois
+ * formulaires remplis à chaque fois.
+ *
+ * Seul point d'entrée vers les mocks pour un composant : la règle d'architecture
+ * réserve `shared/mocks` aux services de feature.
+ */
+export function demoRoles() {
+  return [
+    {
+      role: ROLES.ADMIN,
+      label: 'Administrateur',
+      user: { id: 901, role: ROLES.ADMIN, firstName: 'Admin', lastName: 'Démo' },
+      href: ROUTES.ADMIN,
+    },
+    {
+      role: ROLES.PRO,
+      label: 'Professionnel',
+      // Même identifiant que le premier mock : la fiche publique consultable
+      // correspond au professionnel connecté.
+      user: {
+        id: MOCK_PROS[0]?.id ?? 1,
+        role: ROLES.PRO,
+        displayName: MOCK_PROS[0]?.displayName ?? 'Professionnel Démo',
+        phone: MOCK_PROS[0]?.phone ?? '+242061000001',
+      },
+      href: ROUTES.DASHBOARD_PRO,
+    },
+    {
+      role: ROLES.CLIENT,
+      label: 'Client',
+      user: {
+        id: 902,
+        role: ROLES.CLIENT,
+        firstName: 'Client',
+        lastName: 'Démo',
+        phone: '+242065000002',
+      },
+      href: ROUTES.DASHBOARD_CLIENT,
+    },
+  ];
+}
+
+/** Connecte un profil de démonstration sans passer par le formulaire. */
+export function loginAsDemo(user) {
+  setDemoUser(user);
+  return user;
+}
+
+/** Referme la session de démonstration et rend la main à la vraie API. */
+export function leaveDemo() {
+  setDemoUser(null);
+}
+
 export function becomeProfessional(payload) {
   return callApi(
     () => api.postJson('/auth/become-professional', payload).then((r) => r?.user),
@@ -122,18 +180,18 @@ export function uploadAvatar(file, onProgress) {
         xhr.open('POST', '/api/auth/avatar');
         xhr.withCredentials = true;
         xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable && onProgress) 
+          if (e.lengthComputable && onProgress)
             onProgress(Math.round((e.loaded / e.total) * 100));
-          
+
         };
         xhr.onload = () => {
           try {
             const payload = JSON.parse(xhr.responseText);
-            if (xhr.status >= 200 && xhr.status < 300) 
+            if (xhr.status >= 200 && xhr.status < 300)
               resolve(payload?.avatarUrl ?? null);
-             else 
+             else
               reject(new Error(payload?.message || `Erreur ${xhr.status}`));
-            
+
           } catch {
             reject(new Error('Réponse invalide'));
           }

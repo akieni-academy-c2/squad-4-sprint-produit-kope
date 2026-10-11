@@ -37,7 +37,6 @@ export function ReviewAuthorHistory({ review }) {
   );
 }
 
-/** En-tête compact d'un avis : auteur à gauche, note et date à droite. */
 export function ReviewCardHeader({ review }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">

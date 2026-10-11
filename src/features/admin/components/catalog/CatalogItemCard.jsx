@@ -4,7 +4,6 @@ import { formatDateFr } from '@/shared/utils';
 import { usedBy } from '../catalog/catalogUtils.js';
 import { InlineInput, PositionBadge } from '../catalog/InlineInput.jsx';
 
-/** Pied d'une carte : nombre de professionnels liés et date de création. */
 function ItemFooter({ item }) {
   return (
     <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">

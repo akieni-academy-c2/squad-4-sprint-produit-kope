@@ -27,7 +27,6 @@ const SORT_OPTIONS = [
   { value: 'experience', label: "Plus d'expérience" },
 ];
 
-/** Filtres d'affinage affichés dans la colonne de droite de la recherche. */
 export function SearchRefineFilters({
   available,
   minRating,

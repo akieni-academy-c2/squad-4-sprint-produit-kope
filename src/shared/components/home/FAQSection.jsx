@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { cn } from '@/shared/utils';
-import { FAQ } from '@/shared/mocks/homeData.js';
+import { FAQ } from '@/shared/content/home.js';
 
 export function FAQSection() {
   const [openIdx, setOpenIdx] = useState(0);

@@ -20,3 +20,20 @@ export function dashboardHref(role) {
   if (role === ROLES.ADMIN) return ROUTES.ADMIN;
   return ROUTES.HOME;
 }
+
+/**
+ * Point d'entrée d'un utilisateur connecté, depuis le logo comme depuis `/`.
+ *
+ * Un professionnel gère un profil et un administrateur gère le site : ils ont
+ * une page qui leur est propre. Un client, lui, n'a rien à gérer — son espace
+ * ne contient que ses demandes et ses avis, tous accessibles depuis la
+ * recherche. La recherche est donc son point d'entrée, pas son tableau de bord.
+ *
+ * `dashboardHref` reste inchangée : le lien « Mon espace » du menu continue
+ * d'ouvrir l'espace client.
+ */
+export function landingHrefFor(user) {
+  if (!user) return ROUTES.HOME;
+  if (user.role === ROLES.CLIENT) return ROUTES.SEARCH;
+  return dashboardHref(user.role);
+}

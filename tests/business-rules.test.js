@@ -48,9 +48,9 @@ describe('règles de mot de passe', () => {
 
 describe('règles de nom de personne', () => {
   it('accepte les noms réels courants', () => {
-    for (const name of ['Ada', 'Mbarga', 'Jean-Pierre', "O'Brien", 'Nsimba', 'Kopé', 'De La Salle']) 
+    for (const name of ['Ada', 'Mbarga', 'Jean-Pierre', "O'Brien", 'Nsimba', 'Kopé', 'De La Salle'])
       expect(personNameSchema.safeParse(name).success, name).toBe(true);
-    
+
   });
 
   it('refuse les chiffres', () => {
@@ -59,9 +59,9 @@ describe('règles de nom de personne', () => {
   });
 
   it('refuse les symboles et le HTML', () => {
-    for (const name of ['<script>', '@@@', 'a@b.com', 'x;y', 'a/b']) 
+    for (const name of ['<script>', '@@@', 'a@b.com', 'x;y', 'a/b'])
       expect(personNameSchema.safeParse(name).success, name).toBe(false);
-    
+
   });
 
   it('exige au moins 2 caractères', () => {
@@ -76,9 +76,9 @@ describe('règles de nom de personne', () => {
 
 describe('règles de nom affiché', () => {
   it('accepte les pseudonymes commerciaux', () => {
-    for (const name of ['Plomberie Makélékélé Services', 'BTP & Carrelage', 'Kope.Pro 24', "L'Atelier d'Ada", 'Maçon-Grâce']) 
+    for (const name of ['Plomberie Makélékélé Services', 'BTP & Carrelage', 'Kope.Pro 24', "L'Atelier d'Ada", 'Maçon-Grâce'])
       expect(displayNameSchema.safeParse(name).success, name).toBe(true);
-    
+
   });
 
   it('exige au moins 3 caractères', () => {
@@ -86,9 +86,9 @@ describe('règles de nom affiché', () => {
   });
 
   it('refuse les caractères non autorisés', () => {
-    for (const name of ['<script>alert(1)</script>', 'a@b', 'nom#1', 'x$y', 'e-mail@test']) 
+    for (const name of ['<script>alert(1)</script>', 'a@b', 'nom#1', 'x$y', 'e-mail@test'])
       expect(displayNameSchema.safeParse(name).success, name).toBe(false);
-    
+
   });
 
   it('ne peut pas commencer par un symbole', () => {
@@ -127,8 +127,8 @@ describe('règles de téléphone', () => {
   });
 
   it('refuse les formats invalides', () => {
-    for (const input of ['123', 'abcdefghi', '0612345', '0612345678', '+33 6 12 34 56 78']) 
+    for (const input of ['123', 'abcdefghi', '0612345', '0612345678', '+33 6 12 34 56 78'])
       expect(phoneSchema.safeParse(input).success, input).toBe(false);
-    
+
   });
 });

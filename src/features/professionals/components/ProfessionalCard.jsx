@@ -2,16 +2,13 @@ import { ChevronRight, Star } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { cn } from '@/shared/utils';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/lib/constants.js';
-import { mockImage } from '@/shared/mocks/images.js';
 
-function fallbackPortrait(seed, prompt) {
-  if (prompt) 
-    return mockImage(prompt, 'portrait_4_3');
-  
+function fallbackPortrait(seed) {
   const hash = String(seed || 'kop').split('').reduce((a, c) => a + ((c.charCodeAt(0) * 13) % 7), 3);
   const palettes = [
     ['#eaf3ec', '#2d5c4a'], ['#f6efe0', '#8b6b2f'], ['#fbeae3', '#a45e3a'], ['#e6ecff', '#3e4c8a'],
@@ -22,8 +19,20 @@ function fallbackPortrait(seed, prompt) {
   )}`;
 }
 
-function coverImage(item) {
-  return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id, item.featuredPrompt);
+/**
+ * Image de la carte.
+ *
+ * `homePreview` force un visuel généré : l'accueil ne doit dépendre ni du
+ * service de portraits ni du stock local, déjà consommé par le héros, les
+ * catégories et les deux sections de mise en avant. Le visuel est dérivé de
+ * l'identifiant, donc distinct d'un professionnel à l'autre.
+ *
+ * Partout ailleurs, la photo du professionnel sert — c'est elle que la
+ * recherche en démonstration doit montrer.
+ */
+function coverImage(item, homePreview) {
+  if (homePreview) return fallbackPortrait(item.id);
+  return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id);
 }
 
 function Availability({ isAvailable }) {
@@ -31,12 +40,11 @@ function Availability({ isAvailable }) {
   return <Badge variant="success">Disponible</Badge>;
 }
 
-/** Photo de profil : une seule image, ratio identique sur toutes les cards. */
-function ProfileMedia({ item }) {
+function ProfileMedia({ item, homePreview }) {
   return (
     <div className="aspect-[4/5] w-full shrink-0 self-start overflow-hidden bg-gray-100 sm:w-[170px]">
       <UserAvatar
-        src={item.avatarUrl || item.image || null}
+        src={homePreview ? fallbackPortrait(item.id) : item.avatarUrl || item.image || null}
         name={item.displayName}
         rounded="rounded-none"
         iconSize={40}
@@ -47,20 +55,21 @@ function ProfileMedia({ item }) {
   );
 }
 
-export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
+export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePreview = false }) {
   const avg = Number(item.rating?.average ?? 0);
   const cnt = Number(item.rating?.count ?? 0);
-  const coverSrc = coverImage({ ...item, featuredPrompt });
+  const coverSrc = coverImage({ ...item, featuredPrompt }, homePreview);
 
   if (mode === 'grid')
     return (
       <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
         <Card className="border-[#BDC0C8]! flex h-full cursor-pointer flex-col overflow-hidden relative aspect-4/5.5 ">
-          <img
+          <ImageWithSkeleton
             src={coverSrc}
             alt={item.displayName}
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+            ratio="h-full"
+            skeletonClassName="bg-gray-100"
+            className="transition duration-500 group-hover:scale-[1.04]"
           />
 
           <div className="absolute right-2 left-2 bottom-2  rounded-sm bg-white/92 backdrop-blur-sm  p-4  space-y-2">
@@ -94,7 +103,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
         </Card>
       </Link>
     );
-  
+
 
   return (
     <li>
@@ -102,7 +111,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
         <Card className={cn(
           'flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white transition hover:border-primary-200 hover:shadow-sm sm:flex-row',
         )}>
-        <ProfileMedia item={item} />
+        <ProfileMedia item={item} homePreview={homePreview} />
         <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 space-y-1.5">

@@ -4,6 +4,7 @@ const emptyToUndefined = (value) => (value === '' ? undefined : value);
 export const searchQuerySchema = z.object({
   trade: z.preprocess(emptyToUndefined, idSchema('Métier invalide').optional()),
   zone: z.preprocess(emptyToUndefined, idSchema('Zone invalide').optional()),
+  city: z.preprocess(emptyToUndefined, idSchema('Ville invalide').optional()),
   q: z.preprocess(
     (value) => (typeof value === 'string' && value.trim() ? value : undefined),
     z.string().trim().max(100, '100 caractères maximum').optional(),

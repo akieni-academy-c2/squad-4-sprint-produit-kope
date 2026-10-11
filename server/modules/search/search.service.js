@@ -10,16 +10,17 @@ function toCard(row) {
     zones: row.zones,
     yearsExperience: row.yearsExperience,
     isAvailable: row.isAvailable,
-    rating: { average: row.ratingAverage, count: row.ratingCount }, 
+    rating: { average: row.ratingAverage, count: row.ratingCount },
     coverUrl: uploadUrl(row.coverThumb),
     avatarUrl: row.avatarUrl ?? null,
   };
 }
-export async function search({ trade, zone, q, available, minRating, minExperience, page }) {
+export async function search({ trade, zone, city, q, available, minRating, minExperience, page }) {
   const pagination = { page, pageSize: PAGE_SIZE };
   const filters = {
     tradeId: trade ?? null,
     zoneId: zone ?? null,
+    cityId: city ?? null,
     keyword: q ?? null,
     available: available ?? null,
     minRating: minRating ?? null,

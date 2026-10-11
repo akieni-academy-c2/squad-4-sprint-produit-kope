@@ -1,3 +1,5 @@
+import { env } from '../config/env.js';
+
 const PG_ERRORS = {
   '23505': [409, 'Cette valeur existe déjà'],
   '23503': [400, 'Référence invalide (métier, zone…)'],
@@ -18,7 +20,7 @@ export function errorHandler(err, req, res, next) {
   let errors = err.errors;
   if (err.code === 'LIMIT_FILE_SIZE') {
     status = 400;
-    message = 'La photo dépasse 5 Mo';
+    message = `La photo dépasse ${Math.round(env.MAX_FILE_SIZE_BYTES / (1024 * 1024))} Mo`;
     errors = { photo: message };
   } else if (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT') {
     status = 400;
@@ -36,9 +38,9 @@ export function errorHandler(err, req, res, next) {
     status = 503;
     message = 'Base de données indisponible';
     errors = undefined;
-  } else if (PG_ERRORS[err.code]) 
+  } else if (PG_ERRORS[err.code])
     [status, message] = PG_ERRORS[err.code];
-  
+
   if (status >= 500) {
     console.error(err);
     if (status !== 503) {

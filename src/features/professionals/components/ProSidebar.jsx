@@ -6,7 +6,6 @@ import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { ROUTES, PROFILE_STATUS } from '@/shared/lib/constants.js';
 
-/** Colonne de gauche de l'espace pro : identité, statut, navigation, lien public. */
 export function ProSidebar({ user, profile, displayName, items, active, onChange }) {
   const isPublished = profile?.status === PROFILE_STATUS.PUBLISHED;
   const publicId = user?.id || profile?.userId || profile?.id || '0';

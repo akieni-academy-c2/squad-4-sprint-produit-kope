@@ -89,6 +89,20 @@ body,
     color: #0f172a;
     letter-spacing: -0.01em;
   }
+
+  /* Tout ce qui se clique doit le signaler. Tailwind ne pose pas de curseur
+     par défaut sur les boutons ni les liens : sans cette règle, la quasi-totalité
+     de l'interface affiche la flèche et paraît inerte.
+     Placée dans @layer base, les utilitaires gardent la priorité — un bouton
+     désactivé conserve ainsi son `cursor-not-allowed`. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  a[href],
+  select:not(:disabled),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
 }
 
 p {

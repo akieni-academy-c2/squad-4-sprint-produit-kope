@@ -2,7 +2,6 @@ import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
 import { mockMyContacts } from '@/shared/mocks/appMock.js';
 
-/** Mes contacts */
 export function getMyContacts({ page = 1, pageSize = 20 } = {}) {
   return callApi(
     () => api.get('/contacts', { page, pageSize }),
@@ -10,7 +9,6 @@ export function getMyContacts({ page = 1, pageSize = 20 } = {}) {
   );
 }
 
-/** Prise de contact */
 export function createContact({ toUserId, message }) {
   return callApi(
     () => api.postJson('/contacts', { toUserId, message }).then((r) => r.contact),

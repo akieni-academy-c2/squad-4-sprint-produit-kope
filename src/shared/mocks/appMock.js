@@ -5,8 +5,18 @@ import what3 from '@/shared/assets/what3.png';
 import user1 from '@/shared/assets/user1.png';
 import user2 from '@/shared/assets/user2.png';
 import hero from '@/shared/assets/hero.png';
+import { personas as PERSONA_DATA } from './personas.json';
 
 const IMAGES = [what1, what2, what3, user1, user2, hero];
+
+/**
+ * Identités et portraits de démonstration, générés par `npm run mock:personas`.
+ *
+ * Le catalogue est figé dans le dépôt : l'application reste déterministe et ne
+ * contacte aucun service tiers à l'exécution. Repli sur `FALLBACK_NAMES` si le
+ * fichier n'a pas encore été généré.
+ */
+const PERSONAS = PERSONA_DATA ?? [];
 
 // Palettes des visuels de réalisation : une par quadruple, pour que deux
 // professionnels différents n'affichent jamais les mêmes photos.
@@ -72,32 +82,126 @@ export const MOCK_ZONES = [
   { id: 11, name: 'Maya-Maya', cityId: 2, createdAt: '2026-01-12T10:10:00.000Z' },
 ];
 
-const FIRST = ['Julien', 'Thomas', 'Sarah', 'Moussa', 'Amina', 'David', 'Grace', 'Patrick', 'Clarisse', 'Jean', 'Rod', 'Ruth'];
-const LAST = ['Morel', 'Rivière', 'Le Goff', 'Okamba', 'Itoua', 'Malonga', 'Mpassi', 'Kengue', 'Loufoua', 'Makaya', 'Ngoma', 'Okou'];
+/** Repli si le catalogue de personas n'a pas été généré. */
+const FALLBACK_NAMES = [
+  ['Julien', 'Morel'], ['Thomas', 'Rivière'], ['Sarah', 'Le Goff'],
+  ['Moussa', 'Okamba'], ['Amina', 'Itoua'], ['David', 'Malonga'],
+  ['Grace', 'Mpassi'], ['Patrick', 'Kengue'], ['Clarisse', 'Loufoua'],
+  ['Jean', 'Makaya'], ['Rod', 'Ngoma'], ['Ruth', 'Okou'],
+];
+
+/** Source unique d'identités : personas si disponibles, sinon le repli. */
+const NAMES = PERSONAS.length
+  ? PERSONAS.map((p) => [p.firstName, p.lastName])
+  : FALLBACK_NAMES;
+
+const FIRST = NAMES.map(([first]) => first);
+const LAST = NAMES.map(([, last]) => last);
+
+function nameAt(offset) {
+  return NAMES[((offset % NAMES.length) + NAMES.length) % NAMES.length];
+}
+
+/**
+ * Répartition des professionnels de démonstration.
+ *
+ * Les femmes restent minoritaires dans ces métiers — c'est la réalité du
+ * terrain — sauf en maçonnerie, où elles sont nombreuses et plutôt jeunes.
+ * Le catalogue de personas fournit donc deux réserves distinctes.
+ */
+const ROSTER = [
+  { tradeId: 1, gender: 'male' },
+  { tradeId: 2, gender: 'male' },
+  { tradeId: 3, gender: 'female' },
+  { tradeId: 4, gender: 'male' },
+  { tradeId: 1, gender: 'male' },
+  { tradeId: 2, gender: 'male' },
+  { tradeId: 3, gender: 'female' },
+  { tradeId: 4, gender: 'male' },
+  { tradeId: 1, gender: 'female' },
+  { tradeId: 2, gender: 'male' },
+  { tradeId: 3, gender: 'female' },
+  { tradeId: 4, gender: 'female' },
+];
+
+const MALE_POOL = PERSONAS.filter((p) => p.gender !== 'female');
+// Tri par âge : la maçonnerie prend les plus jeunes, les autres métiers
+// prennent les premières disponibles.
+const FEMALE_POOL = PERSONAS.filter((p) => p.gender === 'female').sort((a, b) => a.age - b.age);
+
+/** Âge d'entrée dans la profession pour un apprenti du bâtiment. */
+const CAREER_START = 18;
+
+/**
+ * Ancienneté cohérente avec l'âge.
+ *
+ * Personne ne peut avoir exercé plus longtemps que la durée écoulée depuis
+ * ses 18 ans, et un artisan plus âgé a fait une carrière plus longue. La
+ * valeur suit donc l'âge — entre 45 et 70 % de la carrière possible, pour que
+ * deux professionnels du même âge n'aient pas la même ancienneté.
+ */
+function careerYears(age, seed) {
+  const elapsed = Math.max(0, age - CAREER_START);
+  const share = 0.45 + ((seed * 13) % 26) / 100;
+
+  return Math.min(elapsed, Math.round(elapsed * share));
+}
+
+/**
+ * Visuels de démonstration.
+ *
+ * Les portraits du service externe sont réalistes mais imposent un appel
+ * réseau à chaque affichage. On alterne donc portraits et visuels du projet :
+ * la démonstration reste utilisable hors ligne.
+ *
+ * L'index décale de 2 par professional : sans cela, le pas de 2 sur
+ * l'alternance et le pas de 6 sur le stock se synchronisent, et trois visuels
+ * seulement reviennent deux fois chacun.
+ */
+const PORTRAIT_SHARE = 2;
+
+function portraitFor(persona, index) {
+  if (persona && index % PORTRAIT_SHARE !== 1) return persona.portrait;
+  // Index entier du compteur asset (0, 1, 2…) : les positions asset sont
+  // 1, 3, 5… et un index flotté donnerait un accès hors tableau.
+  const assetIndex = Math.floor(index / PORTRAIT_SHARE);
+  return IMAGES[assetIndex % IMAGES.length];
+}
 
 function makePro(i) {
-  const trade = MOCK_TRADES[i % MOCK_TRADES.length];
+  const slot = ROSTER[i % ROSTER.length];
+  const wantsFemale = slot.gender === 'female';
+  const pool = wantsFemale ? FEMALE_POOL : MALE_POOL;
+  const persona = pool.shift() ?? PERSONAS[i % Math.max(1, PERSONAS.length)] ?? null;
+  const [firstName, lastName] = persona
+    ? [persona.firstName, persona.lastName]
+    : nameAt(i);
+  const trade = MOCK_TRADES.find((t) => t.id === slot.tradeId) ?? MOCK_TRADES[i % MOCK_TRADES.length];
   const zoneIds = [(i % MOCK_ZONES.length) + 1, ((i + 3) % MOCK_ZONES.length) + 1];
   const zones = MOCK_ZONES.filter((z) => zoneIds.includes(z.id));
   const ratingCount = (i * 3) % 14;
+  const yearsExperience = careerYears(persona?.age ?? 40, i);
   return {
     id: i + 1,
-    displayName: `${FIRST[i % FIRST.length]} ${LAST[i % LAST.length]}`,
+    displayName: persona.fullName || `${firstName} ${lastName}`,
+    firstName,
+    lastName,
+    gender: slot.gender,
     trade: trade.name,
     tradeId: trade.id,
     tradeName: trade.name,
     zones,
-    yearsExperience: (i % 15) + 2,
+    yearsExperience,
     isAvailable: i % 3 !== 0,
     isHidden: false,
-    city: 'Brazzaville',
+    city: persona.city || 'Brazzaville',
     country: 'Congo',
     description:
       'Artisan expérimenté basé à Brazzaville. Devis gratuit, travail soigné et garantie sur les interventions réalisées dans votre quartier.',
-    phone: `+24206${String(1000000 + i * 137913).slice(0, 7)}`,
+    phone: persona.phone || `+24206${String(1000000 + i * 137913).slice(0, 7)}`,
     whatsapp: null,
-    image: IMAGES[i % IMAGES.length],
-    avatarUrl: IMAGES[(i + 3) % IMAGES.length],
+    image: portraitFor(persona, i),
+    avatarUrl: portraitFor(persona, i),
     ratingAverage: ratingCount ? Math.round((3.5 + ((i * 7) % 15) / 10) * 10) / 10 : null,
     ratingCount,
     photos: [0, 1, 2].map((k) => ({
@@ -117,7 +221,7 @@ function makePro(i) {
   };
 }
 
-export const MOCK_PROS = Array.from({ length: 12 }, (_, i) => makePro(i));
+export const MOCK_PROS = Array.from({ length: ROSTER.length }, (_, i) => makePro(i));
 
 const REVIEWS_POOL = [
   { rating: 5, comment: 'Un échange clair et une intervention soignée. Julien a pris le temps de m\'expliquer l\'origine de la fuite.' },

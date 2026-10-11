@@ -5,12 +5,10 @@ import { env } from "./env.js";
 
 export const SESSION_COOKIE = "sid";
 
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000; 
-
 const PgStore = connectPgSimple(session);
 
 export const sessionMiddleware = session({
-  store: new PgStore({ pool, tableName: "session" }),
+  store: new PgStore({ pool, tableName: env.SESSION_TABLE }),
   name: SESSION_COOKIE,
   secret: env.SESSION_SECRET,
   resave: false,
@@ -19,6 +17,6 @@ export const sessionMiddleware = session({
     httpOnly: true,
     sameSite: "lax",
     secure: env.COOKIE_SECURE,
-    maxAge: SEVEN_DAYS_MS,
+    maxAge: env.SESSION_MAX_AGE_MS,
   },
 });

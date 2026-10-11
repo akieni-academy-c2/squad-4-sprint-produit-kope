@@ -50,11 +50,11 @@ export function UserMenu({ onNavigate }) {
     };
   }, [open, close]);
 
-  if (loading) 
+  if (loading)
     return <div className="h-9 w-24 rounded-lg bg-gray-100 animate-pulse" />;
-  
 
-  if (!user) 
+
+  if (!user)
     return (
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="ghost" size="sm" onClick={() => { onNavigate?.(); openModal('login'); }}>
@@ -65,7 +65,7 @@ export function UserMenu({ onNavigate }) {
         </Button>
       </div>
     );
-  
+
 
   return (
     <div className="relative">

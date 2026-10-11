@@ -1,6 +1,5 @@
 import { Card } from '@/shared/components/ui/Card.jsx';
 
-/** Carte de section du formulaire / de la lecture seule. */
 export function ProfileSection({ title, description, children }) {
   return (
     <Card className="p-5">
@@ -13,7 +12,6 @@ export function ProfileSection({ title, description, children }) {
   );
 }
 
-/** Ligne « libellé / valeur » de la lecture seule. */
 export function ProfileRow({ label, value }) {
   return (
     <div className="grid grid-cols-[140px_minmax(0,1fr)] gap-4 py-1.5">

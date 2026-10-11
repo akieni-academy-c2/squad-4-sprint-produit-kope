@@ -4,7 +4,7 @@
  * La mémoire ne suffit pas en serverless : chaque conteneur a son propre
  * compteur, qui repart à zéro à chaque démarrage à froid. PostgreSQL donne un
  * compteur unique quel que soit le nombre d'instances, au prix d'une écriture
- * par tentative — négligeable pour des routes de connexion.
+ * par tentative - négligeable pour des routes de connexion.
  *
  * `RATE_LIMIT_STORE=memory` revient au comportement local si la table n'est pas
  * encore migrée.
@@ -18,7 +18,7 @@ const DEFAULT_WINDOW_MS = 15 * 60_000;
  * Renvoie le nombre de tentatives consommées dans la fenêtre courante.
  *
  * `windowMs` est fourni par l'appelant : la fenêtre était figée à 15 minutes,
- * ce qui rendait toute configuration par route inopérante — l'en-tête
+ * ce qui rendait toute configuration par route inopérante - l'en-tête
  * Retry-After annonçait la fenêtre demandée alors que le compteur suivait
  * celle du store.
  */
@@ -43,7 +43,6 @@ export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db
   return rows[0].count;
 }
 
-/** Supprime les compteurs dont la fenêtre est dépassée. */
 export async function purgeRateLimits(db = pool) {
   const { rowCount } = await db.query(
     "DELETE FROM rate_limits WHERE window_start < now() - interval '1 hour'",
@@ -51,7 +50,6 @@ export async function purgeRateLimits(db = pool) {
   return rowCount;
 }
 
-/** Vrai si la table existe : permet de retomber sur la mémoire sans planter. */
 export async function rateLimitTableExists(db = pool) {
   try {
     await db.query('SELECT 1 FROM rate_limits LIMIT 1');

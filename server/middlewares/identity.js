@@ -8,16 +8,13 @@ const ACCOUNT_SUSPENDED = 'Votre compte a été suspendu.';
  * L'authentification repose uniquement sur la session serveur (cookie `sid`).
  * Renvoie null si aucune session n'est ouverte.
  *
- * `req.user` est posé par `requireRole` après relecture du rôle en base ; sur
- * les autres requêtes seul le session existe. Les contrôleurs lisaient
- * `req.user ?? req.session.user` à la main dans une dizaine d'endroits — chaque
- * oubli étant un `TypeError` en 500 sur une route pourtant authentifiée.
+ * `req.user` est posé par `requireRole` après relecture du rôle en base ; sur les
+ * autres requêtes seul le session existe.
  */
 export function currentUser(req) {
   return req.user ?? req.session?.user ?? null;
 }
 
-/** Raccourci pour les contrôleurs qui viennent de passer par `requireAuth`. */
 export function requiredUserId(req) {
   return currentUser(req).id;
 }

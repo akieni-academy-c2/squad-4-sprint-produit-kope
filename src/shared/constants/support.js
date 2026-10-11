@@ -1,4 +1,3 @@
-/** Coordonnées du service client. */
 export const SUPPORT_EMAIL = 'espoirloem@gmail.com';
 export const SUPPORT_PHONE = '+242 06 570 66 22';
 

@@ -11,7 +11,7 @@ export const requiredText = (max, message = 'Ce champ est obligatoire') =>
 
 /**
  * Nom de personne réel : lettres (accents autorisés), espaces, tirets et
- * apostrophes — « Jean-Pierre », « O'Brien », « Mbarga ». Refuse les chiffres,
+ * apostrophes - « Jean-Pierre », « O'Brien », « Mbarga ». Refuse les chiffres,
  * les symboles et les noms purement décoratifs.
  */
 export const personNameSchema = z
@@ -41,7 +41,7 @@ export const displayNameSchema = z
  *
  * Borné à 32767 : trades, zones, villes et catégories sont des `smallint`.
  * Sans cette borne, `?trade=99999` passait la validation et PostgreSQL
- * échouait sur le cast en 22003 — un 500 sur une route publique, là où la
+ * échouait sur le cast en 22003 - un 500 sur une route publique, là où la
  * seule réponse correcte est « aucun résultat ».
  */
 export const idSchema = (message = 'Identifiant invalide') =>
@@ -83,7 +83,6 @@ export const consentSchema = z
   .boolean({ error: 'Le consentement est obligatoire' })
   .refine((value) => value === true, 'Le consentement est obligatoire');
 
-/** Liste de zones */
 export const zoneIdsSchema = z
   .array(idSchema('Zone invalide'), { error: 'Choisissez au moins une zone' })
   .min(1, 'Choisissez au moins une zone')

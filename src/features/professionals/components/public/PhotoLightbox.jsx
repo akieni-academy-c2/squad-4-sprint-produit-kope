@@ -26,6 +26,7 @@ export function PhotoLightbox({ photos, index, onClose, onPrev, onNext }) {
           <img
             src={photo.url || photo.thumbUrl}
             alt={photo.title || photo.caption || 'Réalisation'}
+            decoding="async"
             className="mx-auto max-h-[65vh] w-auto max-w-full rounded-lg object-contain"
           />
           {photos.length > 1 && (

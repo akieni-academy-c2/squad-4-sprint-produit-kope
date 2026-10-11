@@ -2,7 +2,6 @@ import { Camera } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 
-/** En-tête du formulaire : avatar, nom, métier et progression du téléversement. */
 export function ProfileAvatarCard({ user, avatar, name, tradeName, editing, uploading, uploadProgress, onAvatarChange }) {
   return (
     <Card className="overflow-hidden">

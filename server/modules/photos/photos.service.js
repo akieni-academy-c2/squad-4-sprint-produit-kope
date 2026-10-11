@@ -31,7 +31,7 @@ export async function addPhoto(professionalId, file, { title, description }) {
   // L'écriture disque (ou les deux uploads Cloudinary) a lieu AVANT la
   // transaction : une transaction SQL ne couvre pas le système de fichiers.
   // La tenir dedans retenait une connexion du pool et un verrou FOR UPDATE
-  // pendant toute la durée du transfert réseau — 10 uploads simultanés
+  // pendant toute la durée du transfert réseau - 10 uploads simultanés
   // suffisaient à répondre 503 à toute l'API.
   const processed = await storage.processImage(file.buffer);
   const paths = storage.newPaths(professionalId);
@@ -67,7 +67,6 @@ export async function addPhoto(professionalId, file, { title, description }) {
   }
 }
 
-/** Modification du titre */
 export async function updatePhoto(professionalId, photoId, { title, description }) {
   const updated = await repository.update(photoId, professionalId, { title, description });
   if (!updated) throw ApiError.notFound('Photo introuvable');

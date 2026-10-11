@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Check, X } from 'lucide-react';
 
-/** Saisie en ligne, validée à la touche Entrée, annulée à la touche Échap. */
 export function InlineInput({ value, onChange, onSubmit, onCancel, placeholder, ariaLabel, className = '' }) {
   const [draft, setDraft] = useState(value);
 
@@ -44,7 +43,6 @@ export function InlineInput({ value, onChange, onSubmit, onCancel, placeholder, 
   );
 }
 
-/** Numéro de position sur une carte. */
 export function PositionBadge({ value, muted = false }) {
   return (
     <span

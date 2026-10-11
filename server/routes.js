@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from './db/pool.js';
+import { isDatabaseReachable } from './db/pool.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import referenceRoutes from './modules/reference/reference.routes.js';
@@ -14,7 +14,7 @@ import adminRoutes from './modules/admin/admin.routes.js';
 const router = Router();
 
 router.get('/health', async (req, res) => {
-  await pool.query('SELECT 1');
+  await isDatabaseReachable();
   res.json({ status: 'ok' });
 });
 

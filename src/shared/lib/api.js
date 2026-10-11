@@ -32,13 +32,13 @@ function resolveUrl(url) {
 async function parseResponse(res) {
   let payload = null;
   const contentType = res.headers.get('content-type') || '';
-  if (contentType.includes('application/json')) 
+  if (contentType.includes('application/json'))
     try {
       payload = await res.json();
     } catch {
       payload = null;
     }
-  
+
   if (!res.ok) {
     const message = payload?.message || `Erreur ${res.status}`;
     if (res.status === 403 && typeof window !== 'undefined' && SUSPENDED_PATTERN.test(message))

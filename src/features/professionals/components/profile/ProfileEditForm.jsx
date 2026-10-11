@@ -21,7 +21,6 @@ function TextInput({ id, label, value, onChange, ...rest }) {
   );
 }
 
-/** Formulaire de modification du profil professionnel. */
 export function ProfileEditForm({
   onSubmit,
   values,

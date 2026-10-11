@@ -3,7 +3,6 @@ import { Card } from '@/shared/components/ui/Card.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { cn } from '@/shared/utils';
 
-/** Carte d'une photo publiée, avec les actions modifier / supprimer. */
 export function PhotoCard({ photo, isDeleting, onEdit, onRequestDelete }) {
   const title = photo.title || photo.caption;
 
@@ -14,6 +13,7 @@ export function PhotoCard({ photo, isDeleting, onEdit, onRequestDelete }) {
           src={photo.thumbUrl || photo.url}
           alt={title || ''}
           loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
         {(title || photo.description) && (

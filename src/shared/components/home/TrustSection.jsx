@@ -1,6 +1,7 @@
 import { Star, User, Shield } from 'lucide-react';
 import { SplitShowcase } from '@/shared/components/sections/SplitShowcase.jsx';
-import { mockImage, HERO_IMAGE_PROMPT } from '@/shared/mocks/images.js';
+import { reserveImage, HERO_IMAGE_LABEL } from '@/shared/assets/placeholders.js';
+import { HOME_RESERVED } from '@/shared/content/homeImages.js';
 
 const ITEMS = [
   { icon: User, title: 'Des profils détaillés', body: 'Le métier, des zones d\'intervention et des réalisations.' },
@@ -14,7 +15,7 @@ export function TrustSection() {
       eyebrow="Un service à taille humaine"
       title="La confiance se construit en échangeant."
       intro="À portée facilite la première rencontre. Vous restez libre de discuter de votre besoin et de vos conditions directement avec le professionnel."
-      imageSrc={mockImage(HERO_IMAGE_PROMPT)}
+      imageSrc={reserveImage(HERO_IMAGE_LABEL, HOME_RESERVED.upTo('trust'))}
       imageAlt="Artisanne KOP"
       caption={['Les mains qui font votre quartier', 'Des professionnels, près de chez vous.']}
       items={ITEMS}

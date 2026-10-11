@@ -9,7 +9,6 @@ import { formatDateFr } from '@/shared/utils';
 import { listReviews } from '../services/reviews.service.js';
 import { ReviewAuthor } from './ReviewAuthor.jsx';
 
-/** Liste paginée d'avis (utilisée dans la modale « Avis »). */
 export function ReviewList({ professionalId }) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);

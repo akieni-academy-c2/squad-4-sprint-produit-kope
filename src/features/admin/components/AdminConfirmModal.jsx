@@ -1,6 +1,5 @@
 import { Button, Modal } from '@/shared/components/ui';
 
-/** Confirmation d'action : bloc identique dans les 5 tableaux admin. */
 export function AdminConfirmModal({
   open,
   title,

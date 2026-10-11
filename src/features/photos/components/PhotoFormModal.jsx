@@ -15,7 +15,6 @@ import {
 import { addPhotoSchema, validateFrontend } from '@/shared/utils/validators.js';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 
-/** Formulaire d'ajout / modification d'une réalisation. */
 export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, remaining }) {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState(photo?.title || photo?.caption || '');

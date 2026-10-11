@@ -13,7 +13,6 @@ function Metric({ label, icon: Icon, children }) {
   );
 }
 
-/** Onglet « Vue d'ensemble » : chiffres clés de l'espace professionnel. */
 export function OverviewSection({ profile }) {
   const available = Boolean(profile?.isAvailable);
 

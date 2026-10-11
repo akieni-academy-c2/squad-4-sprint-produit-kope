@@ -10,7 +10,7 @@ function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName }) {
   return (
     <div className={`shrink-0 overflow-hidden bg-gray-100 ${wrapperClassName}`}>
       {src ? (
-        <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+        <img src={src} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
       ) : (
         <span className={`flex h-full w-full items-center justify-center font-extrabold text-primary-700 ${fallbackClassName}`}>
           {initialsOf(name)}
@@ -20,7 +20,6 @@ function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName }) {
   );
 }
 
-/** Colonne de gauche (desktop) : identité, à propos, ligne compacte et signalement. */
 export function PublicProfileSidebar({ profile, view, isVisitorView, onReportClick }) {
   const { tradeName, zones, tags, avg, count, avatarSrc } = view;
 

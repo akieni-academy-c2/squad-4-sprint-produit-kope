@@ -72,7 +72,6 @@ export function setAvailability(userId, isAvailable) {
   return repository.setAvailability(userId, isAvailable);
 }
 
-/** Fiche publique */
 export async function getPublishedDetail(id) {
   const profile = await repository.findPublishedDetail(id);
   if (!profile) throw ApiError.notFound('Profil introuvable');

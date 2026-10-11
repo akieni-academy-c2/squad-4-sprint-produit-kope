@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-/** Accepte aussi bien une chaîne qu'un objet { value, label }. */
 export function toOption(raw) {
   return typeof raw === 'string' ? { value: raw, label: raw } : raw;
 }
@@ -67,7 +66,6 @@ export function useListboxNavigation({
   };
 }
 
-/** Maintient l'option active visible dans une liste défilante. */
 export function useScrollActiveIntoView({ open, activeIndex, optionId, enabled = true }) {
   useEffect(() => {
     if (!open || !enabled) return;

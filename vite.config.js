@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { PRIMARY_AUTHOR, CONTRIBUTORS, PROJECT } from './src/shared/data/credits.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -13,20 +14,151 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 // Google que la vraie page est ailleurs, ce qui est pire que pas de canonical.
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '')
 
-/** Injecte les balises d'URL absolue que le SEO exige, si le domaine est connu. */
-function absoluteUrls() {
-  return {
-    name: 'kop-absolute-urls',
-    transformIndexHtml(html) {
-      if (!SITE_URL) return html
+const person = (author) => ({
+  '@type': 'Person',
+  name: author.name,
+  jobTitle: author.jobTitle,
+  ...(author.knowsAbout ? { knowsAbout: author.knowsAbout } : {}),
+  ...(author.sameAs?.length ? { sameAs: author.sameAs } : {}),
+})
 
+/**
+ * Crédits injectés dans index.html.
+ *
+ * Aucun de ces noms n'est rendu dans l'interface. Ils servent aux moteurs de
+ * recherche et aux moteurs de réponse IA, qui ont besoin d'un auteur nommé et
+ * de liens `sameAs` vers des profils existants pour rattacher le site à une
+ * personne réelle plutôt qu'à une entité anonyme.
+ */
+function creditsJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: PROJECT.name,
+        alternateName: PROJECT.alternateName,
+        description: PROJECT.description,
+        inLanguage: PROJECT.inLanguage,
+        ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
+        author: person(PRIMARY_AUTHOR),
+        publisher: { '@type': 'Organization', name: PROJECT.name },
+      },
+      {
+        '@type': 'Organization',
+        name: PROJECT.name,
+        description: PROJECT.description,
+        founder: person(PRIMARY_AUTHOR),
+        contributor: CONTRIBUTORS.map(person),
+        ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
+      },
+      {
+        '@type': 'CreativeWork',
+        name: PROJECT.name,
+        description: PROJECT.description,
+        inLanguage: PROJECT.inLanguage,
+        creator: [person(PRIMARY_AUTHOR), ...CONTRIBUTORS.map(person)],
+        ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
+      },
+    ],
+  }
+}
+
+/**
+ * Sitemap.xml, généré au build.
+ *
+ * Un fichier écrit à la main dans public/ ne peut pas contenir le domaine de
+ * production : il resterait sur un `localhost` en développement et sur un autre
+ * domaine en ligne. Ici il est produit à partir de SITE_URL, donc toujours
+ * cohérent avec le canonical.
+ *
+ * Seules les pages stables sont listées. Les fiches `/professionals/:id` ont
+ * un contenu variable : les déclarer ici ferait soumettre des URL qui
+ * répondent 404 tant qu'aucun professionnel n'existe sous cet identifiant.
+ */
+const SITEMAP_PATHS = [
+  { loc: '/', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/search', priority: '0.9', changefreq: 'daily' },
+  { loc: '/how-it-works', priority: '0.5', changefreq: 'monthly' },
+]
+
+function sitemap() {
+  return {
+    name: 'kop-sitemap',
+    apply: 'build',
+    generateBundle() {
+      if (!SITE_URL) return
+
+      const urls = SITEMAP_PATHS.map(
+        (entry) =>
+          `  <url>\n` +
+          `    <loc>${SITE_URL}${entry.loc}</loc>\n` +
+          `    <changefreq>${entry.changefreq}</changefreq>\n` +
+          `    <priority>${entry.priority}</priority>\n` +
+          `  </url>`,
+      ).join('\n')
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source:
+          `<?xml version="1.0" encoding="UTF-8"?>\n` +
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+      })
+
+      // robots.txt exige une URL absolue : une racine seule est ignorée. Le
+      // fichier de public/ reste la référence en développement, où SITE_URL
+      // n'est pas défini.
+      this.emitFile({
+        type: 'asset',
+        fileName: 'robots.txt',
+        source:
+          `User-agent: *\nAllow: /\n\n` +
+          `Sitemap: ${SITE_URL}/sitemap.xml\n\n` +
+          `Disallow: /admin\nDisallow: /dashboard\n` +
+          `Disallow: /auth/me\nDisallow: /forbidden\n`,
+      })
+    },
+  }
+}
+
+
+/** Injecte les crédits et les URL absolues dans le <head>. */
+function headTags() {
+  return {
+    name: 'kop-head-tags',
+    transformIndexHtml(html) {
       const head = [
-        `    <link rel="canonical" href="${SITE_URL}${'/'}"/>`,
-        `    <meta property="og:url" content="${SITE_URL}/"/>`,
-        `    <meta name="twitter:image" content="${SITE_URL}/og-image.png"/>`,
+        ...(SITE_URL
+          ? [
+              `    <link rel="canonical" href="${SITE_URL}/"/>`,
+              `    <meta property="og:url" content="${SITE_URL}/"/>`,
+              `    <meta property="og:image" content="${SITE_URL}/og-image.png"/>`,
+              `    <meta property="og:image:width" content="1200"/>`,
+              `    <meta property="og:image:height" content="630"/>`,
+              `    <meta name="twitter:image" content="${SITE_URL}/og-image.png"/>`,
+            ]
+          : []),
+        `    <meta name="author" content="${PRIMARY_AUTHOR.name}"/>`,
+        `    <meta name="creator" content="${PRIMARY_AUTHOR.name}"/>`,
+        `    <script type="application/ld+json">`,
+        JSON.stringify(creditsJsonLd(), null, 2),
+        `    </script>`,
       ].join('\n')
 
-      return html.replace('  </head>', `${head}\n  </head>`)
+      // Les versions absolues remplacent les balises relatives d'index.html.
+      // Enchaîner les deux produirait deux <meta property="og:image"> : le
+      // premier lu l'emporte, et une URL relative n'est pas résolue par Twitter
+      // ni Facebook.
+      const cleaned = SITE_URL
+        ? html
+            .replace(/^[ \t]*<meta name="twitter:image"[^>]*>\r?\n/gm, '')
+            .replace(/^[ \t]*<meta property="og:image"[^>]*>\r?\n/gm, '')
+            .replace(/^[ \t]*<meta property="og:image:width"[^>]*>\r?\n/gm, '')
+            .replace(/^[ \t]*<meta property="og:image:height"[^>]*>\r?\n/gm, '')
+        : html
+
+      return cleaned.replace('  </head>', `${head}\n  </head>`)
     },
   }
 }
@@ -39,7 +171,8 @@ export default defineConfig({
     tailwindcss(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    absoluteUrls(),
+    headTags(),
+    sitemap(),
   ],
   build: {
     outDir: path.resolve(__dirname, 'dist'),

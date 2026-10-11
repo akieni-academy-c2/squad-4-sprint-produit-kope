@@ -2,7 +2,6 @@ import { ImagePlus } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 
-/** Emplacement vide : incrémente la grille jusqu'à ce qu'elle soit pleine. */
 export function AddPhotoSlot({ slotNumber, slotCount, onClick }) {
   const plural = slotCount > 1;
 

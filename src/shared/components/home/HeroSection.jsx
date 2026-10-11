@@ -1,6 +1,7 @@
 import { Handshake, Search, User, Phone } from 'lucide-react';
 import { SearchFilters } from '@/features/search/components/SearchFilters.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import hero from '@/shared/assets/hero.png';
 
 export function HeroSection() {
@@ -50,10 +51,14 @@ export function HeroSection() {
 
         <div className="relative mx-auto w-full max-w-130">
           <div className="rounded-[16px] overflow-hidden  ">
-            <img
+            <ImageWithSkeleton
               src={hero}
               alt="Artisanne KOP"
-              className="w-full h-85 sm:h-100 object-cover bg-accent-500/30"
+              // Premier visuel de la page : il doit être prioritaire sur le
+              // reste, sinon le héros s'affiche après les images du bas.
+              eager
+              ratio="h-85 sm:h-100"
+              skeletonClassName="bg-accent-500/30"
             />
             <FloatingCaption
               align="right"

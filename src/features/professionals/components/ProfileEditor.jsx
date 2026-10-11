@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { useForm } from '@/shared/hooks/useForm.js';
-import { updateProfileSchema } from '@/shared/utils/validators.js';
+import {
+  updateAccountSchema,
+  updateProfileSchema,
+  validateFrontend,
+} from '@/shared/utils/validators.js';
 import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
 import { updateMyProfile } from '../services/professionals.service.js';
 import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.service.js';
@@ -37,12 +41,32 @@ export function ProfileEditor({ profile, user, onUpdated }) {
     async (data) => updateMyProfile(data),
   );
 
-  // Bouton actif seulement si le formulaire est valide ET modifié :
-  // « Enregistrer » ne doit pas envoyer un PUT identique au profil existant.
-  const { ready, dirty } = useFormReadiness(updateProfileSchema, values);
-  const canSubmit = ready && dirty;
+  // Le formulaire couvre deux ensembles distincts : l'identité du compte
+  // (prénom, nom, téléphone) et la fiche professionnelle (métier, description…).
+  // Les deux sont envoyés par la même action, donc le bouton doit considérer
+  // une modification de l'un comme de l'autre.
+  const identity = useMemo(
+    () => ({ firstName, lastName, phone }),
+    [firstName, lastName, phone],
+  );
+  const identityForm = useFormReadiness(updateAccountSchema, identity);
+  const profileForm = useFormReadiness(updateProfileSchema, values);
+  const canSubmit = identityForm.ready && profileForm.ready && (identityForm.dirty || profileForm.dirty);
 
   const onSubmit = async (e) => {
+    // `handleSubmit` ne valide que le schéma du profil. Sans ce contrôle
+    // préalable, un prénom vide part quand même vers l'API et l'utilisateur
+    // découvre l'erreur après l'envoi, sous forme de message serveur.
+    const accountCheck = validateFrontend(updateAccountSchema, identity);
+    if (!accountCheck.success) {
+      setErrors((prev) => ({ ...prev, ...accountCheck.errors }));
+      const firstKey = Object.keys(accountCheck.errors || {})[0];
+      if (firstKey && typeof document !== 'undefined')
+        document.querySelector(`[id="${firstKey}"], [name="${firstKey}"]`)?.focus?.();
+
+      return;
+    }
+
     const res = await handleSubmit(e);
     if (!res.ok) {
       if (res.error?.errors) setErrors((prev) => ({ ...prev, ...res.error.errors }));

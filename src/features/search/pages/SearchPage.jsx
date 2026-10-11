@@ -14,11 +14,12 @@ import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 export function SearchPage() {
   usePageTitle('Rechercher un professionnel');
   const [params, setParams] = useSearchParams();
-  const { trade, zone, page, q, available, minRating, minExperience } = Object.fromEntries(params.entries());
+  const { trade, zone, city, page, q, available, minRating, minExperience } = Object.fromEntries(params.entries());
   const [sort, setSort] = useState(params.get('sort') || 'recommended');
   const { results, loading, error, refresh } = useSearch({
     trade,
     zone,
+    city,
     q,
     available,
     minRating,
@@ -76,14 +77,15 @@ export function SearchPage() {
       <div className="container-kop page-padding">
         <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
           <aside className="hidden lg:block lg:sticky lg:top-23 space-y-4">
-            <SearchFilters variant="sidebar" initial={{ trade, zone, keyword: q }} searching={loading} />
+            <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
           </aside>
 
           <section className="min-w-0 space-y-5">
-            {/* Cette page n'avait aucun titre principal : un `h1` par page est
-                attendu pour les lecteurs d'écran et pour le référencement. */}
-            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              {trade || zone ? 'Professionnels' : 'Trouver un professionnel'}
+            {/* Titre conservé mais invisible : la page a besoin d'un `h1` pour
+                les lecteurs d'écran et le référencement, sans ajouter de
+                bandeau qui répète ce que dit déjà la barre de recherche. */}
+            <h1 className="sr-only">
+              {trade || zone || city ? 'Professionnels' : 'Trouver un professionnel'}
             </h1>
 
             {results?.total > 0 && (
@@ -139,7 +141,7 @@ export function SearchPage() {
           <div className="space-y-4 overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900">Filtres de recherche</h2>
             <div onSubmit={() => setFiltersOpen(false)}>
-              <SearchFilters variant="home-k" initial={{ trade, zone, keyword: q }} searching={loading} />
+              <SearchFilters variant="home-k" initial={{ trade, zone, city, keyword: q }} searching={loading} />
             </div>
             {refinePanel}
           </div>

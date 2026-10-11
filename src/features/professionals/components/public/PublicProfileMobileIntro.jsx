@@ -18,6 +18,7 @@ export function PublicProfileMobileIntro({ profile, view }) {
                   src={avatarSrc}
                   alt={profile.displayName}
                   loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               ) : (

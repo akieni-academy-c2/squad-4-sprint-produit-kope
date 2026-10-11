@@ -5,9 +5,9 @@ import { normalizePhone } from '../../utils/phone.js';
 
 async function main() {
   const phone = normalizePhone(env.ADMIN_PHONE ?? '');
-  if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8) 
+  if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8)
     throw new Error('ADMIN_PHONE (numéro valide) et ADMIN_PASSWORD (8 caractères min.) sont requis dans .env');
-  
+
 
   const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 10);
   // DO NOTHING silencieusement : si le numéro appartient déjà à un compte

@@ -3,7 +3,6 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { BecomeProCard } from './BecomeProCard.jsx';
 
-/** Colonne de gauche du dashboard client (desktop). */
 export function ClientDashboardSidebar({ items, active, onChange }) {
   const { logout } = useAuthContext();
 

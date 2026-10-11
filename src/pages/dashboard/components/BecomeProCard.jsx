@@ -2,7 +2,6 @@ import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 
-/** Appel à l'action « Devenir prestataire », affiché dans la colonne de gauche. */
 export function BecomeProCard() {
   const { open: openModal } = useAuthModal();
 

@@ -7,8 +7,11 @@ const SUFFIX = 'KOP';
  *
  * Sans cela, toutes les routes partagent le titre de index.html : Google
  * affiche « Annuaire des artisans » pour la page de contact comme pour une
- * fiche. Écrit dans le document plutôt qu'au rendu React, pour être lisible
- * par un crawler qui n'exécute pas JavaScript.
+ * fiche.
+ *
+ * Portée réelle : cette écriture passe par le document, donc elle est visible
+ * une fois la page rendue. Un crawler qui n'exécute pas JavaScript ne la voit
+ * pas ; pour ces pages, le titre doit aussi figurer dans index.html.
  */
 export function usePageTitle(title) {
   useEffect(() => {

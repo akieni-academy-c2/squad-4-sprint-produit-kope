@@ -6,9 +6,10 @@ import { RegisterClientForm } from '../pages/RegisterClientPage.jsx';
 import { BecomeProForm } from './BecomeProForm.jsx';
 import { ChangePasswordForm } from './ChangePasswordForm.jsx';
 import { ROLES } from '@/shared/lib/constants.js';
-import { mockImage, LOGIN_IMAGE_PROMPT } from '@/shared/mocks/images.js';
+import { placeholderImage, LOGIN_IMAGE_LABEL } from '@/shared/assets/placeholders.js';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { User } from 'lucide-react';
 
 const DIALOG_LABEL = {
@@ -72,11 +73,12 @@ export function AuthModal() {
             </div>
             <Card className="relative z-10 overflow-hidden flex flex-col transition rounded-sm! border-0! ">
               <div className="relative aspect-6/4 overflow-hidden ">
-                <img
-                  src={mockImage(LOGIN_IMAGE_PROMPT)}
+                <ImageWithSkeleton
+                  src={placeholderImage(LOGIN_IMAGE_LABEL)}
                   alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  ratio="h-full"
+                  skeletonClassName="bg-gray-100"
+                  className="transition duration-500 group-hover:scale-[1.04]"
                 />
                 <FloatingCaption
                   icon={User}

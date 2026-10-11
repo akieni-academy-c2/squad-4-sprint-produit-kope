@@ -1,7 +1,6 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 
-/** États de chargement et d'erreur communs aux deux espaces personnel/pro. */
 
 export function ProfileLoadingState() {
   return (

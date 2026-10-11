@@ -7,7 +7,7 @@ function KpiCard({ label, value, hint }) {
   return (
     <div className="rounded-[18px] border border-[#e2e8e5] bg-white p-4">
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-gray-500">{label}</p>
-      <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{value ?? '—'}</p>
+      <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{value ?? '-'}</p>
       {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
     </div>
   );
@@ -48,7 +48,7 @@ export function AdminStats() {
           <KpiCard label="Demandes de contact" value={stats?.contacts} hint="Toutes périodes" />
           <KpiCard
             label="Taux de publication"
-            value={stats?.professionals ? `${Math.round(((stats?.published || 0) / stats.professionals) * 100)}%` : '—'}
+            value={stats?.professionals ? `${Math.round(((stats?.published || 0) / stats.professionals) * 100)}%` : '-'}
             hint="Profils complets et visibles"
           />
         </div>

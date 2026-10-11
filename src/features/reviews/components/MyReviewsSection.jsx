@@ -5,7 +5,6 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { formatDateFr } from '@/shared/utils';
 import { getMyReviews } from '../services/reviews.service.js';
 
-/** Onglet « Mes avis » du dashboard client : l'historique des avis laissés. */
 export function MyReviewsSection() {
   const { data, loading, error } = useAsyncData(async () => getMyReviews(), []);
   const items = data?.items ?? [];

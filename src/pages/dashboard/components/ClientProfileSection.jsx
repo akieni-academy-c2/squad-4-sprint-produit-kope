@@ -33,7 +33,6 @@ function Detail({ label, value }) {
   );
 }
 
-/** Onglet « Mon profil » du dashboard client : identité, téléphone et avatar. */
 export function ClientProfileSection({ user }) {
   const { refresh, logout } = useAuthContext();
   const { toast } = useNotification();

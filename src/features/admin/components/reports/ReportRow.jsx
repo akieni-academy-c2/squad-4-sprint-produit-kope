@@ -9,7 +9,6 @@ const STATUS_BADGES = {
   dismissed: 'bg-gray-100 text-gray-600',
 };
 
-/** Un signalement individuel : motif, statut, auteur, message et actions. */
 export function ReportRow({ report, onResolve, onDismiss }) {
   return (
     <li className="space-y-2 rounded-sm bg-gray-50/80 p-3">

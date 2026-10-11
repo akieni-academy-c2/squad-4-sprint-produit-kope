@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
-/** Avatar utilisateur */
 export function UserAvatar({
   user,
   name,
@@ -22,16 +21,17 @@ export function UserAvatar({
     setFailed(false);
   }, [photoUrl]);
 
-  if (photoUrl && !failed) 
+  if (photoUrl && !failed)
     return (
       <img
         src={photoUrl}
         alt={label}
+        decoding="async"
         className={cn(className, rounded, 'object-cover')}
         onError={() => setFailed(true)}
       />
     );
-  
+
   return (
     <span className={cn(className, rounded, 'inline-flex items-center justify-center font-semibold', fallbackClassName)}>
       <User size={iconSize} aria-hidden />

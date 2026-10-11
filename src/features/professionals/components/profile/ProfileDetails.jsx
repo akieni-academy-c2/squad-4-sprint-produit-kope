@@ -1,7 +1,6 @@
 import { formatYearsExperience } from './profileForm.js';
 import { ProfileRow, ProfileSection } from './ProfileSection.jsx';
 
-/** Vue lecture seule du profil, affichée quand le formulaire est fermé. */
 export function ProfileDetails({ profile, user }) {
   const zoneNames = (profile?.zones || []).map((z) => z.name).filter(Boolean).join(', ');
 

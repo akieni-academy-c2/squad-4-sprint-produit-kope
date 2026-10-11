@@ -58,7 +58,7 @@ describe('searchPublished', () => {
     const [sql, values] = pool.query.mock.calls[0];
     expect(sql).toContain("p.display_name ILIKE '%' || $3 || '%'");
     expect(sql).toContain('LIMIT $7 OFFSET $8');
-    expect(values).toEqual([2, 3, 'plombier', null, null, null, 10, 20]);
+    expect(values).toEqual([2, 3, 'plombier', null, null, null, 10, 20, null]);
   });
 
   it('binds the refine filters and filters on rating with HAVING', async () => {
@@ -76,7 +76,7 @@ describe('searchPublished', () => {
     expect(sql).toContain('p.is_available = $4');
     expect(sql).toContain('p.years_experience >= $5');
     expect(sql).toContain('HAVING ($6::numeric IS NULL OR AVG(r.rating) >= $6)');
-    expect(values).toEqual([null, null, null, true, 5, 4, 10, 0]);
+    expect(values).toEqual([null, null, null, true, 5, 4, 10, 0, null]);
   });
 });
 

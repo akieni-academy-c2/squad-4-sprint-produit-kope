@@ -11,10 +11,8 @@ export const INVALID_IMAGE = "Le fichier n'est pas une image JPG ou PNG valide";
  *
  * Le `fileFilter` de multer se fie à `file.mimetype`, valeur fournie par le
  * client et donc falsifiable. Seul le décodage fait foi : sans cette
- * vérification, sharp réencodait sans broncher un GIF, un TIFF ou un fichier
- * « polyglot » contenant une charge.
- *
- * Renvoie une instance sharp prête à être redimensionnée.
+ * vérification, sharp réencodait sans broncher un GIF, un TIFF ou une archive
+ * déguisée en image.
  */
 export async function decodeImage(buffer, { field = 'photo' } = {}) {
   let format;

@@ -11,7 +11,6 @@ import {
 import { formatDateFr } from '@/shared/utils';
 import { getProIdentity, statusVariant } from './professionalFilters.js';
 
-/** Carte d'un professionnel dans la liste d'administration. */
 export function AdminProfessionalCard({ pro, onToggleVisibility }) {
   const { id, name } = getProIdentity(pro);
   const hidden = pro.status === PROFILE_STATUS.HIDDEN;

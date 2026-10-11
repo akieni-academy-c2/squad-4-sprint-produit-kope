@@ -13,7 +13,6 @@ function LeaveReviewButton({ onClick, label, className = '' }) {
   );
 }
 
-/** Résumé de la note moyenne et incitation à laisser un avis. */
 export function RatingSummary({ rating, canReview = false, onLeaveReview }) {
   const count = Number(rating?.count ?? 0);
   const avg = Number(rating?.average ?? 0);

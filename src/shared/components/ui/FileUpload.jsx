@@ -63,6 +63,7 @@ export function FileUpload({
             <img
               src={typeof value === 'string' ? value : URL.createObjectURL(value)}
               alt=""
+              decoding="async"
               className="h-20 w-20 shrink-0 rounded-sm object-cover ring-1 ring-gray-200"
             />
             <div className="min-w-0 flex-1 ">

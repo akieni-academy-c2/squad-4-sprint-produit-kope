@@ -12,7 +12,6 @@ import { cn } from '@/shared/utils';
 
 const MIN_SLOTS = 3;
 
-/** Onglet « Mes photos » : grille des réalisations, formulaire et suppression. */
 export function PhotoManager({ photos = [], onChange }) {
   const { toast } = useNotification();
   const [submitting, setSubmitting] = useState(false);

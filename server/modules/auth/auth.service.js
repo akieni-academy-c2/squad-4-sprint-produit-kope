@@ -5,16 +5,17 @@ import { normalizePhone } from '../../utils/phone.js';
 import * as repository from './auth.repository.js';
 import * as professionalsRepository from '../professionals/professionals.repository.js';
 import * as sessions from './sessions.repository.js';
+import { processAvatar, saveAvatar } from './avatar.storage.js';
+import { uploadUrl } from '../../utils/uploads.js';
+import { env } from '../../config/env.js';
 
-const BCRYPT_ROUNDS = 10;
 const DUPLICATE_PHONE = 'Ce numéro est déjà utilisé';
 const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
 const INVALID_CREDENTIALS = 'Numéro ou mot de passe incorrect';
 const ACCOUNT_BLOCKED = 'Ce compte a été bloqué par un administrateur. Contactez le support.';
 
-const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', BCRYPT_ROUNDS);
+const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', env.BCRYPT_ROUNDS);
 
-/** Traduit une violation d'unicité en message exploitable. */
 function rethrowDuplicate(err) {
   if (err.code !== '23505') throw err;
   // Le nom du champ est dans l'erreur PostgreSQL ; on n'expose que le nôtre.
@@ -33,13 +34,13 @@ async function insertUser(data, db) {
 
 /** US-01 */
 export async function registerClient({ firstName, lastName, phone, password }) {
-  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
   return insertUser({ role: 'client', phone, passwordHash, firstName, lastName });
 }
 
 /** US-02 */
 export async function registerProfessional({ displayName, phone, password, tradeId, zoneIds }) {
-  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
 
   try {
     return await withTransaction(async (tx) => {
@@ -66,17 +67,16 @@ export async function login({ phone, password }) {
   return publicUser;
 }
 
-/** Convertit un compte client existant en compte professionnel */
 export async function becomeProfessional(userId, { displayName, tradeId, zoneIds, yearsExperience, description }) {
   return withTransaction(async (tx) => {
     const user = await repository.findById(userId, tx);
     if (!user) throw ApiError.unauthorized();
-    if (user.role === 'admin') 
+    if (user.role === 'admin')
       throw ApiError.forbidden('Un administrateur ne peut pas devenir professionnel');
-    
-    if (user.role === 'professional') 
+
+    if (user.role === 'professional')
       throw ApiError.conflict('Vous avez deja un compte professionnel');
-    
+
     await repository.updateRole(userId, 'professional', tx);
     await professionalsRepository.create({ userId, displayName, tradeId }, tx);
     await professionalsRepository.replaceZones(userId, zoneIds, tx);
@@ -94,11 +94,11 @@ export async function changePassword(userId, { currentPassword, newPassword }, c
   if (!passwordHash) throw ApiError.notFound('Compte introuvable');
 
   const matches = await bcrypt.compare(currentPassword ?? '', passwordHash);
-  if (!matches) 
+  if (!matches)
     throw ApiError.unauthorized('Mot de passe actuel incorrect');
-  
 
-  const newHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+
+  const newHash = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS);
   await repository.updatePasswordHash(userId, newHash);
   // Un mot de passe changé doit couper les autres sessions ouvertes.
   await sessions.destroyUserSessions(userId, { exceptSessionId: currentSessionId });
@@ -110,4 +110,24 @@ export async function updateAccount(userId, { firstName, lastName, phone }) {
   } catch (err) {
     rethrowDuplicate(err);
   }
+}
+
+/**
+ * Traite un avatar téléversé : normalisation, stockage, puis référence en base.
+ *
+ * L'écriture du fichier précède celle de la ligne, comme pour les photos : un
+ * COMMIT en échec laisserait sinon un fichier orphelin. L'ancien avatar n'est
+ * pas supprimé - le compte peut être supprimé avant qu'il ne le soit, et
+ * cleanup disque n'a pas sa place ici.
+ */
+export async function updateAvatar(userId, file) {
+  if (!file) throw ApiError.badRequest('Aucun fichier envoyé');
+
+  const buffer = await processAvatar(file.buffer);
+  const relativePath = await saveAvatar(buffer, userId);
+  const avatarUrl = uploadUrl(relativePath);
+
+  await repository.updateAvatarUrl(userId, avatarUrl);
+
+  return { avatarUrl };
 }

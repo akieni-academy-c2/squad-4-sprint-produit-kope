@@ -1,7 +1,6 @@
 import { ApiError } from '../utils/ApiError.js';
 import { currentUser, loadActiveUser } from './identity.js';
 
-/** Autorise les rôles indiqués, et refuse aussi les comptes bloqués ou suspendus. */
 export function requireRole(...roles) {
   return async (req, res, next) => {
     try {

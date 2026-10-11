@@ -8,7 +8,7 @@ import * as controller from './reviews.controller.js';
 
 const router = Router();
 
-// US-15 
+// US-15
 router.get(
   '/professionals/:id/reviews',
   validate(idParamSchema, 'params'),
@@ -16,7 +16,7 @@ router.get(
   controller.list,
 );
 
-// Avis 
+// Avis
 router.get(
   '/reviews/mine',
   requireAuth,
@@ -33,7 +33,7 @@ router.get(
   controller.byClient,
 );
 
-// US-14 
+// US-14
 router.post(
   '/professionals/:id/reviews',
   requireRole('client', 'professional'),

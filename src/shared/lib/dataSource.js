@@ -1,7 +1,18 @@
 import { useSyncExternalStore } from 'react';
 
-const forcedMocks = import.meta.env?.VITE_USE_MOCKS === 'true';
-const isProd = import.meta.env?.PROD === true;
+/**
+ * Activation de la démo par variable d'environnement.
+ *
+ * `VITE_USE_MOCKS=false` désactive le mode démo. Absente, la démo est active :
+ * le projet doit démarrer et être manipulable sans base de données ni backend.
+ *
+ * La comparaison ignore la casse et les espaces : un .env écrit à la main
+ * contient souvent « false » encadré, et une variable apparemment ignorée est
+ * plus difficile à diagnostiquer qu'une désactivation franche.
+ */
+const forcedMocks = String(import.meta.env?.VITE_USE_MOCKS ?? '')
+  .trim()
+  .toLowerCase() !== 'false';
 
 let mockMode = forcedMocks === true;
 const listeners = new Set();
@@ -16,13 +27,17 @@ export function isMockMode() {
 
 export function enableMockMode() {
   if (mockMode) return;
-  if (isProd && !forcedMocks) return;
+  // Le mode démo est activé par défaut, y compris en production : ce projet se
+  // manipule sans base de données. Seul VITE_USE_MOCKS=false l'interdit, et
+  // resetMockMode reste alors sans effet.
   mockMode = true;
   notify();
 }
 
 export function resetMockMode() {
-  if (forcedMocks) return;
+  // Une désactivation demandée par l'environnement prime sur le sélecteur :
+  // « Quitter la démo » ne doit pas rouvrir un mode que l'on a interdit.
+  if (!forcedMocks) return;
   mockMode = false;
   notify();
 }
@@ -49,8 +64,9 @@ export async function callApi(apiFn, mockFn) {
   try {
     return await apiFn();
   } catch (err) {
-    // En production sans flag explicite, pas de fallback : l'erreur remonte.
-    if (isProd && !forcedMocks) throw err;
+    // Démo désactivée par l'environnement : le repli sur les mocks serait
+    // contraire à la demande, l'erreur remonte.
+    if (!forcedMocks) throw err;
     if (isUnavailable(err)) {
       enableMockMode();
       return mockFn();

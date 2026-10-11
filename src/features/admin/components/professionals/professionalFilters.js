@@ -12,14 +12,12 @@ export const SORT_OPTIONS = [
   { value: 'recent', label: 'Plus récents' },
 ];
 
-/** Variante du badge d'état selon le statut du profil. */
 export function statusVariant(status) {
   if (status === PROFILE_STATUS.PUBLISHED) return 'success';
   if (status === PROFILE_STATUS.HIDDEN) return 'danger';
   return 'warning';
 }
 
-/** Identifiant et nom affichables d'un professionnel (fiche ou compte utilisateur). */
 export function getProIdentity(pro) {
   const id = pro.userId || pro.id;
   return {

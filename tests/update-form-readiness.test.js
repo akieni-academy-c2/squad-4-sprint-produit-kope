@@ -50,8 +50,8 @@ describe('formulaire de modification', () => {
   });
 
   it('détecte un changement sur chaque champ', () => {
-    for (const patch of [{ firstName: 'Awa' }, { lastName: 'Mbarga' }, { phone: '065678901' }]) 
+    for (const patch of [{ firstName: 'Awa' }, { lastName: 'Mbarga' }, { phone: '065678901' }])
       expect(evaluate(PROFIL, { ...PROFIL, ...patch }).canSubmit, JSON.stringify(patch)).toBe(true);
-    
+
   });
 });

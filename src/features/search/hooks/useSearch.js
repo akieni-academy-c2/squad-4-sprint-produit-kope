@@ -8,7 +8,6 @@ import { PAGE_SIZE } from '@/shared/lib/constants.js';
 /** Nonce généré une seule fois par session (hors rendu React). */
 const SESSION_NONCE = Math.floor(Math.random() * 1e9);
 
-/** Générateur pseudo-aléatoire déterministe (mulberry32). */
 function seededRandom(seed) {
   let a = seed >>> 0;
   return () => {
@@ -45,6 +44,7 @@ const ratingOf = (item) => Number(item?.rating?.average ?? 0);
 export async function searchProfessionals({
   trade,
   zone,
+  city,
   q,
   available,
   minRating,
@@ -54,6 +54,7 @@ export async function searchProfessionals({
   const params = {};
   if (trade) params.trade = String(trade);
   if (zone) params.zone = String(zone);
+  if (city) params.city = String(city);
   if (q) params.q = q;
   if (available != null && available !== '') params.available = String(available);
   if (minRating) params.minRating = String(minRating);
@@ -63,6 +64,7 @@ export async function searchProfessionals({
   const cacheKey = [
     trade ?? '',
     zone ?? '',
+    city ?? '',
     q ?? '',
     available ?? '',
     minRating ?? '',
@@ -86,7 +88,7 @@ export async function searchProfessionals({
   );
 }
 
-export function useSearch({ trade, zone, q, available, minRating, minExperience, page, sort }) {
+export function useSearch({ trade, zone, city, q, available, minRating, minExperience, page, sort }) {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -98,6 +100,7 @@ export function useSearch({ trade, zone, q, available, minRating, minExperience,
       const data = await searchProfessionals({
         trade,
         zone,
+        city,
         q,
         available,
         minRating,
@@ -111,7 +114,7 @@ export function useSearch({ trade, zone, q, available, minRating, minExperience,
       else if (sort === 'experience')
         setResults({ ...data, items: [...items].sort((a, b) => Number(b.yearsExperience ?? 0) - Number(a.yearsExperience ?? 0)) });
       else {
-        const seed = SESSION_NONCE + hashQuery({ trade, zone, q, available, minRating, minExperience, page });
+        const seed = SESSION_NONCE + hashQuery({ trade, zone, city, q, available, minRating, minExperience, page });
         setResults({ ...data, items: shuffle(items, seed) });
       }
     } catch (err) {
@@ -120,7 +123,7 @@ export function useSearch({ trade, zone, q, available, minRating, minExperience,
     } finally {
       setLoading(false);
     }
-  }, [trade, zone, q, available, minRating, minExperience, page, sort]);
+  }, [trade, zone, city, q, available, minRating, minExperience, page, sort]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

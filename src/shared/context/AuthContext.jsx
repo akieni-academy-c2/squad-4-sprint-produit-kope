@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import * as authService from '@/features/auth/services/auth.service.js';
 import { UNAUTHORIZED_EVENT } from '@/shared/lib/api.js';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { ROUTES, ROLES } from '@/shared/lib/constants.js';
 
 const AuthContext = createContext(null);
 
@@ -51,9 +51,21 @@ export function AuthProvider({ children }) {
 
   const hasRole = useCallback((role) => Boolean(user?.role && user.role === role), [user]);
 
+  /**
+   * Vrai pour un professionnel et un administrateur.
+   *
+   * Ces deux rôles connaissent déjà la plateforme : la page « Comment ça
+   * marche » ne leur apporte rien, et devenir prestataire ne leur est plus
+   * possible. Un client, lui, garde les deux — il peut encore découvrir le
+   * service, et devenir prestataire est un choix qui lui revient.
+   */
+  const isServiceProvider = Boolean(
+    user && (user.role === ROLES.PRO || user.role === ROLES.ADMIN),
+  );
+
   const value = useMemo(
-    () => ({ user, loading, login, logout, hasRole, refresh: fetchMe }),
-    [user, loading, login, logout, hasRole, fetchMe],
+    () => ({ user, loading, login, logout, hasRole, isServiceProvider, refresh: fetchMe }),
+    [user, loading, login, logout, hasRole, isServiceProvider, fetchMe],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -13,7 +13,7 @@ const LABELS = {
  * Libellé du premier champ encore incomplet, dans l'ordre du formulaire.
  *
  * Sert d'instruction sur le bouton désactivé : un bouton grisé sans dire quoi
- * corriger est une impasse. Volontairement bref — un bouton n'accueille pas
+ * corriger est une impasse. Volontairement bref - un bouton n'accueille pas
  * une phrase. `null` signifie que tout est rempli.
  */
 export function firstMissingField(statuses, order = []) {

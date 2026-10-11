@@ -57,7 +57,6 @@ export async function countByProfessional(professionalId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/** Tous les avis laissés par un client */
 export async function listByClient(clientId, { limit = 20, offset = 0 } = {}, db = pool) {
   const { rows } = await db.query(
     `SELECT r.id, r.rating, r.comment, r.created_at AS "createdAt",
