@@ -57,7 +57,20 @@ export async function countByProfessional(professionalId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-export async function listByClient(clientId, { limit = 20, offset = 0, q = '', rating, professionalId, visibility = 'all' } = {}, db = pool) {
+/**
+ * Tris de « Mes avis ».
+ *
+ * Les valeurs sont des littéraux, jamais interpolées depuis la requête : la
+ * liste est indexée sur `ORDER BY`, le choix se fait par correspondance.
+ */
+const ORDER_BY = {
+  recent: 'r.created_at DESC, r.id DESC',
+  oldest: 'r.created_at ASC, r.id ASC',
+  rating_desc: 'r.rating DESC, r.created_at DESC',
+  rating_asc: 'r.rating ASC, r.created_at DESC',
+};
+
+export async function listByClient(clientId, { limit = 20, offset = 0, q = '', rating, professionalId, visibility = 'all', sort = 'recent' } = {}, db = pool) {
   // Les avis masqués restent listés ici : c'est la seule façon, pour le
   // client, de les retrouver et de les réafficher. Le filtrage se fait sur la
   // fiche publique, pas sur le compte.
@@ -88,11 +101,15 @@ export async function listByClient(clientId, { limit = 20, offset = 0, q = '', r
             r.created_at AS "createdAt", r.updated_at AS "updatedAt",
             r.professional_id AS "professionalId",
             p.display_name AS "professionalName",
+            pu.avatar_url AS "professionalAvatarUrl",
+            t.name AS "professionalTrade",
             COUNT(*) OVER()::int AS total
        FROM reviews r
        JOIN professionals p ON p.user_id = r.professional_id
+       JOIN users pu ON pu.id = r.professional_id
+       JOIN trades t ON t.id = p.trade_id
       WHERE ${conditions.join(' AND ')}
-      ORDER BY r.created_at DESC, r.id DESC
+      ORDER BY ${ORDER_BY[sort] ?? ORDER_BY.recent}
       LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
     values,
   );

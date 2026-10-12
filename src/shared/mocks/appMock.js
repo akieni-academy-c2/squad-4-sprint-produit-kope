@@ -545,6 +545,9 @@ const withProName = (r) => {
     ...r,
     professionalName: pro?.displayName ?? `Pro #${r.professionalId}`,
     professionalAvatarUrl: pro?.avatarUrl ?? null,
+    // Le métier accompagne le nom sur chaque fiche client : « Pro #12 » ne dit
+    // rien, « Pro #12 · Plombier » se reconnaît.
+    professionalTrade: pro?.trade ?? null,
     professionalBlockedAt: pro?.blockedAt ?? null,
     professionalSuspendedAt: pro?.suspendedAt ?? null,
   };
@@ -563,6 +566,8 @@ let MOCK_MY_REVIEWS = [
     id: 8001,
     professionalId: MOCK_PROS[0].id,
     professionalName: MOCK_PROS[0].displayName,
+    professionalAvatarUrl: MOCK_PROS[0].avatarUrl ?? null,
+    professionalTrade: MOCK_PROS[0].trade ?? null,
     rating: 5,
     comment: REVIEWS_POOL[0].comment,
     isHidden: false,
@@ -572,6 +577,8 @@ let MOCK_MY_REVIEWS = [
     id: 8002,
     professionalId: MOCK_PROS[1].id,
     professionalName: MOCK_PROS[1].displayName,
+    professionalAvatarUrl: MOCK_PROS[1].avatarUrl ?? null,
+    professionalTrade: MOCK_PROS[1].trade ?? null,
     rating: 4,
     comment: REVIEWS_POOL[2].comment,
     isHidden: false,
@@ -581,6 +588,8 @@ let MOCK_MY_REVIEWS = [
     id: 8003,
     professionalId: MOCK_PROS[2].id,
     professionalName: MOCK_PROS[2].displayName,
+    professionalAvatarUrl: MOCK_PROS[2].avatarUrl ?? null,
+    professionalTrade: MOCK_PROS[2].trade ?? null,
     rating: 3,
     comment: 'Le travail est correct mais le rendez-vous a été repoussé deux fois.',
     // Présent dès l'ouverture : le filtre « Masqués seulement » a du contenu.
@@ -595,7 +604,16 @@ const MY_REVIEWS_VISIBILITY = {
   all: () => true,
 };
 
-export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility = 'all' } = {}) {
+// Même tableau que le serveur : le tri est choisi par correspondance sur des
+// comparateurs, jamais par une chaîne concaténée dans le tri.
+const MY_REVIEWS_SORT = {
+  recent: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+  rating_desc: (a, b) => b.rating - a.rating || new Date(b.createdAt) - new Date(a.createdAt),
+  rating_asc: (a, b) => a.rating - b.rating || new Date(b.createdAt) - new Date(a.createdAt),
+};
+
+export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility = 'all', sort = 'recent' } = {}) {
   const needle = String(q || '').trim().toLowerCase();
   let rows = MOCK_MY_REVIEWS.filter(MY_REVIEWS_VISIBILITY[visibility] ?? MY_REVIEWS_VISIBILITY.all);
 
@@ -607,6 +625,7 @@ export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility =
         (r.comment || '').toLowerCase().includes(needle),
     );
 
+  rows = [...rows].sort(MY_REVIEWS_SORT[sort] ?? MY_REVIEWS_SORT.recent);
   return paginateMock(rows, page, pageSize);
 }
 
@@ -632,8 +651,13 @@ export function mockDeleteMyReview(id) {
   return null;
 }
 
+const MY_REPORTS_SORT = {
+  recent: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+};
+
 /** Signalements du client : les mêmes lignes que l'administration reçoit. */
-export function mockMyReports({ page = 1, pageSize = 20, q, status } = {}) {
+export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'recent' } = {}) {
   const needle = String(q || '').trim().toLowerCase();
   let rows = MOCK_REPORTS.map(withProName);
 
@@ -645,6 +669,7 @@ export function mockMyReports({ page = 1, pageSize = 20, q, status } = {}) {
         (r.message || '').toLowerCase().includes(needle),
     );
 
+  rows = [...rows].sort(MY_REPORTS_SORT[sort] ?? MY_REPORTS_SORT.recent);
   return paginateMock(rows, page, pageSize);
 }
 

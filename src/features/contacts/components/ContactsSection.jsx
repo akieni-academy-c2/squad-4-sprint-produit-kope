@@ -14,35 +14,26 @@ import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { logContact } from '../services/contacts.service.js';
-import { formatDateFr } from '@/shared/utils';
+import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
 
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Du plus récent' },
   { value: 'name', label: 'Nom (A → Z)' },
 ];
 
-const CHANNELS = {
-  call: { label: 'Appel', icon: Phone },
-  whatsapp: { label: 'WhatsApp', icon: MessageCircle },
-  message: { label: 'Message', icon: MessageCircle },
-};
+// « Qui a pris l'initiative » est la seule distinction qui change la lecture
+// d'un contact : un professionnel qui m'a écrit et moi qui l'ai Joint ne se
+// relisent pas de la même façon.
+const ORIGIN_OPTIONS = [
+  { value: 'all', label: 'Tous les contacts' },
+  { value: 'outgoing', label: 'Contactés par moi' },
+  { value: 'incoming', label: 'Qui m’ont contacté' },
+];
 
 function ContactRow({ contact, onReach }) {
   const name = contact.displayName || 'Utilisateur';
   const { toast } = useNotification();
 
-  // Un contact est un événement : le canal dit comment, la date dit quand.
-  const ChannelIcon = CHANNELS[contact.channel]?.icon ?? MessageCircle;
-  const channelLabel = CHANNELS[contact.channel]?.label ?? 'Message';
-
-  /**
-   * Ouvre le canal puis note le contact.
-   *
-   * Le lien s'ouvre d'abord : `window.open` peut être bloqué par le navigateur
-   * s'il arrive trop tard après le clic asynchrone. L'enregistrement suit, et
-   * son échec est seulement toasted — un professionnel injoignable pour cause de
-   * base de données serait pire que la ligne manquante dans l'historique.
-   */
   const reach = (channel, href, newTab) => {
     if (newTab) window.open(href, '_blank', 'noopener,noreferrer');
     else window.location.href = href;
@@ -54,10 +45,8 @@ function ContactRow({ contact, onReach }) {
       );
   };
 
-  const tel = contact.phone ? `tel:${contact.phone}` : null;
-  const wa = contact.phone
-    ? `https://wa.me/${String(contact.phone).replace(/[^\d]/g, '')}`
-    : null;
+  const tel = contact.phone ? `tel:${String(contact.phone).replace(/\D/g, '')}` : null;
+  const wa = toWhatsappUrl(contact.phone);
 
   return (
     <li>
@@ -87,36 +76,37 @@ function ContactRow({ contact, onReach }) {
           </div>
         </div>
 
-        {/* Un contact n'est pas une conversation : seuls l'interlocuteur et la
-            date du dernier échange sont utiles ici. Le message d'origine
-            alourdissait chaque ligne sans rien apprendre de plus. */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
-          <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
-            <ChannelIcon size={13} aria-hidden className="shrink-0 text-gray-400" />
-            {channelLabel}
+        
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+          <span className=" inline-flex items-center gap-1.5 text-xs text-gray-500">
+            
             <span aria-hidden>·</span>
             {formatDateFr(contact.createdAt)}
           </span>
-          {contact.phone && (
-            <div className="flex items-center gap-2">
+
+          {/* Un seul bouton, jamais les deux : la carte propose de reprendre contact
+              par le dernier canal utilisé. Après un appel, c'est Appeler ;
+              sinon c'est WhatsApp, le canal principal du site. Proposer les
+              deux à la fois transforme une fiche en liste de choix. */}
+          {contact.phone &&
+            (contact.channel === 'call' ? (
               <Button
-                variant="ghost"
+                variant="subtle"
                 size="sm"
-                className="text-primary-700 hover:bg-primary-50"
                 onClick={() => reach('call', tel, false)}
               >
                 <Phone size={14} aria-hidden /> Appeler
               </Button>
+            ) : (
               <Button
-                variant="ghost"
+                variant="subtle"
                 size="sm"
-                className="text-primary-700 hover:bg-primary-50"
                 onClick={() => reach('whatsapp', wa, true)}
               >
                 <MessageCircle size={14} aria-hidden /> WhatsApp
               </Button>
-            </div>
-          )}
+            ))}
+          
         </div>
       </Card>
     </li>
@@ -129,31 +119,27 @@ export function ContactsSection({ rightContainer = null }) {
     const data = await getMyContacts();
     return data.items || [];
   }, [reload]);
-  // Mémoïsé : sans cela, `itemsData ?? []` crée un nouveau tableau à chaque
-// rendu, et le useMemo des filtres se recalculerait en boucle.
+
 const items = useMemo(() => itemsData ?? [], [itemsData]);
 
-  // Un contact vient d'être pris : la liste doit refléter l'événement, sans
-  // rechargement complet de la page.
+ 
   const refresh = () => setReload((n) => n + 1);
 
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
+  const [origin, setOrigin] = useState('all');
 
-  // « Réinitialiser » remet la recherche et le tri par défaut ; le tri seul
-  // ne restreint pas la liste, mais il reste réversible.
-  const dirty = Boolean(q || sort !== 'recent');
+  const dirty = Boolean(q || sort !== 'recent' || origin !== 'all');
 
   const resetFilters = () => {
     setQ('');
     setSort('recent');
+    setOrigin('all');
   };
 
-  // Filtre et tri côté client : la liste du compte tient en quelques lignes,
-  // inutile d'aller le refaire demander au serveur à chaque frappe.
   const visible = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const matched = needle
+    let matched = needle
       ? items.filter(
           (c) =>
             (c.displayName || '').toLowerCase().includes(needle) ||
@@ -162,12 +148,15 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
         )
       : items;
 
+    if (origin === 'outgoing') matched = matched.filter((c) => c.outgoing);
+    if (origin === 'incoming') matched = matched.filter((c) => !c.outgoing);
+
     return [...matched].sort((a, b) =>
       sort === 'name'
         ? (a.displayName || '').localeCompare(b.displayName || '', 'fr')
         : new Date(b.createdAt) - new Date(a.createdAt),
     );
-  }, [items, q, sort]);
+  }, [items, q, sort, origin]);
 
   const filters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
@@ -180,6 +169,16 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
             onClear={() => setQ('')}
             placeholder="Nom, métier ou téléphone..."
             aria-label="Rechercher dans mes contacts"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Origine">
+          <CustomSelect
+            value={origin}
+            onChange={setOrigin}
+            options={ORIGIN_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par origine du contact"
           />
         </AdminFilterGroup>
 

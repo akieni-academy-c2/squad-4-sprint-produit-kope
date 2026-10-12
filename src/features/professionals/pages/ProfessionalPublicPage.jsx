@@ -209,10 +209,6 @@ export function ProfessionalPublicPage() {
         <DialogContent
           className="max-w-3xl min-h-[50vh] p-5"
           onClose={() => setReviewsOpen(false)}
-          // Le lecteur d'avis est ici toute la liste. « Donner mon avis » est
-          // donc hors de la liste et ancré en bas : sans cela, il faudrait
-          // faire défiler tout le pavé pour le trouver, puis le perdre dès le
-          // geste suivant.
           footer={
             canLeaveReview || !user ? (
               <Button
@@ -260,7 +256,7 @@ export function ProfessionalPublicPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <Button as="a" href={`tel:${profile.phone}`} variant="secondary">
+            <Button as="a" href={`tel:${String(profile.phone).replace(/\D/g, '')}`} variant="secondary">
               <Phone size={16} aria-hidden /> Appeler
             </Button>
             {whatsappUrl && (

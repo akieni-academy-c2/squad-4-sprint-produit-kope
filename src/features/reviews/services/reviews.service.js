@@ -31,7 +31,7 @@ export function createReview(professionalId, payload) {
   );
 }
 
-export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalId, visibility } = {}) {
+export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalId, visibility, sort } = {}) {
   return callApi(
     () =>
       api.get('/reviews/mine', {
@@ -41,8 +41,9 @@ export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalI
         ...(rating ? { rating } : {}),
         ...(professionalId ? { professionalId } : {}),
         ...(visibility && visibility !== 'all' ? { visibility } : {}),
+        ...(sort ? { sort } : {}),
       }),
-    async () => mockMyReviews({ page, pageSize, q, rating, visibility }),
+    async () => mockMyReviews({ page, pageSize, q, rating, visibility, sort }),
   );
 }
 

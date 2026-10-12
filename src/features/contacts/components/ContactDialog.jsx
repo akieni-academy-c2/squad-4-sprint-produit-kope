@@ -29,7 +29,6 @@ export function ContactDialog({ open, onOpenChange, toUserId, recipientName }) {
     onOpenChange?.(false);
   };
 
-  // Bouton actif seulement si le message respecte les règles de longueur.
   const { ready } = useFormReadiness(createContactSchema, { toUserId, message }, {
     ignore: ['toUserId'],
   });

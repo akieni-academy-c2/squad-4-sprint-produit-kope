@@ -19,8 +19,9 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
 
   return (
     <div className="space-y-4">
-      <div className="min-w-0">{children}</div>
-
+      {/* Le bouton précède la liste : sur mobile, il n'y a pas de colonne de
+          filtres, donc un bouton placé sous la liste obligerait à faire défiler
+          toute la liste pour découvrir qu'on peut la filtrer. */}
       <Button
         variant="secondary"
         size="sm"
@@ -31,6 +32,8 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
         <SlidersHorizontal size={16} aria-hidden />
         Filtres
       </Button>
+
+      <div className="min-w-0">{children}</div>
 
       {/* Sans portail — cas du rendu seul, hors page — la colonne est
           déclarée ici. La page la fournit dans tous les cas normaux. */}

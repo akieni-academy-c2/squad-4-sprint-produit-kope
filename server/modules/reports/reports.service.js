@@ -55,12 +55,13 @@ export async function setReportStatus(id, status) {
   return report;
 }
 
-export async function myReports(reporterId, { status, q, ...pagination }) {
+export async function myReports(reporterId, { status, q, sort, ...pagination }) {
   const rows = await repository.listByReporter(reporterId, {
     limit: pagination.pageSize,
     offset: offsetOf(pagination),
     status,
     q,
+    sort,
   });
   return paginateSafely(rows, pagination, () => repository.countByReporter(reporterId));
 }

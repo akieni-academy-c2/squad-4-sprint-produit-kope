@@ -130,7 +130,19 @@ export async function countGrouped({ status, q }, db = pool) {
  * professionnel et motivée par la modération. Ici le client veut savoir ce que
  * *lui* a déposé et sur qui, pour pouvoir le retirer.
  */
-export async function listByReporter(reporterId, { limit, offset, status, q } = {}, db = pool) {
+/**
+ * Tris de « Mes signalements ».
+ *
+ * Littéraux choisis par correspondance, jamais interpolés : la liste est
+ * indexée sur `ORDER BY`, un choix par `ORDER BY ${tri}` ouvrirait une
+ * injection sur une liste paginée.
+ */
+const ORDER_BY = {
+  recent: 'r.created_at DESC, r.id DESC',
+  oldest: 'r.created_at ASC, r.id ASC',
+};
+
+export async function listByReporter(reporterId, { limit, offset, status, q, sort = 'recent' } = {}, db = pool) {
   const conditions = ['r.reporter_id = $1'];
   const values = [reporterId];
 
@@ -148,14 +160,16 @@ export async function listByReporter(reporterId, { limit, offset, status, q } = 
     `SELECT r.id, r.professional_id AS "professionalId",
             p.display_name AS "professionalName",
             pu.avatar_url AS "professionalAvatarUrl",
+            t.name AS "professionalTrade",
             r.reason, r.message, r.status,
             r.created_at AS "createdAt", r.resolved_at AS "resolvedAt",
             COUNT(*) OVER()::int AS total
        FROM account_reports r
        JOIN professionals p ON p.user_id = r.professional_id
        JOIN users pu ON pu.id = r.professional_id
+       JOIN trades t ON t.id = p.trade_id
       WHERE ${conditions.join(' AND ')}
-      ORDER BY r.created_at DESC, r.id DESC
+      ORDER BY ${ORDER_BY[sort] ?? ORDER_BY.recent}
       LIMIT $${values.length - 1} OFFSET $${values.length}`,
     values,
   );

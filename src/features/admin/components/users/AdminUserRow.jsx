@@ -92,8 +92,8 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
           <Tooltip side='' content="Bloquer le compte">
             <Button
               size="sm"
-              variant="ghost"
-              className="bg-gray-200/20! rounded-md! text-xs! border-gray-200! border text-red-500"
+              variant="subtle"
+              className="text-danger-500 hover:bg-rose-50 hover:text-danger-600"
               onClick={() => onToggleBlock(user, true)}
               aria-label={`Bloquer ${name}`}
             >

@@ -8,6 +8,7 @@ import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
 import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
 import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
+import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { REPORT_STATUS_OPTIONS, reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
 import { formatDateFr } from '@/shared/utils';
@@ -23,28 +24,35 @@ const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'ne
 // administrateur : le retrait n'est proposé que sur un signalement en attente.
 const WITHDRAWABLE = new Set(['pending']);
 
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Du plus récent' },
+  { value: 'oldest', label: 'Du plus ancien' },
+];
+
   const canWithdraw = (report) => WITHDRAWABLE.has(report.status);
 
 export function MyReportsSection({ rightContainer = null }) {
   const { toast } = useNotification();
   const [status, setStatus] = useState('');
   const [q, setQ] = useState('');
+  const [sort, setSort] = useState('recent');
   const [reload, setReload] = useState(0);
 
   const { data, loading, error } = useAsyncData(
-    () => getMyReports({ status: status || undefined, q: q || undefined }),
-    [status, q, reload],
+    () => getMyReports({ status: status || undefined, q: q || undefined, sort }),
+    [status, q, sort, reload],
   );
   const items = data?.items ?? [];
   const [pendingId, setPendingId] = useState(null);
 
   // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
   // conditionne l'affichage du bouton « Réinitialiser » du panneau.
-  const dirty = Boolean(q || status);
+  const dirty = Boolean(q || status || sort !== 'recent');
 
   const resetFilters = () => {
     setQ('');
     setStatus('');
+    setSort('recent');
   };
 
   const remove = async (id) => {
@@ -83,6 +91,16 @@ export function MyReportsSection({ rightContainer = null }) {
                 aria-label="Filtrer par statut"
               />
             </AdminFilterGroup>
+
+            <AdminFilterGroup title="Trier par">
+              <CustomSelect
+                value={sort}
+                onChange={setSort}
+                options={SORT_OPTIONS}
+                className="w-full"
+                aria-label="Trier les signalements"
+              />
+            </AdminFilterGroup>
           </div>
         </AdminFilterPanel>
       );
@@ -109,7 +127,7 @@ export function MyReportsSection({ rightContainer = null }) {
             icon={Flag}
             title="Aucun signalement"
             description={
-              q || status
+              dirty
                 ? 'Aucun signalement ne correspond à ces filtres.'
                 : 'Les profils que vous signalez apparaissent ici, avec leur état de traitement.'
             }
@@ -120,9 +138,22 @@ export function MyReportsSection({ rightContainer = null }) {
               <li key={report.id}>
                 <Card className="p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-gray-900">{report.professionalName}</p>
-                      <p className="text-xs text-gray-500">{reportReasonLabel(report.reason)}</p>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <UserAvatar
+                        className="h-10 w-10 shrink-0"
+                        src={report.professionalAvatarUrl}
+                        name={report.professionalName}
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-gray-900">{report.professionalName}</p>
+                        {/* Nom + métier : c'est ce couple qui identifie la fiche
+                            signalée, le nom seul revient trop souvent. */}
+                        <p className="truncate text-xs text-gray-500">
+                          {report.professionalTrade
+                            ? `${report.professionalTrade} · ${reportReasonLabel(report.reason)}`
+                            : reportReasonLabel(report.reason)}
+                        </p>
+                      </div>
                     </div>
                     <Badge variant={STATUS_VARIANT[report.status] ?? 'neutral'} size="sm">
                       {reportStatusLabel(report.status)}
@@ -136,7 +167,7 @@ export function MyReportsSection({ rightContainer = null }) {
                   <div className="mt-3 flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
                     <p className="text-xs text-gray-400">{formatDateFr(report.createdAt)}</p>
                     <Button
-                      variant="ghost"
+                      variant="subtle"
                       size="sm"
                       loading={pendingId === report.id}
                       onClick={() => remove(report.id)}

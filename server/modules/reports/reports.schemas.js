@@ -22,6 +22,7 @@ export const createReportSchema = z.object({
 export const listReportsQuerySchema = paginationSchema.extend({
   status: z.preprocess(emptyToUndefined, z.enum(['pending', 'resolved', 'dismissed']).optional()),
   q: z.preprocess(emptyToUndefined, z.string().trim().max(100).optional()),
+  sort: z.preprocess(emptyToUndefined, z.enum(['recent', 'oldest']).optional()),
 });
 
 export const reportStatusSchema = z.object({

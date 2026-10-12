@@ -16,6 +16,7 @@ import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectio
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteReview, getMyReviews, setReviewVisibility } from '../services/reviews.service.js';
 import { UserAvatar } from '@/shared/components/ui/index.js';
+import { ActionGroup } from '@/shared/components/ui/ActionGroup.jsx';
 
 const VISIBILITY_OPTIONS = [
   { value: 'all', label: 'Tous mes avis' },
@@ -32,12 +33,20 @@ const RATING_OPTIONS = [
   { value: '1', label: '1 étoile' },
 ];
 
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Du plus récent' },
+  { value: 'oldest', label: 'Du plus ancien' },
+  { value: 'rating_desc', label: 'Meilleures notes' },
+  { value: 'rating_asc', label: 'Notes les plus basses' },
+];
+
 
 export function MyReviewsSection({ rightContainer = null }) {
   const { toast } = useNotification();
   const [q, setQ] = useState('');
   const [rating, setRating] = useState('');
   const [visibility, setVisibility] = useState('all');
+  const [sort, setSort] = useState('recent');
   const [reload, setReload] = useState(0);
   const [editingId, setEditingId] = useState(null);
   const [pendingId, setPendingId] = useState(null);
@@ -48,9 +57,10 @@ export function MyReviewsSection({ rightContainer = null }) {
         q: q || undefined,
         rating: rating || undefined,
         visibility,
+        sort,
         pageSize: 50,
       }),
-    [q, rating, visibility, reload],
+    [q, rating, visibility, sort, reload],
   );
   const items = data?.items ?? [];
   const editing = items.find((r) => r.id === editingId) ?? null;
@@ -59,12 +69,13 @@ export function MyReviewsSection({ rightContainer = null }) {
 
   // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
   // conditionne l'affichage du bouton « Réinitialiser » du panneau.
-  const dirty = Boolean(q || rating || visibility !== 'all');
+  const dirty = Boolean(q || rating || visibility !== 'all' || sort !== 'recent');
 
   const resetFilters = () => {
     setQ('');
     setRating('');
     setVisibility('all');
+    setSort('recent');
   };
 
   const toggleHidden = async (review) => {
@@ -129,6 +140,16 @@ export function MyReviewsSection({ rightContainer = null }) {
             aria-label="Filtrer par visibilité"
           />
         </AdminFilterGroup>
+
+        <AdminFilterGroup title="Trier par">
+          <CustomSelect
+            value={sort}
+            onChange={setSort}
+            options={SORT_OPTIONS}
+            className="w-full"
+            aria-label="Trier les avis"
+          />
+        </AdminFilterGroup>
       </div>
     </AdminFilterPanel>
   );
@@ -154,7 +175,7 @@ export function MyReviewsSection({ rightContainer = null }) {
             <EmptyState
               title="Aucun avis"
               description={
-                q || rating || visibility !== 'all'
+                dirty
                   ? 'Aucun avis ne correspond à ces filtres.'
                   : 'Les avis que vous laissez aux professionnels apparaîtront ici.'
               }
@@ -165,11 +186,19 @@ export function MyReviewsSection({ rightContainer = null }) {
                 <li key={review.id}>
                   <Card className={`p-4 ${review.isHidden ? 'opacity-70' : ''}`}>
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <div>
-                          
-                        <UserAvatar className="w-8 h-8" src={review.professionalAvatar} alt={review.professionalName} />
-                        <p className="truncate font-semibold text-gray-900">{review.professionalName}</p>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <UserAvatar
+                          className="h-10 w-10 shrink-0"
+                          src={review.professionalAvatarUrl}
+                          name={review.professionalName}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-gray-900">{review.professionalName}</p>
+                          {/* Le métier dit de qui on parle : deux professionnels
+                              peuvent porter le même prénom. */}
+                          {review.professionalTrade && (
+                            <p className="truncate text-xs text-gray-500">{review.professionalTrade}</p>
+                          )}
                         </div>
                         {review.isHidden && (
                           <Badge variant="neutral" size="sm">
@@ -191,7 +220,7 @@ export function MyReviewsSection({ rightContainer = null }) {
                       <p className=" text-xs text-gray-400">{formatDateFr(review.createdAt)}</p>
 
 
-                      <div className=" w-fit flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-200/20 p-1">
+                      <ActionGroup label={`Actions sur l'avis de ${review.professionalName}`}>
                         <button
                           type="button"
                           onClick={() => setEditingId(review.id)}
@@ -201,8 +230,6 @@ export function MyReviewsSection({ rightContainer = null }) {
                         >
                           <Pencil size={16} aria-hidden />
                         </button>
-
-                        <span aria-hidden className="h-4 w-px bg-gray-300" />
 
                         <button
                           type="button"
@@ -219,8 +246,6 @@ export function MyReviewsSection({ rightContainer = null }) {
                           {review.isHidden ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
                         </button>
 
-                        <span aria-hidden className="h-4 w-px bg-gray-300" />
-
                         <button
                           type="button"
                           disabled={pendingId === review.id}
@@ -231,7 +256,7 @@ export function MyReviewsSection({ rightContainer = null }) {
                         >
                           <Trash2 size={16} aria-hidden />
                         </button>
-                      </div>
+                      </ActionGroup>
                     </div>
                   </Card>
                 </li>

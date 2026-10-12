@@ -27,13 +27,24 @@ function ReviewLine({ review, onClick }) {
         onClick={onClick}
         className="flex w-full cursor-pointer items-center gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 text-left transition hover:border-primary-200 hover:shadow-sm focus-ring"
       >
+        <UserAvatar
+          src={review.professionalAvatarUrl}
+          name={review.professionalName}
+          className="h-10 w-10 shrink-0"
+          iconSize={18}
+          fallbackClassName="bg-primary-100 text-primary-700"
+        />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-gray-900">
             {review.professionalName}
           </span>
-          {review.comment && (
-            <span className="mt-0.5 block truncate text-xs text-gray-500">{review.comment}</span>
-          )}
+          {/* Métier puis extrait de l'avis : le couple nom + métier identifie la
+              fiche, le commentaire donne la raison de la ligne. */}
+          <span className="mt-0.5 block truncate text-xs text-gray-500">
+            {review.professionalTrade}
+            {review.professionalTrade && review.comment ? ' · ' : ''}
+            {review.comment}
+          </span>
         </span>
         <span className="flex shrink-0 items-center gap-1.5">
           <StarRating value={review.rating} size="sm" />
@@ -145,8 +156,8 @@ export function ClientOverviewSection({ onNavigate }) {
       {/* Sur desktop, les deux listes se répondent côte à côte : on compare d'un
           coup d'œil ses avis et ses contacts. En dessous, elles s'empilent —
           deux colonnes de lignes tronquées n'apporteraient rien. */}
-      <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-        <StatGroup title="Derniers avis">
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+        <StatGroup title="Derniers avis" className="flex flex-col">
           {loading ? (
             <div className="space-y-2" aria-busy="true">
               {[0, 1].map((i) => (
@@ -156,7 +167,9 @@ export function ClientOverviewSection({ onNavigate }) {
           ) : recentReviews.length === 0 ? (
             <Empty>Aucun avis déposé pour l'instant.</Empty>
           ) : (
-            <ul className="space-y-2">
+            // `flex-1` sur la liste : sans elle, le groupe le plus court gardait
+            // sa hauteur naturelle et les deux cadres ne s'alignaient pas.
+            <ul className="flex-1 space-y-2">
               {recentReviews.map((review) => (
                 <ReviewLine
                   key={review.id}
@@ -168,7 +181,7 @@ export function ClientOverviewSection({ onNavigate }) {
           )}
         </StatGroup>
 
-        <StatGroup title="Derniers contacts">
+        <StatGroup title="Derniers contacts" className="flex flex-col">
           {loading ? (
             <div className="space-y-2" aria-busy="true">
               {[0, 1].map((i) => (
@@ -178,7 +191,7 @@ export function ClientOverviewSection({ onNavigate }) {
           ) : recentContacts.length === 0 ? (
             <Empty>Aucun professionnel contacté pour l'instant.</Empty>
           ) : (
-            <ul className="space-y-2">
+            <ul className="flex-1 space-y-2">
               {recentContacts.map((contact) => (
                 <ContactLine
                   key={contact.id}

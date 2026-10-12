@@ -37,6 +37,7 @@ export async function mine(clientId, query) {
     rating: query.rating,
     professionalId: query.professionalId,
     visibility: query.visibility,
+    sort: query.sort,
   });
   return paginateSafely(rows, query, () => repository.countByClient(clientId));
 }

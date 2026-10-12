@@ -14,6 +14,10 @@ const VARIANTS = {
     'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200',
   secondary:
     'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400',
+  // Actions groupées d'une fiche. Le fond translucide les détache du texte de
+  // la carte sans rivaliser avec l'action principale, qui reste en `primary`.
+  subtle:
+    'bg-gray-200/20 border border-gray-200 text-gray-700 hover:bg-gray-200/40 hover:text-gray-900 disabled:text-gray-400 disabled:border-gray-200',
   mint:
     'bg-mint-50 text-primary-700 border border-mint-200 hover:bg-mint-100 disabled:opacity-60',
   dark:

@@ -34,7 +34,7 @@ function Detail({ label, value }) {
 }
 
 export function ClientProfileSection({ user }) {
-  const { refresh } = useAuthContext();
+  const { refresh, logout } = useAuthContext();
   const { toast } = useNotification();
   const { open: openModal } = useAuthModal();
 
@@ -167,9 +167,14 @@ export function ClientProfileSection({ user }) {
         <BecomeProCard />
       </div>
 
-      <div className="sm:hidden space-y-4">
+      {/* Déconnexion en dernier, seulement sur mobile. Desktop la trouve dans le
+          menu compte du header ; ici, ce serait la seule sortie de l'écran. */}
+      <div className="space-y-4 sm:hidden">
         <Button variant="outline" size="md" className="w-full" onClick={() => openModal('change-password')}>
           Changer le mot de passe
+        </Button>
+        <Button variant="outline" size="md" className="w-full" onClick={logout}>
+          Se déconnecter
         </Button>
       </div>
     </div>

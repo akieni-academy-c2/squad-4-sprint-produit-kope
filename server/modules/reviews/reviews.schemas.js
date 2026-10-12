@@ -60,4 +60,5 @@ export const myReviewsQuerySchema = paginationSchema.extend({
   rating: z.coerce.number().int().min(1).max(5).nullish(),
   professionalId: idSchema().nullish(),
   visibility: z.enum(['all', 'visible', 'hidden']).default('all'),
+  sort: z.enum(['recent', 'oldest', 'rating_desc', 'rating_asc']).default('recent'),
 });

@@ -1,5 +1,5 @@
 import { Calendar, Check, Flag, X } from 'lucide-react';
-import { Button, UserAvatar } from '@/shared/components/ui';
+import { ActionGroup, Button, UserAvatar } from '@/shared/components/ui';
 import { reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
 import { formatDateFr, fullNameInitials } from '@/shared/utils';
 
@@ -41,11 +41,10 @@ export function ReportRow({ report, onResolve, onDismiss }) {
         </div>
 
         {report.status === 'pending' && (
-          <div className="flex gap-1 items-center px-1 bg-gray-200/20 border border-gray-200 rounded-md">
+          <ActionGroup label={`Actions sur le signalement de ${report.professionalName ?? 'ce profil'}`}>
             <Button size="icon-sm" variant="ghost" onClick={() => onDismiss(report)} aria-label="Rejeter le signalement">
               <X className="size-3.5 text-rose-600" />
             </Button>
-            <span className='border h-2 border-gray-200'></span>
             <Button
               size="icon-sm"
               variant="ghost"
@@ -54,7 +53,7 @@ export function ReportRow({ report, onResolve, onDismiss }) {
             >
               <Check className="size-3.5 text-primary-600" />
             </Button>
-          </div>
+          </ActionGroup>
         )}
       </div>
     </li>

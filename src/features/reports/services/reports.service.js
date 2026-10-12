@@ -3,7 +3,7 @@ import { callApi } from '@/shared/lib/dataSource.js';
 import { mockMyReports, mockDeleteMyReport } from '@/shared/mocks/appMock.js';
 
 /** Signalements déposés par le client connecté, avec filtres. */
-export function getMyReports({ page = 1, pageSize = 20, status, q } = {}) {
+export function getMyReports({ page = 1, pageSize = 20, status, q, sort } = {}) {
   return callApi(
     () =>
       api.get('/reports/mine', {
@@ -11,8 +11,9 @@ export function getMyReports({ page = 1, pageSize = 20, status, q } = {}) {
         pageSize,
         ...(status ? { status } : {}),
         ...(q ? { q } : {}),
+        ...(sort ? { sort } : {}),
       }),
-    async () => mockMyReports({ page, pageSize, status, q }),
+    async () => mockMyReports({ page, pageSize, status, q, sort }),
   );
 }
 
