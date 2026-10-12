@@ -125,7 +125,7 @@ export function ProfessionalPublicPage() {
         />
 
         <div className="min-w-0 space-y-12">
-          <PublicProfileMobileIntro profile={profile} view={view} />
+          <PublicProfileMobileIntro profile={profile} view={view} breadcrumbTrade={breadcrumbTrade} />
 
           <RealizationsSection
             photos={photos}

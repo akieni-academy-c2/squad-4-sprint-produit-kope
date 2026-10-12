@@ -12,7 +12,11 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
   return (
     <section className="space-y-6">
       <section className="space-y-4">
-        <nav aria-label="Fil d'Ariane" className="text-sm text-gray-500 pb-4 pt-2 border-b border-gray-200">
+        {/* Fil d'Ariane réservé au desktop : sur mobile il est rendu dans la
+            card profil (PublicProfileMobileIntro), où il décrit la page
+            courante. Ici il arriverait sous la card, détaché de ce qu'il
+            désigne. */}
+        <nav aria-label="Fil d'Ariane" className="hidden text-sm text-gray-500 pb-4 pt-2 border-b border-gray-200 lg:block">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
               <Link to={ROUTES.SEARCH} className=" text-primary-700">Recherche</Link>
