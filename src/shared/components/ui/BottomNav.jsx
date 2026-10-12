@@ -4,10 +4,14 @@ import { cn } from '@/shared/utils';
 import { Sheet } from './Sheet.jsx';
 
 /**
- * Au-delà de 4 entrées, la barre devient illisible sur petit écran : elle garde
- * les 4 premières destinations et un bouton « Menu » ouvre les suivantes.
+ * Au-delà de 5 entrées, la barre devient illisible sur petit écran : elle garde
+ * les 5 premières destinations et un bouton « Menu » ouvre les suivantes.
+ *
+ * Cinq, et non quatre : c'est le nombre d'onglets du compte client, le plus
+ * large que l'application ait. En dessous, le profil disparaissait derrière un
+ * « Menu » — un onglet accessible en un geste de plus que les autres.
  */
-const MAX_VISIBLE_ITEMS = 4;
+const MAX_VISIBLE_ITEMS = 5;
 
 export function BottomNav({ items, active, onChange, ariaLabel }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -40,7 +44,9 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
                 aria-current={!isAction && active === id ? 'page' : undefined}
                 onClick={() => onChange(id)}
                 className={cn(
-                  'flex w-full cursor-pointer flex-col items-center gap-1 px-1 py-2.5 text-[11px] font-semibold transition',
+                  // `text-[10px]` à partir de 5 entrées : à `text-[11px]`,
+                  // « Professionnels » dans l'espace admin serait tronqué.
+                  'flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition',
                   !isAction && active === id
                     ? 'bg-primary-50 text-primary-500'
                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',

@@ -71,20 +71,30 @@ describe('BottomNav', () => {
     { id: 'f', label: 'Section F', shortLabel: 'S-F', icon: Star },
   ];
 
-  it('garde 4 destinations puis un bouton Menu pour les suivantes', () => {
+  it('garde 5 destinations puis un bouton Menu pour les suivantes', () => {
     const html = renderToStaticMarkup(
       <BottomNav items={manyItems} active="a" onChange={() => {}} ariaLabel="Navigation" />,
     );
 
-    // 4 destinations visibles + le bouton Menu, jamais les 6 d'un coup.
-    expect(html.split('<button').length - 1).toBe(5);
+    // 5 destinations visibles + le bouton Menu, jamais les 6 d'un coup.
+    expect(html.split('<button').length - 1).toBe(6);
     expect(html).toContain('S-A');
-    expect(html).toContain('S-D');
-    expect(html).not.toContain('S-E');
+    expect(html).toContain('S-E');
     expect(html).not.toContain('S-F');
     // Le menu est un dialogue (Sheet), pas un simple lien.
     expect(html).toContain('aria-haspopup="dialog"');
     expect(html).toContain('aria-expanded="false"');
+  });
+
+  it('affiche les 5 onglets du compte client sans Menu', () => {
+    // Cas réel du compte client : 5 sections, aucune derrière un « Menu ».
+    const html = renderToStaticMarkup(
+      <BottomNav items={manyItems.slice(0, 5)} active="a" onChange={() => {}} />,
+    );
+
+    expect(html.split('<button').length - 1).toBe(5);
+    expect(html).toContain('S-E');
+    expect(html).not.toContain('aria-haspopup="dialog"');
   });
 
   it('ne propose pas de Menu quand tout tient dans les 4 places', () => {
@@ -98,7 +108,7 @@ describe('BottomNav', () => {
 
   it('met en avant le bouton Menu quand la section active est en débordement', () => {
     const html = renderToStaticMarkup(
-      <BottomNav items={manyItems} active="e" onChange={() => {}} />,
+      <BottomNav items={manyItems} active="f" onChange={() => {}} />,
     );
 
     // Aucune destination visible n'est active, seule la poignée Menu l'est.
