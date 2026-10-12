@@ -5,7 +5,6 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
 import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
-import { Input } from '@/shared/components/ui/Input.jsx';
 import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
 import { useDelayedFlag } from '@/shared/hooks/useDelayedFlag.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
@@ -54,7 +53,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
 
   const dense = variant === "sidebar";
   const home = variant === "home";
-  const homeK = variant === "home-k";
+  const sheet = variant === "sheet";
 
   // Le référentiel arrive en quelques dizaines de millisecondes et revient
   // ensuite du cache : afficher un squelette pour si peu produirait un
@@ -171,7 +170,90 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
     );
 
 
-  if (home || homeK)
+  if (sheet)
+    // Reprise à l'identique des quatre champs de la sidebar desktop, dans le
+    // Sheet qui la remplace sur mobile : mot-clé, métier, ville, zone. La
+    // variante `home` ne portait ni la ville ni les libellés, elle servait à la
+    // barre compacte du héros.
+    return (
+      // Même cadre que la sidebar : sans lui, les champs flottent sur le Sheet
+      // blanc et la sheet de filtres — qui, elle, garde sa card — paraîtrait
+      // revue. Pas de titre ici, le Sheet en porte déjà un.
+      <form onSubmit={onSubmit} className={cn('rounded-md border border-gray-200 bg-white p-2', className)} noValidate>
+        <div className="space-y-4 p-2">
+        <SearchInput
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="Nom du professionnel ou métier"
+          aria-label="Recherche par mot-clé"
+        />
+
+        <div>
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+            <Wrench className="h-3 w-3" aria-hidden />
+            Métier
+          </p>
+          <CustomSelect
+            id="sf-trade-sh"
+            value={tradeValue}
+            onChange={setTradeValue}
+            options={[
+              { value: '', label: 'Tous les métiers' },
+              ...trades.map((t) => ({ value: String(t.id), label: t.name })),
+            ]}
+            className="mt-2 w-full"
+            aria-label="Filtrer par métier"
+          />
+        </div>
+
+        <div>
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+            <Building2 className="h-3 w-3" aria-hidden />
+            Ville
+          </p>
+          <CustomSelect
+            id="sf-city-sh"
+            value={cityValue}
+            onChange={(value) => {
+              setCityValue(value);
+              // Changer de ville invalide la zone retenue.
+              setZoneValue('');
+            }}
+            options={[
+              { value: '', label: 'Toutes les villes' },
+              ...cities.map((c) => ({ value: String(c.id), label: c.name })),
+            ]}
+            className="mt-2 w-full"
+            aria-label="Filtrer par ville"
+          />
+        </div>
+
+        <div>
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+            <MapPin className="h-3 w-3" aria-hidden />
+            Zone
+          </p>
+          <CustomSelect
+            id="sf-zone-sh"
+            value={zoneValue}
+            onChange={setZoneValue}
+            options={[{ value: '', label: 'Toutes les zones' }, ...zoneOptions]}
+            className="mt-2 w-full"
+            aria-label="Filtrer par zone"
+          />
+        </div>
+
+        <div className="border-t border-gray-100 p-2">
+          <Button type="submit" size="md" loading={searching} disabled={!hasCriteria} className="w-full">
+            Rechercher <Search size={16} aria-hidden />
+          </Button>
+        </div>
+        </div>
+      </form>
+    );
+
+
+  if (home)
     return (
       <form
         onSubmit={onSubmit}
@@ -181,18 +263,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
         )}
         noValidate
       >
-        {homeK && (
-          <>
-            <Input
-              name="q"
-              placeholder="Recherche par mot-clé"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              className="sm:h-fit h-16 border-0! bg-transparent!"
-            />
-            <p className='opacity-10 sm:border-x border-y sm:border-y-0 w-[96%] sm:w-0 mx-auto sm:h-8'></p>
-          </>
-        )}
         <CustomSelect
           id="sf-trade-h"
           name="trade"
