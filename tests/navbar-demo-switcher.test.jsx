@@ -52,3 +52,12 @@ describe('Sélecteur de rôle dans la barre', () => {
     expect(html).toContain('aria-expanded="false"');
   });
 });
+
+describe('Justification du header sur mobile', () => {
+  it('repousse le bouton menu à droite quand la nav desktop est masquée', () => {
+    // La nav desktop (porteur du ml-auto) est en display:none sous md : sans
+    // marge automatique sur le bouton hamburger, tout reste calé à gauche.
+    // md:ml-0 rend la main au ml-auto de la nav dès qu'elle réapparaît.
+    expect(render()).toContain('ml-auto md:ml-0');
+  });
+});

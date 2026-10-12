@@ -61,6 +61,50 @@ describe('BottomNav', () => {
     expect(html).not.toContain('aria-selected');
     expect(html.split('aria-current="page"').length - 1).toBe(1);
   });
+
+  const manyItems = [
+    { id: 'a', label: 'Section A', shortLabel: 'S-A', icon: User },
+    { id: 'b', label: 'Section B', shortLabel: 'S-B', icon: Star },
+    { id: 'c', label: 'Section C', shortLabel: 'S-C', icon: User },
+    { id: 'd', label: 'Section D', shortLabel: 'S-D', icon: Star },
+    { id: 'e', label: 'Section E', shortLabel: 'S-E', icon: User },
+    { id: 'f', label: 'Section F', shortLabel: 'S-F', icon: Star },
+  ];
+
+  it('garde 4 destinations puis un bouton Menu pour les suivantes', () => {
+    const html = renderToStaticMarkup(
+      <BottomNav items={manyItems} active="a" onChange={() => {}} ariaLabel="Navigation" />,
+    );
+
+    // 4 destinations visibles + le bouton Menu, jamais les 6 d'un coup.
+    expect(html.split('<button').length - 1).toBe(5);
+    expect(html).toContain('S-A');
+    expect(html).toContain('S-D');
+    expect(html).not.toContain('S-E');
+    expect(html).not.toContain('S-F');
+    // Le menu est un dialogue (Sheet), pas un simple lien.
+    expect(html).toContain('aria-haspopup="dialog"');
+    expect(html).toContain('aria-expanded="false"');
+  });
+
+  it('ne propose pas de Menu quand tout tient dans les 4 places', () => {
+    const html = renderToStaticMarkup(
+      <BottomNav items={manyItems.slice(0, 4)} active="a" onChange={() => {}} />,
+    );
+
+    expect(html.split('<button').length - 1).toBe(4);
+    expect(html).not.toContain('aria-haspopup="dialog"');
+  });
+
+  it('met en avant le bouton Menu quand la section active est en débordement', () => {
+    const html = renderToStaticMarkup(
+      <BottomNav items={manyItems} active="e" onChange={() => {}} />,
+    );
+
+    // Aucune destination visible n'est active, seule la poignée Menu l'est.
+    expect(html.split('bg-primary-50 text-primary-500').length - 1).toBe(1);
+    expect(html).not.toContain('aria-current="page"');
+  });
 });
 
 describe('Tooltip', () => {

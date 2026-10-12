@@ -105,7 +105,10 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 lg:hidden focus-ring"
+          // Sur mobile la nav desktop (qui porte le ml-auto) est masquée :
+          // sans marge automatique, tout reste calé à gauche. md:ml-0 rend la
+          // main au ml-auto du bloc de navigation dès qu'il apparaît.
+          className="ml-auto md:ml-0 inline-flex h-11 w-11 items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 lg:hidden focus-ring"
           aria-label="Menu"
           aria-expanded={open}
         >
