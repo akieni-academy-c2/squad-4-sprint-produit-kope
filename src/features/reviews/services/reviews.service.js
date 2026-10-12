@@ -1,6 +1,6 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { mockReviewsFor } from '@/shared/mocks/appMock.js';
+import { mockReviewsFor, mockMyReviews, mockUpdateMyReview, mockSetMyReviewHidden, mockDeleteMyReview } from '@/shared/mocks/appMock.js';
 
 export function listReviews(professionalId, { page = 1, pageSize = 10 } = {}) {
   return callApi(
@@ -42,7 +42,7 @@ export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalI
         ...(professionalId ? { professionalId } : {}),
         ...(visibility && visibility !== 'all' ? { visibility } : {}),
       }),
-    async () => ({ items: [], total: 0, page, pageSize, totalPages: 1 }),
+    async () => mockMyReviews({ page, pageSize, q, rating, visibility }),
   );
 }
 
@@ -50,7 +50,7 @@ export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalI
 export function updateReview(reviewId, payload) {
   return callApi(
     () => api.patchJson(`/reviews/${reviewId}`, payload).then((r) => r.review),
-    async () => ({ ...payload, id: reviewId, updatedAt: new Date().toISOString() }),
+    async () => mockUpdateMyReview(reviewId, payload),
   );
 }
 
@@ -58,14 +58,14 @@ export function updateReview(reviewId, payload) {
 export function setReviewVisibility(reviewId, isHidden) {
   return callApi(
     () => api.patchJson(`/reviews/${reviewId}/visibility`, { isHidden }).then((r) => r.review),
-    async () => ({ id: reviewId, isHidden, updatedAt: new Date().toISOString() }),
+    async () => mockSetMyReviewHidden(reviewId, isHidden),
   );
 }
 
 export function deleteReview(reviewId) {
   return callApi(
     () => api.del(`/reviews/${reviewId}`),
-    async () => null,
+    async () => mockDeleteMyReview(reviewId),
   );
 }
 

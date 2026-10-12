@@ -171,17 +171,20 @@ export async function countByReporter(reporterId, db = pool) {
 }
 
 /**
- * Suppression par l'auteur du signalement.
+ * Suppression par l'auteur du signalement, uniquement s'il est en attente.
  *
- * `resolved_at` est remis à null : le signalement redevient « en attente »,
- * donc un administrateur le revoit plutôt que de le traiter comme clos.
+ * La condition `status = 'pending'` est portée par le `WHERE` : un signalement
+ * déjà traité ne produit aucune ligne supprimée, l'appelant reçoit donc `null`
+ * et répond 404, exactement comme un signalement qui n'est pas le sien.
  */
 export async function deleteByReporter(id, reporterId, db = pool) {
-  const { rowCount } = await db.query(
-    'DELETE FROM account_reports WHERE id = $1 AND reporter_id = $2',
+  const { rows } = await db.query(
+    `DELETE FROM account_reports
+      WHERE id = $1 AND reporter_id = $2 AND status = 'pending'
+      RETURNING id`,
     [id, reporterId],
   );
-  return rowCount > 0;
+  return rows[0] ?? null;
 }
 
 export async function setStatus(id, status, db = pool) {

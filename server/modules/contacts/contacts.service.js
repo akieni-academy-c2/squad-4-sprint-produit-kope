@@ -3,24 +3,34 @@ import { offsetOf, paginateSafely } from '../../utils/pagination.js';
 import * as repository from './contacts.repository.js';
 import * as authRepository from '../auth/auth.repository.js';
 
-export async function createContact(senderId, { toUserId, message }) {
+/**
+ * Enregistre un contact pris.
+ *
+ * Un appel ou un message WhatsApp n'a pas de texte : la saisie n'est exigée
+ * que pour le canal `message`. La paire n'étant plus unique, répéter un appel
+ * ajoute une ligne au lieu d'échouer — c'est le cas normal, on appelle un
+ * professionnel plusieurs fois.
+ */
+export async function createContact(senderId, { toUserId, message, channel = 'message' }) {
   if (Number(senderId) === Number(toUserId))
     throw ApiError.badRequest('Vous ne pouvez pas vous contacter vous-même', {
       toUserId: 'Choisissez un autre interlocuteur',
     });
 
-
   const recipient = await authRepository.findById(toUserId);
   if (!recipient) throw ApiError.notFound('Utilisateur introuvable');
 
-  if (await repository.existsPair(senderId, toUserId))
-    throw ApiError.conflict('Vous avez déjà contacté cette personne');
-
-
   try {
-    return await repository.create({ senderId, recipientId: toUserId, message });
+    // `message ?? null` : un appel n'a pas de texte, et la colonne est
+    // nullable. Sans cette normalisation, un appel sans `message` insertait
+    // `undefined`, que le pilote PostgreSQL refuse.
+    return await repository.create({
+      senderId,
+      recipientId: toUserId,
+      message: message ?? null,
+      channel,
+    });
   } catch (err) {
-    if (err.code === '23505') throw ApiError.conflict('Vous avez déjà contacté cette personne');
     if (err.code === '23514')
       throw ApiError.badRequest('Données invalides', {
         message: 'Le message doit contenir entre 10 et 500 caractères',

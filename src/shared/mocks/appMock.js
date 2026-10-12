@@ -330,47 +330,116 @@ export function getProDetailMock(id) {
 
 // ---------- Contacts mock ----------
 
+/**
+ * Contacts du client : une ligne par contact pris, canal compris.
+ *
+ * Le même professionnel apparaît deux fois (9003 et 9004) — un appel puis un
+ * WhatsApp. C'est le cas normal : la contrainte d'unicité sur la paire a été
+ * levée en migration, et le regroupement par professionnel s'appuie dessus.
+ */
+let MOCK_MY_CONTACTS = [
+  {
+    id: 9001,
+    channel: 'message',
+    message: 'Bonjour, je recherche un devis pour une rénovation de salle de bain.',
+    status: 'new',
+    outgoing: false,
+    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    userId: 42,
+    role: 'client',
+    phone: '+242061234567',
+    avatarUrl: null,
+    firstName: 'Abel',
+    lastName: 'Bouanga',
+    displayName: 'Abel Bouanga',
+    tradeName: null,
+  },
+  {
+    id: 9002,
+    channel: 'call',
+    message: null,
+    status: 'seen',
+    outgoing: true,
+    createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
+    userId: 7,
+    role: 'professional',
+    phone: '+242069876543',
+    avatarUrl: null,
+    firstName: null,
+    lastName: null,
+    displayName: 'Atelier Kengo',
+    tradeName: 'Menuiserie',
+  },
+  {
+    id: 9003,
+    channel: 'call',
+    message: null,
+    status: 'seen',
+    outgoing: true,
+    createdAt: new Date(Date.now() - 21 * 86400000).toISOString(),
+    userId: 8,
+    role: 'professional',
+    phone: '+242061112233',
+    avatarUrl: null,
+    firstName: null,
+    lastName: null,
+    displayName: 'Dépannage Express',
+    tradeName: 'Plomberie',
+  },
+  {
+    id: 9004,
+    channel: 'whatsapp',
+    message: null,
+    status: 'seen',
+    outgoing: true,
+    createdAt: new Date(Date.now() - 47 * 86400000).toISOString(),
+    userId: 8,
+    role: 'professional',
+    phone: '+242061112233',
+    avatarUrl: null,
+    firstName: null,
+    lastName: null,
+    displayName: 'Dépannage Express',
+    tradeName: 'Plomberie',
+  },
+  {
+    id: 9005,
+    channel: 'call',
+    message: null,
+    status: 'seen',
+    outgoing: true,
+    createdAt: new Date(Date.now() - 63 * 86400000).toISOString(),
+    userId: 9,
+    role: 'professional',
+    phone: '+242065554433',
+    avatarUrl: null,
+    firstName: null,
+    lastName: null,
+    displayName: 'Atelier Kengo',
+    tradeName: 'Menuiserie',
+  },
+];
+
 export function mockMyContacts({ page = 1, pageSize = 20 } = {}) {
-  const items = [
+  return paginateMock(MOCK_MY_CONTACTS, page, pageSize);
+}
+
+/** Un clic sur Appeler ou WhatsApp ajoute une ligne, comme le serveur. */
+export function mockLogContact(toUserId, channel) {
+  const counterpart = MOCK_MY_CONTACTS.find((c) => String(c.userId) === String(toUserId));
+  MOCK_MY_CONTACTS = [
     {
-      id: 9001,
-      message: 'Bonjour, je recherche un devis pour une rénovation de salle de bain.',
-      status: 'new',
-      outgoing: false,
-      createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-      userId: 42,
-      role: 'client',
-      phone: '+242061234567',
-      avatarUrl: null,
-      firstName: 'Abel',
-      lastName: 'Bouanga',
-      displayName: 'Abel Bouanga',
-      tradeName: null,
-    },
-    {
-      id: 9002,
-      message: 'Bonjour, êtes-vous disponible la semaine prochaine pour un chantier ?',
+      ...(counterpart ?? { userId: toUserId, displayName: 'Contact', role: 'professional', tradeName: null }),
+      id: 9100 + MOCK_MY_CONTACTS.length,
+      channel,
+      message: null,
       status: 'seen',
       outgoing: true,
-      createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
-      userId: 7,
-      role: 'professional',
-      phone: '+242069876543',
-      avatarUrl: null,
-      firstName: null,
-      lastName: null,
-      displayName: 'Atelier Kengo',
-      tradeName: 'Menuiserie',
+      createdAt: new Date().toISOString(),
     },
+    ...MOCK_MY_CONTACTS,
   ];
-  const start = (page - 1) * pageSize;
-  return {
-    items: items.slice(start, start + pageSize),
-    total: items.length,
-    page,
-    pageSize,
-    totalPages: Math.ceil(items.length / pageSize),
-  };
+  return null;
 }
 
 // ---------- Admin mock ----------
@@ -480,6 +549,112 @@ const withProName = (r) => {
     professionalSuspendedAt: pro?.suspendedAt ?? null,
   };
 };
+
+// ---------- Compte client mock ----------
+//
+// Ce que voit le client connecté en démo. Les listes sont mutables : corriger,
+// masquer ou retirer un avis doit tenir jusqu'au rechargement, sinon la
+// démonstration d'une action ne montre rien. Placé après `MOCK_REPORTS`,
+// `withProName` et `paginateMock`, tous deux déclarés plus haut.
+
+/** Avis déposés par le client. */
+let MOCK_MY_REVIEWS = [
+  {
+    id: 8001,
+    professionalId: MOCK_PROS[0].id,
+    professionalName: MOCK_PROS[0].displayName,
+    rating: 5,
+    comment: REVIEWS_POOL[0].comment,
+    isHidden: false,
+    createdAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+  },
+  {
+    id: 8002,
+    professionalId: MOCK_PROS[1].id,
+    professionalName: MOCK_PROS[1].displayName,
+    rating: 4,
+    comment: REVIEWS_POOL[2].comment,
+    isHidden: false,
+    createdAt: new Date(Date.now() - 15 * 86400000).toISOString(),
+  },
+  {
+    id: 8003,
+    professionalId: MOCK_PROS[2].id,
+    professionalName: MOCK_PROS[2].displayName,
+    rating: 3,
+    comment: 'Le travail est correct mais le rendez-vous a été repoussé deux fois.',
+    // Présent dès l'ouverture : le filtre « Masqués seulement » a du contenu.
+    isHidden: true,
+    createdAt: new Date(Date.now() - 40 * 86400000).toISOString(),
+  },
+];
+
+const MY_REVIEWS_VISIBILITY = {
+  visible: (r) => !r.isHidden,
+  hidden: (r) => r.isHidden,
+  all: () => true,
+};
+
+export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility = 'all' } = {}) {
+  const needle = String(q || '').trim().toLowerCase();
+  let rows = MOCK_MY_REVIEWS.filter(MY_REVIEWS_VISIBILITY[visibility] ?? MY_REVIEWS_VISIBILITY.all);
+
+  if (rating) rows = rows.filter((r) => String(r.rating) === String(rating));
+  if (needle)
+    rows = rows.filter(
+      (r) =>
+        r.professionalName.toLowerCase().includes(needle) ||
+        (r.comment || '').toLowerCase().includes(needle),
+    );
+
+  return paginateMock(rows, page, pageSize);
+}
+
+export function mockUpdateMyReview(id, { rating, comment }) {
+  const review = MOCK_MY_REVIEWS.find((r) => String(r.id) === String(id));
+  if (!review) throw new Error('Avis introuvable');
+  review.rating = rating;
+  review.comment = comment;
+  return review;
+}
+
+export function mockSetMyReviewHidden(id, isHidden) {
+  const review = MOCK_MY_REVIEWS.find((r) => String(r.id) === String(id));
+  if (!review) throw new Error('Avis introuvable');
+  review.isHidden = Boolean(isHidden);
+  return review;
+}
+
+export function mockDeleteMyReview(id) {
+  const before = MOCK_MY_REVIEWS.length;
+  MOCK_MY_REVIEWS = MOCK_MY_REVIEWS.filter((r) => String(r.id) !== String(id));
+  if (MOCK_MY_REVIEWS.length === before) throw new Error('Avis introuvable');
+  return null;
+}
+
+/** Signalements du client : les mêmes lignes que l'administration reçoit. */
+export function mockMyReports({ page = 1, pageSize = 20, q, status } = {}) {
+  const needle = String(q || '').trim().toLowerCase();
+  let rows = MOCK_REPORTS.map(withProName);
+
+  if (status) rows = rows.filter((r) => r.status === status);
+  if (needle)
+    rows = rows.filter(
+      (r) =>
+        r.professionalName.toLowerCase().includes(needle) ||
+        (r.message || '').toLowerCase().includes(needle),
+    );
+
+  return paginateMock(rows, page, pageSize);
+}
+
+export function mockDeleteMyReport(id) {
+  const target = MOCK_REPORTS.find((r) => String(r.id) === String(id));
+  // Même refus que le serveur : un signalement traité n'est pas retirable.
+  if (!target || target.status !== 'pending') throw new Error('Signalement introuvable');
+  MOCK_REPORTS = MOCK_REPORTS.filter((r) => String(r.id) !== String(id));
+  return null;
+}
 
 export const MOCK_AUTO_BLOCK_THRESHOLD = 3;
 export const MOCK_AUTO_SUSPEND_THRESHOLD = 5;

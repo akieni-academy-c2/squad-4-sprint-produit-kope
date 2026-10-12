@@ -1,5 +1,6 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
+import { mockMyReports, mockDeleteMyReport } from '@/shared/mocks/appMock.js';
 
 /** Signalements déposés par le client connecté, avec filtres. */
 export function getMyReports({ page = 1, pageSize = 20, status, q } = {}) {
@@ -11,7 +12,7 @@ export function getMyReports({ page = 1, pageSize = 20, status, q } = {}) {
         ...(status ? { status } : {}),
         ...(q ? { q } : {}),
       }),
-    async () => ({ items: [], total: 0, page, pageSize, totalPages: 1 }),
+    async () => mockMyReports({ page, pageSize, status, q }),
   );
 }
 
@@ -19,6 +20,6 @@ export function getMyReports({ page = 1, pageSize = 20, status, q } = {}) {
 export function deleteMyReport(id) {
   return callApi(
     () => api.del(`/reports/${id}`),
-    async () => null,
+    async () => mockDeleteMyReport(id),
   );
 }

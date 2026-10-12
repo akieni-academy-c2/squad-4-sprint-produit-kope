@@ -11,11 +11,19 @@ import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { REPORT_STATUS_OPTIONS, reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
 import { formatDateFr } from '@/shared/utils';
+import { cn } from '@/shared/utils';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteMyReport, getMyReports } from '../services/reports.service.js';
 
 const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'neutral' };
+
+// Un signalement traité a déjà fait son office — le professionnel a été bloqué
+// ou le motif rejeté. Le retirer effacerait une décision prise par un
+// administrateur : le retrait n'est proposé que sur un signalement en attente.
+const WITHDRAWABLE = new Set(['pending']);
+
+  const canWithdraw = (report) => WITHDRAWABLE.has(report.status);
 
 export function MyReportsSection({ rightContainer = null }) {
   const { toast } = useNotification();
@@ -84,8 +92,7 @@ export function MyReportsSection({ rightContainer = null }) {
       <div>
         <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes signalements</h2>
         <p className="mt-1 text-sm text-gray-600">
-          Les profils que vous avez signalés et l'état de leur traitement. Un signalement
-          retiré n'a plus d'effet sur la fiche.
+          Vos signalements et leur état de traitement.
         </p>
       </div>
 
@@ -133,7 +140,15 @@ export function MyReportsSection({ rightContainer = null }) {
                       size="sm"
                       loading={pendingId === report.id}
                       onClick={() => remove(report.id)}
-                      className="text-gray-500 hover:bg-rose-50 hover:text-danger-500"
+                      // Rétractation d'une décision déjà prise : le bouton
+                      // disparaît plutôt que d'être désactivé, un gris
+                      // inexplicable sur un traitement terminé.
+                      className={cn(
+                        'text-gray-500 hover:bg-rose-50 hover:text-danger-500',
+                        !canWithdraw(report) && 'invisible',
+                      )}
+                      aria-hidden={!canWithdraw(report)}
+                      tabIndex={canWithdraw(report) ? undefined : -1}
                     >
                       <Trash2 size={16} aria-hidden />
                       Retirer

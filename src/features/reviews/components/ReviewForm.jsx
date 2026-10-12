@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createReview } from '../services/reviews.service.js';
+import { createReview, updateReview } from '../services/reviews.service.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { Textarea } from '@/shared/components/ui/Textarea.jsx';
@@ -9,10 +9,18 @@ import { Card } from '@/shared/components/ui/Card.jsx';
 
 const MAX = 300;
 
-export function ReviewForm({ professionalId, onSuccess }) {
+/**
+ * Formulaire d'avis, en dépôt ou en correction.
+ *
+ * `review` bascule le mode : le formulaire est le même, l'appel derrière change.
+ * Un second formulaire aurait dupliqué la validation de la note et le compteur
+ * de caractères, qui auraient divergé du premier au premier ajustement.
+ */
+export function ReviewForm({ professionalId, review = null, onSuccess }) {
   const { toast } = useNotification();
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const isEdit = Boolean(review);
+  const [rating, setRating] = useState(review?.rating ?? 0);
+  const [comment, setComment] = useState(review?.comment ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,10 +34,16 @@ export function ReviewForm({ professionalId, onSuccess }) {
     setError(null);
     setSubmitting(true);
     try {
-      await createReview(professionalId, { rating: Number(rating), comment: comment.trim() || null });
-      toast({ message: 'Merci, votre avis a été publié.', type: 'success' });
-      setRating(0);
-      setComment('');
+      const payload = { rating: Number(rating), comment: comment.trim() || null };
+      if (isEdit) await updateReview(review.id, payload);
+      else await createReview(professionalId, payload);
+
+      toast({
+        message: isEdit ? 'Avis mis à jour.' : 'Merci, votre avis a été publié.',
+        type: 'success',
+      });
+      setRating(isEdit ? review.rating : 0);
+      setComment(isEdit ? review.comment ?? '' : '');
       onSuccess?.();
     } catch (err) {
       const msg =
@@ -76,7 +90,7 @@ export function ReviewForm({ professionalId, onSuccess }) {
 
         <div className="flex items-center justify-end gap-3">
           <Button type="submit" loading={submitting} disabled={!canSubmit} size="lg">
-            Publier mon avis
+            {isEdit ? 'Enregistrer les modifications' : 'Publier mon avis'}
           </Button>
         </div>
       </form>

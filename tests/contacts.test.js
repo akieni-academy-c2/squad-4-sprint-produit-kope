@@ -43,18 +43,12 @@ describe('contacts.service', () => {
     expect(authRepository.findById).toHaveBeenCalledWith(9);
   });
 
-  it('refuse un doublon (client comme pro)', async () => {
-    vi.spyOn(authRepository, 'findById').mockResolvedValue({ id: 9, role: 'professional' });
-    vi.spyOn(contactsRepository, 'existsPair').mockResolvedValue(true);
-    await expect(contactsService.createContact(7, { toUserId: 9, message: MESSAGE })).rejects.toMatchObject({
-      status: 409,
-    });
-  });
-
+  // Un doublon n'est plus refusé : la paire n'est plus unique en base, un
+  // professionnel peut être rappelé autant de fois que nécessaire. Le test
+  // vérifie que le canal transite bien jusqu'à l'écriture.
   it('crée le contact quand tout est valide', async () => {
     vi.spyOn(authRepository, 'findById').mockResolvedValue({ id: 9, role: 'client' });
-    vi.spyOn(contactsRepository, 'existsPair').mockResolvedValue(false);
-    const created = { id: 1, message: MESSAGE, status: 'new' };
+    const created = { id: 1, message: MESSAGE, channel: 'message', status: 'new' };
     vi.spyOn(contactsRepository, 'create').mockResolvedValue(created);
 
     await expect(contactsService.createContact(7, { toUserId: 9, message: MESSAGE })).resolves.toEqual(created);
@@ -62,6 +56,21 @@ describe('contacts.service', () => {
       senderId: 7,
       recipientId: 9,
       message: MESSAGE,
+      channel: 'message',
+    });
+  });
+
+  it('enregistre un appel sans message', async () => {
+    vi.spyOn(authRepository, 'findById').mockResolvedValue({ id: 9, role: 'professional' });
+    const created = { id: 2, message: null, channel: 'call', status: 'new' };
+    vi.spyOn(contactsRepository, 'create').mockResolvedValue(created);
+
+    await expect(contactsService.createContact(7, { toUserId: 9, channel: 'call' })).resolves.toEqual(created);
+    expect(contactsRepository.create).toHaveBeenCalledWith({
+      senderId: 7,
+      recipientId: 9,
+      message: null,
+      channel: 'call',
     });
   });
 

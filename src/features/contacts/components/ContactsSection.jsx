@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Phone, Users } from 'lucide-react';
+import { MessageCircle, Phone, Users } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
 import { getMyContacts } from '../services/contacts.service.js';
+import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
 import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
@@ -9,17 +10,55 @@ import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
+import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
-import { formatPhoneFR } from '@/shared/utils';
+import { logContact } from '../services/contacts.service.js';
+import { formatDateFr } from '@/shared/utils';
 
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Du plus récent' },
   { value: 'name', label: 'Nom (A → Z)' },
 ];
 
-function ContactRow({ contact }) {
+const CHANNELS = {
+  call: { label: 'Appel', icon: Phone },
+  whatsapp: { label: 'WhatsApp', icon: MessageCircle },
+  message: { label: 'Message', icon: MessageCircle },
+};
+
+function ContactRow({ contact, onReach }) {
   const name = contact.displayName || 'Utilisateur';
+  const { toast } = useNotification();
+
+  // Un contact est un événement : le canal dit comment, la date dit quand.
+  const ChannelIcon = CHANNELS[contact.channel]?.icon ?? MessageCircle;
+  const channelLabel = CHANNELS[contact.channel]?.label ?? 'Message';
+
+  /**
+   * Ouvre le canal puis note le contact.
+   *
+   * Le lien s'ouvre d'abord : `window.open` peut être bloqué par le navigateur
+   * s'il arrive trop tard après le clic asynchrone. L'enregistrement suit, et
+   * son échec est seulement toasted — un professionnel injoignable pour cause de
+   * base de données serait pire que la ligne manquante dans l'historique.
+   */
+  const reach = (channel, href, newTab) => {
+    if (newTab) window.open(href, '_blank', 'noopener,noreferrer');
+    else window.location.href = href;
+
+    logContact(contact.userId, channel)
+      .then(() => onReach())
+      .catch((err) =>
+        toast({ message: err?.message || 'Contact non enregistré.', type: 'error' }),
+      );
+  };
+
+  const tel = contact.phone ? `tel:${contact.phone}` : null;
+  const wa = contact.phone
+    ? `https://wa.me/${String(contact.phone).replace(/[^\d]/g, '')}`
+    : null;
+
   return (
     <li>
       <Card className="p-4">
@@ -48,21 +87,35 @@ function ContactRow({ contact }) {
           </div>
         </div>
 
-        {contact.message && (
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-gray-600">{contact.message}</p>
-        )}
-
+        {/* Un contact n'est pas une conversation : seuls l'interlocuteur et la
+            date du dernier échange sont utiles ici. Le message d'origine
+            alourdissait chaque ligne sans rien apprendre de plus. */}
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
-          <p className="text-xs text-gray-400">
-            {new Date(contact.createdAt).toLocaleDateString('fr-FR')}
-          </p>
+          <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+            <ChannelIcon size={13} aria-hidden className="shrink-0 text-gray-400" />
+            {channelLabel}
+            <span aria-hidden>·</span>
+            {formatDateFr(contact.createdAt)}
+          </span>
           {contact.phone && (
-            <a
-              href={`tel:${contact.phone}`}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-primary-700 hover:underline"
-            >
-              <Phone size={14} aria-hidden /> {formatPhoneFR(contact.phone)}
-            </a>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary-700 hover:bg-primary-50"
+                onClick={() => reach('call', tel, false)}
+              >
+                <Phone size={14} aria-hidden /> Appeler
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-primary-700 hover:bg-primary-50"
+                onClick={() => reach('whatsapp', wa, true)}
+              >
+                <MessageCircle size={14} aria-hidden /> WhatsApp
+              </Button>
+            </div>
           )}
         </div>
       </Card>
@@ -71,13 +124,18 @@ function ContactRow({ contact }) {
 }
 
 export function ContactsSection({ rightContainer = null }) {
+  const [reload, setReload] = useState(0);
   const { data: itemsData, loading, error } = useAsyncData(async () => {
     const data = await getMyContacts();
     return data.items || [];
-  }, []);
+  }, [reload]);
   // Mémoïsé : sans cela, `itemsData ?? []` crée un nouveau tableau à chaque
 // rendu, et le useMemo des filtres se recalculerait en boucle.
 const items = useMemo(() => itemsData ?? [], [itemsData]);
+
+  // Un contact vient d'être pris : la liste doit refléter l'événement, sans
+  // rechargement complet de la page.
+  const refresh = () => setReload((n) => n + 1);
 
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
@@ -167,7 +225,7 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
           ) : (
             <ul className="space-y-3">
               {visible.map((c) => (
-                <ContactRow key={c.id} contact={c} />
+                <ContactRow key={c.id} contact={c} onReach={refresh} />
               ))}
             </ul>
           )}

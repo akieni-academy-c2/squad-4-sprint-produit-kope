@@ -19,12 +19,12 @@ const COUNTERPART_COLUMNS = `
             ) AS "displayName",
             t.name AS "tradeName"`;
 
-export async function create({ senderId, recipientId, message }, db = pool) {
+export async function create({ senderId, recipientId, message, channel = 'message' }, db = pool) {
   const { rows } = await db.query(
-    `INSERT INTO contacts (sender_id, recipient_id, message)
-     VALUES ($1, $2, $3)
-     RETURNING id, message, status, created_at AS "createdAt"`,
-    [senderId, recipientId, message],
+    `INSERT INTO contacts (sender_id, recipient_id, message, channel)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, message, channel, status, created_at AS "createdAt"`,
+    [senderId, recipientId, message, channel],
   );
   return rows[0];
 }
@@ -49,12 +49,12 @@ export async function listForUser(userId, { limit = 20, offset = 0 } = {}, db = 
   const incoming = COUNTERPART.replace('%s', 'c.sender_id');
   const { rows } = await db.query(
     `WITH mine AS (
-       SELECT c.id, c.message, c.status, TRUE AS outgoing, c.created_at AS "createdAt",
+       SELECT c.id, c.message, c.channel, c.status, TRUE AS outgoing, c.created_at AS "createdAt",
               ${COUNTERPART_COLUMNS}
        ${outgoing}
       WHERE c.sender_id = $1
      UNION ALL
-       SELECT c.id, c.message, c.status, FALSE AS outgoing, c.created_at AS "createdAt",
+       SELECT c.id, c.message, c.channel, c.status, FALSE AS outgoing, c.created_at AS "createdAt",
               ${COUNTERPART_COLUMNS}
        ${incoming}
       WHERE c.recipient_id = $1

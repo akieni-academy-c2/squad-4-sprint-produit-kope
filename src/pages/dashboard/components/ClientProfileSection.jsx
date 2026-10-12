@@ -104,39 +104,44 @@ export function ClientProfileSection({ user }) {
         </div>
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="flex items-center gap-5 border-b border-gray-100 bg-mint-50/40 p-6">
-          <div className="relative h-20 w-20 overflow-hidden rounded-full">
-            <UserAvatar user={user} src={avatar} className="h-full w-full" />
-            {editing && (
-              <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 text-white">
-                <Camera size={18} aria-hidden />
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  className="sr-only"
-                  disabled={uploading}
-                  onChange={onAvatarChange}
-                />
-              </label>
-            )}
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-gray-900">{name}</p>
-            <p className="text-sm text-gray-500">{user?.phone || 'Aucun numéro'}</p>
-            {editing &&
-              (uploading ? (
-                <div className="mt-2 w-40 overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-2 rounded-full bg-primary-500 transition-all duration-200"
-                    style={{ width: `${uploadProgress}%` }}
+      <Card className="overflow-hidden p-0">
+        {/* Bandeau d'identité sur dégradé : même composition que la carte de
+            statut de `ProSidebar` — dégradé en haut, informations en dessous.
+            Deux sections qui affichent la même personne doivent se ressembler. */}
+        <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-gray-100">
+              <UserAvatar user={user} src={avatar} className="h-full w-full" rounded="rounded-none" />
+              {editing && (
+                <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 text-white">
+                  <Camera size={18} aria-hidden />
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    className="sr-only"
+                    disabled={uploading}
+                    onChange={onAvatarChange}
                   />
-                </div>
-              ) : (
-                <p className="mt-1 text-[12px] font-semibold text-primary-600">
-                  Clique sur la photo pour la changer
-                </p>
-              ))}
+                </label>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold text-gray-900">{name}</p>
+              <p className="text-xs text-gray-500">{user?.phone || 'Aucun numéro'}</p>
+              {editing &&
+                (uploading ? (
+                  <div className="mt-2 w-40 overflow-hidden rounded-full bg-gray-200">
+                    <div
+                      className="h-2 rounded-full bg-primary-500 transition-all duration-200"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                ) : (
+                  <p className="mt-1 text-[12px] font-semibold text-primary-600">
+                    Cliquez sur la photo pour la changer
+                  </p>
+                ))}
+            </div>
           </div>
         </div>
 

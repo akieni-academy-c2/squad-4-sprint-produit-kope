@@ -68,12 +68,15 @@ export async function myReports(reporterId, { status, q, ...pagination }) {
 /**
  * Retrait d'un signalement par son auteur.
  *
- * 404 et non 403 : comme pour les avis, confirmer l'existence d'un signalement
- * d'autrui permettrait d'énumérer les signalements du site. La suppression est
- * refusée aussi bien quand le signalement est absent que quand il est celui de
- * quelqu'un d'autre.
+ * Seuls les signalements « pending » se retirent. Un signalement traité a
+ * déjà produit ses effets — blocage ou suspension du professionnel — et le
+ * retirer effacerait une décision d'administration. La règle est vérifiée
+ * ici et non seulement dans l'interface, sinon un appel direct la contourne.
+ *
+ * 404 et non 403 : confirmer l'existence d'un signalement d'autrui permettrait
+ * d'énumérer les signalements du site.
  */
 export async function deleteMyReport(id, reporterId) {
-  const deleted = await repository.deleteByReporter(id, reporterId);
-  if (!deleted) throw ApiError.notFound('Signalement introuvable');
+  const { rows } = await repository.deleteByReporter(id, reporterId);
+  if (!rows) throw ApiError.notFound('Signalement introuvable');
 }
