@@ -47,11 +47,10 @@ export function Dialog({ open, onOpenChange, children }) {
 export function DialogContent({ className, children, footer, onClose, ref: forwardedRef }) {
   const labelId = useId();
 
-  // Le panneau est une colonne flex : seul le milieu défile. Le header et le
-  // footer sont hors de la zone de défilement, donc ils restent en place sans
+  // Le panneau est une colonne flex : le header est hors de la zone de
+  // défilement, donc le bouton Fermer et le titre ne bougent plus sans
   // dépendre de `sticky` — lequel se calculait sur une largeur mal déduite et
-  // laissait le contenu passer sur les côtés. Sur mobile, le footer est de
-  // fait ancré en bas du sheet, pas simplement collant.
+  // laissait le contenu passer sur les côtés. Seul le corps défile.
   const childArray = Children.toArray(children);
   const headerIndex = childArray.findIndex((child) => child.type === DialogHeader);
   const header = headerIndex >= 0 ? childArray.splice(headerIndex, 1)[0] : null;
@@ -96,14 +95,19 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
 
         {/* min-h-0 : sans lui, un enfant flex refuse de rétrécir sous sa
             hauteur naturelle et la colonne déborde au lieu de défiler. */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{childArray}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {childArray}
 
-        {/* pt-3 suffit : le filet sépare déjà le bouton du contenu. mt-4 + pt-4
-            empilaient 32px au-dessus du bouton, sur un panneau déjà
-            rembourré. */}
-        {footer && (
-          <div className="mt-3 shrink-0 border-t border-gray-100 pt-3">{footer}</div>
-        )}
+          {/* Le footer vit dans le parent qui défile, mais reste `sticky`
+              en bas : le bouton d'action suit le défilement sans jamais
+              sortir de l'écran. Le conteneur reste transparent — un fond
+              ici poserait une bande opaque sur la liste. */}
+          {footer && (
+            <div className="sticky bottom-0 border-t border-gray-100 pt-3 pb-1">
+              {footer}
+            </div>
+          )}
+        </div>
       </DialogLabelContext.Provider>
     </div>
   );
