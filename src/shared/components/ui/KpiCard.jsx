@@ -46,11 +46,19 @@ const GROUP_TONES = {
   danger: 'border-danger-500 bg-danger-500',
   teal: 'border-teal-600 bg-teal-500',
   neutral: 'border-gray-600 bg-gray-500',
+  // Bandeau d'en-tête : teinté et non plein. Les tuiles posées dedans restent
+  // blanches, un aplat de marque les aurait transformées en simple texte sur
+  // fond coloré et perdu leur lecture en tuile.
+  mint: 'border-mint-200 bg-mint-50',
 };
+
+// Fond clair : le titre ne peut pas être blanc, il disparaîtrait.
+const SOFT_TONES = new Set(['mint']);
 
 /** Conteneur de tuiles, avec son titre en capitales. */
 export function StatGroup({ title, tone = 'default', children, className }) {
   const toned = tone !== 'default';
+  const soft = SOFT_TONES.has(tone);
 
   return (
     <section className={cn('rounded-[18px] border p-4', GROUP_TONES[tone] ?? GROUP_TONES.default, className)}>
@@ -58,7 +66,7 @@ export function StatGroup({ title, tone = 'default', children, className }) {
         <h3
           className={cn(
             'text-sm font-bold uppercase tracking-[0.08em]',
-            toned ? 'text-white' : 'text-gray-500',
+            toned ? (soft ? 'text-primary-700' : 'text-white') : 'text-gray-500',
           )}
         >
           {title}

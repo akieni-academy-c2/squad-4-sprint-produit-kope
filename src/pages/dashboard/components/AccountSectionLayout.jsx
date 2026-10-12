@@ -45,10 +45,16 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
           </aside>
         )}
 
-      <Sheet open={open} onOpenChange={setOpen} side="right">
-        {/* pt-16 : le bouton de fermeture de Sheet est en `absolute` dans le
-            coin, le contenu doit démarrer en dessous. */}
-        <div className="w-full overflow-y-auto p-4 pt-16">{filters(`${searchId}-mobile`)}</div>
+      {/* Feuille par le bas : les filtres sont un réglage qu'on consulte et
+          qu'on referme, pas un panneau qu'on parcourt. Sur le côté, ils
+          occupaient la moitié de l'écran et repoussaient la liste hors de
+          champ — à l'inverse du tiroir de navigation, qu'on laisse ouvert. */}
+      <Sheet open={open} onOpenChange={setOpen} side="bottom">
+        {/* pt-10 : le panneau applique déjà `p-4`, le bouton de fermeture descend
+            jusqu'à 52px du bord haut. On complète jusqu'à 56px pour que son
+            en-tête passe dessous sans le toucher. Le `p-4` de la feuille par
+            le bas remplace celui que portait cette div sur la feuille latérale. */}
+        <div className="w-full overflow-y-auto pt-10">{filters(`${searchId}-mobile`)}</div>
       </Sheet>
     </div>
   );

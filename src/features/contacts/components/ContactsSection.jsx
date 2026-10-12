@@ -30,6 +30,16 @@ const ORIGIN_OPTIONS = [
   { value: 'incoming', label: 'Qui m’ont contacté' },
 ];
 
+// Le canal dit *comment* on a été joint. Il répond à une question que
+// l'origine ne couvre pas : « qui ai-je déjà réussi à appeler ? » n'a rien à
+// voir avec « qui m'a écrit en premier ».
+const CHANNEL_OPTIONS = [
+  { value: 'all', label: 'Tous les canaux' },
+  { value: 'call', label: 'Appels' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'message', label: 'Messages' },
+];
+
 function ContactRow({ contact, onReach }) {
   const name = contact.displayName || 'Utilisateur';
   const { toast } = useNotification();
@@ -128,13 +138,15 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
   const [origin, setOrigin] = useState('all');
+  const [channel, setChannel] = useState('all');
 
-  const dirty = Boolean(q || sort !== 'recent' || origin !== 'all');
+  const dirty = Boolean(q || sort !== 'recent' || origin !== 'all' || channel !== 'all');
 
   const resetFilters = () => {
     setQ('');
     setSort('recent');
     setOrigin('all');
+    setChannel('all');
   };
 
   const visible = useMemo(() => {
@@ -150,13 +162,14 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
 
     if (origin === 'outgoing') matched = matched.filter((c) => c.outgoing);
     if (origin === 'incoming') matched = matched.filter((c) => !c.outgoing);
+    if (channel !== 'all') matched = matched.filter((c) => c.channel === channel);
 
     return [...matched].sort((a, b) =>
       sort === 'name'
         ? (a.displayName || '').localeCompare(b.displayName || '', 'fr')
         : new Date(b.createdAt) - new Date(a.createdAt),
     );
-  }, [items, q, sort, origin]);
+  }, [items, q, sort, origin, channel]);
 
   const filters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
@@ -179,6 +192,16 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
             options={ORIGIN_OPTIONS}
             className="w-full"
             aria-label="Filtrer par origine du contact"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Canal">
+          <CustomSelect
+            value={channel}
+            onChange={setChannel}
+            options={CHANNEL_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par canal de contact"
           />
         </AdminFilterGroup>
 

@@ -9,6 +9,7 @@ import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.service.js';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { updateAccountSchema } from '@/shared/utils/validators.js';
+import { formatDateFr } from '@/shared/utils';
 import { BecomeProCard } from './BecomeProCard.jsx';
 
 function Field({ label, value, onChange }) {
@@ -29,6 +30,24 @@ function Detail({ label, value }) {
     <div className="grid grid-cols-[120px_1fr] gap-4 px-6 py-4">
       <dt className="text-gray-500">{label}</dt>
       <dd className="font-semibold text-gray-900">{value}</dd>
+    </div>
+  );
+}
+
+/**
+ * Sous-ensemble du profil : « Informations personnelles » et « Contacts ».
+ *
+ * Un seul `<dl>` par bloc, pas un seul pour les deux : ce sont deux listes de
+ * définitions distinctes, et l'espaceur après « Rôle » dans un `<dl>` unique
+ * se lirait comme un contact sans libellé.
+ */
+function ProfileBlock({ title, children }) {
+  return (
+    <div className="border-t border-gray-100 pt-4">
+      <p className="px-6 pb-1 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
+        {title}
+      </p>
+      <dl className="text-sm">{children}</dl>
     </div>
   );
 }
@@ -146,20 +165,49 @@ export function ClientProfileSection({ user }) {
         </div>
 
         {editing ? (
-          <form onSubmit={save} className="grid gap-4 px-5 py-5 sm:grid-cols-2">
-            <Field label="Prénom(s)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <Field label="Nom(s)" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            <Field label="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <div className="sm:col-span-2">
-              <Button type="submit" loading={saving} disabled={!canSubmit}>Enregistrer</Button>
+          <form onSubmit={save} className="space-y-5 px-5 py-5">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
+                Informations personnelles
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Prénom(s)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                <Field label="Nom(s)" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              </div>
             </div>
+
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
+                Contacts
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                {/* L'adresse est la clé de connexion : elle n'appartient pas au
+                    formulaire d'édition, seulement à la lecture. */}
+                <div className="space-y-1">
+                  <span className="block text-xs font-semibold text-gray-600">E-mail</span>
+                  <p className="rounded-sm border border-dashed border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                    {user?.email || '—'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Button type="submit" loading={saving} disabled={!canSubmit}>Enregistrer</Button>
           </form>
         ) : (
-          <dl className="divide-y divide-gray-100 text-sm">
-            <Detail label="Nom complet" value={name} />
-            <Detail label="Téléphone" value={user?.phone || '-'} />
-            <Detail label="Rôle" value="Client" />
-          </dl>
+          <div className="space-y-4 p-5">
+            <ProfileBlock title="Informations personnelles">
+              <Detail label="Nom complet" value={name} />
+              <Detail label="Rôle" value="Client" />
+              <Detail label="Inscrit depuis" value={formatDateFr(user?.createdAt) || '—'} />
+            </ProfileBlock>
+
+            <ProfileBlock title="Contacts">
+              <Detail label="Téléphone" value={user?.phone || '-'} />
+              <Detail label="E-mail" value={user?.email || '-'} />
+            </ProfileBlock>
+          </div>
         )}
       </Card>
 

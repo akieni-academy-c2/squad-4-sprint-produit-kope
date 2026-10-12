@@ -79,10 +79,14 @@ export function AdminSectionLayout({
         </aside>
       )}
 
-      <Sheet open={open} onOpenChange={setOpen} side="right">
-        <div className="w-full overflow-y-auto p-4 pt-16">
-          {filters(`${searchId}-mobile`)}
-        </div>
+      {/* Feuille par le bas : les filtres sont un réglage qu'on consulte et qu'on
+          referme, pas un panneau qu'on parcourt. Sur le côté, ils occupaient la
+          moitié de l'écran et repoussaient la liste hors de champ. */}
+      <Sheet open={open} onOpenChange={setOpen} side="bottom">
+        {/* pt-10 : le panneau applique déjà `p-4` et le bouton de fermeture descend
+            jusqu'à 52px du bord haut. On complète jusqu'à 56px pour que le
+            bouton « Réinitialiser » passe dessous sans être recouvert. */}
+        <div className="w-full overflow-y-auto pt-10">{filters(`${searchId}-mobile`)}</div>
       </Sheet>
     </div>
   );
