@@ -1,8 +1,7 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { PRO_CTA_IMAGE_LABEL, reserveImage } from '@/shared/assets/placeholders.js';
-import { HOME_RESERVED } from '@/shared/content/homeImages.js';
+import cta from '@/shared/assets/cta.png';
 
 export function ProCTA({ imageLeft = false } = {}) {
   const { open: openModal } = useAuthModal();
@@ -33,7 +32,7 @@ export function ProCTA({ imageLeft = false } = {}) {
             </div>
             <div className={`relative max-w-115 ${imageLeft ? 'lg:order-1 lg:mr-auto' : 'lg:ml-auto'}`}>
 <ImageWithSkeleton
-                src={reserveImage(PRO_CTA_IMAGE_LABEL, HOME_RESERVED.upTo('cta'))}
+                src={cta}
                 alt="Devenir prestataire KOP"
                 // 4/3 plutôt que 16/9 : la section est haute et l'image doit
                 // occuper de la hauteur sur mobile comme sur grand écran.

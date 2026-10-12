@@ -6,7 +6,8 @@ import { RegisterClientForm } from '../pages/RegisterClientPage.jsx';
 import { BecomeProForm } from './BecomeProForm.jsx';
 import { ChangePasswordForm } from './ChangePasswordForm.jsx';
 import { ROLES } from '@/shared/lib/constants.js';
-import { placeholderImage, LOGIN_IMAGE_LABEL } from '@/shared/assets/placeholders.js';
+import confiance from '@/shared/assets/confiance.png';
+import form from '@/shared/assets/form.png';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
@@ -19,9 +20,34 @@ const DIALOG_LABEL = {
   password: 'Changer le mot de passe',
 };
 
+/**
+ * Le panneau de gauche accompagne le formulaire affiché : un visiteur qui
+ * s'inscrit comme particulier et un professionnel qui se présente ne doivent
+ * pas lire la même promesse. Seul le visuel et le texte changent, la mise en
+ * page reste celle partagée par toutes les modales.
+ */
+const SIDE_PANEL = {
+  'register-pro': {
+    image: form,
+    imageAlt: 'Professionnelle KOP à son atelier',
+    title: 'Votre savoir-faire mérite d’être à portée.',
+    description:
+      'Un profil pour présenter votre activité. Un espace pour retrouver les demandes de vos futurs clients.',
+  },
+  default: {
+    image: confiance,
+    imageAlt: '',
+    title: 'Les belles rencontres commencent tout près.',
+    description:
+      'Retrouvez les professionnels de votre quartier et gardez une trace de vos demandes, au même endroit.',
+  },
+};
+
 export function AuthModal() {
   const { mode, close } = useAuthModal();
   const { user } = useAuthContext();
+
+  const side = SIDE_PANEL[mode] ?? SIDE_PANEL.default;
 
   const renderPro = () => {
 
@@ -65,17 +91,22 @@ export function AuthModal() {
             </svg>
             <div className='relative z-10 space-y-2 p-6'>
               <h2 className="text-3xl font-semibold tracking-tight leading-tight text-white!">
-                Les belles rencontres commencent tout près.
+                {side.title}
               </h2>
               <p className="text-sm leading-6 text-white/80">
-                Retrouvez les professionnels de votre quartier et gardez une trace de vos demandes, au même endroit.
+                {side.description}
               </p>
             </div>
-            <Card className="relative z-10 overflow-hidden flex flex-col transition rounded-sm! border-0! ">
-              <div className="relative aspect-6/4 overflow-hidden ">
+            {/* flex-1 et non h-full : le panneau est en `justify-between` avec le titre
+                au-dessus. Une card en h-full mesurerait 100% de la hauteur
+                du panneau et repousserait le titre hors du cadre — le panneau
+                étant en overflow-hidden, il disparaitrait. flex-1 lui donne la
+                hauteur restante, l'image occupe alors toute la card. */}
+            <Card className="relative z-10 flex flex-1 flex-col overflow-hidden rounded-sm! border-0! transition">
+              <div className="relative h-full overflow-hidden ">
                 <ImageWithSkeleton
-                  src={placeholderImage(LOGIN_IMAGE_LABEL)}
-                  alt=""
+                  src={side.image}
+                  alt={side.imageAlt}
                   ratio="h-full"
                   skeletonClassName="bg-gray-100"
                   className="transition duration-500 group-hover:scale-[1.04]"

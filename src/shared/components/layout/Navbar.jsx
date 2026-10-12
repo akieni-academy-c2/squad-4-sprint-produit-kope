@@ -108,7 +108,7 @@ export function Navbar() {
           {(user || loading) && <UserMenu />}
         </div>
 
-        <div className='flex absolute right-3 gap-2 items-center border bg-gray-200/20 border-gray-200 px-3 py-2 rounded-md'>
+        <div className='flex md:hidden absolute right-3 gap-2 items-center border bg-gray-200/20 border-gray-200 px-3 py-2 rounded-md'>
 
         <Link
           to={ROUTES.SEARCH}

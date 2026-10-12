@@ -164,7 +164,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
 
         <div className="border-t border-gray-100 p-2">
           <Button type="submit" size="sm" loading={searching} disabled={!hasCriteria} className="w-full">
-            Rechercher <Search size={16} aria-hidden />
+            Rechercher <Search size={16} aria-hidden /> 
           </Button>
         </div>
       </form>
@@ -205,10 +205,11 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
           ]}
           aria-label="Filtrer par métier"
           aria-invalid={Boolean(error?.trade) || undefined}
-          className="sm:h-16"
+          className="w-full"
+          triggerClassName="border-0!  bg-transparent! hover:border-0! hover:bg-transparent!"
         />
 
-        <p className='opacity-10 sm:border-x border-y sm:border-y-0 w-[96%] sm:w-0 mx-auto sm:h-8'></p>
+        <p className='opacity-10 sm:border-x border-y sm:border-y-0 w-[90%] sm:w-0 mx-auto sm:h-4'></p>
 
         <CustomSelect
           id="sf-zone-h"
@@ -221,7 +222,8 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
             ...zones.map((z) => ({ value: String(z.id), label: z.name })),
           ]}
           aria-label="Filtrer par zone"
-          className="sm:h-16"
+          className="w-full"
+          triggerClassName=" border-0! bg-transparent! hover:border-0! hover:bg-transparent!"
         />
 
 

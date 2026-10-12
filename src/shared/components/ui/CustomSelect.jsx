@@ -20,6 +20,10 @@ export function CustomSelect({
   options = [],
   placeholder = 'Sélectionner...',
   className,
+  // `className` habille le conteneur (largeur, position) ; le bouton porte
+  // son propre cadre. Sans cette prop, seule façon de retirer fond et bordure
+  // du champ, et les surcharges finissaient sur le conteneur sans effet.
+  triggerClassName,
   menuClassName,
   disabled,
   id,
@@ -222,6 +226,7 @@ export function CustomSelect({
             'relative flex w-full items-center justify-between gap-2 rounded-sm border border-gray-200 bg-white px-3 text-left text-gray-900 transition-colors hover:border-gray-300 focus-ring disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400',
             SIZES[size] || SIZES.md,
             open && 'border-primary-500',
+            triggerClassName,
           )}
         >
           <span className={cn('truncate', !selected && 'text-gray-400')}>
