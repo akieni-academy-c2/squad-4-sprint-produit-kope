@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MessageCircle, Phone, Star, User } from 'lucide-react';
+import { MessageCircle, MessageSquarePlus, Phone, Star, User } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
 import { getPublishedDetail, canReview } from '../services/professionals.service.js';
 import { ReviewForm, ReviewList } from '@/features/reviews/components/index.js';
@@ -136,6 +136,8 @@ export function ProfessionalPublicPage() {
             onOpenPhoto={setOpenIndex}
           />
 
+          {/* Sur mobile, la colonne de droite s'empile sous celle-ci : les avis y
+              sont déjà rendus, leur version ici évite un second affichage. */}
           <section className="space-y-4 lg:hidden">
             <ReviewsBlock
               rating={rating}
@@ -146,16 +148,14 @@ export function ProfessionalPublicPage() {
               headingClassName="text-xl"
             />
           </section>
-
-          {isVisitorView && (
-            <div className="lg:hidden">
-              <ReportTrigger onClick={onReportClick} />
-            </div>
-          )}
         </div>
 
         <aside className="min-w-0 space-y-5 lg:self-stretch">
-          <section id="avis" className="space-y-4 ">
+          {/* Les avis apparaissent deux fois sur mobile : une fois ici, et une
+              fois dans la colonne de droite. Le bloc de droite n'était masqué
+              que sur ses liens internes, pas sur la colonne elle-même, qui
+              s'empile sous la colonne centrale en une seule colonne. */}
+          <section id="avis" className="hidden space-y-4 lg:block">
             <ReviewsBlock
               rating={rating}
               canReview={canLeaveReview || !user}
@@ -176,6 +176,16 @@ export function ProfessionalPublicPage() {
               Contacter {firstName}
             </Button>
           </Card>
+
+          {/* Dernier élément de la fiche sur mobile : signaler un profil est
+              une action de recours, elle ne doit pas passer avant le bouton
+              de contact. Sur desktop, `PublicProfileSidebar` porte déjà le
+              sien, d'où le `lg:hidden`. */}
+          {isVisitorView && (
+            <div className="lg:hidden">
+              <ReportTrigger onClick={onReportClick} />
+            </div>
+          )}
         </aside>
       </div>
 
@@ -190,7 +200,27 @@ export function ProfessionalPublicPage() {
       )}
 
       <Dialog open={reviewsOpen} onOpenChange={(o) => !o && setReviewsOpen(false)}>
-        <DialogContent className="max-w-3xl min-h-[50vh] p-5" onClose={() => setReviewsOpen(false)}>
+        <DialogContent
+          className="max-w-3xl min-h-[50vh] p-5"
+          onClose={() => setReviewsOpen(false)}
+          // Le lecteur d'avis est ici toute la liste. « Donner mon avis » est
+          // donc hors de la liste et ancré en bas : sans cela, il faudrait
+          // faire défiler tout le pavé pour le trouver, puis le perdre dès le
+          // geste suivant.
+          footer={
+            canLeaveReview || !user ? (
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={onLeaveReviewClick}
+              >
+                <MessageSquarePlus size={18} aria-hidden />
+                Donner mon avis
+              </Button>
+            ) : null
+          }
+        >
           <DialogHeader>
             <DialogTitle>Avis ({count})</DialogTitle>
             <DialogDescription>les avis laissés sur la fiche</DialogDescription>

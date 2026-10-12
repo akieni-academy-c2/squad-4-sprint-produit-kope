@@ -1,4 +1,4 @@
-import { isValidElement, cloneElement, useId, useContext, createContext } from 'react';
+import { isValidElement, cloneElement, useId, useContext, createContext, Children } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/utils';
@@ -44,8 +44,17 @@ export function Dialog({ open, onOpenChange, children }) {
   );
 }
 
-export function DialogContent({ className, children, onClose, ref: forwardedRef }) {
+export function DialogContent({ className, children, footer, onClose, ref: forwardedRef }) {
   const labelId = useId();
+
+  // Le panneau est une colonne flex : seul le milieu défile. Le header et le
+  // footer sont hors de la zone de défilement, donc ils restent en place sans
+  // dépendre de `sticky` — lequel se calculait sur une largeur mal déduite et
+  // laissait le contenu passer sur les côtés. Sur mobile, le footer est de
+  // fait ancré en bas du sheet, pas simplement collant.
+  const childArray = Children.toArray(children);
+  const headerIndex = childArray.findIndex((child) => child.type === DialogHeader);
+  const header = headerIndex >= 0 ? childArray.splice(headerIndex, 1)[0] : null;
 
   return (
     <div
@@ -57,21 +66,38 @@ export function DialogContent({ className, children, onClose, ref: forwardedRef 
       // dans le vide et le dialogue n'aurait pas de nom du tout.
       aria-labelledby={labelId}
       className={cn(
-        'relative w-full rounded-t-3xl bg-white p-2  shadow-(--shadow-pop) animate-scale-in sm:rounded-3xl',
+        // Même contrat que Modal : sur mobile la boîte grandit avec le
+        // contenu jusqu'à 90dvh puis défile. Sans plafond, un formulaire long
+        // est coupé — iOS ne réduit pas la page sous le clavier, donc rien ne
+        // viendrait le faire remonter. `sm:max-h-none` rend la hauteur libre
+        // sur desktop, où le dialogue est centré.
+        'relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) animate-scale-in sm:max-h-none sm:rounded-3xl',
         className,
       )}
       onClick={(e) => e.stopPropagation()}
     >
       <DialogLabelContext.Provider value={labelId}>
-        {children}
-        <button
-          type="button"
-          aria-label="Fermer"
-          className="absolute cursor-pointer right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
-          onClick={() => onClose?.()}
-        >
-          <X size={16} aria-hidden />
-        </button>
+        <div className="mb-4 flex shrink-0 items-start gap-3">
+          {header
+            ? cloneElement(header, { className: cn(header.props.className, 'mb-0 min-w-0 flex-1') })
+            : <span className="flex-1" />}
+          <button
+            type="button"
+            aria-label="Fermer"
+            className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
+            onClick={() => onClose?.()}
+          >
+            <X size={16} aria-hidden />
+          </button>
+        </div>
+
+        {/* min-h-0 : sans lui, un enfant flex refuse de rétrécir sous sa
+            hauteur naturelle et la colonne déborde au lieu de défiler. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{childArray}</div>
+
+        {footer && (
+          <div className="mt-4 shrink-0 border-t border-gray-100 pt-4">{footer}</div>
+        )}
       </DialogLabelContext.Provider>
     </div>
   );
