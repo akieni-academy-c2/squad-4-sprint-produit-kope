@@ -14,7 +14,7 @@ import { cn } from '@/shared/utils';
 /** Au-delà de ce délai, l'attente est réelle et mérite un squelette. */
 const SKELETON_DELAY_MS = 200;
 
-export function SearchFilters({ initial = {}, variant = "search", className, searching = false }) {
+export function SearchFilters({ initial = {}, variant = "search", className, searching = false, onApply }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { trades, zones, cities, loading } = useReferenceData();
@@ -45,6 +45,9 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
     if (k) next.set("q", k);
     next.set("page", "1");
     navigate(`${ROUTES.SEARCH}?${next.toString()}`);
+    // La navigation relance le rendu : fermer ici plutôt que sur le `submit`
+    // bubblé évite de dépendre de la propagation de l'événement.
+    onApply?.();
   };
 
   // Rien à lancer tant qu'aucun critère n'est renseigné : le bouton se grise,

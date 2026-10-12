@@ -35,6 +35,10 @@ export function SearchRefineFilters({
   onChange,
   onSortChange,
   onReset,
+  // Fermeture du Sheet mobile, une fois les filtres posés. Les filtres
+  // s'appliquent déjà au choix, il n'y a rien à valider : ce bouton sert
+  // à en sortir. Sur desktop le panneau reste affiché, `onApply` est absent.
+  onApply,
   dirty = false,
 }) {
   const handle = (key) => (value) => onChange({ [key]: value });
@@ -114,7 +118,10 @@ export function SearchRefineFilters({
       </div>
 
       <div className="border-t border-gray-100 p-2">
-        <Button size="sm" className="w-full" onClick={onReset} disabled={!dirty}>
+        {/* Ce bouton valide, il ne remet pas à zéro : la réinitialisation a
+            déjà son propre accès dans l'en-tête. Appeler `onReset` ici
+            annulait les filtres juste après les avoir choisis. */}
+        <Button size="sm" className="w-full" onClick={() => onApply?.()} disabled={!dirty}>
           Appliquer
         </Button>
       </div>

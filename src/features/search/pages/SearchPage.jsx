@@ -59,18 +59,19 @@ export function SearchPage() {
     setParams(next);
   };
 
-  const refinePanel = (
-    <SearchRefineFilters
-      available={available ?? ''}
-      minRating={minRating ?? ''}
-      minExperience={minExperience ?? ''}
-      sort={sort}
-      onChange={onRefineChange}
-      onSortChange={onChangeSort}
-      onReset={resetRefine}
-      dirty={refineDirty}
-    />
-  );
+  // Propriétés communes aux deux rendus : le panneau est affiché deux fois,
+  // en colonne fixe sur desktop et dans le Sheet sur mobile. Seul le second
+  // reçoit la fermeture, l'autre n'a rien à fermer.
+  const refineProps = {
+    available: available ?? '',
+    minRating: minRating ?? '',
+    minExperience: minExperience ?? '',
+    sort,
+    onChange: onRefineChange,
+    onSortChange: onChangeSort,
+    onReset: resetRefine,
+    dirty: refineDirty,
+  };
 
   return (
     <div>
@@ -134,7 +135,7 @@ export function SearchPage() {
           </section>
 
           <aside className="hidden lg:block lg:sticky lg:top-23 space-y-4">
-            {refinePanel}
+            <SearchRefineFilters {...refineProps} />
           </aside>
         </div>
 
@@ -150,19 +151,25 @@ export function SearchPage() {
           total={results?.total ?? 0}
         />
 
+        {/* Les deux feuilles se referment sur validation : les résultats sont à
+            jour derrière, le panneau n'a plus rien à apporter et il masque
+            la liste qu'on vient de mettre à jour. */}
         <Sheet open={searchOpen} onOpenChange={setSearchOpen} side="bottom">
           <div className="space-y-4 overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900">Recherche</h2>
-            <div onSubmit={() => setSearchOpen(false)}>
-              <SearchFilters variant="sheet" initial={{ trade, zone, city, keyword: q }} searching={loading} />
-            </div>
+            <SearchFilters
+              variant="sheet"
+              initial={{ trade, zone, city, keyword: q }}
+              searching={loading}
+              onApply={() => setSearchOpen(false)}
+            />
           </div>
         </Sheet>
 
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen} side="bottom">
           <div className="space-y-4 overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900">Filtres</h2>
-            {refinePanel}
+            <SearchRefineFilters {...refineProps} onApply={() => setFiltersOpen(false)} />
           </div>
         </Sheet>
       </div>
