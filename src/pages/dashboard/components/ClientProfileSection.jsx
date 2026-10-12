@@ -34,7 +34,7 @@ function Detail({ label, value }) {
 }
 
 export function ClientProfileSection({ user }) {
-  const { refresh, logout } = useAuthContext();
+  const { refresh } = useAuthContext();
   const { toast } = useNotification();
   const { open: openModal } = useAuthModal();
 
@@ -165,14 +165,6 @@ export function ClientProfileSection({ user }) {
       <div className="sm:hidden space-y-4">
         <Button variant="outline" size="md" className="w-full" onClick={() => openModal('change-password')}>
           Changer le mot de passe
-        </Button>
-        <Button
-          variant="outline"
-          size="md"
-          className="w-full lg:col-start-1 lg:row-start-3"
-          onClick={logout}
-        >
-          Se déconnecter
         </Button>
       </div>
     </div>

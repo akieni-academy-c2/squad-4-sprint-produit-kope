@@ -9,6 +9,12 @@ import * as controller from './reports.controller.js';
 
 const router = Router();
 
+// Suivi et retrait de ses propres signalements. Même chemin que la lecture
+// publique des avis : l'auteur est déduit de la session, jamais du corps.
+router.get('/reports/mine', requireAuth, validate(listReportsQuerySchema, 'query'), controller.mine);
+
+router.delete('/reports/:id', requireAuth, validate(idParamSchema, 'params'), controller.remove);
+
 // Traitement côté administrateur
 router.get('/admin/reports', requireRole('admin'), validate(listReportsQuerySchema, 'query'), controller.list);
 router.patch(

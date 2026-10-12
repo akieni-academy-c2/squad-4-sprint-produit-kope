@@ -123,6 +123,67 @@ export async function countGrouped({ status, q }, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
+/**
+ * Signalements déposés par un utilisateur, avec le nom du professionnel.
+ *
+ * Séparée de `list` : celle-ci est la vue administrateur, groupée par
+ * professionnel et motivée par la modération. Ici le client veut savoir ce que
+ * *lui* a déposé et sur qui, pour pouvoir le retirer.
+ */
+export async function listByReporter(reporterId, { limit, offset, status, q } = {}, db = pool) {
+  const conditions = ['r.reporter_id = $1'];
+  const values = [reporterId];
+
+  if (status) {
+    values.push(status);
+    conditions.push(`r.status = $${values.length}`);
+  }
+  if (q) {
+    values.push(`%${q}%`);
+    conditions.push(`(p.display_name ILIKE $${values.length} OR r.message ILIKE $${values.length})`);
+  }
+
+  values.push(limit, offset);
+  const { rows } = await db.query(
+    `SELECT r.id, r.professional_id AS "professionalId",
+            p.display_name AS "professionalName",
+            pu.avatar_url AS "professionalAvatarUrl",
+            r.reason, r.message, r.status,
+            r.created_at AS "createdAt", r.resolved_at AS "resolvedAt",
+            COUNT(*) OVER()::int AS total
+       FROM account_reports r
+       JOIN professionals p ON p.user_id = r.professional_id
+       JOIN users pu ON pu.id = r.professional_id
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY r.created_at DESC, r.id DESC
+      LIMIT $${values.length - 1} OFFSET $${values.length}`,
+    values,
+  );
+  return rows;
+}
+
+export async function countByReporter(reporterId, db = pool) {
+  const { rows } = await db.query(
+    'SELECT COUNT(*)::int AS count FROM account_reports WHERE reporter_id = $1',
+    [reporterId],
+  );
+  return Number(rows[0]?.count ?? 0);
+}
+
+/**
+ * Suppression par l'auteur du signalement.
+ *
+ * `resolved_at` est remis à null : le signalement redevient « en attente »,
+ * donc un administrateur le revoit plutôt que de le traiter comme clos.
+ */
+export async function deleteByReporter(id, reporterId, db = pool) {
+  const { rowCount } = await db.query(
+    'DELETE FROM account_reports WHERE id = $1 AND reporter_id = $2',
+    [id, reporterId],
+  );
+  return rowCount > 0;
+}
+
 export async function setStatus(id, status, db = pool) {
   const { rows } = await db.query(
     `UPDATE account_reports

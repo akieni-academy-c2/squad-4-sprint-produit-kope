@@ -31,10 +31,41 @@ export function createReview(professionalId, payload) {
   );
 }
 
-export function getMyReviews({ page = 1, pageSize = 20 } = {}) {
+export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalId, visibility } = {}) {
   return callApi(
-    () => api.get('/reviews/mine', { page, pageSize }),
+    () =>
+      api.get('/reviews/mine', {
+        page,
+        pageSize,
+        ...(q ? { q } : {}),
+        ...(rating ? { rating } : {}),
+        ...(professionalId ? { professionalId } : {}),
+        ...(visibility && visibility !== 'all' ? { visibility } : {}),
+      }),
     async () => ({ items: [], total: 0, page, pageSize, totalPages: 1 }),
+  );
+}
+
+/** Correction d'un avis. La note est renvoyée en entier par le sélecteur. */
+export function updateReview(reviewId, payload) {
+  return callApi(
+    () => api.patchJson(`/reviews/${reviewId}`, payload).then((r) => r.review),
+    async () => ({ ...payload, id: reviewId, updatedAt: new Date().toISOString() }),
+  );
+}
+
+/** Masque ou réaffiche un avis sans toucher à son texte. */
+export function setReviewVisibility(reviewId, isHidden) {
+  return callApi(
+    () => api.patchJson(`/reviews/${reviewId}/visibility`, { isHidden }).then((r) => r.review),
+    async () => ({ id: reviewId, isHidden, updatedAt: new Date().toISOString() }),
+  );
+}
+
+export function deleteReview(reviewId) {
+  return callApi(
+    () => api.del(`/reviews/${reviewId}`),
+    async () => null,
   );
 }
 

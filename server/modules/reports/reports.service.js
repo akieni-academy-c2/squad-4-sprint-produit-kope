@@ -54,3 +54,26 @@ export async function setReportStatus(id, status) {
   if (!report) throw ApiError.notFound('Signalement introuvable');
   return report;
 }
+
+export async function myReports(reporterId, { status, q, ...pagination }) {
+  const rows = await repository.listByReporter(reporterId, {
+    limit: pagination.pageSize,
+    offset: offsetOf(pagination),
+    status,
+    q,
+  });
+  return paginateSafely(rows, pagination, () => repository.countByReporter(reporterId));
+}
+
+/**
+ * Retrait d'un signalement par son auteur.
+ *
+ * 404 et non 403 : comme pour les avis, confirmer l'existence d'un signalement
+ * d'autrui permettrait d'énumérer les signalements du site. La suppression est
+ * refusée aussi bien quand le signalement est absent que quand il est celui de
+ * quelqu'un d'autre.
+ */
+export async function deleteMyReport(id, reporterId) {
+  const deleted = await repository.deleteByReporter(id, reporterId);
+  if (!deleted) throw ApiError.notFound('Signalement introuvable');
+}

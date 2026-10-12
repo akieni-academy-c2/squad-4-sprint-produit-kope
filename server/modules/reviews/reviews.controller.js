@@ -15,6 +15,25 @@ export async function mine(req, res) {
   res.json(await service.mine(requiredUserId(req), req.validated.query));
 }
 
+export async function update(req, res) {
+  const review = await service.updateReview(req.validated.params.id, requiredUserId(req), req.validated.body);
+  res.json({ review });
+}
+
+export async function setVisibility(req, res) {
+  const review = await service.setReviewVisibility(
+    req.validated.params.id,
+    requiredUserId(req),
+    req.validated.body.isHidden,
+  );
+  res.json({ review });
+}
+
+export async function remove(req, res) {
+  await service.deleteReview(req.validated.params.id, requiredUserId(req));
+  res.status(204).end();
+}
+
 export async function byClient(req, res) {
   const viewer = currentUser(req);
   const isSelf = viewer && String(viewer.id) === String(req.validated.params.id);

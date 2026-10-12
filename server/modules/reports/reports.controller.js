@@ -15,3 +15,12 @@ export async function setStatus(req, res) {
   const report = await service.setReportStatus(req.validated.params.id, req.validated.body.status);
   res.json({ report });
 }
+
+export async function mine(req, res) {
+  res.json(await service.myReports(requiredUserId(req), req.validated.query));
+}
+
+export async function remove(req, res) {
+  await service.deleteMyReport(req.validated.params.id, requiredUserId(req));
+  res.status(204).end();
+}
