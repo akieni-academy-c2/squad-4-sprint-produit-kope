@@ -77,7 +77,10 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
       onClick={(e) => e.stopPropagation()}
     >
       <DialogLabelContext.Provider value={labelId}>
-        <div className="mb-4 flex shrink-0 items-start gap-3">
+        {/* mb-3 et non mb-4 : la marge du panneau s'y ajoute. Sur le modal
+            d'avis, p-5 + mb-4 laissait 36px sous le titre — le tiers de
+            l'écran sur un sheet. */}
+        <div className="mb-3 flex shrink-0 items-start gap-3">
           {header
             ? cloneElement(header, { className: cn(header.props.className, 'mb-0 min-w-0 flex-1') })
             : <span className="flex-1" />}
@@ -95,8 +98,11 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
             hauteur naturelle et la colonne déborde au lieu de défiler. */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{childArray}</div>
 
+        {/* pt-3 suffit : le filet sépare déjà le bouton du contenu. mt-4 + pt-4
+            empilaient 32px au-dessus du bouton, sur un panneau déjà
+            rembourré. */}
         {footer && (
-          <div className="mt-4 shrink-0 border-t border-gray-100 pt-4">{footer}</div>
+          <div className="mt-3 shrink-0 border-t border-gray-100 pt-3">{footer}</div>
         )}
       </DialogLabelContext.Provider>
     </div>
@@ -104,7 +110,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
 }
 
 export function DialogHeader({ className, children }) {
-  return <div className={cn('mb-4 space-y-1.5', className)}>{children}</div>;
+  return <div className={cn('mb-4 space-y-1', className)}>{children}</div>;
 }
 
 export function DialogTitle({ className, children }) {
