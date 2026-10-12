@@ -102,48 +102,50 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
     );
 
 
+  // La carte ne rend pas de <li> : la sémantique de liste appartient au parent
+  // qui possède la <ul>. Le rendre ici imbriquait deux <li> dans SearchResults,
+  // qui enveloppe déjà chaque ligne, et laissait une <Link> nue comme enfant
+  // direct de <ul> en mode grille.
   return (
-    <li>
-      <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
-        <Card className={cn(
-          'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
-        )}>
-        <ProfileMedia item={item} homePreview={homePreview} />
-        <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1.5">
-              <div className="text-[20px] font-extrabold tracking-tight text-gray-900">
-                {item.displayName}
-              </div>
-              <p className="text-sm text-gray-700">
-                <span className="font-semibold text-primary-700">{item.trade}</span>
-                {(item.zones || []).length > 0 && (
-                  <> · <span>{(item.zones || []).slice(0, 2).join(' · ')}</span></>
-                )}
-              </p>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-700">
-                {item.yearsExperience != null && (
-                  <span>{item.yearsExperience} an{item.yearsExperience > 1 ? 's' : ''} d'expérience</span>
-                )}
-                {cnt > 0 && (
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
-                    <StarRating value={avg} size="sm" />
-                    {avg.toFixed(1)} ({cnt} avis)
-                  </span>
-                )}
-              </div>
+    <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+      <Card className={cn(
+        'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
+      )}>
+      <ProfileMedia item={item} homePreview={homePreview} />
+      <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 space-y-1.5">
+            <div className="text-[20px] font-extrabold tracking-tight text-gray-900">
+              {item.displayName}
+            </div>
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold text-primary-700">{item.trade}</span>
+              {(item.zones || []).length > 0 && (
+                <> · <span>{(item.zones || []).slice(0, 2).join(' · ')}</span></>
+              )}
+            </p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-700">
+              {item.yearsExperience != null && (
+                <span>{item.yearsExperience} an{item.yearsExperience > 1 ? 's' : ''} d'expérience</span>
+              )}
+              {cnt > 0 && (
+                <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
+                  <StarRating value={avg} size="sm" />
+                  {avg.toFixed(1)} ({cnt} avis)
+                </span>
+              )}
             </div>
           </div>
-
-          <div className="mt-auto flex items-center justify-between pt-1">
-            <Availability isAvailable={item.isAvailable} />
-            <span className="inline-flex items-center justify-center rounded-[10px] border border-[#dfe5e2] bg-[#f5f7f6] px-4 py-2.5 text-sm font-bold text-gray-900 transition group-hover:bg-white">
-              Afficher le profil
-            </span>
-          </div>
         </div>
+
+        <div className="mt-auto flex items-center justify-between pt-1">
+          <Availability isAvailable={item.isAvailable} />
+          <span className="inline-flex items-center justify-center rounded-[10px] border border-[#dfe5e2] bg-[#f5f7f6] px-4 py-2.5 text-sm font-bold text-gray-900 transition group-hover:bg-white">
+            Afficher le profil
+          </span>
+        </div>
+      </div>
       </Card>
-      </Link>
-    </li>
+    </Link>
   );
 }

@@ -53,6 +53,9 @@ export function SearchResults({ data, listMode = true }) {
     );
 
 
+  // Chaque <li> est fourni ici, pas par la carte : une carte ne peut pas savoir
+  // si son appelant l'a déjà enveloppée. Les deux modes rendent les mêmes
+  // enveloppes, seules les classes de la <ul> diffèrent.
   const cards = listMode ? (
     <ul className="space-y-3 sm:space-y-4">
       {items.map((item) => (
@@ -69,7 +72,9 @@ export function SearchResults({ data, listMode = true }) {
   ) : (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <ProfessionalCard key={item.id} item={item} mode="grid" />
+        <li key={item.id}>
+          <ProfessionalCard item={item} mode="grid" />
+        </li>
       ))}
     </ul>
   );

@@ -164,7 +164,7 @@ export function Navbar() {
                       <NavLink
                         to={item.to}
                         onClick={() => setOpen(false)}
-                        className="flex items-center gap-2.5 rounded border border-gray-300 bg-white/25 px-3 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
+                        className="flex items-center gap-2.5 rounded-md border border-gray-300 bg-white/25 px-3 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                       >
                         <Search size={16} aria-hidden className="shrink-0 text-gray-400" />
                         {item.label}
@@ -180,7 +180,10 @@ export function Navbar() {
                       onClick={() => setOpen(false)}
                       className={({ isActive }) =>
                         cn(
-                          'flex items-center gap-2.5 rounded px-3 py-2.5 text-sm font-medium transition focus-ring',
+                          'flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition focus-ring',
+                          // La recherche garde le rayon des cartes (12px) même
+                          // déconnecté, où elle n'est plus distinguée par un cadre.
+                          item.to === ROUTES.SEARCH ? 'rounded-md' : 'rounded',
                           isActive
                             ? 'bg-primary-50 text-primary-700'
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
@@ -196,35 +199,36 @@ export function Navbar() {
             </ul>
           </nav>
 
-          {/* Toute action liée à l'utilisateur tient dans une seule card en bas :
-              même surface, même traitement, pas de pied de page qui s'éparpille
-              en boutons colorés de tailles différentes. */}
+          {/* Le pied ne change pas de forme selon la session : un filet le sépare
+              toujours de la navigation. Seule la fiche utilisateur mérite une
+              card — pour un visiteur, ce sont deux portes d'entrée, pas une
+              identité à afficher. */}
           <div className="border-t border-gray-100 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            <Card className="overflow-hidden p-1.5">
-              {loading ? (
-                <div className="h-14 w-full animate-pulse rounded bg-gray-100" />
-              ) : !user ? (
-                // Mêmes composants et mêmes variantes que la barre desktop :
-                // l'invité reconnaît l'action avant même de lire l'écran.
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="md"
-                    className="flex-1"
-                    onClick={() => { setOpen(false); openModal('login'); }}
-                  >
-                    Se connecter
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    className="flex-1"
-                    onClick={() => { setOpen(false); openModal('register-client'); }}
-                  >
-                    S'inscrire
-                  </Button>
-                </div>
-              ) : (
+            {loading ? (
+              <div className="h-14 w-full animate-pulse rounded-md bg-gray-100" />
+            ) : !user ? (
+              // Mêmes composants et mêmes variantes que la barre desktop :
+              // l'invité reconnaît l'action avant même de lire l'écran.
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="w-full"
+                  onClick={() => { setOpen(false); openModal('login'); }}
+                >
+                  Se connecter
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
+                  className="w-full"
+                  onClick={() => { setOpen(false); openModal('register-client'); }}
+                >
+                  S&apos;inscrire
+                </Button>
+              </div>
+            ) : (
+              <Card className="overflow-hidden p-1.5">
                 <div className="flex flex-col gap-0.5">
                   <div className="flex items-center gap-3 px-3 py-2">
                     <UserAvatar user={user} name={name} className="h-10 w-10 shrink-0" />
@@ -252,8 +256,8 @@ export function Navbar() {
                     Se déconnecter
                   </button>
                 </div>
-              )}
-            </Card>
+              </Card>
+            )}
           </div>
         </div>
       </Sheet>
