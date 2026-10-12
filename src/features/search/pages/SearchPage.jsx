@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/Button.jsx';
 import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { SearchFilters } from '../components/SearchFilters.jsx';
 import { SearchRefineFilters } from '../components/SearchRefineFilters.jsx';
 import { Sheet } from '@/shared/components/ui/Sheet.jsx';
-import { Search, SlidersHorizontal } from 'lucide-react';
 import { SearchResults } from '../components/SearchResults.jsx';
+import { SearchActionBar } from '../components/SearchActionBar.jsx';
 import { useSearch } from '../hooks/useSearch.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
@@ -75,7 +74,12 @@ export function SearchPage() {
 
   return (
     <div>
-      <div className="container-kop page-padding">
+      {/* pb-20 : la barre fixe mesure 64px (48px de bouton + 8px de marge
+          interne), plus l'espace sûr de l'iPhone. pb-24 laissait 32px
+          d'inutile sous la pagination sur mobile ; 80px suffisent à ce que
+          la dernière page reste atteignable sans coller à la barre.
+          lg:pb-8 la désactive sur desktop, où la barre est masquée. */}
+      <div className="container-kop page-padding pb-20 lg:pb-8">
         <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
           <aside className="hidden lg:block lg:sticky lg:top-23 space-y-4">
             <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
@@ -89,38 +93,19 @@ export function SearchPage() {
               {trade || zone || city ? 'Professionnels' : 'Trouver un professionnel'}
             </h1>
 
-            {/* Le compteur et l'accès aux filtres partagent la même ligne sur
-                mobile : c'est le seul endroit où l'on sait qu'il y a des
-                résultats, donc le seul endroit utile pour proposer de les
-                affiner. Le bouton reste visible sans résultat — il sert aussi
-                à changer de métier ou de zone pour élargir la recherche. */}
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                {results?.total > 0 && (
-                  <>
-                    <p className="text-md font-semibold uppercase tracking-[0.12em]">
-                      {results?.total ?? 0} Résultats
-                    </p>
-                    <p className="text-xs">
-                      Disponibles d'abord, puis note et date de mise à jour décroissantes.
-                    </p>
-                  </>
-                )}
+            {/* Compteur seul : l'accès aux filtres est porté par la barre fixe
+                du bas, sur toute la hauteur de la page. Un bouton ici le
+                doublait et disparaissait dès le premier défilement. */}
+            {results?.total > 0 && (
+              <div>
+                <p className="text-md font-semibold uppercase tracking-[0.12em]">
+                  {results?.total ?? 0} Résultats
+                </p>
+                <p className="text-xs">
+                  Disponibles d'abord, puis note et date de mise à jour décroissantes.
+                </p>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="shrink-0 lg:hidden"
-                onClick={() => setFiltersOpen(true)}
-                aria-label="Ouvrir les filtres de recherche"
-              >
-                <SlidersHorizontal size={16} aria-hidden />
-                Filtres
-                {refineDirty && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary-500" aria-hidden />
-                )}
-              </Button>
-            </div>
+            )}
 
             {loading && (
               <div className="space-y-4" aria-busy="true">
@@ -153,18 +138,17 @@ export function SearchPage() {
           </aside>
         </div>
 
-        {/* Deux surfaces, deux Sheets : sur mobile, le bouton flottant donne accès à
-            la recherche (colonne de gauche sur desktop) et le bouton « Filtres »
-            à l'affinage (colonne de droite). Un seul Sheet qui empilait les
-            deux obligeait à faire défiler pour atteindre l'un ou l'autre. */}
-        <Button
-          type="button"
-          aria-label="Rechercher"
-          onClick={() => setSearchOpen(true)}
-          className="fixed! bottom-4 left-1/2 z-40 -translate-x-1/2 h-14 w-[90%] lg:hidden"
-        >
-          <Search size={18} aria-hidden /> Rechercher
-        </Button>
+        {/* Sur mobile, les deux surfaces de la page sont atteintes par la barre
+            fixe du bas : le champ de recherche (colonne de gauche sur desktop)
+            et l'icône de filtres (colonne de droite). Le bouton flottant
+            « Rechercher » qui les ouvrait toutes les deux est retiré. */}
+        <SearchActionBar
+          onSearchClick={() => setSearchOpen(true)}
+          onFiltersClick={() => setFiltersOpen(true)}
+          keyword={q ?? ''}
+          filtersActive={refineDirty}
+          total={results?.total ?? 0}
+        />
 
         <Sheet open={searchOpen} onOpenChange={setSearchOpen} side="bottom">
           <div className="space-y-4 overflow-y-auto">
