@@ -64,10 +64,7 @@ export function AuthModal() {
 
   return (
     <Dialog open={mode != null} onOpenChange={(o) => !o && close()}>
-      <DialogContent className="max-w-4xl p-2 " onClose={close}>
-        {/* Nom accessible du dialogue. Le titre est déjà porté visuellement par
-            chaque formulaire ; celui-ci le déclare une seule fois pour le lecteur
-            d'écran, qui doit savoir quelle fenêtre vient de s'ouvrir. */}
+      <DialogContent className="max-w-4xl p-2  " onClose={close}>
         <DialogTitle className="sr-only">{DIALOG_LABEL[mode] ?? 'Compte'}</DialogTitle>
         <div className="grid lg:grid-cols-2 lg:items-start min-h-140">
           <aside className="relative hidden h-full lg:flex flex-col justify-between gap-3 overflow-hidden rounded-[16px] bg-radial from-[#28604B] to-[#183E30] p-2 text-white">
@@ -97,11 +94,6 @@ export function AuthModal() {
                 {side.description}
               </p>
             </div>
-            {/* flex-1 et non h-full : le panneau est en `justify-between` avec le titre
-                au-dessus. Une card en h-full mesurerait 100% de la hauteur
-                du panneau et repousserait le titre hors du cadre — le panneau
-                étant en overflow-hidden, il disparaitrait. flex-1 lui donne la
-                hauteur restante, l'image occupe alors toute la card. */}
             <Card className="relative z-10 flex flex-1 flex-col overflow-hidden rounded-sm! border-0! transition">
               <div className="relative h-full overflow-hidden ">
                 <ImageWithSkeleton

@@ -57,7 +57,7 @@ export function DialogContent({ className, children, onClose, ref: forwardedRef 
       // dans le vide et le dialogue n'aurait pas de nom du tout.
       aria-labelledby={labelId}
       className={cn(
-        'relative w-full rounded-t-3xl bg-white p-2 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-(--shadow-pop) animate-scale-in sm:rounded-3xl',
+        'relative w-full rounded-t-3xl bg-white p-2  shadow-(--shadow-pop) animate-scale-in sm:rounded-3xl',
         className,
       )}
       onClick={(e) => e.stopPropagation()}

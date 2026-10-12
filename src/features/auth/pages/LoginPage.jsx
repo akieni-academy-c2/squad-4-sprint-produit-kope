@@ -126,9 +126,8 @@ export function LoginPage() {
   return (
     <div className="container-kop page-padding ">
       <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16 min-h-[72vh]">
-        {/* Left illustration */}
         <div className="hidden lg:block">
-          <div className="rounded-[32px] bg-kop-mint p-10 h-full max-w-[520px] relative overflow-hidden">
+          <div className="rounded-4xl bg-kop-mint p-10 h-full max-w-130 relative overflow-hidden">
             <p className="text-xs font-bold uppercase tracking-wider text-primary-800/70">KOP</p>
             <h2 className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
               Retrouvez votre
