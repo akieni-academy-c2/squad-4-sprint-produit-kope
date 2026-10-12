@@ -1,78 +1,192 @@
-import { Flag, Phone, Star, User } from 'lucide-react';
+import { Flag, Phone, Star } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
+import { KpiCard, StatGroup } from '@/shared/components/ui';
+import { StarRating } from '@/shared/components/ui/StarRating.jsx';
+import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
+import { formatDateFr } from '@/shared/utils';
 import { getMyReviews } from '@/features/reviews/services/reviews.service.js';
 import { getMyContacts } from '@/features/contacts/services/contacts.service.js';
+import { getMyReports } from '@/features/reports/services/reports.service.js';
+
+const RECENT_COUNT = 4;
+
+/** État vide des listes : bordure pointillée, comme dans l'espace admin. */
+function Empty({ children }) {
+  return (
+    <p className="rounded-[14px] border border-dashed border-gray-200 bg-[#f7faf8] p-6 text-center text-sm text-gray-500">
+      {children}
+    </p>
+  );
+}
+
+function ReviewLine({ review, onClick }) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex w-full cursor-pointer items-center gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 text-left transition hover:border-primary-200 hover:shadow-sm focus-ring"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-gray-900">
+            {review.professionalName}
+          </span>
+          {review.comment && (
+            <span className="mt-0.5 block truncate text-xs text-gray-500">{review.comment}</span>
+          )}
+        </span>
+        <span className="flex shrink-0 items-center gap-1.5">
+          <StarRating value={review.rating} size="sm" />
+          <span className="text-xs text-gray-400">{formatDateFr(review.createdAt)}</span>
+        </span>
+      </button>
+    </li>
+  );
+}
+
+function ContactLine({ contact, onClick }) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex w-full cursor-pointer items-center gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 text-left transition hover:border-primary-200 hover:shadow-sm focus-ring"
+      >
+        <UserAvatar
+          user={{ firstName: contact.firstName, lastName: contact.lastName }}
+          src={contact.avatarUrl}
+          name={contact.displayName}
+          className="h-10 w-10 shrink-0"
+          iconSize={18}
+          fallbackClassName="bg-primary-100 text-primary-700"
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-gray-900">
+            {contact.displayName || 'Utilisateur'}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-gray-500">
+            {contact.tradeName && <span className="truncate">{contact.tradeName}</span>}
+            {contact.phone && (
+              <>
+                {contact.tradeName && <span aria-hidden>·</span>}
+                <Phone size={12} className="shrink-0" aria-hidden />
+                <span className="truncate">{contact.phone}</span>
+              </>
+            )}
+          </span>
+        </span>
+        <span className="shrink-0 text-xs text-gray-400">{formatDateFr(contact.createdAt)}</span>
+      </button>
+    </li>
+  );
+}
 
 /**
  * Vue d'ensemble du compte client.
  *
- * Elle ne duplique pas les sections : elle les rend atteignables et dit en un
- * coup d'œil ce que le compte contient. Les compteurs servent de raccourci —
- * « 4 avis » évite d'ouvrir la section pour le découvrir.
+ * Même rythme que la vue d'ensemble de l'administration : des groupes titrés
+ * (`StatGroup`) qui ouvrent la section qu'ils résument. Trois compteurs pour
+ * savoir si une section mérite qu'on y aille, puis les dernières lignes de
+ * chaque section pour voir de quoi il s'agit sans changer d'onglet.
  */
-export function ClientOverviewSection({ user, onNavigate }) {
-  // `pageSize: 1` suffit : seul `total` est lu, inutile de rapatrier les avis.
+export function ClientOverviewSection({ onNavigate }) {
   const { data, loading, error } = useAsyncData(async () => {
-    const [reviews, contacts] = await Promise.all([
-      getMyReviews({ pageSize: 1 }),
-      getMyContacts({ pageSize: 1 }),
+    const [reviews, contacts, reports] = await Promise.all([
+      getMyReviews({ pageSize: RECENT_COUNT }),
+      getMyContacts({ pageSize: RECENT_COUNT }),
+      getMyReports({ pageSize: RECENT_COUNT }),
     ]);
     return {
-      reviews: reviews?.total ?? 0,
-      contacts: contacts?.total ?? 0,
+      reviews: reviews?.items ?? [],
+      reviewsTotal: reviews?.total ?? 0,
+      contacts: contacts?.items ?? [],
+      contactsTotal: contacts?.total ?? 0,
+      reportsTotal: reports?.total ?? 0,
     };
   }, []);
 
-  const firstName = user?.firstName ?? '';
-  const tiles = [
-    { id: 'profil', label: 'Mon profil', hint: 'Photo, téléphone, mot de passe', icon: User },
-    { id: 'avis', label: 'Mes avis', hint: `${data?.reviews ?? 0} déposé${(data?.reviews ?? 0) > 1 ? 's' : ''}`, icon: Star },
-    { id: 'contacts', label: 'Mes contacts', hint: `${data?.contacts ?? 0} professionnel${(data?.contacts ?? 0) > 1 ? 's' : ''}`, icon: Phone },
-    { id: 'signalements', label: 'Mes signalements', hint: 'Suivre ou retirer un signalement', icon: Flag },
-  ];
+  const recentReviews = data?.reviews.slice(0, RECENT_COUNT) ?? [];
+  const recentContacts = data?.contacts.slice(0, RECENT_COUNT) ?? [];
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Vue d'ensemble</h2>
-        {firstName && (
-          <p className="mt-1 text-sm text-gray-600">
-            Bonjour {firstName}, voici ce que contient votre compte.
-          </p>
-        )}
-      </div>
+    <div className="space-y-4">
+      <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Vue d'ensemble</h2>
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2" aria-busy="true">
-          {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-24 w-full rounded-md" />
-          ))}
+      <StatGroup title="Mon activité">
+        {/* Colonne et non rangée : chaque compteur porte une phrase qui ne
+            tient pas sur un tiers de largeur. */}
+        <div className="grid gap-3 sm:grid-cols-3">
+          <KpiCard
+            label="Avis déposés"
+            value={loading ? '–' : data?.reviewsTotal ?? 0}
+            hint="Modifiables et masquables"
+            icon={<Star size={12} aria-hidden />}
+            onClick={() => onNavigate?.('avis')}
+          />
+          <KpiCard
+            label="Professionnels rencontrés"
+            value={loading ? '–' : data?.contactsTotal ?? 0}
+            hint="Appels et messages WhatsApp"
+            icon={<Phone size={12} aria-hidden />}
+            onClick={() => onNavigate?.('contacts')}
+          />
+          <KpiCard
+            label="Signalements"
+            value={loading ? '–' : data?.reportsTotal ?? 0}
+            hint="Suivi de traitement"
+            icon={<Flag size={12} aria-hidden />}
+            onClick={() => onNavigate?.('signalements')}
+          />
         </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {tiles.map(({ id, label, hint, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onNavigate?.(id)}
-              className="group flex cursor-pointer items-center gap-3 rounded-md border border-gray-200 bg-white p-4 text-left transition hover:border-primary-300 hover:bg-primary-50/40 focus-ring"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 transition group-hover:bg-primary-100 group-hover:text-primary-500">
-                <Icon size={20} aria-hidden />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-bold text-gray-900">{label}</span>
-                <span className="block truncate text-xs text-gray-500">{hint}</span>
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+      </StatGroup>
+
+      <StatGroup title="Derniers avis">
+        {loading ? (
+          <div className="space-y-2" aria-busy="true">
+            {[0, 1].map((i) => (
+              <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
+            ))}
+          </div>
+        ) : recentReviews.length === 0 ? (
+          <Empty>Aucun avis déposé pour l'instant.</Empty>
+        ) : (
+          <ul className="space-y-2">
+            {recentReviews.map((review) => (
+              <ReviewLine
+                key={review.id}
+                review={review}
+                onClick={() => onNavigate?.('avis')}
+              />
+            ))}
+          </ul>
+        )}
+      </StatGroup>
+
+      <StatGroup title="Derniers contacts">
+        {loading ? (
+          <div className="space-y-2" aria-busy="true">
+            {[0, 1].map((i) => (
+              <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
+            ))}
+          </div>
+        ) : recentContacts.length === 0 ? (
+          <Empty>Aucun professionnel contacté pour l'instant.</Empty>
+        ) : (
+          <ul className="space-y-2">
+            {recentContacts.map((contact) => (
+              <ContactLine
+                key={contact.id}
+                contact={contact}
+                onClick={() => onNavigate?.('contacts')}
+              />
+            ))}
+          </ul>
+        )}
+      </StatGroup>
 
       {error && (
         <p className="text-sm text-gray-500">
-          Les compteurs n'ont pas pu être chargés, mais les sections restent accessibles.
+          L'aperçu n'a pas pu être chargé, mais les sections restent accessibles.
         </p>
       )}
     </div>

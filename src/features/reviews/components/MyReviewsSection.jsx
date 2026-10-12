@@ -12,6 +12,8 @@ import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { formatDateFr } from '@/shared/utils';
+import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
+import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import {
   deleteReview,
   getMyReviews,
@@ -90,7 +92,7 @@ function EditRow({ review, onCancel, onSaved }) {
   );
 }
 
-export function MyReviewsSection() {
+export function MyReviewsSection({ rightContainer = null }) {
   const { toast } = useNotification();
   const [q, setQ] = useState('');
   const [rating, setRating] = useState('');
@@ -112,6 +114,16 @@ export function MyReviewsSection() {
   const items = data?.items ?? [];
 
   const refresh = () => setReload((n) => n + 1);
+
+  // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
+  // conditionne l'affichage du bouton « Réinitialiser » du panneau.
+  const dirty = Boolean(q || rating || visibility !== 'all');
+
+  const resetFilters = () => {
+    setQ('');
+    setRating('');
+    setVisibility('all');
+  };
 
   const toggleHidden = async (review) => {
     setPendingId(review.id);
@@ -142,32 +154,59 @@ export function MyReviewsSection() {
     }
   };
 
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes avis</h2>
+  const filters = (searchId) => (
+        <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
+          <div className="divide-y divide-gray-100">
+            <AdminFilterGroup title="Recherche">
+              <SearchInput
+                id={searchId}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onClear={() => setQ('')}
+                placeholder="Professionnel ou texte..."
+                aria-label="Rechercher dans mes avis"
+              />
+            </AdminFilterGroup>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <SearchInput
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Professionnel ou texte"
-          aria-label="Rechercher dans mes avis"
-        />
-        <CustomSelect
-          value={rating}
-          onChange={setRating}
-          options={RATING_OPTIONS}
-          aria-label="Filtrer par note"
-          size="sm"
-        />
-        <CustomSelect
-          value={visibility}
-          onChange={setVisibility}
-          options={VISIBILITY_OPTIONS}
-          aria-label="Filtrer par visibilité"
-          size="sm"
-        />
+            <AdminFilterGroup title="Note">
+              <CustomSelect
+                value={rating}
+                onChange={setRating}
+                options={RATING_OPTIONS}
+                className="w-full"
+                aria-label="Filtrer par note"
+              />
+            </AdminFilterGroup>
+
+            <AdminFilterGroup title="Visibilité">
+              <CustomSelect
+                value={visibility}
+                onChange={setVisibility}
+                options={VISIBILITY_OPTIONS}
+                className="w-full"
+                aria-label="Filtrer par visibilité"
+              />
+            </AdminFilterGroup>
+          </div>
+        </AdminFilterPanel>
+      );
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes avis</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Corrigez, masquez ou retirez un avis que vous avez déposé. Un avis masqué reste
+          dans cette liste et disparaît seulement de la fiche du professionnel.
+        </p>
       </div>
+
+      <AccountSectionLayout
+        ariaLabel="de mes avis"
+        rightContainer={rightContainer}
+        searchId="my-reviews-search"
+        filters={filters}
+      >
 
       <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos avis">
         {items.length === 0 ? (
@@ -252,6 +291,7 @@ export function MyReviewsSection() {
           </ul>
         )}
       </DataState>
+      </AccountSectionLayout>
     </div>
   );
 }

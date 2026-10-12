@@ -1,72 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Ban, CalendarClock, EyeOff, Flag, Phone, Star } from 'lucide-react';
-import { Badge, DataState, UserAvatar } from '@/shared/components/ui';
+import { Badge, DataState, KpiCard, StatGroup as Group, UserAvatar } from '@/shared/components/ui';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { getStats } from '../services/admin.service.js';
 import { cn, formatDateFr } from '@/shared/utils';
 
 const RECENT_COUNT = 4;
-
-
-const GROUP_TONES = {
-  default: 'border-[#e2e8e5] bg-white',
-  primary: 'border-primary-600 bg-primary-500',
-  danger: 'border-danger-500 bg-danger-500',
-  teal: 'border-teal-600 bg-teal-500',
-  neutral: 'border-gray-600 bg-gray-500',
-};
-
-function Group({ title, tone = 'default', children }) {
-  const toned = tone !== 'default';
-
-  return (
-    <section className={cn('rounded-[18px] border p-4', GROUP_TONES[tone] ?? GROUP_TONES.default)}>
-      <h3
-        className={cn(
-          'text-sm font-bold uppercase tracking-[0.08em]',
-          toned ? 'text-white' : 'text-gray-500',
-        )}
-      >
-        {title}
-      </h3>
-      <div className="mt-3">{children}</div>
-    </section>
-  );
-}
-
-function KpiCard({ label, value, hint, onClick, tone = 'default', icon = null, footer = null }) {
-  const clickable = typeof onClick === 'function';
-  const Wrapper = clickable ? 'button' : 'div';
-
-  return (
-    <Wrapper
-      {...(clickable ? { type: 'button', onClick } : {})}
-      className={cn(
-        'rounded-[18px] border bg-white p-4',
-        clickable &&
-          'block w-full text-left transition hover:border-primary-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-primary-500',
-        tone === 'danger' ? 'border-rose-200 bg-rose-50/50' : 'border-[#e2e8e5]',
-      )}
-    >
-      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-gray-500">
-        {icon}
-        {label}
-      </p>
-      <p
-        className={cn(
-          'mt-2 text-3xl font-extrabold tracking-tight',
-          tone === 'danger' && Number(value) > 0 ? 'text-rose-600' : 'text-gray-900',
-        )}
-      >
-        {value ?? '-'}
-      </p>
-      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
-      {footer && <div className="mt-1.5">{footer}</div>}
-    </Wrapper>
-  );
-}
 
 function TodoCard({ label, value, hint, onClick }) {
   const pending = Number(value ?? 0) > 0;

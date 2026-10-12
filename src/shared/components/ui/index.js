@@ -25,4 +25,5 @@ export { SidebarNav } from './SidebarNav.jsx';
 export { MultiSelect } from './MultiSelect.jsx';
 export { PasswordInput } from './PasswordInput.jsx';
 export { UserAvatar } from './UserAvatar.jsx';
+export { KpiCard, StatGroup } from './KpiCard.jsx';
 export { Tooltip } from './Tooltip.jsx';

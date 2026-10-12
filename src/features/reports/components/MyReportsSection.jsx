@@ -11,11 +11,13 @@ import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { REPORT_STATUS_OPTIONS, reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
 import { formatDateFr } from '@/shared/utils';
+import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
+import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteMyReport, getMyReports } from '../services/reports.service.js';
 
 const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'neutral' };
 
-export function MyReportsSection() {
+export function MyReportsSection({ rightContainer = null }) {
   const { toast } = useNotification();
   const [status, setStatus] = useState('');
   const [q, setQ] = useState('');
@@ -27,6 +29,15 @@ export function MyReportsSection() {
   );
   const items = data?.items ?? [];
   const [pendingId, setPendingId] = useState(null);
+
+  // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
+  // conditionne l'affichage du bouton « Réinitialiser » du panneau.
+  const dirty = Boolean(q || status);
+
+  const resetFilters = () => {
+    setQ('');
+    setStatus('');
+  };
 
   const remove = async (id) => {
     setPendingId(id);
@@ -41,27 +52,49 @@ export function MyReportsSection() {
     }
   };
 
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes signalements</h2>
+  const filters = (searchId) => (
+        <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
+          <div className="divide-y divide-gray-100">
+            <AdminFilterGroup title="Recherche">
+              <SearchInput
+                id={searchId}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onClear={() => setQ('')}
+                placeholder="Professionnel ou texte..."
+                aria-label="Rechercher dans mes signalements"
+              />
+            </AdminFilterGroup>
 
-      {/* La recherche et le statut sont posés sur place : changer un filtre ne
-          doit pas navigationner, seulement recharger la liste. */}
-      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
-        <SearchInput
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Rechercher un professionnel"
-          aria-label="Rechercher dans mes signalements"
-        />
-        <CustomSelect
-          value={status}
-          onChange={setStatus}
-          options={REPORT_STATUS_OPTIONS}
-          aria-label="Filtrer par statut"
-          size="sm"
-        />
+            <AdminFilterGroup title="Statut">
+              <CustomSelect
+                value={status}
+                onChange={setStatus}
+                options={REPORT_STATUS_OPTIONS}
+                className="w-full"
+                aria-label="Filtrer par statut"
+              />
+            </AdminFilterGroup>
+          </div>
+        </AdminFilterPanel>
+      );
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes signalements</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Les profils que vous avez signalés et l'état de leur traitement. Un signalement
+          retiré n'a plus d'effet sur la fiche.
+        </p>
       </div>
+
+      <AccountSectionLayout
+        ariaLabel="de mes signalements"
+        rightContainer={rightContainer}
+        searchId="my-reports-search"
+        filters={filters}
+      >
 
       <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos signalements">
         {items.length === 0 ? (
@@ -112,6 +145,7 @@ export function MyReportsSection() {
           </ul>
         )}
       </DataState>
+      </AccountSectionLayout>
     </div>
   );
 }
