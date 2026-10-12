@@ -22,10 +22,13 @@ import { RealizationsSection } from '../components/public/RealizationsSection.js
 import { ReviewsBlock } from '../components/public/ReviewsBlock.jsx';
 import { CITY, getProfileView } from '../components/public/profileView.js';
 
+/** `isAction` : ces entrées ouvrent une fenêtre, elles ne naviguent pas.
+ *  La barre ne doit donc jamais les marquer comme actives — ni visuellement,
+ *  ni via `aria-current`, qui signifie « vous êtes ici ». */
 const NAV_SECTIONS = [
   { id: 'profile', label: 'Profil', icon: User },
-  { id: 'avis', label: 'Avis', icon: Star },
-  { id: 'contact', label: 'Contact', icon: MessageCircle },
+  { id: 'avis', label: 'Avis', icon: Star, isAction: true },
+  { id: 'contact', label: 'Contact', icon: MessageCircle, isAction: true },
 ];
 
 export function ProfessionalPublicPage() {
@@ -93,7 +96,9 @@ export function ProfessionalPublicPage() {
   const goNext = () => setOpenIndex((cur) => (cur == null ? 0 : (cur + 1) % photos.length));
 
   const scrollToSection = (sectionId) => {
-    setActiveSection(sectionId);
+    // `avis` et `contact` ouvrent une fenêtre : la page n'a pas changé de
+    // section, marquer l'une d'elles comme active laisserait la barre sur une
+    // destination quittée dès la fermeture du dialogue.
     if (sectionId === 'avis') {
       setReviewsOpen(true);
       return;
@@ -103,6 +108,7 @@ export function ProfessionalPublicPage() {
       else openAuthModal('login');
       return;
     }
+    setActiveSection(sectionId);
     if (sectionId === 'profile') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
