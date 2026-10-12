@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { EyeOff, Pencil, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
@@ -16,6 +15,7 @@ import { formatDateFr } from '@/shared/utils';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteReview, getMyReviews, setReviewVisibility } from '../services/reviews.service.js';
+import { UserAvatar } from '@/shared/components/ui/index.js';
 
 const VISIBILITY_OPTIONS = [
   { value: 'all', label: 'Tous mes avis' },
@@ -97,41 +97,41 @@ export function MyReviewsSection({ rightContainer = null }) {
   };
 
   const filters = (searchId) => (
-        <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
-          <div className="divide-y divide-gray-100">
-            <AdminFilterGroup title="Recherche">
-              <SearchInput
-                id={searchId}
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                onClear={() => setQ('')}
-                placeholder="Professionnel ou texte..."
-                aria-label="Rechercher dans mes avis"
-              />
-            </AdminFilterGroup>
+    <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
+      <div className="divide-y divide-gray-100">
+        <AdminFilterGroup title="Recherche">
+          <SearchInput
+            id={searchId}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onClear={() => setQ('')}
+            placeholder="Professionnel ou texte..."
+            aria-label="Rechercher dans mes avis"
+          />
+        </AdminFilterGroup>
 
-            <AdminFilterGroup title="Note">
-              <CustomSelect
-                value={rating}
-                onChange={setRating}
-                options={RATING_OPTIONS}
-                className="w-full"
-                aria-label="Filtrer par note"
-              />
-            </AdminFilterGroup>
+        <AdminFilterGroup title="Note">
+          <CustomSelect
+            value={rating}
+            onChange={setRating}
+            options={RATING_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par note"
+          />
+        </AdminFilterGroup>
 
-            <AdminFilterGroup title="Visibilité">
-              <CustomSelect
-                value={visibility}
-                onChange={setVisibility}
-                options={VISIBILITY_OPTIONS}
-                className="w-full"
-                aria-label="Filtrer par visibilité"
-              />
-            </AdminFilterGroup>
-          </div>
-        </AdminFilterPanel>
-      );
+        <AdminFilterGroup title="Visibilité">
+          <CustomSelect
+            value={visibility}
+            onChange={setVisibility}
+            options={VISIBILITY_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par visibilité"
+          />
+        </AdminFilterGroup>
+      </div>
+    </AdminFilterPanel>
+  );
 
   return (
     <div className="space-y-5">
@@ -149,83 +149,98 @@ export function MyReviewsSection({ rightContainer = null }) {
         filters={filters}
       >
 
-      <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos avis">
-        {items.length === 0 ? (
-          <EmptyState
-            title="Aucun avis"
-            description={
-              q || rating || visibility !== 'all'
-                ? 'Aucun avis ne correspond à ces filtres.'
-                : 'Les avis que vous laissez aux professionnels apparaîtront ici.'
-            }
-          />
-        ) : (
-          <ul className="space-y-3">
-            {items.map((review) => (
-              <li key={review.id}>
-                <Card className={`p-4 ${review.isHidden ? 'opacity-70' : ''}`}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <p className="truncate font-semibold text-gray-900">{review.professionalName}</p>
-                      {review.isHidden && (
-                        <Badge variant="neutral" size="sm">
-                          Masqué
-                        </Badge>
-                      )}
+        <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos avis">
+          {items.length === 0 ? (
+            <EmptyState
+              title="Aucun avis"
+              description={
+                q || rating || visibility !== 'all'
+                  ? 'Aucun avis ne correspond à ces filtres.'
+                  : 'Les avis que vous laissez aux professionnels apparaîtront ici.'
+              }
+            />
+          ) : (
+            <ul className="space-y-3">
+              {items.map((review) => (
+                <li key={review.id}>
+                  <Card className={`p-4 ${review.isHidden ? 'opacity-70' : ''}`}>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <div>
+                          
+                        <UserAvatar className="w-8 h-8" src={review.professionalAvatar} alt={review.professionalName} />
+                        <p className="truncate font-semibold text-gray-900">{review.professionalName}</p>
+                        </div>
+                        {review.isHidden && (
+                          <Badge variant="neutral" size="sm">
+                            Masqué
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="inline-flex items-center gap-1.5">
+                        <StarRating value={review.rating} size="sm" />
+                        <span className="text-sm text-gray-500">{review.rating}/5</span>
+                      </span>
                     </div>
-                    <span className="inline-flex items-center gap-1.5">
-                      <StarRating value={review.rating} size="sm" />
-                      <span className="text-sm text-gray-500">{review.rating}/5</span>
-                    </span>
-                  </div>
 
-                  {review.comment && (
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-600">{review.comment}</p>
-                  )}
-                  <p className="mt-1 text-xs text-gray-400">{formatDateFr(review.createdAt)}</p>
+                    {review.comment && (
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-600">{review.comment}</p>
+                    )}
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditingId(review.id)}
-                      className="text-gray-600 hover:bg-gray-100"
-                    >
-                      <Pencil size={16} aria-hidden />
-                      Modifier
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      loading={pendingId === review.id}
-                      onClick={() => toggleHidden(review)}
-                      className="text-gray-600 hover:bg-gray-100"
-                    >
-                      <EyeOff size={16} aria-hidden />
-                      {review.isHidden ? 'Réafficher' : 'Masquer'}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      loading={pendingId === review.id}
-                      onClick={() => remove(review)}
-                      className="text-gray-500 hover:bg-rose-50 hover:text-danger-500"
-                    >
-                      <Trash2 size={16} aria-hidden />
-                      Supprimer
-                    </Button>
-                  </div>
-                </Card>
-              </li>
-            ))}
-          </ul>
-        )}
-      </DataState>
+                    <div className='flex items-center justify-between border-t border-gray-200 pt-3 mt-3'>
+                      <p className=" text-xs text-gray-400">{formatDateFr(review.createdAt)}</p>
+
+
+                      <div className=" w-fit flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-200/20 p-1">
+                        <button
+                          type="button"
+                          onClick={() => setEditingId(review.id)}
+                          title="Modifier"
+                          aria-label={`Modifier l'avis sur ${review.professionalName}`}
+                          className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 focus-ring"
+                        >
+                          <Pencil size={16} aria-hidden />
+                        </button>
+
+                        <span aria-hidden className="h-4 w-px bg-gray-300" />
+
+                        <button
+                          type="button"
+                          disabled={pendingId === review.id}
+                          onClick={() => toggleHidden(review)}
+                          title={review.isHidden ? 'Réafficher' : 'Masquer'}
+                          aria-label={
+                            review.isHidden
+                              ? `Réafficher l'avis sur ${review.professionalName}`
+                              : `Masquer l'avis sur ${review.professionalName}`
+                          }
+                          className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
+                        >
+                          {review.isHidden ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
+                        </button>
+
+                        <span aria-hidden className="h-4 w-px bg-gray-300" />
+
+                        <button
+                          type="button"
+                          disabled={pendingId === review.id}
+                          onClick={() => remove(review)}
+                          title="Supprimer"
+                          aria-label={`Supprimer l'avis sur ${review.professionalName}`}
+                          className="cursor-pointer rounded p-1.5 text-gray-500 transition hover:bg-white hover:text-danger-500 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
+                        >
+                          <Trash2 size={16} aria-hidden />
+                        </button>
+                      </div>
+                    </div>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )}
+        </DataState>
       </AccountSectionLayout>
 
-      {/* Correction : le formulaire du dépôt d'avis, réutilisé tel quel. Deux
-          versions de la même saisie divergeraient sur la validation de la note
-          et le compteur de caractères. */}
       <Dialog open={editingId != null} onOpenChange={(o) => !o && setEditingId(null)}>
         <DialogContent className="max-w-lg p-5" onClose={() => setEditingId(null)}>
           <DialogHeader>
