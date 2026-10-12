@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { cn } from '@/shared/utils';
 import { useOverlay } from './useOverlay.js';
 
-export function Sheet({ open, onOpenChange, side = 'right', children }) {
+export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
   const innerRef = useRef(null);
   const { render, show, panelRef } = useOverlay({
     open,
@@ -28,6 +28,7 @@ export function Sheet({ open, onOpenChange, side = 'right', children }) {
     >
       <div
         ref={setRefs}
+        id={id}
         role="dialog"
         aria-modal="true"
         className={cn(

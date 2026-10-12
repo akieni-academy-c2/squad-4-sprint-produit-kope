@@ -95,7 +95,11 @@ export function DemoRoleSwitcher() {
           <div
             ref={menuRef}
             role="menu"
-            className="absolute right-0 z-40 mt-2 w-60 origin-top-right overflow-hidden rounded-sm border border-gray-200 bg-white shadow-[var(--shadow-pop)] animate-scale-in"
+            // Sur mobile le bouton est collé au logo, donc à gauche : un menu
+            // ancré à droite s'ouvrirait par-delà le bord gauche de l'écran.
+            // Il s'ouvre donc vers la droite, et `max-w-[calc(100vw-7rem)]` le
+            // borne à la place disponible entre le bouton et le bord droit.
+            className="absolute left-0 z-40 mt-2 w-60 max-w-[calc(100vw-7rem)] origin-top-left overflow-hidden rounded-sm border border-gray-200 bg-white shadow-[var(--shadow-pop)] animate-scale-in sm:right-0 sm:left-auto sm:max-w-none sm:origin-top-right"
           >
             <div className="border-b border-gray-100 px-4 py-3">
               <p className="text-sm font-semibold text-gray-800">

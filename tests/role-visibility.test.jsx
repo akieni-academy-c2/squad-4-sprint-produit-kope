@@ -144,12 +144,14 @@ describe('Recherche dans la navigation', () => {
     expect(searchLinks.length).toBeGreaterThan(0);
   });
 
-  it('n\'affiche qu\'un seul lien de recherche', () => {
-    // Desktop et menu mobile en comptent deux, mais chaque surface une seule.
+  it('n\'affiche qu\'un seul lien de recherche par surface', () => {
+    // Trois surfaces portent la recherche : la nav desktop, l'icône du header
+    // mobile et la ligne du Sheet. Chacune n'en propose qu'une, mais le total
+    // monte à trois — d'où le plafond, et non « au plus deux ».
     for (const role of [null, 'client', 'professional', 'admin']) {
       connectAs(role);
       const desktop = render(<Navbar />);
-      expect(desktop.split('href="/search"').length - 1, String(role)).toBeLessThanOrEqual(2);
+      expect(desktop.split('href="/search"').length - 1, String(role)).toBeLessThanOrEqual(3);
     }
   });
 });
