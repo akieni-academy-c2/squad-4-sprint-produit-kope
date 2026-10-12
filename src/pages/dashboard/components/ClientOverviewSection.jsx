@@ -105,8 +105,10 @@ export function ClientOverviewSection({ onNavigate }) {
     };
   }, []);
 
-  const recentReviews = data?.reviews.slice(0, RECENT_COUNT) ?? [];
-  const recentContacts = data?.contacts.slice(0, RECENT_COUNT) ?? [];
+  // La limite est déjà portée par `pageSize` : le serveur ne renvoie que
+  // RECENT_COUNT lignes. Le `slice` serait une seconde règle à maintenir.
+  const recentReviews = data?.reviews ?? [];
+  const recentContacts = data?.contacts ?? [];
 
   return (
     <div className="space-y-4">
@@ -140,49 +142,54 @@ export function ClientOverviewSection({ onNavigate }) {
         </div>
       </StatGroup>
 
-      <StatGroup title="Derniers avis">
-        {loading ? (
-          <div className="space-y-2" aria-busy="true">
-            {[0, 1].map((i) => (
-              <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
-            ))}
-          </div>
-        ) : recentReviews.length === 0 ? (
-          <Empty>Aucun avis déposé pour l'instant.</Empty>
-        ) : (
-          <ul className="space-y-2">
-            {recentReviews.map((review) => (
-              <ReviewLine
-                key={review.id}
-                review={review}
-                onClick={() => onNavigate?.('avis')}
-              />
-            ))}
-          </ul>
-        )}
-      </StatGroup>
+      {/* Sur desktop, les deux listes se répondent côte à côte : on compare d'un
+          coup d'œil ses avis et ses contacts. En dessous, elles s'empilent —
+          deux colonnes de lignes tronquées n'apporteraient rien. */}
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
+        <StatGroup title="Derniers avis">
+          {loading ? (
+            <div className="space-y-2" aria-busy="true">
+              {[0, 1].map((i) => (
+                <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
+              ))}
+            </div>
+          ) : recentReviews.length === 0 ? (
+            <Empty>Aucun avis déposé pour l'instant.</Empty>
+          ) : (
+            <ul className="space-y-2">
+              {recentReviews.map((review) => (
+                <ReviewLine
+                  key={review.id}
+                  review={review}
+                  onClick={() => onNavigate?.('avis')}
+                />
+              ))}
+            </ul>
+          )}
+        </StatGroup>
 
-      <StatGroup title="Derniers contacts">
-        {loading ? (
-          <div className="space-y-2" aria-busy="true">
-            {[0, 1].map((i) => (
-              <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
-            ))}
-          </div>
-        ) : recentContacts.length === 0 ? (
-          <Empty>Aucun professionnel contacté pour l'instant.</Empty>
-        ) : (
-          <ul className="space-y-2">
-            {recentContacts.map((contact) => (
-              <ContactLine
-                key={contact.id}
-                contact={contact}
-                onClick={() => onNavigate?.('contacts')}
-              />
-            ))}
-          </ul>
-        )}
-      </StatGroup>
+        <StatGroup title="Derniers contacts">
+          {loading ? (
+            <div className="space-y-2" aria-busy="true">
+              {[0, 1].map((i) => (
+                <div key={i} className="h-[66px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />
+              ))}
+            </div>
+          ) : recentContacts.length === 0 ? (
+            <Empty>Aucun professionnel contacté pour l'instant.</Empty>
+          ) : (
+            <ul className="space-y-2">
+              {recentContacts.map((contact) => (
+                <ContactLine
+                  key={contact.id}
+                  contact={contact}
+                  onClick={() => onNavigate?.('contacts')}
+                />
+              ))}
+            </ul>
+          )}
+        </StatGroup>
+      </div>
 
       {error && (
         <p className="text-sm text-gray-500">
