@@ -71,3 +71,18 @@ export function sectionFromPathname(pathname, sections) {
 export function sectionHref(base, id, rootId) {
   return id && id !== rootId ? `${base}/${id}` : base;
 }
+
+/**
+ * Cadre de la colonne centrale d'un tableau de bord.
+ *
+ * Posé **une fois par page**, autour de la colonne centrale, et non dans chaque
+ * section : seules les sections qui passent par un layout de filtres y
+ * seraient encadrées, et l'onglet « Vue d'ensemble » ou « Mon profil » —
+ * dépourvus de filtres — resterait sur le fond nu. On changeait alors de page
+ * en changeant d'onglet.
+ *
+ * Fond gris doux et bordure : la vue est posée sur le fond de la page comme une
+ * feuille sur un bureau. Les cartes blanches de la section contrastent alors
+ * avec leur conteneur au lieu de s'y confondre.
+ */
+export const DASHBOARD_FRAME = 'rounded-md border border-gray-200 bg-gray-50/60 p-4 sm:p-5';

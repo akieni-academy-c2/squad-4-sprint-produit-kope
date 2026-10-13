@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { DASHBOARD_FRAME, ROUTES } from '@/shared/lib/constants.js';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
@@ -73,7 +73,7 @@ export function AdminDashboardPage() {
           <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
-        <section className="min-w-0">
+        <section className={cn('min-w-0', DASHBOARD_FRAME)}>
           <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
           {section === 'overview' && <AdminStats onNavigate={openSection} />}
           {section === 'professionals' && (

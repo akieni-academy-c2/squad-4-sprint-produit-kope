@@ -1,5 +1,5 @@
 import { Skeleton } from './Skeleton.jsx';
-import { Button } from './Button.jsx';
+import { ErrorState } from './ErrorState.jsx';
 
 export function DataState({ loading, error, errorPrefix = 'Erreur de chargement', onRetry, children }) {
   if (loading)
@@ -13,18 +13,12 @@ export function DataState({ loading, error, errorPrefix = 'Erreur de chargement'
 
   if (error)
     return (
-      <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-        <p>
-          {errorPrefix} : {error.message || 'réessayez'}
-        </p>
-        {onRetry && (
-          <div className="mt-3">
-            <Button variant="outline" size="sm" onClick={onRetry}>
-              Réessayer
-            </Button>
-          </div>
-        )}
-      </div>
+      <ErrorState
+        title={errorPrefix}
+        message={error.message || 'Impossible de charger ces données. Réessayez.'}
+        onAction={onRetry}
+        className="my-4"
+      />
     );
 
   return children;

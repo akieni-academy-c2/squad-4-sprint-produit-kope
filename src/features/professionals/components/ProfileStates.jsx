@@ -1,5 +1,5 @@
-import { Button } from '@/shared/components/ui/Button.jsx';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
+import { ErrorState } from '@/shared/components/ui/ErrorState.jsx';
 
 
 export function ProfileLoadingState() {
@@ -14,12 +14,13 @@ export function ProfileLoadingState() {
 
 export function ProfileErrorState({ error, onRetry }) {
   return (
-    <div className="mx-auto max-w-xl rounded-2xl border border-rose-200 bg-rose-50 p-6 shadow-sm text-rose-700">
-      <h1 className="text-xl font-bold">Erreur de chargement du profil</h1>
-      <p className="mt-1 text-sm">{error?.message || 'Impossible de charger votre profil.'}</p>
-      <div className="mt-4 flex gap-2">
-        <Button onClick={onRetry}>Réessayer</Button>
-      </div>
+    <div className="container-kop py-10">
+      <ErrorState
+        title="Erreur de chargement du profil"
+        message={error?.message || 'Impossible de charger votre profil. Réessayez.'}
+        onAction={onRetry}
+        className="mx-auto max-w-xl"
+      />
     </div>
   );
 }

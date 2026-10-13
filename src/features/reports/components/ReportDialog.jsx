@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Flag } from 'lucide-react';
 import { Button, CustomSelect, FormField, Modal } from '@/shared/components/ui';
+import { ErrorState } from '@/shared/components/ui/ErrorState.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 
 /**
@@ -98,13 +99,12 @@ export function ReportDialog({
         />
 
         {error && (
-          <p
-            role="alert"
-            className="flex items-center gap-2 rounded-sm bg-danger-50 px-3 py-2 text-sm text-danger-500"
-          >
-            <Flag size={14} aria-hidden />
-            {error}
-          </p>
+          <ErrorState
+            title="Signalement non envoyé"
+            message={error}
+            compact
+            className="bg-danger-50/40"
+          />
         )}
 
         {notice && <p className="text-xs text-gray-500">{notice}</p>}
