@@ -21,7 +21,7 @@ import { submitLabel } from '@/shared/utils/submitLabel.js';
 import { extractInitial, getFullName } from './profile/profileForm.js';
 
 export function ProfileEditor({ profile, user, onUpdated }) {
-  const { trades, zones, loading: loadingRefs } = useReferenceData();
+  const { trades, zones, cities, loading: loadingRefs } = useReferenceData();
   const { toast } = useNotification();
   const { refresh } = useAuthContext();
   const { open: openModal } = useAuthModal();
@@ -171,6 +171,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
           setField={setField}
           trades={trades}
           zones={zones}
+          cities={cities}
           loadingRefs={loadingRefs}
           account={{ firstName, lastName, phone, email }}
           accountErrors={identityForm.errors}

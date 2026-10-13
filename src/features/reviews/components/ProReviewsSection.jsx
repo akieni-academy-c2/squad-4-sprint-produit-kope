@@ -8,7 +8,10 @@ import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { fullNameInitials } from '@/shared/utils';
+import { REVIEW_REPORT_REASON_OPTIONS } from '@/shared/constants/reports.js';
 import { listReviews } from '../services/reviews.service.js';
+import { reportReview } from '@/features/reports/services/reports.service.js';
+import { ReportDialog } from '@/features/reports/components/ReportDialog.jsx';
 import { ReviewAuthorHistory } from './ReviewCardHeader.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
@@ -65,6 +68,8 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
   const [q, setQ] = useState('');
   const [rating, setRating] = useState('');
   const [sort, setSort] = useState('recent');
+  const [reportingId, setReportingId] = useState(null);
+  const [reportedIds, setReportedIds] = useState([]);
 
   const dirty = Boolean(q || rating || sort !== 'recent');
 
@@ -196,6 +201,25 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
                   <p className="text-xs text-gray-400">
                     {new Date(review.createdAt).toLocaleDateString('fr-FR')}
                   </p>
+
+                  {/* Signaler l'avis, et rien d'autre : le professionnel
+                      consulte et conteste, il ne modifie ni ne supprime. Faire
+                      ou refaire un avis sur sa propre fiche n'aurait aucun sens
+                      et fausserait sa note moyenne. */}
+                  {reportedIds.includes(review.id) ? (
+                    <p className="text-xs font-medium text-gray-400">
+                      Avis signalé — en attente de traitement
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setReportingId(review.id)}
+                      className="cursor-pointer self-start text-xs font-medium text-gray-400 underline-offset-4 transition hover:text-danger-500 hover:underline"
+                    >
+                      Signaler cet avis
+                    </button>
+                  )}
+
                   <ReviewAuthorHistory review={review} />
                 </Card>
               ))}
@@ -203,6 +227,27 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
           </>
         )}
       </AccountSectionLayout>
+
+      {/* Retirer l'avis est une décision d'administration, pas du professionnel :
+          le signalement ne produit aucun effet immédiat, et le formulaire le
+          dit pour ne pas laisser croire à un retrait automatique. */}
+      <ReportDialog
+        open={reportingId != null}
+        onClose={() => setReportingId(null)}
+        title="Signaler cet avis"
+        description="Votre signalement est transmis à l’administration."
+        reasonOptions={REVIEW_REPORT_REASON_OPTIONS}
+        reasonLabel="Motif du signalement"
+        reasonHelp="Le motif aide l’administration à traiter le signalement."
+        notice="L’avis reste visible en attendant la décision. Seul un administrateur peut le retirer."
+        successMessage="Avis signalé. Merci."
+        submitLabel="Signaler cet avis"
+        submit={async (payload) => {
+          const id = reportingId;
+          await reportReview(id, payload);
+          setReportedIds((prev) => [...prev, id]);
+        }}
+      />
     </div>
   );
 }

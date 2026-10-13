@@ -37,6 +37,25 @@ export async function existsPair(senderId, recipientId, db = pool) {
   return rowCount > 0;
 }
 
+/**
+ * Les deux comptes ont-ils déjà eu un contact, quel que soit le sens ?
+ *
+ * `existsPair` ne teste qu'un sens : un client qui a écrit à un professionnel
+ * ne l'a pas dans l'autre sens. C'est ici qu'on prouve qu'une conversation
+ * existe vraiment avant d'autoriser un signalement depuis la liste des
+ * contacts.
+ */
+export async function hasContactBetween(userA, userB, db = pool) {
+  const { rowCount } = await db.query(
+    `SELECT 1 FROM contacts
+      WHERE (sender_id = $1 AND recipient_id = $2)
+         OR (sender_id = $2 AND recipient_id = $1)
+      LIMIT 1`,
+    [userA, userB],
+  );
+  return rowCount > 0;
+}
+
 export async function markIncomingAsSeen(userId, db = pool) {
   await db.query(
     "UPDATE contacts SET status = 'seen' WHERE recipient_id = $1 AND status = 'new'",

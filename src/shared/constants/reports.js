@@ -8,6 +8,23 @@ export const REPORT_REASON_OPTIONS = [
   { value: 'other', label: 'Autre motif' },
 ];
 
+/**
+ * Motifs de signalement d'un avis.
+ *
+ * Listes distinctes de celles d'un profil : « fausse identité » et « avis
+ * différé » ne visent pas un contenu, et « avis trompeur » n'a pas d'équivalent
+ * pour une fiche. Réutiliser les mêmes options obligerait l'utilisateur à
+ * choisir « faux profil » pour un avis, qui n'a pas de profil.
+ */
+export const REVIEW_REPORT_REASON_OPTIONS = [
+  { value: 'abusive', label: 'Avis insultant ou injurieux' },
+  { value: 'false', label: 'Avis faux ou mensonger' },
+  { value: 'spam', label: 'Spam ou publicité' },
+  { value: 'inappropriate', label: 'Contenu inapproprié' },
+  { value: 'private_info', label: 'Données personnelles Divulgées' },
+  { value: 'other', label: 'Autre motif' },
+];
+
 export const REPORT_STATUS_OPTIONS = [
   { value: '', label: 'Tous les signalements' },
   { value: 'pending', label: 'En attente' },
@@ -16,6 +33,9 @@ export const REPORT_STATUS_OPTIONS = [
 ];
 
 const REASON_LABELS = Object.fromEntries(REPORT_REASON_OPTIONS.map((o) => [o.value, o.label]));
+const REVIEW_REASON_LABELS = Object.fromEntries(
+  REVIEW_REPORT_REASON_OPTIONS.map((o) => [o.value, o.label]),
+);
 
 const STATUS_LABELS = {
   pending: 'En attente',
@@ -24,5 +44,7 @@ const STATUS_LABELS = {
 };
 
 export const reportReasonLabel = (value) => REASON_LABELS[value] ?? value;
+
+export const reviewReportReasonLabel = (value) => REVIEW_REASON_LABELS[value] ?? value;
 
 export const reportStatusLabel = (value) => STATUS_LABELS[value] ?? value;

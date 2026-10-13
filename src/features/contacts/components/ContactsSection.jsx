@@ -13,6 +13,9 @@ import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
+import { REPORT_REASON_OPTIONS } from '@/shared/constants/reports.js';
+import { reportContact } from '@/features/reports/services/reports.service.js';
+import { ReportDialog, ReportTrigger } from '@/features/reports/components/ReportDialog.jsx';
 import { logContact } from '../services/contacts.service.js';
 import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
 
@@ -40,7 +43,7 @@ const CHANNEL_OPTIONS = [
   { value: 'message', label: 'Messages' },
 ];
 
-function ContactRow({ contact, onReach }) {
+function ContactRow({ contact, onReach, onReport, reported }) {
   const name = contact.displayName || 'Utilisateur';
   const { toast } = useNotification();
 
@@ -116,7 +119,17 @@ function ContactRow({ contact, onReach }) {
                 <MessageCircle size={14} aria-hidden /> WhatsApp
               </Button>
             ))}
-          
+
+          {/* Le signalement est réservé au correspondant client : c'est le seul
+              cas où il manque une issue. Un professionnel signalé passe déjà
+              par la fiche publique, qui porte ce geste ; le dupliquer ici
+              ouvrirait deux chemins vers le même signalement. */}
+          {contact.role === 'client' &&
+            (reported ? (
+              <span className="text-[11px] font-medium text-gray-400">Signalé</span>
+            ) : (
+              <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />
+            ))}
         </div>
       </Card>
     </li>
@@ -125,14 +138,15 @@ function ContactRow({ contact, onReach }) {
 
 export function ContactsSection({ rightContainer = null }) {
   const [reload, setReload] = useState(0);
+  const [reporting, setReporting] = useState(null);
+  const [reportedIds, setReportedIds] = useState([]);
   const { data: itemsData, loading, error } = useAsyncData(async () => {
     const data = await getMyContacts();
     return data.items || [];
   }, [reload]);
 
-const items = useMemo(() => itemsData ?? [], [itemsData]);
+  const items = useMemo(() => itemsData ?? [], [itemsData]);
 
- 
   const refresh = () => setReload((n) => n + 1);
 
   const [q, setQ] = useState('');
@@ -223,7 +237,7 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
       <div>
         <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes contacts</h2>
         <p className="mt-1 text-sm text-gray-600">
-          Les professionnels que vous avez appelés ou écrits.
+          Les professionnels et clients que vous avez appelés ou écrits.
         </p>
       </div>
 
@@ -247,12 +261,32 @@ const items = useMemo(() => itemsData ?? [], [itemsData]);
           ) : (
             <ul className="space-y-3">
               {visible.map((c) => (
-                <ContactRow key={c.id} contact={c} onReach={refresh} />
+                <ContactRow
+                  key={c.id}
+                  contact={c}
+                  onReach={refresh}
+                  onReport={setReporting}
+                  reported={reportedIds.includes(c.userId)}
+                />
               ))}
             </ul>
           )}
         </DataState>
       </AccountSectionLayout>
+
+      <ReportDialog
+        open={reporting != null}
+        onClose={() => setReporting(null)}
+        title="Signaler ce contact"
+        description={`Votre signalement concerne ${reporting?.displayName || 'ce contact'} et sera transmis à l’administration.`}
+        reasonOptions={REPORT_REASON_OPTIONS}
+        notice="Le signalement est possible uniquement pour un contact avec qui vous avez déjà échangé."
+        submit={async (payload) => {
+          const id = reporting?.userId;
+          await reportContact(id, payload);
+          setReportedIds((prev) => [...prev, id]);
+        }}
+      />
     </div>
   );
 }

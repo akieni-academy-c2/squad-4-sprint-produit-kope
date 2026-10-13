@@ -5,7 +5,7 @@ import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
 import { getPublishedDetail, canReview } from '../services/professionals.service.js';
 import { ReviewForm, ReviewList } from '@/features/reviews/components/index.js';
 import { listReviews } from '@/features/reviews/services/reviews.service.js';
-import { ReportDialog, ReportTrigger } from '../components/ReportDialog.jsx';
+import { ReportProfessionalDialog, ReportTrigger } from '../components/ReportDialog.jsx';
 import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
@@ -268,7 +268,9 @@ export function ProfessionalPublicPage() {
         </DialogContent>
       </Dialog>
 
-      {reportOpen && <ReportDialog open onClose={() => setReportOpen(false)} professionalId={profile.id} />}
+      {reportOpen && (
+        <ReportProfessionalDialog open onClose={() => setReportOpen(false)} professionalId={profile.id} />
+      )}
 
       <BottomNav
         items={NAV_SECTIONS}

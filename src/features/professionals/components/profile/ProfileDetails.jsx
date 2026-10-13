@@ -33,6 +33,7 @@ export function ProfileDetails({ profile, user }) {
       <ProfileSection title="Informations professionnelles">
         <dl className="divide-y divide-gray-100">
           <ProfileRow label="Métier" value={profile?.tradeName} />
+          <ProfileRow label="Ville" value={profile?.cityName} />
           <ProfileRow label="Zones" value={zoneNames} />
           <ProfileRow label="Expérience" value={formatYearsExperience(profile?.yearsExperience)} />
         </dl>

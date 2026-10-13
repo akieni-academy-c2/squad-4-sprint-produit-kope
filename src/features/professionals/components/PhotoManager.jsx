@@ -1,7 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/shared/components/ui/Button.jsx';
-import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
-import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
 import { Modal } from '@/shared/components/ui/Modal.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { MAX_PHOTOS, ALLOWED_MIME, MAX_FILE_SIZE_BYTES } from '@/shared/lib/constants.js';
@@ -10,89 +8,24 @@ import { AddPhotoSlot } from '@/features/photos/components/AddPhotoSlot.jsx';
 import { PhotoCard } from '@/features/photos/components/PhotoCard.jsx';
 import { PhotoFormModal } from '@/features/photos/components/PhotoFormModal.jsx';
 import { pickFormErrors } from '@/features/photos/components/photoFormErrors.js';
-import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
-import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { cn } from '@/shared/utils';
 
 const MIN_SLOTS = 3;
 
-const SORT_OPTIONS = [
-  { value: 'recent', label: 'Les plus récentes' },
-  { value: 'oldest', label: 'Les plus anciennes' },
-  { value: 'title', label: 'Titre (A → Z)' },
-];
-
-const SORTERS = {
-  recent: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-  oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-  title: (a, b) => (a.title || '').localeCompare(b.title || '', 'fr'),
-};
-
-export function PhotoManager({ photos = [], onChange, rightContainer = null }) {
+// Pas de panneau de filtres ici, contrairement aux autres sections : le
+// portfolio est plafonné (MAX_PHOTOS) et se parcourt d'un regard. Une recherche
+// sur dix éléments n'apporte rien et coûterait une colonne sur desktop.
+export function PhotoManager({ photos = [], onChange }) {
   const { toast } = useNotification();
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [confirmPhoto, setConfirmPhoto] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [q, setQ] = useState('');
-  const [sort, setSort] = useState('recent');
-
-  const dirty = Boolean(q || sort !== 'recent');
-
-  const resetFilters = () => {
-    setQ('');
-    setSort('recent');
-  };
-
-  // Le filtrage porte sur ce qui est affiché, pas sur le compteur de la
-  // limite : « 12/20 » décrit le portfolio, alors que la grille peut n'en
-  // montrer que trois. Les emplacements vides suivent la liste filtrée, sinon
-  // le premier écran serait occupé par trois cases vides.
-  const visiblePhotos = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    const rows = needle
-      ? photos.filter(
-          (p) =>
-            (p.title || '').toLowerCase().includes(needle) ||
-            (p.description || '').toLowerCase().includes(needle) ||
-            (p.caption || '').toLowerCase().includes(needle),
-        )
-      : photos;
-
-    return [...rows].sort(SORTERS[sort] ?? SORTERS.recent);
-  }, [photos, q, sort]);
 
   const remaining = Math.max(0, MAX_PHOTOS - photos.length);
   const full = remaining <= 0;
-  const slotCount = full ? 0 : Math.max(MIN_SLOTS - visiblePhotos.length, 1);
-
-  const filters = (searchId) => (
-    <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
-      <div className="divide-y divide-gray-100">
-        <AdminFilterGroup title="Recherche">
-          <SearchInput
-            id={searchId}
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onClear={() => setQ('')}
-            placeholder="Titre ou description..."
-            aria-label="Rechercher dans mes photos"
-          />
-        </AdminFilterGroup>
-
-        <AdminFilterGroup title="Trier par">
-          <CustomSelect
-            value={sort}
-            onChange={setSort}
-            options={SORT_OPTIONS}
-            className="w-full"
-            aria-label="Trier mes photos"
-          />
-        </AdminFilterGroup>
-      </div>
-    </AdminFilterPanel>
-  );
+  const slotCount = full ? 0 : Math.max(MIN_SLOTS - photos.length, 1);
 
   const openAdd = () => {
     setEditing(null);
@@ -188,7 +121,7 @@ export function PhotoManager({ photos = [], onChange, rightContainer = null }) {
     <>
       <div className="mb-8 flex items-end justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">Photos de réalisations</h2>
+          <h2 className="text-lg font-bold text-gray-900">Mes réalisations</h2>
           <p className="text-sm text-gray-500">
             Ajoutez jusqu'à <b>{MAX_PHOTOS}</b> photos (JPG ou PNG, 5 Mo max). Une vignette est générée automatiquement.
           </p>
@@ -203,20 +136,8 @@ export function PhotoManager({ photos = [], onChange, rightContainer = null }) {
         </span>
       </div>
 
-      <AccountSectionLayout
-        ariaLabel="de mes photos"
-        rightContainer={rightContainer}
-        searchId="pro-photos-search"
-        filters={filters}
-      >
-        {dirty && visiblePhotos.length !== photos.length && (
-          <p aria-live="polite" className="mb-3 text-sm text-gray-500">
-            {visiblePhotos.length} photo{visiblePhotos.length > 1 ? 's' : ''} sur {photos.length}
-          </p>
-        )}
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {visiblePhotos.map((photo) => (
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {photos.map((photo) => (
             <PhotoCard
               key={photo.id}
               photo={photo}
@@ -227,15 +148,14 @@ export function PhotoManager({ photos = [], onChange, rightContainer = null }) {
           ))}
 
           {Array.from({ length: slotCount }, (_, index) => (
-          <AddPhotoSlot
-            key={`slot-${index}`}
-            slotNumber={photos.length + index + 1}
-            slotCount={slotCount}
-            onClick={openAdd}
-          />
-        ))}
-      </div>
-      </AccountSectionLayout>
+            <AddPhotoSlot
+              key={`slot-${index}`}
+              slotNumber={photos.length + index + 1}
+              slotCount={slotCount}
+              onClick={openAdd}
+            />
+          ))}
+        </div>
 
       <PhotoFormModal
         key={editing ? `edit-${editing.id}` : 'add'}

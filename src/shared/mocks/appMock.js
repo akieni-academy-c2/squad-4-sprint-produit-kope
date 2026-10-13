@@ -719,6 +719,64 @@ export function mockReportProfessional({ professionalId, reporterId = 901, reaso
   return { ...withProName(created), reportCount, autoBlocked, autoSuspended };
 }
 
+// ---------- Signalements d'avis et de correspondants ----------
+
+// File distincte de `MOCK_REPORTS`, comme la table : la cible est un contenu,
+// les effets sont « retirer l'avis » et non « suspendre le compte ». Les
+// confondre ferait porter à l'un les compteurs de l'autre.
+let MOCK_REVIEW_REPORTS = [];
+
+/**
+ * Signalement d'un correspondant, depuis la liste des contacts.
+ *
+ * Même refus que le serveur : sans conversation, on ne signale rien. Sans
+ * cette garde, la démo accepterait n'importe quel identifiant et laisserait
+ * croire que le contrôle existe.
+ */
+export function mockReportContact(userId, { reason, message = null }, reporterId = 901) {
+  const linked = MOCK_MY_CONTACTS.some(
+    (c) =>
+      (String(c.userId) === String(userId) && String(c.reporterId) === String(reporterId)) ||
+      (String(c.userId) === String(reporterId) && String(c.reporterId) === String(userId)),
+  );
+  if (!linked) throw new Error('Contact introuvable');
+  if (MOCK_REPORTS.some((r) => String(r.professionalId) === String(userId) && String(r.reporterId) === String(reporterId)))
+    throw new Error('Vous avez déjà signalé ce compte');
+
+  const created = {
+    id: Math.max(0, ...MOCK_REPORTS.map((r) => r.id)) + 1,
+    professionalId: Number(userId),
+    reporterId: Number(reporterId),
+    targetRole: 'client',
+    reason,
+    message: message || null,
+    status: 'pending',
+    resolvedAt: null,
+    createdAt: new Date().toISOString(),
+  };
+  MOCK_REPORTS = [created, ...MOCK_REPORTS];
+  return withProName(created);
+}
+
+/** Signalement d'un avis reçu par le professionnel. */
+export function mockReportReview(reviewId, { reason, message = null }, reporterId = 901) {
+  if (MOCK_REVIEW_REPORTS.some((r) => String(r.reviewId) === String(reviewId)))
+    throw new Error('Vous avez déjà signalé cet avis');
+
+  const created = {
+    id: MOCK_REVIEW_REPORTS.length + 1,
+    reviewId: Number(reviewId),
+    reporterId: Number(reporterId),
+    reason,
+    message: message || null,
+    status: 'pending',
+    resolvedAt: null,
+    createdAt: new Date().toISOString(),
+  };
+  MOCK_REVIEW_REPORTS = [created, ...MOCK_REVIEW_REPORTS];
+  return created;
+}
+
 export function mockAdminReports({ page = 1, pageSize = 20, status, query = '' } = {}) {
   const q = String(query || '').trim().toLowerCase();
   let rows = MOCK_REPORTS.map(withProName);

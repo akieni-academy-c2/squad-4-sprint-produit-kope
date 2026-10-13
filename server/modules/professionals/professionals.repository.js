@@ -35,6 +35,7 @@ const PROFILE_COLUMNS = {
   description: 'description',
   yearsExperience: 'years_experience',
   whatsapp: 'whatsapp',
+  cityId: 'city_id',
 };
 
 export async function updateProfile(userId, fields, db = pool) {
@@ -69,6 +70,8 @@ export async function findOwnProfile(userId, db = pool) {
             t.name AS "tradeName",
             p.description,
             p.years_experience AS "yearsExperience",
+            p.city_id AS "cityId",
+            c.name AS "cityName",
             COALESCE(p.whatsapp, u.phone) AS whatsapp,
             p.is_available AS "isAvailable",
             p.is_hidden AS "isHidden",
@@ -78,6 +81,9 @@ export async function findOwnProfile(userId, db = pool) {
        FROM professionals p
        JOIN users u ON u.id = p.user_id
        JOIN trades t ON t.id = p.trade_id
+       -- LEFT JOIN : un profil créé avant la colonne city_id n'a pas de ville.
+       -- Un JOIN le ferait disparaître de son propre tableau de bord.
+       LEFT JOIN cities c ON c.id = p.city_id
       WHERE p.user_id = $1`,
     [userId],
   );

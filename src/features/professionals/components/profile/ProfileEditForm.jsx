@@ -27,6 +27,7 @@ export function ProfileEditForm({
   setField,
   trades,
   zones,
+  cities = [],
   loadingRefs,
   account,
   accountErrors = {},
@@ -89,6 +90,18 @@ export function ProfileEditForm({
             inputMode="tel"
           />
           <FormField
+            id="pe-whatsapp"
+            label="Numéro WhatsApp"
+            error={errors.whatsapp}
+            placeholder="+242... (laisser vide pour utiliser votre numéro de compte)"
+            value={values.whatsapp}
+            onChange={(e) => setField('whatsapp', e.target.value)}
+            inputMode="tel"
+          />
+          {/* En dernier : c'est le canal de repli, celui que le professionnel
+              renseigne le moins souvent. Laisser le téléphone et WhatsApp côte à
+              côte, puis l'e-mail, suit l'ordre de préférence du contact. */}
+          <FormField
             id="pe-email"
             type="email"
             label="E-mail"
@@ -97,16 +110,6 @@ export function ProfileEditForm({
             error={accountErrors.email}
             liveStatus={statusOf(accountStatuses, 'email')}
             placeholder="vous@exemple.com"
-            help="Facultatif — vos clients l’utilisent pour vous écrire."
-          />
-          <FormField
-            id="pe-whatsapp"
-            label="Numéro WhatsApp"
-            error={errors.whatsapp}
-            placeholder="+242... (laisser vide pour utiliser votre numéro de compte)"
-            value={values.whatsapp}
-            onChange={(e) => setField('whatsapp', e.target.value)}
-            inputMode="tel"
           />
         </div>
       </ProfileSection>
@@ -153,6 +156,27 @@ export function ProfileEditForm({
               aria-label="Métier"
               aria-invalid={Boolean(errors.tradeId) || undefined}
               aria-describedby={errors.tradeId ? 'pe-trade-error' : undefined}
+            />
+          </FormField>
+
+          {/* Le catalogue vient de l'espace admin : aucune ville n'est saisie en
+              dur, un administrateur peut en ajouter sans intervention du code. */}
+          <FormField id="pe-city" label="Ville" error={errors.cityId}>
+            <CustomSelect
+              id="pe-city"
+              name="cityId"
+              className="w-full"
+              value={values.cityId == null ? '' : String(values.cityId)}
+              placeholder="Choisissez une ville"
+              disabled={loadingRefs}
+              onChange={(value) => setField('cityId', value === '' ? null : value)}
+              options={[
+                { value: '', label: 'Non renseignée' },
+                ...cities.map((c) => ({ value: String(c.id), label: c.name })),
+              ]}
+              aria-label="Ville d’exercice"
+              aria-invalid={Boolean(errors.cityId) || undefined}
+              aria-describedby={errors.cityId ? 'pe-city-error' : undefined}
             />
           </FormField>
           <FormField

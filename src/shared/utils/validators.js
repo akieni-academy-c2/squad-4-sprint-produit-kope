@@ -179,6 +179,12 @@ export const updateProfileSchema = z.object({
       })
       .nullish(),
   ),
+  // Aligné sur `updateProfileSchema` serveur : la ville est facultative,
+  // `null` et `''` signifient tous deux « non renseignée ».
+  cityId: z.preprocess(
+    (v) => (v === '' || v == null ? null : Number(v)),
+    z.number({ error: 'Choisissez une ville' }).int().positive().max(32767).nullish(),
+  ),
   zoneIds: zoneIdsSchema,
 });
 

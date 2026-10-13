@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createReportSchema,
   listReportsQuerySchema,
@@ -9,6 +9,7 @@ import * as service from '../server/modules/reports/reports.service.js';
 import { autoBlockThreshold } from '../server/modules/reports/reports.service.js';
 import * as adminRepository from '../server/modules/admin/admin.repository.js';
 import * as professionalsRepository from '../server/modules/professionals/professionals.repository.js';
+import * as contactsRepository from '../server/modules/contacts/contacts.repository.js';
 import { env } from '../server/config/env.js';
 import {
   MOCK_PROS,
@@ -51,12 +52,15 @@ describe('signalements de profils', () => {
       const rows = [{ id: 3, professionalId: 7, reason: 'spam', message: null, status: 'pending', createdAt: 'now' }];
       const db = { query: vi.fn().mockResolvedValue({ rows }) };
 
-      const result = await repository.create({ professionalId: 7, reporterId: 2, reason: 'spam', message: null }, db);
+      const result = await repository.create({ professionalId: 7, reporterId: 2, reason: 'spam', message: null, targetRole: 'professional' }, db);
 
       const [query, params] = db.query.mock.calls[0];
-      expect(query).toContain('INSERT INTO account_reports (professional_id, reporter_id, reason, message)');
+      // `target_role` fige le rôle de la cible au moment du signalement : un
+      // client qui devient professionnel plus tard ne doit pas requalifier
+      // rétroactivement les signalements reçus avant.
+      expect(query).toContain('INSERT INTO account_reports (professional_id, reporter_id, reason, message, target_role)');
       expect(query).toContain('created_at AS "createdAt"');
-      expect(params).toEqual([7, 2, 'spam', null]);
+      expect(params).toEqual([7, 2, 'spam', null, 'professional']);
       expect(result).toEqual(rows[0]);
     });
 
@@ -94,6 +98,15 @@ describe('signalements de profils', () => {
   });
 
   describe('service', () => {
+    // Rôle des comptes par défaut : l'auteur est un client, la cible un
+    // professionnel. C'est le cas canonique — seul un client fait basculer le
+    // seuil de sanction automatique, ce que couvrent les tests ci-dessous.
+    beforeEach(() => {
+      vi.spyOn(repository, 'targetRoleOf').mockImplementation(async (id) =>
+        String(id) === '2' ? 'client' : 'professional',
+      );
+    });
+
     it('refuse de signaler son propre profil', async () => {
       await expect(service.createReport(7, 7, { reason: 'spam' })).rejects.toMatchObject({ status: 403 });
     });
@@ -129,7 +142,7 @@ describe('signalements de profils', () => {
       vi.spyOn(professionalsRepository, 'existsPublished').mockResolvedValue(true);
       vi.spyOn(repository, 'exists').mockResolvedValue(false);
       vi.spyOn(repository, 'create').mockResolvedValue({ id: 100 });
-      vi.spyOn(repository, 'countByProfessional').mockResolvedValue(autoBlockThreshold() - 1);
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(autoBlockThreshold() - 1);
       const block = vi.spyOn(adminRepository, 'setUserBlocked');
 
       const result = await service.createReport(2, 7, { reason: 'spam' });
@@ -144,7 +157,7 @@ describe('signalements de profils', () => {
       vi.spyOn(professionalsRepository, 'existsPublished').mockResolvedValue(true);
       vi.spyOn(repository, 'exists').mockResolvedValue(false);
       vi.spyOn(repository, 'create').mockResolvedValue({ id: 200 });
-      vi.spyOn(repository, 'countByProfessional').mockResolvedValue(threshold);
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(threshold);
       const block = vi.spyOn(adminRepository, 'setUserBlocked').mockResolvedValue({ id: 7, blockedAt: 'now' });
 
       const result = await service.createReport(2, 7, { reason: 'spam' });
@@ -164,7 +177,7 @@ describe('signalements de profils', () => {
       vi.spyOn(professionalsRepository, 'existsPublished').mockResolvedValue(true);
       vi.spyOn(repository, 'exists').mockResolvedValue(false);
       vi.spyOn(repository, 'create').mockResolvedValue({ id: 300 });
-      vi.spyOn(repository, 'countByProfessional').mockResolvedValue(99);
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(99);
       const block = vi.spyOn(adminRepository, 'setUserBlocked');
       const suspend = vi.spyOn(adminRepository, 'setUserSuspended');
 
@@ -186,6 +199,115 @@ describe('signalements de profils', () => {
 
       await expect(service.setReportStatus(999, 'resolved')).rejects.toMatchObject({ status: 404 });
       spy.mockRestore();
+    });
+
+    // Un professionnel est une partie prenante : il a un intérêt direct à ce
+    // qu'un concurrent soit bloqué. Compter ses signalements au seuil lui
+    // donnerait, avec quelques comptes coordonnés, le moyen de faire
+    // suspendre une fiche en ligne. Ses signalements restent recevables et
+    // visibles — ils ne font pas basculer de compteur.
+    it('ne compte pas les signalements d’un professionnel au seuil de blocage', async () => {
+      repository.targetRoleOf.mockImplementation(async (id) => (String(id) === '2' ? 'professional' : 'client'));
+
+      vi.spyOn(professionalsRepository, 'existsPublished').mockResolvedValue(true);
+      vi.spyOn(repository, 'exists').mockResolvedValue(false);
+      vi.spyOn(repository, 'create').mockResolvedValue({ id: 400 });
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(99);
+      const block = vi.spyOn(adminRepository, 'setUserBlocked');
+      const suspend = vi.spyOn(adminRepository, 'setUserSuspended');
+
+      const result = await service.createReport(2, 7, { reason: 'spam' });
+
+      expect(result.autoBlocked).toBe(false);
+      expect(result.autoSuspended).toBe(false);
+      expect(block).not.toHaveBeenCalled();
+      expect(suspend).not.toHaveBeenCalled();
+
+      block.mockRestore();
+      suspend.mockRestore();
+    });
+
+    it('accepte le signalement d’un professionnel sans le dévaloriser', async () => {
+      repository.targetRoleOf.mockImplementation(async (id) => (String(id) === '2' ? 'professional' : 'client'));
+
+      vi.spyOn(professionalsRepository, 'existsPublished').mockResolvedValue(true);
+      vi.spyOn(repository, 'exists').mockResolvedValue(false);
+      vi.spyOn(repository, 'create').mockResolvedValue({ id: 401 });
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(0);
+
+      const result = await service.createReport(2, 7, { reason: 'spam' });
+
+      // Le signalement existe et est rattaché à la cible : c'est
+      // l'administrateur qui décide, pas le compteur.
+      expect(result.id).toBe(401);
+      expect(result.targetRole).toBe('client');
+    });
+  });
+
+  describe('signalement d’un correspondant', () => {
+    it('exige une conversation réelle avec la cible', async () => {
+      vi.spyOn(contactsRepository, 'hasContactBetween').mockResolvedValue(false);
+      vi.spyOn(repository, 'exists').mockResolvedValue(false);
+
+      // Sans contact, signaler reviendrait à ouvrir un canal aveugle :
+      // n'importe quel identifiant serait acceptable.
+      await expect(service.reportContact(2, 5, { reason: 'spam' })).rejects.toMatchObject({ status: 404 });
+    });
+
+    it('refuse de se signaler soi-même', async () => {
+      await expect(service.reportContact(2, 2, { reason: 'spam' })).rejects.toMatchObject({ status: 403 });
+    });
+
+    it('enregistre le signalement contre un client', async () => {
+      vi.spyOn(contactsRepository, 'hasContactBetween').mockResolvedValue(true);
+      vi.spyOn(repository, 'exists').mockResolvedValue(false);
+      vi.spyOn(repository, 'targetRoleOf').mockImplementation(async (id) => (String(id) === '2' ? 'professional' : 'client'));
+      vi.spyOn(repository, 'create').mockResolvedValue({ id: 500 });
+      vi.spyOn(repository, 'countSanctionable').mockResolvedValue(1);
+      const block = vi.spyOn(adminRepository, 'setUserBlocked');
+
+      const result = await service.reportContact(2, 5, { reason: 'harassment' });
+
+      expect(result.id).toBe(500);
+      expect(result.targetRole).toBe('client');
+      block.mockRestore();
+    });
+  });
+
+  describe('signalement d’un avis', () => {
+    it('refuse un avis qui n’est pas sur la fiche du demandeur', async () => {
+      // La jointure du repository porte le contrôle : un avis reçu par un autre
+      // professionnel n’est simplement pas trouvé.
+      vi.spyOn(repository, 'findReceivedReview').mockResolvedValue(null);
+
+      // 404 et non 403 : ne pas révéler qu'un avis existe ailleurs.
+      await expect(service.reportReview(7, 42, { reason: 'false' })).rejects.toMatchObject({ status: 404 });
+    });
+
+    it('refuse un second signalement du même avis', async () => {
+      vi.spyOn(repository, 'findReceivedReview').mockResolvedValue({ id: 42, clientId: 3 });
+      vi.spyOn(repository, 'reviewReportExists').mockResolvedValue(true);
+
+      await expect(service.reportReview(7, 42, { reason: 'false' })).rejects.toMatchObject({ status: 409 });
+    });
+
+    it('n’applique aucun effet automatique', async () => {
+      vi.spyOn(repository, 'findReceivedReview').mockResolvedValue({ id: 42, clientId: 3, rating: 1 });
+      vi.spyOn(repository, 'reviewReportExists').mockResolvedValue(false);
+      vi.spyOn(repository, 'createReviewReport').mockResolvedValue({ id: 600 });
+      const block = vi.spyOn(adminRepository, 'setUserBlocked');
+      const suspend = vi.spyOn(adminRepository, 'setUserSuspended');
+
+      const result = await service.reportReview(7, 42, { reason: 'false' });
+
+      // Retirer un avis engage la réputation de son auteur autant que celle du
+      // professionnel : c'est une décision humaine, pas un compteur.
+      expect(result.id).toBe(600);
+      expect(block).not.toHaveBeenCalled();
+      expect(suspend).not.toHaveBeenCalled();
+
+      block.mockRestore();
+      suspend.mockRestore();
     });
   });
 

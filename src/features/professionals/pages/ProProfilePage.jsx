@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lucide-react';
+import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
@@ -13,20 +13,25 @@ import { ProfileErrorState, ProfileLoadingState } from '../components/ProfileSta
 import { ProSidebar } from '../components/ProSidebar.jsx';
 import { PublicationStatus } from '../components/PublicationStatus.jsx';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
+import { MyReportsSection } from '@/features/reports/components/MyReportsSection.jsx';
 import { ProReviewsSection } from '@/features/reviews/components/ProReviewsSection.jsx';
 
+// Le profil ferme la liste, comme dans l'espace client : le compte se parcourt
+// du plus utile au plus administratif.
 const NAV_ITEMS = [
   { id: 'overview', label: 'Vue d’ensemble', shortLabel: 'Aperçu', icon: LayoutDashboard },
-  { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
-  { id: 'photos', label: 'Mes photos', shortLabel: 'Photos', icon: ImageIcon },
+  { id: 'photos', label: 'Mes réalisations', shortLabel: 'Réalis.', icon: ImageIcon },
   { id: 'contacts', label: 'Mes contacts', shortLabel: 'Contacts', icon: Phone },
   { id: 'avis', label: 'Mes avis', shortLabel: 'Avis', icon: Star },
+  { id: 'signalements', label: 'Mes signalements', shortLabel: 'Signal.', icon: Flag },
+  { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
 ];
 
 // Sections qui portent des filtres : seules celles-là occupent la colonne de
-// droite, comme dans l'espace client et l'espace admin. Aperçu et profil
-// n'en ont pas, la grille retombe alors à deux colonnes.
-const WITH_FILTERS = new Set(['photos', 'contacts', 'avis']);
+// droite, comme dans l'espace client et l'espace admin. Aperçu et profil n'en
+// ont pas, la grille retombe alors à deux colonnes. Les photos n'ont pas de
+// panneau : elles se parcourent d'un regard, un filtre n'y apporterait rien.
+const WITH_FILTERS = new Set(['contacts', 'avis', 'signalements']);
 
 export function ProProfilePage() {
   const { user } = useAuthContext();
@@ -121,12 +126,16 @@ export function ProProfilePage() {
 
           {active === 'profil' && <ProfileEditor profile={profile} user={user} onUpdated={setProfile} />}
 
-          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} rightContainer={rightEl} />}
+          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} />}
 
           {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
 
           {active === 'avis' && (
             <ProReviewsSection professionalId={profile?.id} rightContainer={rightEl} />
+          )}
+
+          {active === 'signalements' && (
+            <MyReportsSection rightContainer={rightEl} />
           )}
         </main>
 
