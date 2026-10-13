@@ -49,7 +49,7 @@ const SORTERS = {
 // Plafond de la liste reçue. Ces avis viennent de l'endpoint **public** de la
 // fiche, qui n'a pas de filtres : tout est donc filtré et trié côté client sur
 // la page téléchargée. Au-delà de ce nombre, les résultats seraient filtrés
-// sur un sous-ensemble en silence — un professionnel qui filtre ses avis
+// sur un sous-ensemble en silence - un professionnel qui filtre ses avis
 // croirait voir « aucun avis 1 étoile » alors que les plus anciens n'ont pas
 // été chargés. La limite est donc affichée quand elle est atteinte.
 const FETCH_LIMIT = 100;
@@ -64,8 +64,8 @@ const clientName = (review) =>
  * propre pagination.
  *
  * Le composant, et non la section, parce que « Tous » affiche deux blocs
- * côte à côte. Chaque moitié a ses états — l'une peut être vide pendant que
- * l'autre est pleine — et les écrire deux fois les ferait diverger au premier
+ * côte à côte. Chaque moitié a ses états - l'une peut être vide pendant que
+ * l'autre est pleine - et les écrire deux fois les ferait diverger au premier
  * ajustement.
  */
 function ReviewBlock({
@@ -133,7 +133,7 @@ const MERGE_LIMIT = 100;
  *
  * Deux ensembles, parce qu'un professionnel est deux rôles sur la plateforme :
  * il reçoit des avis sur sa fiche, et il en dépose sur celle des autres. Les
- * premiers ne se gèrent pas — il les consulte et les conteste — les seconds
+ * premiers ne se gèrent pas - il les consulte et les conteste - les seconds
  * sont les siens, donc modifiables, masquables et supprimables.
  *
  * Les deux listes partagent `ReviewCard` avec le compte client : même carte,
@@ -225,8 +225,8 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
    * obligent à comparer leurs dates de part et d'autre. Un professionnel veut
    * une chronologie : ce qui s'est passé, dans l'ordre.
    *
-   * `kind` sert seulement à choisir la carte — un avis donné et un avis reçu ne
-   * se gèrent pas pareil — jamais à les séparer dans le rendu.
+   * `kind` sert seulement à choisir la carte - un avis donné et un avis reçu ne
+   * se gèrent pas pareil - jamais à les séparer dans le rendu.
    */
   const merged = useMemo(() => {
     if (origin !== 'all') return [];
@@ -303,7 +303,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
         </AdminFilterGroup>
 
         {/* L'origine vient après la recherche, pas avant. C'est le filtre le
-            plus large — il garde les deux listes — alors que la recherche est le
+            plus large - il garde les deux listes - alors que la recherche est le
             geste que l'utilisateur fait en premier : en dessous, on commence par
             taper. */}
         <AdminFilterGroup title="Origine">

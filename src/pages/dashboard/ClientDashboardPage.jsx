@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Flag, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
+import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { cn } from '@/shared/utils';
@@ -36,7 +36,7 @@ export function ClientDashboardPage() {
 
   // La section vit dans l'URL, pas dans un état local. C'est ce qui rend le
   // rechargement, le bouton « retour » du navigateur et un lien de partage
-  // corrects — trois choses qu'un `useState` ne sait pas faire.
+  // corrects - trois choses qu'un `useState` ne sait pas faire.
   const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_CLIENT, SECTIONS, ROOT_ID);
 
   const [rightEl, setRightEl] = useState(null);
@@ -70,7 +70,7 @@ export function ClientDashboardPage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn(STICKY_TOP, withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 

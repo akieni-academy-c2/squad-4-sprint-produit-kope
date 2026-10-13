@@ -20,8 +20,8 @@ const FOCUSABLE = [
  * `requestAnimationFrame` et un `setTimeout` de 300 ms qui démontrait le
  * portail à la fin. Deux problèmes.
  *
- * Le premier est que la durée d'une animation CSS **vit dans la classe** —
- * `transition-* duration-300` — tandis que le délai de démontage vit dans le
+ * Le premier est que la durée d'une animation CSS **vit dans la classe** -
+ * `transition-* duration-300` - tandis que le délai de démontage vit dans le
  * hook. Les deux chiffres sont écrits à deux endroits, à 60 lignes de distance,
  * et divergent au premier changement : la surface disparaît avant d'avoir fini
  * de partir, ou reste 300 ms dans le vide.

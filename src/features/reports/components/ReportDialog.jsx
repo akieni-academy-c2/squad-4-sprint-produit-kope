@@ -9,8 +9,8 @@ import { useNotification } from '@/shared/context/NotificationContext.jsx';
  *
  * La cible est passée par `submit` plutôt que déduite ici : chaque appelant
  * connaît son endpoint, et le formulaire n'a pas à savoir distinguer un avis
- * d'un contact. Ce qui est réellement partagé — les motifs, la validation, le
- * libellé d'attente — ne doit pas être recopié par cible.
+ * d'un contact. Ce qui est réellement partagé - les motifs, la validation, le
+ * libellé d'attente - ne doit pas être recopié par cible.
  */
 export function ReportDialog({
   open,

@@ -58,7 +58,7 @@ const router = createBrowserRouter([
       { path: ROUTES.REGISTER_PRO, element: page(<AuthModalRedirect mode="register-pro" />) },
       // Les sections de tableau de bord sont adressables : `/dashboard/client/avis`
       // ouvre la même page sur le bon onglet. La section est lue dans le chemin,
-      // pas dans un état local — le rechargement et le bouton « retour » du
+      // pas dans un état local - le rechargement et le bouton « retour » du
       // navigateur fonctionnent alors, et un lien de partage est exact.
       { path: `${ROUTES.DASHBOARD_CLIENT}/:section?`, element: protectedPage(ROLES.CLIENT, ClientDashboardPage) },
       { path: `${ROUTES.DASHBOARD_PRO}/:section?`, element: protectedPage(ROLES.PRO, ProProfilePage) },

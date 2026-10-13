@@ -4,14 +4,14 @@ import { Link } from '@/shared/components/ui/Link.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
-import { ROUTES, PROFILE_STATUS, STICKY_TOP } from '@/shared/lib/constants.js';
+import { ROUTES, PROFILE_STATUS, STICKY_COLUMN } from '@/shared/lib/constants.js';
 
 export function ProSidebar({ user, profile, displayName, items, active, onChange }) {
   const isPublished = profile?.status === PROFILE_STATUS.PUBLISHED;
   const publicId = user?.id || profile?.userId || profile?.id || '0';
 
   return (
-    <aside className={`space-y-6 ${STICKY_TOP} lg:self-start`}>
+    <aside className={`space-y-6 ${STICKY_COLUMN}`}>
       <Card className="overflow-hidden p-0">
         <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
           <div className="flex items-center gap-4">
@@ -29,12 +29,12 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
 
           {/* Dans la carte, avant la navigation : le lien vaut pour la fiche
               affichée juste au-dessus. En bas de colonne, sous la navigation, il
-              se lisait comme un bouton de plus parmi les onglets — et il
+              se lisait comme un bouton de plus parmi les onglets - et il
               disparaissait sur mobile, où la colonne est remplacée par la barre
               du bas. */}
           {/* Prévisualisation : on quitte le tableau de bord pour voir sa
               fiche comme un visiteur, on compare, on revient corriger. D'où le
-              nouvel onglet — et d'où `Link` plutôt que `RouterLink` : ce dernier
+              nouvel onglet - et d'où `Link` plutôt que `RouterLink` : ce dernier
               intercepte le clic et annulerait l'ouverture. */}
           {isPublished && (
             <Button

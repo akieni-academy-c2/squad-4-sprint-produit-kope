@@ -7,7 +7,7 @@ import { cn } from '@/shared/utils';
  *
  * L'import de react-router est renommé `RouterLink` au moment où il est
  * importé, jamais ailleurs : c'est ce qui libère le nom `Link` pour ce
- * composant, et évite d'avoir deux « Link » différents dans un même fichier —
+ * composant, et évite d'avoir deux « Link » différents dans un même fichier -
  * l'un qui prend `to`, l'autre `href`.
  *
  * ## Deux rendus, une seule API
@@ -28,14 +28,14 @@ import { cn } from '@/shared/utils';
  * « retour » et perd l'historique de la tâche. On ne l'emploie que dans **trois**
  * cas :
  *
- * 1. **La destination est une prévisualisation** — « Voir ma fiche publique »,
+ * 1. **La destination est une prévisualisation** - « Voir ma fiche publique »,
  *    le lien de l'admin vers une fiche. On quitte son tableau de bord pour voir
  *    ce que voit un visiteur, on compare, on revient corriger.
  * 2. **La destination quitte l'application** : autre domaine, application
  *    externe (WhatsApp).
  * 3. **La ressource est générée** : export, PDF.
  *
- * Jamais pour la navigation interne — sections, fil d'Ariane, onglets, et même
+ * Jamais pour la navigation interne - sections, fil d'Ariane, onglets, et même
  * les pages « externes » comme les mentions légales. Ce sont des déplacements
  * dans l'application, pas des départs. C'est ce qui garde le bouton « retour »
  * utile : il annule la dernière étape d'une démarche.

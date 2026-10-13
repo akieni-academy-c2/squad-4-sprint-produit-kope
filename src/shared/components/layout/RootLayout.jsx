@@ -16,7 +16,7 @@ const DOTTED_BG_ROUTES = [...BOTTOM_NAV_ROUTES, ROUTES.SEARCH];
  * Une route et ses sous-sections.
  *
  * La comparaison était une égalité exacte : elle ne voyait plus que `/admin`.
- * Dès que l'onglet portait l'URL — `/admin/users`, `/dashboard/client/avis` —
+ * Dès que l'onglet portait l'URL - `/admin/users`, `/dashboard/client/avis` -
  * la page n'était plus reconnue comme tableau de bord. Le fond pointillé
  * disparaissait, et la réserve d'espace pour la barre du bas avec lui, ce qui
  * décalait toute la mise en page : changer d'onglet ressemblait à un

@@ -3,7 +3,7 @@
 Le mouvement n'est pas une décoration qu'on ajoute à la fin : c'est une
 information. Il dit d'où vient un objet, où il va, et s'il est disponible.
 
-Ce dossier contient le système. Les composants ne l'animent pas librement — ils
+Ce dossier contient le système. Les composants ne l'animent pas librement - ils
 puisent dans ces trois fichiers.
 
 ```
@@ -30,9 +30,9 @@ Tout le reste est du CSS.**
 | | interruption | sortie | CSS suffit ? |
 |---|---|---|---|
 | feuille, dialogue | oui | oui | non |
-| onglet d'un tableau de bord | — | oui | non |
-| message éphémère | — | oui | non |
-| parallaxe du héros | non | — | non, `useScroll` |
+| onglet d'un tableau de bord | - | oui | non |
+| message éphémère | - | oui | non |
+| parallaxe du héros | non | - | non, `useScroll` |
 | icône d'action (28 px) | non | non | **non**, `whileTap` |
 | bouton de texte (44 px) | non | non | **oui**, `:active` |
 | survol, couleur, opacité | non | non | **oui** |
@@ -45,7 +45,7 @@ compositeur, en JavaScript zéro.
 
 Une icône de 28 px est dans l'autre cas : elle est **sous le doigt**, donc le
 retour se voit, et il n'y en a jamais assez pour que la facture compte. Ce qui
-la distingue d'un bouton de texte n'est pas sa taille — c'est le **nombre
+la distingue d'un bouton de texte n'est pas sa taille - c'est le **nombre
 d'occurrences**.
 
 Une feuille, si : on la rouvre à mi-parcours, elle doit repartir de sa vitesse.
@@ -56,7 +56,7 @@ Une transition CSS ne connaît ni l'interruption, ni l'état suivant.
 1. **La courbe suit le sens du mouvement.** Un élément qui arrive décélère,
    un élément qui part accélère, un élément qui se déplace à l'écran reste
    symétrique.
-2. **La sortie est plus courte que l'entrée** — 70 %, et par construction :
+2. **La sortie est plus courte que l'entrée** - 70 %, et par construction :
    `exitOf()` la dérive, elle n'est jamais écrite à la main.
 3. **On n'anime que `transform` et `opacity`.** Tout le reste force le
    navigateur à refaire la mise en page à chaque image.

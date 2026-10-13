@@ -12,7 +12,7 @@ import { ProfileSection } from './ProfileSection.jsx';
 /**
  * `{ status, total }` attendu par `FormField`.
  *
- * Un champ absent de `statuses` — le cas tant qu'aucune saisie n'a eu lieu —
+ * Un champ absent de `statuses` - le cas tant qu'aucune saisie n'a eu lieu -
  * rend `undefined` et non un objet vide : `FormField` teste
  * `liveStatus?.status === OK`, un objet `{ status: undefined }` passerait le
  * `&&` et poserait une ligne d'état vide sous le champ.
@@ -104,7 +104,7 @@ export function ProfileEditForm({
               Même composant que l'inscription et la connexion : un numéro se
               saisit partout de la même façon, indicatif compris. Trois
               implémentations du même champ auraient divergé au premier ajustement
-              — et c'est ce qui s'était produit.
+              - et c'est ce qui s'était produit.
             */}
             <PhoneInput
               id="pe-phone"
@@ -230,14 +230,14 @@ export function ProfileEditForm({
         {/* La ville passe avant les zones, et pas seulement dans l'ordre du
             formulaire : elle les restreint. Une zone appartient à une ville
             (`zones.city_id`), et proposer celles de Pointe-Noire pendant qu'on
-            a choisi Brazzaville conduit à un profil incohérent — on ne peut pas
+            a choisi Brazzaville conduit à un profil incohérent - on ne peut pas
             être à la fois dans les deux.
 
             Changer de ville ne vide pas la sélection : elle reste visible pour
             que l'utilisateur voie pourquoi elle ne convient plus, et le serveur
             la refusera à l'enregistrement. */}
         <div className="mt-4">
-          {/* Les zones affichées sont celles de la ville choisie — rien d'autre. */}
+          {/* Les zones affichées sont celles de la ville choisie - rien d'autre. */}
           <MultiSelect
             label="Zones"
             required

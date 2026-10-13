@@ -8,16 +8,16 @@ import { Button, Modal } from '@/shared/components/ui';
  * `window.confirm` affiche deux boutons nommés OK / Annuler, dans la langue du
  * navigateur, sans style, et **fige le thread** : le rendu s'arrête pendant
  * l'affichage. Sur une action destructive, c'est le moment le moins bien placé
- * pour saccader — et c'est souvent le moment où l'utilisateur vient de cliquer
+ * pour saccader - et c'est souvent le moment où l'utilisateur vient de cliquer
  * ailleurs.
  *
  * ## Ce que ce composant exige du dialogue qui l'appelle
  *
  * **Un nom, pas un verbe.** « Supprimer » ne dit pas ce qui va disparaître.
- * `title` porte l'objet — « Supprimer cet avis ? » — et `description` dit ce
+ * `title` porte l'objet - « Supprimer cet avis ? » - et `description` dit ce
  * que la perte est concrète, pour qu'on puisseClickedь Decide.
  *
- * L'action proposée est à droite — celle que le clavier atteint par défaut —
+ * L'action proposée est à droite - celle que le clavier atteint par défaut -
  * et n'est jamais pré-sélectionnée : un `Entrée` pressé par réflexe ne doit
  * pas effacer.
  *

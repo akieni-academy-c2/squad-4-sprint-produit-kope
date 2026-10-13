@@ -30,7 +30,7 @@ import { formatDateFr } from '@/shared/utils';
  * avis masqué disparaît de toutes les fiches publiques.
  *
  * Tant que la demande de confirmation était laissée aux sections qui rendent la
- * carte, chacune pouvait l'oublier — et il suffisait d'en oublier une pour que
+ * carte, chacune pouvait l'oublier - et il suffisait d'en oublier une pour que
  * la règle ne vaille plus nulle part. Elle est donc appliquée **dans** la carte :
  * un nouvel appelant reçoit la garantie sans avoir à la réécrire, et le test qui
  * vérifie la règle porte sur le composant qui l'applique.
@@ -54,7 +54,7 @@ export function ReviewCard({
   onDelete,
   onReport,
 }) {
-  // null | 'hide' | 'reveal' | 'delete' — ce qui attend une confirmation.
+  // null | 'hide' | 'reveal' | 'delete' - ce qui attend une confirmation.
   const [asking, setAsking] = useState(null);
 
   const confirm = () => {
@@ -137,7 +137,7 @@ export function ReviewCard({
       {/*
         Le titre porte l'objet et non le verbe : « Supprimer » seul ne dit pas
         ce qui disparaît. La description dit ce que la perte est concrète, pour
-        qu'on puisse décider — « définitivement » pour une suppression, ce qui
+        qu'on puisse décider - « définitivement » pour une suppression, ce qui
         n'est pas vrai d'un masquage.
       */}
       <ConfirmDialog

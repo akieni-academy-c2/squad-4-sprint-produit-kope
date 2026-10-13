@@ -10,7 +10,7 @@ import { cn } from '@/shared/utils';
  *
  * `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes
  * voisines. Une pagination se lit comme un objet de la page, pas comme un
- * encadré d'attention — à `gray-300` elle dessinait une boîte plus sombre que
+ * encadré d'attention - à `gray-300` elle dessinait une boîte plus sombre que
  * tout ce qu'elle controls.
  */
 export const PAGINATION_BAR = 'mt-4 rounded-md border border-gray-200 bg-white px-4 py-2';

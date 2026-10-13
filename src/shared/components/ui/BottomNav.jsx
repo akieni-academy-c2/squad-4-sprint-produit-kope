@@ -6,7 +6,7 @@ import { Sheet } from './Sheet.jsx';
 /**
  * La barre ne dépasse jamais cinq cellules, bouton « Menu » compris.
  *
- * Cinq destinations quand la liste tient exactement dedans — c'est le compte
+ * Cinq destinations quand la liste tient exactement dedans - c'est le compte
  * client, le plus large ensemble de sections. Au-delà, une cellule est prise par
  * le « Menu » et les destinations visibles passent à quatre : compter le Menu
  * à part donnerait six cellules, une de trop, et sur un mobile de 360 px chaque

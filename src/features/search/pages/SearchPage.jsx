@@ -9,7 +9,7 @@ import { SearchActionBar } from '../components/SearchActionBar.jsx';
 import { useSearch } from '../hooks/useSearch.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
-import { STICKY_TOP } from '@/shared/lib/constants.js';
+import { STICKY_COLUMN } from '@/shared/lib/constants.js';
 
 export function SearchPage() {
   usePageTitle('Rechercher un professionnel');
@@ -83,7 +83,7 @@ export function SearchPage() {
           lg:pb-8 la désactive sur desktop, où la barre est masquée. */}
       <div className="container-kop page-padding pb-20 lg:pb-8">
         <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
-          <aside className={`hidden lg:block ${STICKY_TOP} space-y-4`}>
+          <aside className={`hidden lg:block ${STICKY_COLUMN} space-y-4`}>
             <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
           </aside>
 
@@ -109,7 +109,20 @@ export function SearchPage() {
               </div>
             )}
 
-            {loading && (
+            {/*
+              Le squelette couvre `loading` **et** l'absence de données.
+
+              `useSearch` démarre avec `results = null` et `loading = false` :
+              React peint une fois avant d'exécuter l'effet qui déclenchera la
+              requête. Pendant cette image, `SearchResults` recevait `null`,
+              `items` valait `[]`, et la page affichait « aucun professionnel »
+              - l'écran vide d'abord, les résultats ensuite.
+
+              C'est le pire ordre : un message d'absence alors que la recherche
+              n'a pas encore commencé. Il ne disparait pas, il se corrige tout
+              seul après 200 ms, ce qui se lit comme une erreur puis un rattrapage.
+            */}
+            {(loading || !results) && !error && (
               <div className="space-y-4" aria-busy="true">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="flex gap-4 rounded-[20px] border border-gray-100 bg-white p-4">
@@ -123,6 +136,7 @@ export function SearchPage() {
                 ))}
               </div>
             )}
+
             {error && !loading && (
               <DataState
                 error={error}
@@ -130,12 +144,10 @@ export function SearchPage() {
                 onRetry={refresh}
               />
             )}
-            {!loading && !error && (
-              <SearchResults data={results} listMode />
-            )}
+            {!loading && !error && results && <SearchResults data={results} listMode />}
           </section>
 
-          <aside className={`hidden lg:block ${STICKY_TOP} space-y-4`}>
+          <aside className={`hidden lg:block ${STICKY_COLUMN} space-y-4`}>
             <SearchRefineFilters {...refineProps} />
           </aside>
         </div>

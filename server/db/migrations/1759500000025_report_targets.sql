@@ -2,9 +2,9 @@
 --
 -- La clé étrangère liait `professional_id` à la table `professionals`. Un
 -- client n'y a pas de ligne : il était structurellement impossible à signaler.
--- On garde le nom de colonne — il désigne bien le compte visé, et le renommer
+-- On garde le nom de colonne - il désigne bien le compte visé, et le renommer
 -- toucherait le repository d'administration, l'espace client et la file de
--- modération pour rien — mais la cible devient un `users`.
+-- modération pour rien - mais la cible devient un `users`.
 --
 -- `target_role` dit au lecteur à quel type de compte la ligne s'applique. Il
 -- n'est pas déductible du compte visé : un client peut devenir professionnel
@@ -36,7 +36,7 @@ CREATE INDEX account_reports_professional_idx ON account_reports (professional_i
 --
 -- Table distincte de `account_reports` : la cible est un contenu, pas un
 -- compte. Les deux flux de modération n'ont ni les mêmes effets ni les mêmes
--- acteurs — un avis se retire, un compte se suspend — et les confondre ferait
+-- acteurs - un avis se retire, un compte se suspend - et les confondre ferait
 -- porter à l'un les compteurs de l'autre.
 --
 -- Pas de seuil de blocage automatique ici, contrairement aux signalements de

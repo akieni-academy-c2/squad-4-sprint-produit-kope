@@ -6,7 +6,7 @@ import { formatDateFr } from '@/shared/utils';
  * Tuiles d'aperçu, partagées par les deux tableaux de bord.
  *
  * Un aperçu n'a pas à avoir deux rendus : le client et le professionnel
- * regardent les mêmes choses — un contact, un avis — et une différence de
+ * regardent les mêmes choses - un contact, un avis - et une différence de
  * dessin entre les deux espaces ferait croire à une différence de données.
  *
  * Colonne et non rangée : les items sont posés sur deux colonnes jusqu'à `lg`,
@@ -37,7 +37,7 @@ export function ActivityTile({ onClick, label, children }) {
 /**
  * Un avis dans un aperçu.
  *
- * `subtitle` porte la ligne sous le nom — métier pour un avis donné, extrait
+ * `subtitle` porte la ligne sous le nom - métier pour un avis donné, extrait
  * pour un avis reçu. Le composant ne suppose pas lequel : les deux espaces ont
  * des informations différentes à montrer sous le même nom.
  */

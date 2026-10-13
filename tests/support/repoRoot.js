@@ -11,7 +11,7 @@ import { existsSync } from 'node:fs';
  * d'imports.
  *
  * L'expression `new URL('../src/…', import.meta.url)` ne tient qu'aussi
- * longtemps que le test ne change pas de profondeur — or toute l'arborescence
+ * longtemps que le test ne change pas de profondeur - or toute l'arborescence
  * de `tests/` est faite pour calquer `src/` et `server/`. Chercher la racine à
  * la volée rend ces tests insensibles à leur propre emplacement.
  */

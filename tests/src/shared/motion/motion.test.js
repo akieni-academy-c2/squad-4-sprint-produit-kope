@@ -6,7 +6,7 @@ import * as variants from '@/shared/motion/variants.js';
 /**
  * Le système de mouvement.
  *
- * Ces tests ne vérifient pas des pixels — ils vérifient les **invariants**
+ * Ces tests ne vérifient pas des pixels - ils vérifient les **invariants**
  * annoncés dans `timing.js`, `stagger.js` et `variants.js`. Ce sont des règles
  * de physique et de coût, pas des»: ça se teste sans navigateur.
  *
@@ -19,10 +19,10 @@ const criticalDamping = ({ stiffness, mass }) => 2 * Math.sqrt(stiffness * mass)
 
 /** Ce que le compositeur sait animer sans refaire la mise en page. */
 const COMPOSITOR_PROPERTIES = new Set([
-  // Transformations — framer-motion les regroupe sous `transform`.
+  // Transformations - framer-motion les regroupe sous `transform`.
   'x', 'y', 'z', 'scale', 'scaleX', 'scaleY', 'rotate', 'rotateX', 'rotateY', 'rotateZ',
   'skew', 'skewX', 'skewY', 'transformPerspective', 'transformOrigin',
-  // Opacité et découpe — également compositées.
+  // Opacité et découpe - également compositées.
   'opacity', 'clipPath',
 ]);
 
@@ -43,7 +43,7 @@ function animatedProperties(variant) {
 }
 
 describe('ressorts', () => {
-  it('n’est jamais sous-amorti — un objet qui dépasse sa cible', () => {
+  it('n’est jamais sous-amorti - un objet qui dépasse sa cible', () => {
     // Le choix documenté dans `timing.js` : dans une interface professionnelle,
     // un rebond se lit comme un jouet. Le seuil critique vaut
     // 2 × √(stiffness × masse) ; être au-dessus garantit qu'on ne le dépasse
@@ -88,7 +88,7 @@ describe('échelle des durées', () => {
 
   it('garde la contrainte hors de l’échelle', () => {
     // `PERCEPTIBLE` est une contrainte, pas un cran de l'échelle. Mélangé aux
-    // durées, il la rend non ordonnée — et donc invérifiable.
+    // durées, il la rend non ordonnée - et donc invérifiable.
     expect(Object.values(DURATION)).not.toContain(PERCEPTIBLE);
   });
 });
@@ -137,7 +137,7 @@ describe('cascade d’un groupe', () => {
   });
 
   it('pose le groupe entier dans le temps imparti, quelle que soit sa taille', () => {
-    // C'est l'invariant central. Un `staggerChildren` fixe — le réflexe — sur
+    // C'est l'invariant central. Un `staggerChildren` fixe - le réflexe - sur
     // 24 cartes étale la dernière à plus de deux secondes ; l'utilisateur a
     // déjà commencé à lire et l'interface paraît charger.
     for (const count of [2, 4, 8, 12, 24, 200]) 

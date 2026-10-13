@@ -9,7 +9,7 @@ export function extractInitial(profile) {
     yearsExperience: profile?.yearsExperience ?? '',
     whatsapp: profile?.whatsapp ?? '',
     // `null` et non `''` : la ville est le seul champ du formulaire où « rien
-    // sélectionné » est une valeur valide — le serveur la stocke en NULL.
+    // sélectionné » est une valeur valide - le serveur la stocke en NULL.
     cityId: profile?.cityId ?? null,
     zoneIds: profile?.zones?.map((z) => Number(z.id ?? z))?.filter(Boolean) ?? profile?.zoneIds ?? [],
   };

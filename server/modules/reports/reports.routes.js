@@ -52,7 +52,7 @@ router.post(
   controller.createForContact,
 );
 
-// Signalement d'un avis reçu. Réservé au professionnel dont c'est la fiche —
+// Signalement d'un avis reçu. Réservé au professionnel dont c'est la fiche -
 // l'autorisation est portée par la requête du service, pas par un rôle :
 // n'importe quel professionnel est « professionnel ».
 router.post(

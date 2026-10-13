@@ -13,7 +13,7 @@ import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { ROLES, STICKY_TOP } from '@/shared/lib/constants.js';
+import { ROLES, STICKY_BAND } from '@/shared/lib/constants.js';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { PhotoLightbox } from '../components/public/PhotoLightbox.jsx';
 import { PublicProfileMobileIntro } from '../components/public/PublicProfileMobileIntro.jsx';
@@ -172,31 +172,46 @@ export function ProfessionalPublicPage() {
           </section>
 
           {/*
-            Même haut collant que les autres colonnes de l'application —
-            la barre de recherche de `/search`, la mini fiche de la colonne de
-            droite. Les trois s'arrêtent sous le header, alignés.
+            Épinglée en haut **et** en bas - voir `STICKY_BAND`.
 
-            `lg:bottom-4` retiré : il transformait cette carte en bande qui se
-            colle **au bas** de la fenêtre dès que la fiche est courte. Elle
-            flottait donc à mi-hauteur de l'écran pendant que la mini fiche
-            restait en haut — deux cartes d'un même geste, à deux hauteurs
-            différentes sur la même page.
-
-            Sans ce `bottom`, la carte se colle en haut et suit le défilement
-            sur la hauteur de la colonne, ce qui est le comportement attendu
-            d'un bouton de contact persistant.
+            Une carte qui ne se colle qu'en haut quitte l'écran dès qu'on arrive
+            en bas de la fiche. Or « Contacter » est précisément l'action qu'on
+            cherche une fois avoir lu : elle doit rester atteignable depuis le
+            haut et depuis le bas, sans jamais flotter au milieu.
           */}
-          <Card id="contact" className={`space-y-4 p-5 ${STICKY_TOP}`}>
-            <div className="space-y-1.5">
-              <h2 className="text-lg font-bold text-gray-900">Parlons de votre besoin.</h2>
-              <p className="text-sm leading-6 text-gray-600">
-                Décrivez votre projet, ses coordonnées apparaîtront ensuite.
-              </p>
+          <Card
+            id="contact"
+            className={`overflow-hidden border-0 p-0 text-white shadow-lg ${STICKY_BAND}`}
+          >
+            {/* Deux teintes en diagonale, pas un aplat. Un aplat vert qui couvre
+                40 % de la page attire plus que la photo du professionnel, qui
+                est le sujet de la fiche ; le dégradé le ramène au rang de fond. */}
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-br from-primary-500 to-primary-700"
+            />
+
+            <div className="relative flex flex-col gap-4 p-5">
+              <div className="space-y-1.5">
+                <h2 className="text-lg font-bold text-white">Parlons de votre besoin.</h2>
+                <p className="text-sm leading-6 text-white/80">
+                  Décrivez votre projet, ses coordonnées apparaîtront ensuite.
+                </p>
+              </div>
+
+              {/* Le bouton se retourne sur la carte : blanc sur le vert. Le même
+                  bouton vert, posé sur le vert, ne laisserait qu'un rectangle
+                  plus clair, sans bord ni texte lisible. */}
+              <Button
+                className="w-full bg-white text-primary-700 hover:bg-white/90"
+                size="lg"
+                onClick={onContactClick}
+              >
+                Contacter {firstName}
+              </Button>
             </div>
-            <Button className="w-full" size="lg" onClick={onContactClick}>
-              Contacter {firstName}
-            </Button>
           </Card>
+
 
           {/* Dernier élément de la fiche sur mobile : signaler un profil est
               une action de recours, elle ne doit pas passer avant le bouton

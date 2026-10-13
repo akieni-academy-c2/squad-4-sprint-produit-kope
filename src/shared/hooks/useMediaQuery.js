@@ -15,8 +15,8 @@ import { useCallback, useSyncExternalStore } from 'react';
  *
  * `matchMedia` est un magasin externe : l'état est dans le navigateur, pas
  * dans React. Le hook qui sait dialoguer avec un magasin externe est
- * `useSyncExternalStore`, et il est écrit pour ça. La version à l'Effet —
- * `useState` + `addEventListener` — se trompe dans les deux sens : elle écrit
+ * `useSyncExternalStore`, et il est écrit pour ça. La version à l'Effet -
+ * `useState` + `addEventListener` - se trompe dans les deux sens : elle écrit
  * l'état dans le corps de l'effet au premier rendu, et elle peut rendre une
  * valeur périmée entre le moment où React la lit et celui où l'événement
  * arrive.
@@ -35,7 +35,7 @@ export function useMediaQuery(query) {
 
   /**
    * Rendu serveur : il n'y a pas de fenêtre. On renvoie `false`, ce qui fait
-   * choisir la variante mobile — celle dont la mise en page est juste sans
+   * choisir la variante mobile - celle dont la mise en page est juste sans
    * JavaScript, puisqu'elle repose sur des classes et non sur l'état.
    */
   const getServerSnapshot = useCallback(() => false, []);
@@ -43,5 +43,5 @@ export function useMediaQuery(query) {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
-/** `true` à partir du breakpoint `sm` de Tailwind — le palier de la modale. */
+/** `true` à partir du breakpoint `sm` de Tailwind - le palier de la modale. */
 export const useIsDesktop = () => useMediaQuery('(min-width: 640px)');

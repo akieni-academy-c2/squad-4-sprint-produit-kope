@@ -17,7 +17,7 @@ const RECENT_COUNT = 4;
  *
  * Même construction que celle du client : des compteurs qui ouvrent la section
  * qu'ils résument, puis les dernières lignes de chaque section. Un aperçu
- * n'a pas à avoir deux rendus — celui du professionnel montrait quatre tuiles
+ * n'a pas à avoir deux rendus - celui du professionnel montrait quatre tuiles
  * statiques, sans aucun chiffre qui réponde à « où en suis-je ? » : ni mes
  * contacts, ni mes avis.
  */
@@ -100,7 +100,7 @@ export function OverviewSection({ profile, onNavigate }) {
                   subtitle={review.comment}
                   rating={review.rating}
                   createdAt={review.createdAt}
-                  actionLabel={`Ouvrir mes avis — avis reçu`}
+                  actionLabel={`Ouvrir mes avis - avis reçu`}
                   onClick={() => onNavigate?.('avis')}
                 />
               ))}
@@ -123,7 +123,7 @@ export function OverviewSection({ profile, onNavigate }) {
                 <ContactTile
                   key={contact.id}
                   contact={contact}
-                  actionLabel={`Ouvrir mes contacts — ${contact.displayName || 'Utilisateur'}`}
+                  actionLabel={`Ouvrir mes contacts - ${contact.displayName || 'Utilisateur'}`}
                   onClick={() => onNavigate?.('contacts')}
                 />
               ))}

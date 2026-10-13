@@ -23,6 +23,44 @@ export default defineConfig([
     },
   },
   {
+    // Règles de dépôt.
+    //
+    // Ces quatre contrôles vivaient dans des tests qui lisaient le code source
+    // pour y chercher des chaînes. Ils vérifiaient que le fichier **contenait**
+    // un texte, pas que l'écran produisait le bon résultat - et ils ne
+    // s'exécutaient qu'au moment de la suite, donc après coup.
+    //
+    // Un contrôle statique appartient au linter : il tourne à l'enregistrement,
+    // il donne une position sur la ligne fautive, et il n'occupe aucun temps de
+    // test. Aucun test ne les perd : ils n'en étaient pas.
+    files: ['src/**/*.jsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='className'] > Literal[value=/\\$\\{/]",
+          message:
+            "Un attribut className=\"…\" est une chaîne simple : ${…} y est du texte, pas une interpolation. Utilise className={`…`} ou cn(…).",
+        },
+        {
+          selector: "CallExpression[callee.name='cn'] > Literal.arguments[0][value=/\\$\\{/]",
+          message:
+            "cn('…') reçoit une chaîne simple : ${…} y est du texte. cn(STICKY_TOP, …) n'interpole pas non plus.",
+        },
+        {
+          selector: "Literal[value=/lg:top-\\(--header-height\\)/]",
+          message:
+            "Ce décalage est déclaré une seule fois, dans STICKY_TOP (ou STICKY_BAND). Une recopie diverge à la première retouche.",
+        },
+        {
+          selector: "Literal[value=/inputMode=[\\\"']tel[\\\"']|type=[\\\"']tel[\\\"']|T.l.phon \\(0|\\+242 06 000/]",
+          message:
+            "Une saisie de numéro passe par PhoneInput, seul endroit où l'indicatif +242 et son séparateur sont posés.",
+        },
+      ],
+    },
+  },
+  {
     files: [
       'server/**/*.js',
       'vite.config.js',

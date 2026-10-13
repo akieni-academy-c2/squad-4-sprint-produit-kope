@@ -54,7 +54,7 @@ export function NotificationProvider({ children }) {
           Le message est le seul élément de l'interface qui **arrive par-dessus
           le contenu** sans le pousser : il ne peut donc pas entrer comme une
           tuile, mais comme un objet qu'on pose. D'où l'échelle à 0.98 et le
-          ressort — et une vraie animation de sortie.
+          ressort - et une vraie animation de sortie.
         */}
         <AnimatePresence initial={false}>
           {toasts.map((t) => (

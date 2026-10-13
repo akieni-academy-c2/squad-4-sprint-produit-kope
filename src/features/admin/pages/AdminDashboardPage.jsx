@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
-import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
+import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
 import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
@@ -50,7 +50,7 @@ export function AdminDashboardPage() {
   // Un simple `useState` survivrait au changement de section : ouvrir
   // « Signalements » depuis un KPI, puis revenir par l'URL ou le bouton
   // « retour » afficherait encore ce filtre-la. La portée suit donc la section
-  // qui l'a demandé — pas d'effet pour la purger, la valeur cesse simplement
+  // qui l'a demandé - pas d'effet pour la purger, la valeur cesse simplement
   // d'être lue dès que la section change.
   const [pendingFilters, setPendingFilters] = useState(null);
   const [rightEl, setRightEl] = useState(null);
@@ -82,7 +82,7 @@ export function AdminDashboardPage() {
             : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
         )}
       >
-        <aside className={`hidden lg:block ${STICKY_TOP}`}>
+        <aside className={`hidden lg:block ${STICKY_COLUMN}`}>
           <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
@@ -108,7 +108,7 @@ export function AdminDashboardPage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn(STICKY_TOP, withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 

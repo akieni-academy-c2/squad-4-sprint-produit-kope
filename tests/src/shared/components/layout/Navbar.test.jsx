@@ -50,7 +50,7 @@ describe('Destinations de la barre', () => {
 
   it('nhibernate aucun onglet', () => {
     // Régression : `to` absent résolvait vers l'adresse courante. Le rendu
-    // produisait alors quatre liens vers `/` — on ne le voyait qu'en cliquant.
+    // produisait alors quatre liens vers `/` - on ne le voyait qu'en cliquant.
     const html = render();
     const hrefs = [...html.matchAll(/<a[^>]*\shref="([^"]*)"/g)].map((m) => m[1]);
 
@@ -106,7 +106,7 @@ describe('Justification du header sur mobile', () => {
   it('cale le bouton menu à droite quand la nav desktop est masquée', () => {
     // La barre desktop disparaît sous `md`. Le groupe mobile doit alors venir
     // au bord droit sans dépendre d'une marge automatique portée par un élément
-    // qui n'est plus dans le flux — d'où le positionnement absolute.
+    // qui n'est plus dans le flux - d'où le positionnement absolute.
     //
     // Le test vérifiait autrefois `ml-auto md:ml-0`, la recette CSS d'avant. Il
     // vérifie désormais le mécanisme retenu.
