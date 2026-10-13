@@ -1,5 +1,5 @@
 /**
- * Conditions d'utilisation — version courante.
+ * Conditions d'utilisation - version courante.
  *
  * ## Pourquoi le texte est une donnée et pas du JSX
  *

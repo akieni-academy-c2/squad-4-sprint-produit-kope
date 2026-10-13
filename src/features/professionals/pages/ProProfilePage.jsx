@@ -3,7 +3,7 @@ import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lu
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
+import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
 import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
@@ -99,7 +99,7 @@ export function ProProfilePage() {
       {/* Une seule grille pour les trois colonnes, comme les espaces client et
           admin : navigation à gauche, contenu au centre, filtres à droite. Les
           sections ne creusent pas leur propre colonne, elles y projettent
-          leurs filtres par portail — sans quoi la colonne de droite n'a pas la
+          leurs filtres par portail - sans quoi la colonne de droite n'a pas la
           même largeur que dans les deux autres espaces, et les deux barres
           sticky ne s'alignent plus. */}
       <div
@@ -152,7 +152,7 @@ export function ProProfilePage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn(STICKY_TOP, withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 

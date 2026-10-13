@@ -8,7 +8,7 @@ import { cn } from '@/shared/utils';
  * ## Pourquoi celui-ci a une instance Motion, et `Button` non
  *
  * La règle du système de mouvement est « ce qui peut être interrompu ou qui a
- * une sortie passe par Motion ». Ni l'un ni l'autre n'est vrai ici — et c'est
+ * une sortie passe par Motion ». Ni l'un ni l'autre n'est vrai ici - et c'est
  * justement ce qui les sépare de `Button` :
  *
  * | | instances par page | surface | retour lisible ? |
@@ -25,7 +25,7 @@ import { cn } from '@/shared/utils';
  *
  * La documentation de Motion le formule : les événements `:hover` CSS sont
  * **faux sur appareil tactile**. Un navigateur tactile synthétise un survol au
- * toucher, puis le laisse collé — l'icône resterait survolée après le tap, et
+ * toucher, puis le laisse collé - l'icône resterait survolée après le tap, et
  * le fond y resterait aussi. `whileHover` se désengage au `pointerleave`, que
  * le tactile produit correctement.
  *

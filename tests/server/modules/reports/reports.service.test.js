@@ -99,7 +99,7 @@ describe('signalements de profils', () => {
 
   describe('service', () => {
     // Rôle des comptes par défaut : l'auteur est un client, la cible un
-    // professionnel. C'est le cas canonique — seul un client fait basculer le
+    // professionnel. C'est le cas canonique - seul un client fait basculer le
     // seuil de sanction automatique, ce que couvrent les tests ci-dessous.
     beforeEach(() => {
       vi.spyOn(repository, 'targetRoleOf').mockImplementation(async (id) =>
@@ -205,7 +205,7 @@ describe('signalements de profils', () => {
     // qu'un concurrent soit bloqué. Compter ses signalements au seuil lui
     // donnerait, avec quelques comptes coordonnés, le moyen de faire
     // suspendre une fiche en ligne. Ses signalements restent recevables et
-    // visibles — ils ne font pas basculer de compteur.
+    // visibles - ils ne font pas basculer de compteur.
     it('ne compte pas les signalements d’un professionnel au seuil de blocage', async () => {
       repository.targetRoleOf.mockImplementation(async (id) => (String(id) === '2' ? 'professional' : 'client'));
 

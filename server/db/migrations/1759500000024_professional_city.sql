@@ -1,7 +1,7 @@
 -- Ville d'exercice du professionnel.
 --
 -- Elle vient du catalogue `cities`, que l'administrateur configure depuis
--- l'espace admin — aucune ville n'est saisie en dur. Nullable : les profils
+-- l'espace admin - aucune ville n'est saisie en dur. Nullable : les profils
 -- créés avant cette colonne n'ont pas de ville, et les rendre obligatoires
 -- les mettrait hors conformité au premier enregistrement.
 --

@@ -20,13 +20,13 @@ import { useOverlay } from './useOverlay.js';
  *
  * Sur mobile, le fond est décalé de 40 px et non de 100 %. La modale occupe
  * 90 dvh ; partir du bas exact la ferait cheminer devant toute la page, et le
- * retour n'était plus un retour. Le reste de la course — jusqu'au bord — est un
+ * retour n'était plus un retour. Le reste de la course - jusqu'au bord - est un
  * glissement que l'on ne voit pas, pas une distance d'animation.
  *
  * ## Le fond est flouté, comme les deux autres surfaces
  *
  * `Sheet` et `Dialog` l'étaient ; seule la modale ne l'était pas. Trois surfaces
- * qui se recouvrent de la même façon ne peuvent pas lectures différemment —
+ * qui se recouvrent de la même façon ne peuvent pas lectures différemment -
  * celle qui n'est pas floutée paraît posée sur la page au lieu de devant.
  */
 export function Modal({
@@ -96,7 +96,7 @@ export function Modal({
             variants={panelVariants}
             // États nommés explicites : voir `Sheet`. La propagation implicite
             // depuis le fond fonctionne, mais disparait sans erreur si le fond
-            // change — et la fermeture de la modale devient instantanée.
+            // change - et la fermeture de la modale devient instantanée.
             initial="initial"
             animate="animate"
             exit="exit"

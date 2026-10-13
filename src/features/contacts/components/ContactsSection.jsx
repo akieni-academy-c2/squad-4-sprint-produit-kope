@@ -45,7 +45,7 @@ const ORIGIN_OPTIONS = [
 // voir avec « qui m'a écrit en premier ? ».
 //
 // Ni « Messages » ni « Aucun » ne sont proposés. Un contact issu d'une demande
-// de message est une ligne sans échange — ni appel, ni WhatsApp — et la
+// de message est une ligne sans échange - ni appel, ni WhatsApp - et la
 // filtrer n'isolerait que des conversations vides. Elle reste consultable,
 // elle ne mérite pas une option.
 const CHANNEL_OPTIONS = [
@@ -106,13 +106,13 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             {/* Signalement possible pour tout correspondant, client comme
                 professionnel : le serveur refuse toute cible sans conversation
                 réelle, et un signalement de professionnel ne compte pas au
-                seuil de blocage automatique — il est traité par un
+                seuil de blocage automatique - il est traité par un
                 administrateur, jamais suspendu par un compteur.
 
                 À côté de « Contacté », pas avec « Appeler ». Le signalement est
                 un geste de recours sur la relation, il appartient au même
                 registre que le badge qui la décrit. Sur la ligne des canaux, il
-                se lisait comme un troisième moyen de joindre — exactement ce que
+                se lisait comme un troisième moyen de joindre - exactement ce que
                 la ternaire du pied cherche à éviter. */}
             {!reported && (
               <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />

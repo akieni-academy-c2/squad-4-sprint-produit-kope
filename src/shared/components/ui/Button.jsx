@@ -41,7 +41,7 @@ const SIZES = {
  * C'est la question à se poser, et la réponse est « du CSS », pour une raison
  * concrète : **au relâchement, le doigt est déjà parti.** La seule chose qu'un
  * ressort apporte de plus est de conserver la vitesse courante quand
- * l'animation est interrompue — ce qui compte pour une feuille qu'on rouvre à
+ * l'animation est interrompue - ce qui compte pour une feuille qu'on rouvre à
  * mi-parcours, et pas pour un appui. Ici, personne ne voit la vitesse de retour.
  *
  * En échange, un ressort coûte à chaque bouton de l'application : un type
@@ -49,7 +49,7 @@ const SIZES = {
  * props `whileTap` à propager à travers `as={Link}`. Pour 30 ms de retour que
  * `:active` rend gratuitement, sur le compositeur, en JavaScript zéro.
  *
- * Le ressort est réservé à ce qui peut **vraiment** être interrompu et repris —
+ * Le ressort est réservé à ce qui peut **vraiment** être interrompu et repris -
  * voir `src/shared/motion/timing.js`.
  *
  * ## Les valeurs
@@ -57,7 +57,7 @@ const SIZES = {
  * `0.97` : en dessous de `0.95` le bouton s'enfonce au lieu de s'appuyer ; au
  * dessus de `0.98`, le retour est plus court que l'appui et ça tremble.
  *
- * `100 ms` à l'aller, `150 ms` au retour — un ressort appliqué à la main ferait
+ * `100 ms` à l'aller, `150 ms` au retour - un ressort appliqué à la main ferait
  * exactement la même chose, sans la dépendance.
  *
  * `active:` disparaît sur un bouton désactivé grâce à `disabled:active:scale-100`

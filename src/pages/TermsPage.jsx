@@ -24,7 +24,7 @@ import { SUPPORT_EMAIL } from '@/shared/constants/support.js';
  * lecture.
  */
 export function TermsPage() {
-  usePageTitle('Conditions d’utilisation — KOP');
+  usePageTitle('Conditions d’utilisation - KOP');
 
   // Un lien profond vers une section doit l'amener à l'écran : sans cela, le
   // navigateur positionne la vue avant que la mise en page soit faite, et le

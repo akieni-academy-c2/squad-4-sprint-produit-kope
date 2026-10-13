@@ -144,7 +144,7 @@ export function RegisterClientForm({ bare = false } = {}) {
 
         Il change d'une étape à l'autre, et les deux libellés ne font pas le
         même nombre de lignes dans la colonne étroite du dialogue. Le formulaire
-        — titre du champ, bouton, tout — se retrouvait décalé de 20 px entre
+        - titre du champ, bouton, tout - se retrouvait décalé de 20 px entre
         l'étape 1 et l'étape 2, alors que rien n'y avait changé : le premier
         champ sautait sous le doigt.
 
@@ -271,7 +271,7 @@ export function RegisterClientForm({ bare = false } = {}) {
                     J’accepte les{' '}
                     {/*
                       Le mot « conditions » est un lien. Sans lui, la case
-                      invite à accepter un texte que rien ne permet de lire — et
+                      invite à accepter un texte que rien ne permet de lire - et
                       le clic se fait sans savoir.
                     */}
                     <a

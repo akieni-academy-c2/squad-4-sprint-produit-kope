@@ -18,7 +18,7 @@ import { BecomeProCard } from './BecomeProCard.jsx';
  * Champ de saisie avec son état.
  *
  * `{ status, total }` suffit : `FormField` n'a besoin que du statut pour
- * colorer la bordure et sortir la ligne d'état. `error` reste prioritaire —
+ * colorer la bordure et sortir la ligne d'état. `error` reste prioritaire -
  * c'est le message du schéma Zod, plus précis que « presque correct ».
  */
 function Field({ label, value, onChange, type = 'text', placeholder, hint, status, error, id }) {
@@ -56,7 +56,7 @@ export function ClientProfileSection({ user }) {
 
   // Formulaire de modification : le bouton n'est actif que si les valeurs
   // sont valides ET différentes de celles enregistrées. `statuses` et `errors`
-  // portent la même information champ par champ — ils alimentent les bordures
+  // portent la même information champ par champ - ils alimentent les bordures
   // et les messages, pour qu'un bouton grisé dise quoi corriger.
   const { ready, dirty, statuses, errors } = useFormReadiness(updateAccountSchema, {
     firstName,

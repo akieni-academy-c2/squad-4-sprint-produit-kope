@@ -12,7 +12,7 @@ import { useOverlay } from './useOverlay.js';
  * ## Le mouvement
  *
  * La feuille **entre en se poussant** : ressort, et non courbe. Un ressort
- * conserve sa vitesse quand il est interrompu — refermer une feuille à
+ * conserve sa vitesse quand il est interrompu - refermer une feuille à
  * mi-parcours puis la rouvrir repart de là où elle était, au lieu de
  * recommencer à chaque fois. C'est ce qui la fait lire comme un objet et non
  * comme une transition CSS.
@@ -69,7 +69,7 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
             variants={side === 'bottom' ? sheetPanel : sidePanel}
             // États nommés explicites plutôt qu'hérités du fond.
             //
-            // La propagation implicite fonctionne — mais elle est implicite.
+            // La propagation implicite fonctionne - mais elle est implicite.
             // Une refonte du fond, un `variants` oublié, une réorganisation du
             // JSX suffisaient à faire disparaître la sortie, **sans erreur et
             // sans avertissement** : la feuille se refermait d'un coup. Nommer

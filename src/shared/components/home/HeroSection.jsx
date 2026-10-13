@@ -65,7 +65,7 @@ export function HeroSection() {
       </svg>
       {/* Le parent porte la cadence, les enfants ne portent que leur état.
           `initial={false}` : c'est le premier rendu de la page, la composition
-          est déjà là — l'animer en entrée n'ajouterait qu'un blanc de 340 ms
+          est déjà là - l'animer en entrée n'ajouterait qu'un blanc de 340 ms
           avant le premier mot.
 
           `ScrollDepth` enveloppe les deux colonnes pour y lier un parallaxe :

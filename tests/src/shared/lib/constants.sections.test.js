@@ -7,7 +7,7 @@ import { sectionFromPathname, sectionHref } from '@/shared/lib/constants.js';
  *
  * Ces tests verrouillent le contrat dont dépend `useSectionNav` : si la
  * déduction du chemin se trompe, le tableau de bord affiche une section vide
- * alors que l'URL est correcte — un écran blanc sans message d'erreur.
+ * alors que l'URL est correcte - un écran blanc sans message d'erreur.
  */
 const SECTIONS = ['apercu', 'avis', 'contacts', 'signalements', 'profil'];
 const ROOT = 'apercu';
@@ -57,7 +57,7 @@ describe('section d’un tableau de bord déduite du chemin', () => {
 
 /**
  * Régression : `RootLayout` comparait les routes par égalité exacte. Dès que les
- * onglets ont porté l'URL, `/admin` n'était plus reconnu sur `/admin/users` —
+ * onglets ont porté l'URL, `/admin` n'était plus reconnu sur `/admin/users` -
  * le fond pointillé disparaissait et la réserve de la barre du bas avec lui,
  * ce qui décalait toute la mise en page au changement d'onglet.
  */

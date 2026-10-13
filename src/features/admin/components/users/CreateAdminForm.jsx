@@ -13,7 +13,7 @@ const INPUT_CLASS =
  *
  * `phone` est absent de la liste : c'est le seul des quatre à avoir une saisie
  * particulière, et il est rendu à part juste après. Le lister ici et le traiter
- * à part aurait laissé deux endroits où le téléphone est défini — c'est
+ * à part aurait laissé deux endroits où le téléphone est défini - c'est
  * exactement ce qui a fait que les autres formulaires de l'application
  * avaient un champ libre.
  */

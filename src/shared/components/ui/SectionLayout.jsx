@@ -7,7 +7,7 @@ import { cn } from '@/shared/utils';
 import { STICKY_TOP } from '@/shared/lib/constants.js';
 
 /**
- * Colonne de filtres d'une section de tableau de bord — espace client,
+ * Colonne de filtres d'une section de tableau de bord - espace client,
  * professionnel et administration.
  *
  * Les trois espaces partagent la même colonne de filtres et la même feuille
@@ -20,7 +20,7 @@ import { STICKY_TOP } from '@/shared/lib/constants.js';
  * Il n'est **pas** ici, et c'est volontaire. Les tableaux de bord partagent le
  * fond pointillé (`bg-dots`) posé une fois par `RootLayout` sur la colonne
  * centrale. Encadrer chaque section d'une boîte grise donnait aux onglets un
- * fond différent de celui de la page — et deux motifs superposés là où un seul
+ * fond différent de celui de la page - et deux motifs superposés là où un seul
  * était prévu.
  *
  * ## Les colonnes
@@ -56,7 +56,7 @@ export function SectionLayout({
       size="sm"
       className={fullWidthFilterButton ? 'w-full lg:hidden' : 'lg:hidden'}
       onClick={() => setOpen(true)}
-      aria-label={`Ouvrir les filtres — ${ariaLabel ?? 'de la section'}`}
+      aria-label={`Ouvrir les filtres - ${ariaLabel ?? 'de la section'}`}
     >
       <SlidersHorizontal className="h-4 w-4" aria-hidden />
       Filtres
@@ -84,7 +84,7 @@ export function SectionLayout({
 
       <div className="min-w-0">{children}</div>
 
-      {/* Sans portail — cas du rendu seul, hors page — la colonne est déclarée
+      {/* Sans portail - cas du rendu seul, hors page - la colonne est déclarée
           ici. La page la fournit dans tous les cas normaux. */}
       {rightContainer
         ? createPortal(filters(searchId), rightContainer)
@@ -101,7 +101,7 @@ export function SectionLayout({
         {/* Colonne flex et non bloc défilant : le bouton doit rester visible
             pendant qu'on fait défiler les filtres, sinon il sort du champ au
             premier groupe supplémentaire. `max-h` déduit des 2rem de `p-4` que
-            la feuille pose déjà — le panneau est en `border-box`, son plafond
+            la feuille pose déjà - le panneau est en `border-box`, son plafond
             les comprend. */}
         <div className="flex max-h-[calc(90dvh-2rem)] flex-col pt-10">
           <div className="w-full flex-1 overflow-y-auto">{filters(`${searchId}-mobile`)}</div>

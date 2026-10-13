@@ -18,7 +18,7 @@ export const autoSuspendThreshold = () => env.AUTO_SUSPEND_REPORTS_THRESHOLD;
  * concurrent soit bloqué, et il peut coordonner ses signalements avec d'autres.
  * Compter les siens leur donnerait, avec trois comptes suffisants, le moyen de
  * faire suspendre une fiche en ligne. Ses signalements restent recevables et
- * visibles dans la file de modération — l'administrateur tranche — ils ne font
+ * visibles dans la file de modération - l'administrateur tranche - ils ne font
  * pas basculer de compteur.
  *
  * Le professionnel reste donc recevable comme auteur, mais la cible sanctionnable
@@ -43,7 +43,7 @@ export async function createReport(reporterId, professionalId, { reason, message
  *
  * Chemin distinct de `createReport` : celui-ci valide que la cible est une fiche
  * publiée, ce qui est la bonne garantie pour un signalement à froid depuis une
- * fiche publique mais exclut un client — qui n'a pas de fiche. Ici la cible est
+ * fiche publique mais exclut un client - qui n'a pas de fiche. Ici la cible est
  * un compte que le demandeur a effectivement contacté, ce qui remplace la
  * preuve de publication.
  *

@@ -14,7 +14,7 @@ const sameValue = (a, b) => {
  * Isolé du hook pour être testable sans rendu : l'environnement de test est
  * `node`, sans bibliothèque de rendu, et une logique de formulaire qui ne peut
  * être testée que montée dans un composant finit par être réimplémentée dans
- * les tests — réimplémentation qui ne casse plus quand la logique change.
+ * les tests - réimplémentation qui ne casse plus quand la logique change.
  *
  * `ready`  : chaque champ obligatoire est valide (bouton actif).
  * `dirty`  : au moins une valeur diffère de l'état initial. Indispensable sur
@@ -35,7 +35,7 @@ export function evaluateForm(schema, values, initial = values, { ignore = [], ru
   const fields = Object.keys(schema.shape).filter((f) => !ignore.includes(f));
 
   // Champs facultatifs : le schéma accepte `undefined`. Sans cette liste, un
-  // champ vide reste IDLE et `ready` l'exigerait à tort — le bouton
+  // champ vide reste IDLE et `ready` l'exigerait à tort - le bouton
   // « Enregistrer » resterait éteint pour tout compte sans adresse, alors que
   // ne pas avoir d'e-mail n'est pas une saisie invalide. On teste le schéma
   // lui-même plutôt que de tenir une liste à la main, sinon le prochain champ
@@ -64,7 +64,7 @@ export function evaluateForm(schema, values, initial = values, { ignore = [], ru
   }
 
   // `ready` : valide, et chaque champ obligatoire est OK. Un champ facultatif
-  // laissé vide ne bloque pas — il n'a rien à corriger.
+  // laissé vide ne bloque pas - il n'a rien à corriger.
   const ready =
     success &&
     fields.every(

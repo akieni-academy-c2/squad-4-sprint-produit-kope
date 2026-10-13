@@ -8,7 +8,7 @@ import { cn } from '@/shared/utils';
  *
  * Un numéro congolais commence toujours par `+242`. Le laisser à la saisie
  * produit trois erreurs à chaque fois : l'utilisateur tape `+242 242 06…`, il
- * oublie le `+`, ou il met un espace entre l'indicatif et le numéro — et le
+ * oublie le `+`, ou il met un espace entre l'indicatif et le numéro - et le
  * champ est alors refusé pour une faute de frappe qui n'en était pas une.
  *
  * Le faire figer à gauche retire le problème à la source. Et le séparateur
@@ -21,7 +21,7 @@ import { cn } from '@/shared/utils';
  *
  * ## Le placeholder annonce exactement ce que le champ produira
  *
- * Le regroupement est `2 · 3 · 2 · 2` — celui de `formatPhoneDisplay`, couvert
+ * Le regroupement est `2 · 3 · 2 · 2` - celui de `formatPhoneDisplay`, couvert
  * par ses tests. Le placeholder et l'indice de saisie alignent leur exemple
  * dessus. Ils annonçaient `06 12 34 56 7` : l'utilisateur tapait l'exemple
  * donné et le champ réécrivait ses groupes sous ses doigts, ce qui se lit comme
@@ -53,7 +53,7 @@ export function PhoneInput({ id, value, onChange, error, success, disabled, clas
           Séparateur à la hauteur du texte, pas de la zone.
 
           Étiré sur les 44 px du champ (`self-stretch`), il touchait les bordures
-          haute et basse et pesait plus lourd que la bordure du champ lui-même —
+          haute et basse et pesait plus lourd que la bordure du champ lui-même -
           un trait qui estructurait la boîte au lieu de la séparer en deux
           parties. Centré sur la ligne de `+242`, il dit seulement « le préfixe
           finit ici », et la bordure du champ reste le seul cadre.

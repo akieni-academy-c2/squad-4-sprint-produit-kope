@@ -54,7 +54,7 @@ export const ROUTES = {
  *
  * Les onglets sont adressables : `/dashboard/client/avis` recharge la page sur
  * la bonne section, le bouton « retour » du navigateur défait une navigation
- * entre onglets, et un lien de partage — « son avis » — ouvre la bonne vue.
+ * entre onglets, et un lien de partage - « son avis » - ouvre la bonne vue.
  *
  * On ne compare pas des chaînes brutes mais le **dernier segment** : le chemin
  * peut être préfixé (`/admin`), et une route inconnue doit retomber sur
@@ -65,23 +65,56 @@ export const ROUTES = {
  */
 
 /**
- * Haut collant des colonnes latérales.
+ * Haut collant des colonnes latérales : sous le header, avec un jour de
+ * respiration. Un `top: var(--header-height)` colle la colonne au bord de la
+ * barre, et les deux boîtes se touchent - on lit un empilement raté.
  *
- * Toutes les colonnes collantes de l'application — filtres de `/search`,
- * colonnes de filtres des tableaux de bord, mini fiche et carte de contact de la
- * fiche publique — s'arrêtent sous le header, au même endroit.
+ * Hauteur du header en variable CSS pour qu'un changement suive tout seul.
  *
- * Écrire `lg:top-(--header-height)` à chaque fois est une recopie : la valeur a
- * déjà changé une fois (`lg:top-23`, une classe Tailwind qui n'existe pas — le
- * maximum de l'échelle est 20, puis 24), et elle changera encore. Une seule
- * déclaration, un seul point à corriger.
- *
- * Le palier est dans la chaîne et non devant : la colonne n'existe qu'à partir
- * de `lg`, et énumérer la moitié des propriétés à la main est exactement
- * l'erreur que ce jeton supprime.
+ * Déclaré une seule fois : la valeur était recopiée onze fois, et avait déjà
+ * changé une fois (`lg:top-23` - classe inexistante, l'échelle s'arrête à 20
+ * puis 24 ; elle n'était jamais générée, le collant était simplement absent).
  */
-export const STICKY_TOP = 'lg:sticky lg:top-(--header-height)';
+export const STICKY_TOP = 'lg:sticky lg:top-[calc(var(--header-height)+1rem)]';
 
+/** Bas collant, même respiration que `STICKY_TOP` en haut. */
+export const STICKY_BOTTOM = 'lg:bottom-4';
+
+/**
+ * Colonne épinglée sur les deux bords - pour les cartes d'action unique.
+ *
+ * Bornée en haut et en bas, elle ne quitte pas la bande entre les deux et se
+ * met à défiler dedans plutôt que de sortir de l'écran. C'est ce qu'il faut
+ * d'une action qu'on cherche une fois Having lu : elle reste atteignable du
+ * haut et du bas de la page.
+ *
+ * Collée en haut seulement, elle disparaît quand on arrive en bas de la fiche.
+ */
+export const STICKY_BAND = `${STICKY_TOP} ${STICKY_BOTTOM}`;
+
+/**
+ * Colonne latérale d'une grille, collante.
+ *
+ * `STICKY_TOP` + `align-self: start`, et c'est la seconde moitié qui compte. Un
+ * `sticky` se déplace dans la boîte de son parent : si la boîte fait exactement
+ * sa hauteur, il n'a nulle part où aller. Or un élément de grille s'étire par
+ * défaut sur toute la hauteur de la ligne - une colonne de filtres étirée ne
+ * colle plus, sans que rien ne le signale.
+ *
+ * Les deux moitiés sont liées dans un seul jeton : impossible d'en garder une
+ * sans l'autre. Elles ne l'étaient pas - les colonnes de gauche portaient
+ * `self-start`, celles de droite non, et sur la même page une suivait le
+ * défilement pendant que l'autre restait en haut.
+ */
+export const STICKY_COLUMN = `${STICKY_TOP} lg:self-start`;
+
+/**
+ * Section d'un tableau de bord déduite du chemin.
+ *
+ * La racine (`/admin`) n'a pas de section : elle rend `''`, et c'est
+ * `useSectionNav` qui applique le repli sur l'onglet d'accueil. Une route
+ * inconnue retombe aussi sur `''` plutôt que sur un écran vide.
+ */
 export function sectionFromPathname(pathname, sections) {
   const segment = String(pathname || '').split('/').filter(Boolean).pop();
   return sections.includes(segment) ? segment : '';

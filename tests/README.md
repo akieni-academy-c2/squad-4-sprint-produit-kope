@@ -25,7 +25,7 @@ tests/
 | `@test/` | `tests/` |
 
 Un test n'écrit jamais de chemin relatif. C'est ce qui permet de le déplacer
-dans l'arborescence sans casser ses imports — et donc de le poser **à côté de
+dans l'arborescence sans casser ses imports - et donc de le poser **à côté de
 ce qu'il teste** plutôt qu'au hasard dans un dossier à plat.
 
 ## Nommer un test qui traverse deux couches
@@ -38,25 +38,25 @@ validators.test.js         le schéma vu du client
 validators.parity.test.js  le même schéma, déduit du serveur
 ```
 
-Quand un test mélange vraiment les deux côtés — un service qui traverse le
-réseau, une migration lue par un composant — il reste où il est et son nom dit
+Quand un test mélange vraiment les deux côtés - un service qui traverse le
+réseau, une migration lue par un composant - il reste où il est et son nom dit
 pourquoi il est à part : `services.audit.test.js`, `HomePage.persona.test.jsx`.
 
 ## Ce qui reste à la racine
 
 Trois fichiers, volontairement hors arborescence :
 
-- `setup.js` — configuration Vitest commune ;
-- `sql-live.test.js` — le seul qui demande une vraie base PostgreSQL
+- `setup.js` - configuration Vitest commune ;
+- `sql-live.test.js` - le seul qui demande une vraie base PostgreSQL
   (`npm run test:db`). Il interroge tous les repositories, il n'appartient donc
   à aucun ;
-- `support/` — l'outillage.
+- `support/` - l'outillage.
 
 ## Lire un fichier source sans l'importer
 
 Certains tests inspectent le **texte** d'une source : le contenu de
 `index.css`, la liste des `<img>` de `src/`, les migrations SQL. L'alias `@` ne
-vaut que pour le graphe d'imports — il faut un chemin sur le disque. Ces tests
+vaut que pour le graphe d'imports - il faut un chemin sur le disque. Ces tests
 utilisent `repoPath()` de `support/repoRoot.js` :
 
 ```js
@@ -66,7 +66,7 @@ const css = readFileSync(repoPath('src/index.css'), 'utf8');
 ```
 
 `repoRoot.js` remonte depuis son propre emplacement jusqu'à la racine du dépôt.
-Un test peut ainsi changer de profondeur sans que sa référence casse — ce que
+Un test peut ainsi changer de profondeur sans que sa référence casse - ce que
 `new URL('../src/…', import.meta.url)` ne permettait pas.
 
 ## Exécuter

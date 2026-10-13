@@ -19,7 +19,7 @@ const DialogLabelContext = createContext(null);
 /**
  * Le panneau reçoit la variante du dialogue, pas un fondu d'opacité.
  *
- * `animate-scale-in` — l'animation CSS du projet — ne faisait qu'un `scale` sur
+ * `animate-scale-in` - l'animation CSS du projet - ne faisait qu'un `scale` sur
  * 180 ms, sans ressort ni recul. Une surface qui apparaît à la taille exacte
  * n'a aucune direction : on ne sait pas d'où elle vient. Ici, elle arrive par
  * le bas et se pose.
@@ -98,7 +98,7 @@ export function DialogContent({
       variants={variants}
       // États nommés explicites : voir `Sheet`. La propagation implicite depuis
       // le fond fonctionne, mais une réorganisation du JSX suffit à la faire
-      // disparaître — et le dialogue se referme alors d'un coup, sans erreur.
+      // disparaître - et le dialogue se referme alors d'un coup, sans erreur.
       initial="initial"
       animate="animate"
       exit="exit"

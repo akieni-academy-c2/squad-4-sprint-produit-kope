@@ -51,7 +51,7 @@ const SEP = /[\\/]/g;
  * `walk` rend un chemin absolu, aux séparateurs de la plateforme ; `EXEMPT`
  * est écrit en chemins de dépôt, séparateurs obliques. Sans cette
  * normalisation, la comparaison échouerait sous Windows alors qu'elle passe
- * sous Linux — un test qui ne surveille que la machine de son auteur.
+ * sous Linux - un test qui ne surveille que la machine de son auteur.
  */
 const srcKey = (file) => relative(REPO_ROOT, file).replace(SEP, '/');
 

@@ -79,7 +79,7 @@ export function LoginForm({ bare = false } = {}) {
             Même champ que l'inscription, et pour la même raison : le serveur
             stocke `+242061234567`, un compte doit donc se saisir des deux
             côtés de la même façon. Le champ libre demandait de taper
-            l'indicatif — et un utilisateur qui le tapait autrement qu'à
+            l'indicatif - et un utilisateur qui le tapait autrement qu'à
             l'inscription ne se connectait pas, sans comprendre pourquoi.
           */}
           <PhoneInput

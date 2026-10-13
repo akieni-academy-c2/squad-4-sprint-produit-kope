@@ -10,7 +10,7 @@ export default defineConfig({
       // Les tests miroitent `src/` et `server/` : un fichier placé dans
       // `tests/src/features/admin/components/catalog/` importe son sujet par
       // `@/features/admin/...`. Sans alias, la profondeur d'un test ferait
-      // varier le nombre de `../` d'un fichier à l'autre — et le déplacer
+      // varier le nombre de `../` d'un fichier à l'autre - et le déplacer
       // casserait ses imports pour une raison étrangère au code testé.
       '@server': path.resolve(__dirname, 'server'),
       '@test': path.resolve(__dirname, 'tests'),

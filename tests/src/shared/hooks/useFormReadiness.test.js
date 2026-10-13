@@ -9,7 +9,7 @@ import { FIELD_STATUS } from '@/shared/hooks/useFieldStatus.js';
  * initial.
  *
  * Ces tests appellent `evaluateForm`, le calcul réellement utilisé par
- * `useFormReadiness`. Une version précédente rejouait la logique à sa main —
+ * `useFormReadiness`. Une version précédente rejouait la logique à sa main -
  * elle continuait à passer quand un champ optionnel avait été ajouté au schéma
  * et que le vrai calcul éteignait le bouton en permanence.
  */

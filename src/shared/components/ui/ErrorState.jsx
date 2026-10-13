@@ -6,8 +6,8 @@ import { cn } from '@/shared/utils';
  * Panneau d'erreur, style du système de design.
  *
  * L'erreur est un **état**, pas une alerte : elle occupe une place dans la
- * page et se lit comme le reste de l'interface. La sprayed everywhere — texte
- * rouge sur fond rouge, bordure rouge — transformait chaque écran qui échouait
+ * page et se lit comme le reste de l'interface. La sprayed everywhere - texte
+ * rouge sur fond rouge, bordure rouge - transformait chaque écran qui échouait
  * en affiche d'alerte, et deux implémentations cohabitaient déjà
  * (`DataState` et `ProfileErrorState`) avec des couleurs différentes.
  *
@@ -15,7 +15,7 @@ import { cn } from '@/shared/utils';
  * (`PublicationStatus`, `MissingChecklist`) :
  *   - une pastille d'icône qui donne le ton sans colorer le texte ;
  *   - un **titre** en gras, sémantique, bref ;
- *   - le **détail** en texte courant, jamais en rouge — le rouge attire
+ *   - le **détail** en texte courant, jamais en rouge - le rouge attire
  *     l'œil, et c'est le titre qui doit l'attirer, pas la phrase d'erreur ;
  *   - l'action, alignée sur le bord du texte.
  *

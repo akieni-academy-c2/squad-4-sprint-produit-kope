@@ -78,7 +78,7 @@ describe('BottomNav', () => {
 
     // La barre compte au maximum cinq cellules : quatre destinations et le
     // bouton Menu. Compter le Menu à part donnerait six icônes sur 360 px, soit
-    // ~60 px chacune — sous la cible tactile confortable.
+    // ~60 px chacune - sous la cible tactile confortable.
     expect(html.split('<button').length - 1).toBe(5);
     expect(html).toContain('S-A');
     expect(html).toContain('S-D');

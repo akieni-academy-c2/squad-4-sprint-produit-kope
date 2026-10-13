@@ -17,7 +17,7 @@ import { sectionFromPathname, sectionHref } from '@/shared/lib/constants';
  * `useNavigate` y est appelé directement : il ne parvient plus à préserver le
  * `useCallback` du chargement de profil et désactive l'optimisation du fichier
  * entier. Passé par un hook, l'appel est opaque et le composant reste
- * analysable — les deux tableaux de bord partagent en outre exactement la même
+ * analysable - les deux tableaux de bord partagent en outre exactement la même
  * logique.
  *
  * @param base   racine du tableau de bord, ex. `/dashboard/client`
