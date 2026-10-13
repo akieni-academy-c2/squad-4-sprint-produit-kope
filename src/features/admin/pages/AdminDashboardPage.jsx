@@ -60,7 +60,7 @@ export function AdminDashboardPage() {
             : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
         )}
       >
-        <aside className="hidden lg:block lg:sticky lg:top-23">
+        <aside className="hidden lg:block lg:sticky lg:top-(--header-height)">
           <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
@@ -86,7 +86,7 @@ export function AdminDashboardPage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn('lg:sticky lg:top-23', withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn('lg:sticky lg:top-(--header-height)', withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 

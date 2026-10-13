@@ -18,6 +18,13 @@ import { reportContact } from '@/features/reports/services/reports.service.js';
 import { ReportDialog, ReportTrigger } from '@/features/reports/components/ReportDialog.jsx';
 import { logContact } from '../services/contacts.service.js';
 import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
+import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+
+// Plafond de la liste chargée. Les filtres contacts sont tous côté client, il
+// faut donc la totalité pour qu'une recherche ne porte que sur la page affichée.
+const FETCH_LIMIT = 100;
+
+const PAGE_SIZE = 10;
 
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Du plus récent' },
@@ -83,16 +90,35 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             <Badge variant={contact.outgoing ? 'info' : 'primary'} size="sm">
               {contact.outgoing ? 'Contacté' : 'Vous a contacté'}
             </Badge>
-            {!contact.outgoing && contact.status === 'new' && (
-              <Badge variant="warning" size="sm">Nouveau</Badge>
+            {/* « Nouveau » signalait un message entrant jamais ouvert. C'est un
+                état de lecture, pas un statut de la relation : ce qui compte
+                sur la carte, c'est l'état du signalement. */}
+            {reported && (
+              <Badge variant="danger" size="sm">
+                Signalé
+              </Badge>
+            )}
+
+            {/* Signalement possible pour tout correspondant, client comme
+                professionnel : le serveur refuse toute cible sans conversation
+                réelle, et un signalement de professionnel ne compte pas au
+                seuil de blocage automatique — il est traité par un
+                administrateur, jamais suspendu par un compteur.
+
+                À côté de « Contacté », pas avec « Appeler ». Le signalement est
+                un geste de recours sur la relation, il appartient au même
+                registre que le badge qui la décrit. Sur la ligne des canaux, il
+                se lisait comme un troisième moyen de joindre — exactement ce que
+                la ternaire du pied cherche à éviter. */}
+            {!reported && (
+              <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />
             )}
           </div>
         </div>
 
         
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
-          <span className=" inline-flex items-center gap-1.5 text-xs text-gray-500">
-            
+          <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
             <span aria-hidden>·</span>
             {formatDateFr(contact.createdAt)}
           </span>
@@ -119,17 +145,6 @@ function ContactRow({ contact, onReach, onReport, reported }) {
                 <MessageCircle size={14} aria-hidden /> WhatsApp
               </Button>
             ))}
-
-          {/* Le signalement est réservé au correspondant client : c'est le seul
-              cas où il manque une issue. Un professionnel signalé passe déjà
-              par la fiche publique, qui porte ce geste ; le dupliquer ici
-              ouvrirait deux chemins vers le même signalement. */}
-          {contact.role === 'client' &&
-            (reported ? (
-              <span className="text-[11px] font-medium text-gray-400">Signalé</span>
-            ) : (
-              <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />
-            ))}
         </div>
       </Card>
     </li>
@@ -141,7 +156,7 @@ export function ContactsSection({ rightContainer = null }) {
   const [reporting, setReporting] = useState(null);
   const [reportedIds, setReportedIds] = useState([]);
   const { data: itemsData, loading, error } = useAsyncData(async () => {
-    const data = await getMyContacts();
+    const data = await getMyContacts({ pageSize: FETCH_LIMIT });
     return data.items || [];
   }, [reload]);
 
@@ -153,14 +168,23 @@ export function ContactsSection({ rightContainer = null }) {
   const [sort, setSort] = useState('recent');
   const [origin, setOrigin] = useState('all');
   const [channel, setChannel] = useState('all');
+  const [page, setPage] = useState(1);
 
   const dirty = Boolean(q || sort !== 'recent' || origin !== 'all' || channel !== 'all');
+
+  // Changer un filtre ramène en première page : rester sur la page 3 d'un
+  // résultat filtré affiche un vide alors que des contacts existent.
+  const changeFilter = (setter) => (value) => {
+    setter(value);
+    setPage(1);
+  };
 
   const resetFilters = () => {
     setQ('');
     setSort('recent');
     setOrigin('all');
     setChannel('all');
+    setPage(1);
   };
 
   const visible = useMemo(() => {
@@ -185,6 +209,15 @@ export function ContactsSection({ rightContainer = null }) {
     );
   }, [items, q, sort, origin, channel]);
 
+  // Pagination sur la liste filtrée, pas sur la page serveur. Les filtres
+  // vivent tous dans le navigateur : paginer côté serveur afficherait un
+  // « aucun contact » sur la page 3 alors que la page 1 en contenait trois qui
+  // correspondaient. Filtres et pagination portent donc sur le même ensemble.
+  const paged = useMemo(
+    () => visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [visible, page],
+  );
+
   const filters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
       <div className="divide-y divide-gray-100">
@@ -192,8 +225,8 @@ export function ContactsSection({ rightContainer = null }) {
           <SearchInput
             id={searchId}
             value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onClear={() => setQ('')}
+            onChange={(e) => changeFilter(setQ)(e.target.value)}
+            onClear={() => changeFilter(setQ)('')}
             placeholder="Nom, métier ou téléphone..."
             aria-label="Rechercher dans mes contacts"
           />
@@ -202,7 +235,7 @@ export function ContactsSection({ rightContainer = null }) {
         <AdminFilterGroup title="Origine">
           <CustomSelect
             value={origin}
-            onChange={setOrigin}
+            onChange={changeFilter(setOrigin)}
             options={ORIGIN_OPTIONS}
             className="w-full"
             aria-label="Filtrer par origine du contact"
@@ -212,7 +245,7 @@ export function ContactsSection({ rightContainer = null }) {
         <AdminFilterGroup title="Canal">
           <CustomSelect
             value={channel}
-            onChange={setChannel}
+            onChange={changeFilter(setChannel)}
             options={CHANNEL_OPTIONS}
             className="w-full"
             aria-label="Filtrer par canal de contact"
@@ -222,7 +255,7 @@ export function ContactsSection({ rightContainer = null }) {
         <AdminFilterGroup title="Trier par">
           <CustomSelect
             value={sort}
-            onChange={setSort}
+            onChange={changeFilter(setSort)}
             options={SORT_OPTIONS}
             className="w-full"
             aria-label="Trier les contacts"
@@ -259,17 +292,28 @@ export function ContactsSection({ rightContainer = null }) {
               }
             />
           ) : (
-            <ul className="space-y-3">
-              {visible.map((c) => (
-                <ContactRow
-                  key={c.id}
-                  contact={c}
-                  onReach={refresh}
-                  onReport={setReporting}
-                  reported={reportedIds.includes(c.userId)}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="space-y-3">
+                {paged.map((c) => (
+                  <ContactRow
+                    key={c.id}
+                    contact={c}
+                    onReach={refresh}
+                    onReport={setReporting}
+                    reported={reportedIds.includes(c.userId)}
+                  />
+                ))}
+              </ul>
+
+              <Pagination
+                page={page}
+                pageSize={PAGE_SIZE}
+                total={visible.length}
+                onPageChange={setPage}
+                variant="summary"
+                className={PAGINATION_BAR}
+              />
+            </>
           )}
         </DataState>
       </AccountSectionLayout>

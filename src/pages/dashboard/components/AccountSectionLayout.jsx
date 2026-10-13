@@ -40,7 +40,7 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
       {rightContainer
         ? createPortal(filters(searchId), rightContainer)
         : (
-          <aside className="hidden lg:sticky lg:top-23 lg:block">
+          <aside className="hidden lg:sticky lg:top-(--header-height) lg:block">
             {filters(searchId)}
           </aside>
         )}

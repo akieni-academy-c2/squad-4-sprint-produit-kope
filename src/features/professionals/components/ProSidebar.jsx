@@ -22,27 +22,33 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
             </div>
           </div>
         </div>
+
         <div className="px-5 py-4">
           <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Statut</p>
           <p className="mt-1 text-sm font-semibold capitalize text-gray-900">{profile?.status ?? '-'}</p>
+
+          {/* Dans la carte, avant la navigation : le lien vaut pour la fiche
+              affichée juste au-dessus. En bas de colonne, sous la navigation, il
+              se lisait comme un bouton de plus parmi les onglets — et il
+              disparaissait sur mobile, où la colonne est remplacée par la barre
+              du bas. */}
+          {isPublished && (
+            <Button
+              as={Link}
+              to={ROUTES.PROFESSIONAL(publicId)}
+              variant="subtle"
+              size="sm"
+              className="mt-3 w-full"
+            >
+              Voir ma fiche publique <ChevronRight size={16} className="inline" aria-hidden />
+            </Button>
+          )}
         </div>
       </Card>
 
       <div className="hidden lg:block">
         <SidebarNav items={items} active={active} onChange={onChange} ariaLabel="Navigation de l'espace pro" />
       </div>
-
-      {isPublished && (
-        <Button
-          as={Link}
-          to={ROUTES.PROFESSIONAL(publicId)}
-          variant="secondary"
-          size="md"
-          className="w-full"
-        >
-          Voir ma fiche publique <ChevronRight size={16} className="inline" aria-hidden />
-        </Button>
-      )}
     </aside>
   );
 }

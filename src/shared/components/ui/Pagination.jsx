@@ -1,6 +1,17 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
+/**
+ * Habillage de la barre de pagination.
+ *
+ * Exporté plutôt que recopié : la barre est posée sur le fond de la page, pas
+ * sur une carte, et sans ce bandeau elle flotte sans contour au milieu du
+ * contenu. La même valeur est reprise par la recherche, l'espace client,
+ * l'espace professionnel et l'administration — une copie divergerait au
+ * premier ajustement.
+ */
+export const PAGINATION_BAR = 'mt-4 rounded-md border border-gray-100 bg-white px-4 py-2';
+
 function getButtons(current, totalPages) {
   if (totalPages <= 7)
     return Array.from({ length: totalPages }, (_, i) => i + 1);

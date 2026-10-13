@@ -152,7 +152,7 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
         </Card>
       </section>
 
-      <Card className="hidden items-center gap-3 p-3 lg:sticky lg:top-23 lg:flex">
+      <Card className="hidden items-center gap-3 p-3 lg:sticky lg:top-(--header-height) lg:flex">
         <Avatar
           src={avatarSrc}
           name={profile.displayName}

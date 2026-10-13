@@ -74,7 +74,7 @@ export function AdminSectionLayout({
       {rightContainer ? (
         createPortal(filters(searchId), rightContainer)
       ) : (
-        <aside className="hidden lg:block lg:w-72 lg:shrink-0 lg:sticky lg:top-23">
+        <aside className="hidden lg:block lg:w-72 lg:shrink-0 lg:sticky lg:top-(--header-height)">
           {filters(searchId)}
         </aside>
       )}

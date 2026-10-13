@@ -16,6 +16,11 @@ import { cn } from '@/shared/utils';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteMyReport, getMyReports } from '../services/reports.service.js';
+import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+
+// Page assez courte pour que la liste reste lisible, assez longue pour ne pas
+// assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
+const PAGE_SIZE = 10;
 
 const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'neutral' };
 
@@ -36,13 +41,29 @@ export function MyReportsSection({ rightContainer = null }) {
   const [status, setStatus] = useState('');
   const [q, setQ] = useState('');
   const [sort, setSort] = useState('recent');
+  const [page, setPage] = useState(1);
   const [reload, setReload] = useState(0);
 
   const { data, loading, error } = useAsyncData(
-    () => getMyReports({ status: status || undefined, q: q || undefined, sort }),
-    [status, q, sort, reload],
+    () =>
+      getMyReports({
+        page,
+        pageSize: PAGE_SIZE,
+        status: status || undefined,
+        q: q || undefined,
+        sort,
+      }),
+    [page, status, q, sort, reload],
   );
   const items = data?.items ?? [];
+  const total = data?.total ?? 0;
+
+  // Changer un filtre ramène en première page : rester sur la page 3 d'un
+  // résultat filtré affiche un vide alors que des signalements existent.
+  const changeFilter = (setter) => (value) => {
+    setter(value);
+    setPage(1);
+  };
   const [pendingId, setPendingId] = useState(null);
 
   // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
@@ -53,6 +74,7 @@ export function MyReportsSection({ rightContainer = null }) {
     setQ('');
     setStatus('');
     setSort('recent');
+    setPage(1);
   };
 
   const remove = async (id) => {
@@ -75,7 +97,7 @@ export function MyReportsSection({ rightContainer = null }) {
               <SearchInput
                 id={searchId}
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => changeFilter(setQ)(e.target.value)}
                 onClear={() => setQ('')}
                 placeholder="Professionnel ou texte..."
                 aria-label="Rechercher dans mes signalements"
@@ -85,7 +107,7 @@ export function MyReportsSection({ rightContainer = null }) {
             <AdminFilterGroup title="Statut">
               <CustomSelect
                 value={status}
-                onChange={setStatus}
+                onChange={changeFilter(setStatus)}
                 options={REPORT_STATUS_OPTIONS}
                 className="w-full"
                 aria-label="Filtrer par statut"
@@ -95,7 +117,7 @@ export function MyReportsSection({ rightContainer = null }) {
             <AdminFilterGroup title="Trier par">
               <CustomSelect
                 value={sort}
-                onChange={setSort}
+                onChange={changeFilter(setSort)}
                 options={SORT_OPTIONS}
                 className="w-full"
                 aria-label="Trier les signalements"
@@ -133,6 +155,7 @@ export function MyReportsSection({ rightContainer = null }) {
             }
           />
         ) : (
+          <>
           <ul className="space-y-3">
             {items.map((report) => (
               <li key={report.id}>
@@ -189,6 +212,15 @@ export function MyReportsSection({ rightContainer = null }) {
               </li>
             ))}
           </ul>
+            <Pagination
+              page={data?.page ?? 1}
+              pageSize={PAGE_SIZE}
+              total={total}
+              onPageChange={setPage}
+              variant="summary"
+              className={PAGINATION_BAR}
+            />
+          </>
         )}
       </DataState>
       </AccountSectionLayout>

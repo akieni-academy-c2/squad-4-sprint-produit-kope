@@ -171,7 +171,7 @@ export function ProfessionalPublicPage() {
             />
           </section>
 
-          <Card id="contact" className="space-y-4 p-5 lg:sticky lg:top-23 lg:bottom-4">
+          <Card id="contact" className="space-y-4 p-5 lg:sticky lg:top-(--header-height) lg:bottom-4">
             <div className="space-y-1.5">
               <h2 className="text-lg font-bold text-gray-900">Parlons de votre besoin.</h2>
               <p className="text-sm leading-6 text-gray-600">
