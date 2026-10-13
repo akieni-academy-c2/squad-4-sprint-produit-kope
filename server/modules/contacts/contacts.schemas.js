@@ -6,7 +6,7 @@ import { idSchema } from '../../utils/commonSchemas.js';
  *
  * `channel` est la seule information réellement nécessaire : elle dit comment
  * le contact a été pris, et `created_at` dit quand. `message` reste accepté
- * pour le formulaire historique, mais n'est plus exigé — un appel n'a pas de
+ * pour le formulaire historique, mais n'est plus exigé - un appel n'a pas de
  * texte, et l'imposer rendait le clic sur « Appeler » impossible à enregistrer.
  */
 export const contactChannels = {

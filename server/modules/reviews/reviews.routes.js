@@ -26,7 +26,7 @@ router.get(
 
 // Gestion de son propre avis. Le client_id n'est jamais lu dans le corps : il
 // vient de la session, donc ces trois routes ne peuvent agir que sur ses
-// propres avis. Le masquage est séparé de la mise à jour — corriger un texte
+// propres avis. Le masquage est séparé de la mise à jour - corriger un texte
 // ne doit pas réafficher un avis que le client avait retiré.
 router.patch(
   '/reviews/:id',

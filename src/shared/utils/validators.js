@@ -17,12 +17,12 @@ const phoneSchema = z
   });
 
 /**
- * Adresse e-mail de contact — aligné sur `emailSchema` de
+ * Adresse e-mail de contact - aligné sur `emailSchema` de
  * server/utils/commonSchemas.js, qui fait foi.
  *
  * `nullish` couvre absent, chaîne vide et `null` : le champ est facultatif et
  * effaçable, vider doit rester possible. Les trois finissent en `null`. Sans
- * lui, un formulaire jamais touché — aucun `email` dans l'objet — serait
+ * lui, un formulaire jamais touché - aucun `email` dans l'objet - serait
  * refusé et « Enregistrer » resterait éteint en permanence.
  */
 const emailSchema = z

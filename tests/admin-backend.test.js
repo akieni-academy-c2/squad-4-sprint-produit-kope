@@ -342,7 +342,7 @@ function fakeDb() {
   };
 }
 
-describe('admin stats — file de modération', () => {
+describe('admin stats - file de modération', () => {
   afterEach(() => vi.restoreAllMocks());
 
   it('compte les signalements en attente, les comptes bloqués et suspendus', async () => {

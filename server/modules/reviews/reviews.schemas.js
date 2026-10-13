@@ -46,8 +46,8 @@ export const reviewVisibilitySchema = z.object({
 /**
  * Filtres de « Mes avis ».
  *
- * `visibility` remplace un booléen simple : trois états sont nécessaires —
- * tous, masqués seuls, visibles seuls — et `hidden=true` seul ne peut pas
+ * `visibility` remplace un booléen simple : trois états sont nécessaires -
+ * tous, masqués seuls, visibles seuls - et `hidden=true` seul ne peut pas
  * exprimer le troisième.
  */
 export const myReviewsQuerySchema = paginationSchema.extend({

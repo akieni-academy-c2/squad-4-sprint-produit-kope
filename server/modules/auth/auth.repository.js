@@ -15,7 +15,7 @@ export async function updateAccount(userId, { firstName, lastName, phone, email 
   RETURNING id, role, phone, email,
             first_name AS "firstName", last_name AS "lastName"`,
     // L'e-mail est le seul champ effaçable : `COALESCE` interdirait de le
-    // retirer, `email` prend donc la valeur telle quelle — `null` pour vider,
+    // retirer, `email` prend donc la valeur telle quelle - `null` pour vider,
     // une chaîne pour la poser. Les autres restent inchangés si absents.
     [userId, firstName ?? null, lastName ?? null, phone ?? null, email ?? null],
   );

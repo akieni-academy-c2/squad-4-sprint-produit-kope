@@ -5,14 +5,14 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 
 /**
- * Colonne de filtres du compte client.
+ * Colonne de filtres d'un compte — client comme professionnel.
  *
  * Même contrat que `AdminSectionLayout` de l'espace admin. La colonne de
  * gauche (navigation) et celle de droite (filtres) sont déclarées par la même
- * grille dans `ClientDashboardPage` : la section ne dessine donc pas sa propre
- * colonne, elle y projette ses filtres par portail. Deux grilles imbriquées
- * donnaient des largeurs de colonne incohérentes entre les sections et
- * désalignaient les deux barres sticky.
+ * grille dans `ClientDashboardPage` et `ProProfilePage` : la section ne dessine
+ * donc pas sa propre colonne, elle y projette ses filtres par portail. Deux
+ * grilles imbriquées donnaient des largeurs de colonne incohérentes entre les
+ * sections et désalignaient les deux barres sticky.
  */
 export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchId = 'account-search', filters, children }) {
   const [open, setOpen] = useState(false);
@@ -27,7 +27,7 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
         size="sm"
         className="w-full lg:hidden"
         onClick={() => setOpen(true)}
-        aria-label={`Ouvrir les filtres — ${ariaLabel}`}
+        aria-label={`Ouvrir les filtres - ${ariaLabel}`}
       >
         <SlidersHorizontal size={16} aria-hidden />
         Filtres
@@ -35,7 +35,7 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
 
       <div className="min-w-0">{children}</div>
 
-      {/* Sans portail — cas du rendu seul, hors page — la colonne est
+      {/* Sans portail - cas du rendu seul, hors page - la colonne est
           déclarée ici. La page la fournit dans tous les cas normaux. */}
       {rightContainer
         ? createPortal(filters(searchId), rightContainer)
@@ -48,12 +48,12 @@ export function AccountSectionLayout({ ariaLabel, rightContainer = null, searchI
       {/* Feuille par le bas : les filtres sont un réglage qu'on consulte et
           qu'on referme, pas un panneau qu'on parcourt. Sur le côté, ils
           occupaient la moitié de l'écran et repoussaient la liste hors de
-          champ — à l'inverse du tiroir de navigation, qu'on laisse ouvert. */}
+          champ - à l'inverse du tiroir de navigation, qu'on laisse ouvert. */}
       <Sheet open={open} onOpenChange={setOpen} side="bottom">
         {/* Colonne flex et non bloc défilant : le bouton doit rester visible
             pendant qu'on fait défiler les filtres, sinon il sort du champ au
             premier groupe supplémentaire. `max-h` déduit des 2rem de `p-4` que
-            la feuille pose déjà — le panneau est en `border-box`, son plafond
+            la feuille pose déjà - le panneau est en `border-box`, son plafond
             les comprend. */}
         <div className="flex max-h-[calc(90dvh-2rem)] flex-col pt-10">
           <div className="w-full flex-1 overflow-y-auto">

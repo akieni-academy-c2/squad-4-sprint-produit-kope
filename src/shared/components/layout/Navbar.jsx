@@ -201,7 +201,7 @@ export function Navbar() {
 
           {/* Le pied ne change pas de forme selon la session : un filet le sépare
               toujours de la navigation. Seule la fiche utilisateur mérite une
-              card — pour un visiteur, ce sont deux portes d'entrée, pas une
+              card - pour un visiteur, ce sont deux portes d'entrée, pas une
               identité à afficher. */}
           <div className="border-t border-gray-100 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             {loading ? (

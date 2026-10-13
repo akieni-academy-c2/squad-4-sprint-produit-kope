@@ -9,7 +9,7 @@ import { AuthModalProvider } from '../src/shared/context/AuthModalContext.jsx';
 /**
  * Le sélecteur de rôle est demandé « juste à côté du logo ».
  *
- * Il doit donc exister sur toutes les tailles d'écran — sur mobile il n'y a plus
+ * Il doit donc exister sur toutes les tailles d'écran - sur mobile il n'y a plus
  * de barre de navigation, mais l'outil de démonstration doit rester accessible,
  * sinon il devient impossible de changer de rôle sur un téléphone.
  */

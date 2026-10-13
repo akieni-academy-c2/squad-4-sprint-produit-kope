@@ -27,7 +27,7 @@ const { search } = await import('../server/modules/search/search.service.js');
  *
  * La ville est un critère de premier niveau, avant la zone : une zone
  * appartient à une ville, et l'inverse n'est pas vrai. Le filtre doit donc
- * exister dans les deux requêtes — liste et compteur — sans quoi le total
+ * exister dans les deux requêtes - liste et compteur - sans quoi le total
  * affiché ne correspond plus aux résultats.
  */
 describe('Filtre ville', () => {

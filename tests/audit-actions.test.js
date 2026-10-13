@@ -26,7 +26,7 @@ async function findByRole(role) {
   return items;
 }
 
-describe('audit — actions utilisateur', () => {
+describe('audit - actions utilisateur', () => {
   describe('compte', () => {
     it('inscrit un client', async () => {
       const user = await authApi.registerClient({
@@ -209,7 +209,7 @@ describe('audit — actions utilisateur', () => {
   });
 });
 
-describe('audit — actions administration', () => {
+describe('audit - actions administration', () => {
   describe('statistiques', () => {
     it('renvoie des compteurs numériques', async () => {
       const stats = await adminApi.getStats();
@@ -385,7 +385,7 @@ describe('audit — actions administration', () => {
     });
   });
 
-  describe('catalogue — métiers', () => {
+  describe('catalogue - métiers', () => {
     it('crée, renomme, réordonne et supprime un métier', async () => {
       const name = unique('Métier');
       const created = await adminApi.createTrade({ name, categoryId: 1 });
@@ -401,7 +401,7 @@ describe('audit — actions administration', () => {
     });
   });
 
-  describe('catalogue — catégories', () => {
+  describe('catalogue - catégories', () => {
     it('crée, renomme, réordonne et supprime une catégorie', async () => {
       const created = await adminApi.createTradeCategory({ name: unique('Catégorie') });
       await adminApi.updateTradeCategory(created.id, { name: unique('Catégorie renommée') });
@@ -411,7 +411,7 @@ describe('audit — actions administration', () => {
     });
   });
 
-  describe('catalogue — villes et arrondissements', () => {
+  describe('catalogue - villes et arrondissements', () => {
     it('crée, renomme, réordonne et supprime une ville', async () => {
       const created = await adminApi.createCity({ name: unique('Ville') });
       await adminApi.updateCity(created.id, { name: unique('Ville renommée') });

@@ -105,8 +105,8 @@ function nameAt(offset) {
 /**
  * Répartition des professionnels de démonstration.
  *
- * Les femmes restent minoritaires dans ces métiers — c'est la réalité du
- * terrain — sauf en maçonnerie, où elles sont nombreuses et plutôt jeunes.
+ * Les femmes restent minoritaires dans ces métiers - c'est la réalité du
+ * terrain - sauf en maçonnerie, où elles sont nombreuses et plutôt jeunes.
  * Le catalogue de personas fournit donc deux réserves distinctes.
  */
 const ROSTER = [
@@ -137,7 +137,7 @@ const CAREER_START = 18;
  *
  * Personne ne peut avoir exercé plus longtemps que la durée écoulée depuis
  * ses 18 ans, et un artisan plus âgé a fait une carrière plus longue. La
- * valeur suit donc l'âge — entre 45 et 70 % de la carrière possible, pour que
+ * valeur suit donc l'âge - entre 45 et 70 % de la carrière possible, pour que
  * deux professionnels du même âge n'aient pas la même ancienneté.
  */
 function careerYears(age, seed) {
@@ -333,7 +333,7 @@ export function getProDetailMock(id) {
 /**
  * Contacts du client : une ligne par contact pris, canal compris.
  *
- * Le même professionnel apparaît deux fois (9003 et 9004) — un appel puis un
+ * Le même professionnel apparaît deux fois (9003 et 9004) - un appel puis un
  * WhatsApp. C'est le cas normal : la contrainte d'unicité sur la paire a été
  * levée en migration, et le regroupement par professionnel s'appuie dessus.
  */
@@ -1134,7 +1134,7 @@ const SESSION_KEY = 'kop_demo_user';
 
 // Une URL `blob:` ne vit que dans l'onglet qui l'a créée. Conservée telle
 // quelle dans `localStorage`, elle survit au rechargement comme une promesse
-// morte : le blob est evaporé avec le tas mémoire, et la première `<img>`
+// morte : le blob est évaporé avec le tas mémoire, et la première `<img>`
 // qui la demande reçoit `ERR_FILE_NOT_FOUND`. On n'écrit donc jamais l'URL :
 // on écrit ce marqueur et on garde le fichier en mémoire pour la durée de
 // l'onglet.
@@ -1146,7 +1146,7 @@ export function setDemoAvatarFile(file) {
   demoAvatarFile = file ?? null;
 }
 
-/** URL d'aperçu du fichier en cours — valide pour cet onglet uniquement. */
+/** URL d'aperçu du fichier en cours - valide pour cet onglet uniquement. */
 export function getDemoAvatarUrl() {
   return demoAvatarFile ? URL.createObjectURL(demoAvatarFile) : null;
 }
@@ -1156,9 +1156,20 @@ export function getDemoUser() {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     const user = JSON.parse(raw);
+
     // Retranche l'URL à la lecture, jamais à l'écriture : c'est le seul moment
     // où le blob existe encore.
     if (user?.avatarUrl === DEMO_AVATAR_MARKER) user.avatarUrl = getDemoAvatarUrl();
+
+    // Des sessions écrites avant le marqueur portent encore une vraie URL
+    // `blob:`, elle est déjà morte. Le marqueur seul ne les rattrape pas :
+    // sans ce filet, l'erreur `ERR_FILE_NOT_FOUND` continuerait d'apparaître
+    // sur ces sessions jusqu'à ce que l'utilisateur se déconnecte. Toute
+    // `blob:` sortie du stockage est morte par définition - un blob n'a jamais
+    // survécu à un rechargement.
+    if (typeof user?.avatarUrl === 'string' && user.avatarUrl.startsWith('blob:'))
+      user.avatarUrl = null;
+
     return user;
   } catch {
     return null;

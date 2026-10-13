@@ -115,6 +115,11 @@ export function demoRoles() {
         role: ROLES.PRO,
         displayName: MOCK_PROS[0]?.displayName ?? 'Professionnel Démo',
         phone: MOCK_PROS[0]?.phone ?? '+242061000001',
+        firstName: MOCK_PROS[0]?.firstName ?? '',
+        lastName: MOCK_PROS[0]?.lastName ?? '',
+        // Vide à dessein : le formulaire doit montrer un champ à remplir,
+        // pas une adresse qui laisserait croire qu'elle est en lecture seule.
+        email: '',
       },
       href: ROUTES.DASHBOARD_PRO,
     },

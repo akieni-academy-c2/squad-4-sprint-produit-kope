@@ -86,7 +86,7 @@ export function AdminSectionLayout({
         {/* Colonne flex et non bloc défilant : le bouton doit rester visible
             pendant qu'on fait défiler les filtres, sinon il sort du champ au
             premier groupe supplémentaire. `max-h` déduit des 2rem de `p-4` que
-            la feuille pose déjà — le panneau est en `border-box`, son plafond
+            la feuille pose déjà - le panneau est en `border-box`, son plafond
             les comprend. */}
         <div className="flex max-h-[calc(90dvh-2rem)] flex-col pt-10">
           <div className="w-full flex-1 overflow-y-auto">{filters(`${searchId}-mobile`)}</div>

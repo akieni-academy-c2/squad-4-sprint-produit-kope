@@ -49,7 +49,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
 
   // Le panneau est une colonne flex : le header est hors de la zone de
   // défilement, donc le bouton Fermer et le titre ne bougent plus sans
-  // dépendre de `sticky` — lequel se calculait sur une largeur mal déduite et
+  // dépendre de `sticky` - lequel se calculait sur une largeur mal déduite et
   // laissait le contenu passer sur les côtés. Seul le corps défile.
   const childArray = Children.toArray(children);
   const headerIndex = childArray.findIndex((child) => child.type === DialogHeader);
@@ -67,7 +67,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
       className={cn(
         // Même contrat que Modal : sur mobile la boîte grandit avec le
         // contenu jusqu'à 90dvh puis défile. Sans plafond, un formulaire long
-        // est coupé — iOS ne réduit pas la page sous le clavier, donc rien ne
+        // est coupé - iOS ne réduit pas la page sous le clavier, donc rien ne
         // viendrait le faire remonter. `sm:max-h-none` rend la hauteur libre
         // sur desktop, où le dialogue est centré.
         'relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) animate-scale-in sm:max-h-none sm:rounded-3xl',
@@ -77,7 +77,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
     >
       <DialogLabelContext.Provider value={labelId}>
         {/* mb-3 et non mb-4 : la marge du panneau s'y ajoute. Sur le modal
-            d'avis, p-5 + mb-4 laissait 36px sous le titre — le tiers de
+            d'avis, p-5 + mb-4 laissait 36px sous le titre - le tiers de
             l'écran sur un sheet. */}
         <div className="mb-3 flex shrink-0 items-start gap-3">
           {header
@@ -100,7 +100,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
 
           {/* Le footer vit dans le parent qui défile, mais reste `sticky`
               en bas : le bouton d'action suit le défilement sans jamais
-              sortir de l'écran. Le conteneur reste transparent — un fond
+              sortir de l'écran. Le conteneur reste transparent - un fond
               ici poserait une bande opaque sur la liste. */}
           {footer && (
             <div className="sticky bottom-0 border-t border-gray-100 pt-3 pb-1">

@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
    *
    * Ces deux rôles connaissent déjà la plateforme : la page « Comment ça
    * marche » ne leur apporte rien, et devenir prestataire ne leur est plus
-   * possible. Un client, lui, garde les deux — il peut encore découvrir le
+   * possible. Un client, lui, garde les deux - il peut encore découvrir le
    * service, et devenir prestataire est un choix qui lui revient.
    */
   const isServiceProvider = Boolean(

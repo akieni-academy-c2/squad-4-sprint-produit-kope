@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 /**
  * Activation du mode démonstration.
  *
- * Règle : `VITE_USE_MOCKS=false` désactive, toute autre valeur — variable
- * absente comprise — laisse la démo active. Le projet doit démarrer et être
+ * Règle : `VITE_USE_MOCKS=false` désactive, toute autre valeur - variable
+ * absente comprise - laisse la démo active. Le projet doit démarrer et être
  * manipulable sans base de données ni backend.
  *
  * `import.meta.env` est figé à l'import du module : on teste donc la règle

@@ -50,7 +50,7 @@ export function FileUpload({
   // `src` change donc à chaque rendu, l'image est rechargée à chaque fois et
   // les anciennes URL ne sont jamais libérées. Mémoïsée sur le fichier, une
   // seule URL existe, et le `revoke` la rend quand le fichier change ou que le
-  // composant se démonte — sans lui le blob resterait en mémoire jusqu'au
+  // composant se démonte - sans lui le blob resterait en mémoire jusqu'au
   // rechargement de la page.
   const previewUrl = useMemo(
     () => (typeof value === 'string' ? value : value ? URL.createObjectURL(value) : null),

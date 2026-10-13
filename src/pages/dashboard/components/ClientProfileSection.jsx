@@ -8,23 +8,32 @@ import { ProfileAvatarCard } from '@/features/professionals/components/profile/P
 import { ProfileRow, ProfileSection } from '@/features/professionals/components/profile/ProfileSection.jsx';
 import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.service.js';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
+import { submitLabel } from '@/shared/utils/submitLabel.js';
+import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { updateAccountSchema } from '@/shared/utils/validators.js';
 import { formatDateFr } from '@/shared/utils';
 import { BecomeProCard } from './BecomeProCard.jsx';
 
-function Field({ label, value, onChange, type = 'text', placeholder, hint }) {
+/**
+ * Champ de saisie avec son état.
+ *
+ * `{ status, total }` suffit : `FormField` n'a besoin que du statut pour
+ * colorer la bordure et sortir la ligne d'état. `error` reste prioritaire —
+ * c'est le message du schéma Zod, plus précis que « presque correct ».
+ */
+function Field({ label, value, onChange, type = 'text', placeholder, hint, status, error, id }) {
   return (
-    <div className="space-y-1">
-      <label className="text-xs font-semibold text-gray-600">{label}</label>
-      <input
-        type={type}
-        className="w-full rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
-      {hint && <p className="text-[11px] text-gray-400">{hint}</p>}
-    </div>
+    <FormField
+      id={id}
+      label={label}
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      help={hint}
+      error={error}
+      liveStatus={status ? { status, missing: 0, total: 1 } : undefined}
+    />
   );
 }
 
@@ -46,9 +55,20 @@ export function ClientProfileSection({ user }) {
   const name = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || '-';
 
   // Formulaire de modification : le bouton n'est actif que si les valeurs
-  // sont valides ET différentes de celles enregistrées.
-  const { ready, dirty } = useFormReadiness(updateAccountSchema, { firstName, lastName, phone, email });
+  // sont valides ET différentes de celles enregistrées. `statuses` et `errors`
+  // portent la même information champ par champ — ils alimentent les bordures
+  // et les messages, pour qu'un bouton grisé dise quoi corriger.
+  const { ready, dirty, statuses, errors } = useFormReadiness(updateAccountSchema, {
+    firstName,
+    lastName,
+    phone,
+    email,
+  });
   const canSubmit = ready && dirty;
+
+  // Ordre du formulaire, pas ordre alphabétique : le premier défaut affiché
+  // doit être le premier champ à corriger.
+  const label = submitLabel(statuses, ['firstName', 'lastName', 'phone', 'email'], 'Enregistrer');
 
   const save = async (e) => {
     e.preventDefault();
@@ -131,30 +151,60 @@ export function ClientProfileSection({ user }) {
           <form onSubmit={save} className="space-y-4">
             <ProfileSection title="Informations personnelles">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Prénom(s)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                <Field label="Nom(s)" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                <Field
+                  id="profile-firstName"
+                  label="Prénom(s)"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  status={statuses.firstName}
+                  error={errors.firstName}
+                />
+                <Field
+                  id="profile-lastName"
+                  label="Nom(s)"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  status={statuses.lastName}
+                  error={errors.lastName}
+                />
               </div>
             </ProfileSection>
 
             <ProfileSection title="Contact">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field
+                  id="profile-phone"
                   label="Téléphone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  status={statuses.phone}
+                  error={errors.phone}
                 />
                 <Field
+                  id="profile-email"
                   type="email"
                   label="E-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="vous@exemple.com"
-                  hint="Facultatif — laissez vide pour le retirer."
+                  hint="Facultatif - laissez vide pour le retirer."
+                  status={statuses.email}
+                  error={errors.email}
                 />
               </div>
             </ProfileSection>
 
-            <Button type="submit" loading={saving} disabled={!canSubmit}>Enregistrer</Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button type="submit" loading={saving} disabled={!canSubmit}>{label}</Button>
+              {/* Un bouton grisé sans dire quoi corriger est une impasse : le
+                  libellé passe de « Enregistrer » à « Complétez le prénom »
+                  dès qu'un champ manque. */}
+              {!ready && (
+                <span aria-live="polite" className="text-xs text-gray-500">
+                  {label}
+                </span>
+              )}
+            </div>
           </form>
         ) : (
           <>

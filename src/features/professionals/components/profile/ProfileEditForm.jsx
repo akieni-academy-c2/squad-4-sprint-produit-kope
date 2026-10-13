@@ -6,19 +6,17 @@ import { Textarea } from '@/shared/components/ui/Textarea.jsx';
 import { DESC_MAX, DESC_MIN } from './profileForm.js';
 import { ProfileSection } from './ProfileSection.jsx';
 
-function TextInput({ id, label, value, onChange, ...rest }) {
-  return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="text-xs font-semibold text-gray-600">{label}</label>
-      <input
-        id={id}
-        className="w-full rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm"
-        value={value}
-        onChange={onChange}
-        {...rest}
-      />
-    </div>
-  );
+/**
+ * `{ status, total }` attendu par `FormField`.
+ *
+ * Un champ absent de `statuses` — le cas tant qu'aucune saisie n'a eu lieu —
+ * rend `undefined` et non un objet vide : `FormField` teste
+ * `liveStatus?.status === OK`, un objet `{ status: undefined }` passerait le
+ * `&&` et poserait une ligne d'état vide sous le champ.
+ */
+function statusOf(statuses, field) {
+  const status = statuses?.[field];
+  return status ? { status, missing: 0, total: 1 } : undefined;
 }
 
 export function ProfileEditForm({
@@ -31,8 +29,11 @@ export function ProfileEditForm({
   zones,
   loadingRefs,
   account,
+  accountErrors = {},
+  accountStatuses = {},
   onAccountField,
   canSubmit = true,
+  submitHint = null,
 }) {
   const descLen = String(values.description ?? '').length;
 
@@ -40,8 +41,22 @@ export function ProfileEditForm({
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <ProfileSection title="Informations personnelles">
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextInput id="pe-firstName" label="Prénom(s)" value={account.firstName} onChange={(e) => onAccountField('firstName', e.target.value)} />
-          <TextInput id="pe-lastName" label="Nom(s)" value={account.lastName} onChange={(e) => onAccountField('lastName', e.target.value)} />
+          <FormField
+            id="pe-firstName"
+            label="Prénom(s)"
+            value={account.firstName}
+            onChange={(e) => onAccountField('firstName', e.target.value)}
+            error={accountErrors.firstName}
+            liveStatus={statusOf(accountStatuses, 'firstName')}
+          />
+          <FormField
+            id="pe-lastName"
+            label="Nom(s)"
+            value={account.lastName}
+            onChange={(e) => onAccountField('lastName', e.target.value)}
+            error={accountErrors.lastName}
+            liveStatus={statusOf(accountStatuses, 'lastName')}
+          />
         </div>
         <div className="mt-4">
           <FormField
@@ -69,7 +84,20 @@ export function ProfileEditForm({
             label="Téléphone"
             value={account.phone}
             onChange={(e) => onAccountField('phone', e.target.value)}
+            error={accountErrors.phone}
+            liveStatus={statusOf(accountStatuses, 'phone')}
             inputMode="tel"
+          />
+          <FormField
+            id="pe-email"
+            type="email"
+            label="E-mail"
+            value={account.email ?? ''}
+            onChange={(e) => onAccountField('email', e.target.value)}
+            error={accountErrors.email}
+            liveStatus={statusOf(accountStatuses, 'email')}
+            placeholder="vous@exemple.com"
+            help="Facultatif — vos clients l’utilisent pour vous écrire."
           />
           <FormField
             id="pe-whatsapp"
@@ -156,8 +184,17 @@ export function ProfileEditForm({
         </div>
       </ProfileSection>
 
-      <div className="flex justify-end gap-3 pt-1">
-        <Button type="submit" loading={submitting} disabled={!canSubmit} size="md">Enregistrer</Button>
+      <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
+        {/* Le libellé ne dit pas « Enregistrer » tant qu'un champ est incomplet :
+            un bouton grisé sans dire quoi corriger est une impasse. */}
+        {submitHint && (
+          <span aria-live="polite" className="text-xs text-gray-500">
+            {submitHint}
+          </span>
+        )}
+        <Button type="submit" loading={submitting} disabled={!canSubmit} size="md">
+          Enregistrer
+        </Button>
       </div>
     </form>
   );

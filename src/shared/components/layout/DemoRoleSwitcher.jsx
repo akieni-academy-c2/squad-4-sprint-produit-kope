@@ -52,7 +52,7 @@ export function DemoRoleSwitcher() {
 
   // `refresh()` est asynchrone : sans `await`, la navigation part avant que
   // `AuthContext` n'ait reçu le nouveau profil. `ProtectedRoute` lisait encore
-  // l'ancien `user` — un administrateur démo sans cookie de session atteignait
+  // l'ancien `user` - un administrateur démo sans cookie de session atteignait
   // `/admin` et son `GET /api/admin/stats` partait réellement, donc en 401.
   // Attendre garantit que la garde de route observe la session à jour.
   const enterAs = async (entry) => {

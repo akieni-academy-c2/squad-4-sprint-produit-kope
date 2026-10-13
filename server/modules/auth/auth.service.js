@@ -24,7 +24,7 @@ function rethrowDuplicate(err) {
     throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
   // Index partiel : la violation porte sur `users_email_unique`, pas sur une
   // contrainte de colonne. Sans ce cas, une adresse déjà prise serait rapportée
-  // comme un numéro en double — un message qui désigne le mauvais champ.
+  // comme un numéro en double - un message qui désigne le mauvais champ.
   if (err.constraint === 'users_email_unique' || err.detail?.includes('email'))
     throw ApiError.conflict(DUPLICATE_EMAIL, { email: DUPLICATE_EMAIL });
   throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });

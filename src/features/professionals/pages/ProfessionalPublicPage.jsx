@@ -23,7 +23,7 @@ import { ReviewsBlock } from '../components/public/ReviewsBlock.jsx';
 import { CITY, getProfileView } from '../components/public/profileView.js';
 
 /** `isAction` : ces entrées ouvrent une fenêtre, elles ne naviguent pas.
- *  La barre ne doit donc jamais les marquer comme actives — ni visuellement,
+ *  La barre ne doit donc jamais les marquer comme actives - ni visuellement,
  *  ni via `aria-current`, qui signifie « vous êtes ici ». */
 const NAV_SECTIONS = [
   { id: 'profile', label: 'Profil', icon: User },

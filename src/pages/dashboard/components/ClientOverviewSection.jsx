@@ -49,7 +49,7 @@ function Tile({ onClick, children, label }) {
 
 function ReviewLine({ review, onClick }) {
   return (
-    <Tile onClick={onClick} label={`Ouvrir mes avis — avis de ${review.professionalName}`}>
+    <Tile onClick={onClick} label={`Ouvrir mes avis - avis de ${review.professionalName}`}>
       <UserAvatar
         src={review.professionalAvatarUrl}
         name={review.professionalName}
@@ -66,7 +66,7 @@ function ReviewLine({ review, onClick }) {
         </span>
       </span>
       {/* Filet pleine largeur entre l'identité et la note : il coupe la tuile en
-          deux bandes — « qui » puis « quoi ». Un simple `·` ne_SEPARE que deux
+          deux bandes - « qui » puis « quoi ». Un simple `·` ne_SEPARE que deux
           mots et laissait lire « Plombier ★★★★★ » comme une seule ligne. */}
       <span aria-hidden className="h-px w-full shrink-0 bg-gray-200" />
       <span className="mt-auto flex flex-col items-center gap-1 pt-1">
@@ -81,7 +81,7 @@ function ReviewLine({ review, onClick }) {
 
 function ContactLine({ contact, onClick }) {
   return (
-    <Tile onClick={onClick} label={`Ouvrir mes contacts — ${contact.displayName || 'Utilisateur'}`}>
+    <Tile onClick={onClick} label={`Ouvrir mes contacts - ${contact.displayName || 'Utilisateur'}`}>
       <UserAvatar
         user={{ firstName: contact.firstName, lastName: contact.lastName }}
         src={contact.avatarUrl}
@@ -149,8 +149,8 @@ export function ClientOverviewSection({ onNavigate }) {
 
       <StatGroup title="Mon activité" tone="mint">
         {/* Colonne et non rangée : chaque compteur porte une phrase qui ne
-            tient pas sur un tiers de largeur. Le libellé reste court — deux
-            mots comme ses voisins — et le « détail » qui dépassait se retrouve
+            tient pas sur un tiers de largeur. Le libellé reste court - deux
+            mots comme ses voisins - et le « détail » qui dépassait se retrouve
             dans l'indice sous le chiffre. */}
         <div className="grid gap-3 sm:grid-cols-3">
           <KpiCard
@@ -178,7 +178,7 @@ export function ClientOverviewSection({ onNavigate }) {
       </StatGroup>
 
       {/* Sur desktop, les deux listes se répondent côte à côte : on compare d'un
-          coup d'œil ses avis et ses contacts. En dessous, elles s'empilent —
+          coup d'œil ses avis et ses contacts. En dessous, elles s'empilent -
           deux colonnes de lignes tronquées n'apporteraient rien.
 
           `min-w-0` sur chaque groupe est la vraie protection contre le
@@ -186,7 +186,7 @@ export function ClientOverviewSection({ onNavigate }) {
           il refuse de descendre sous la largeur minimale de son contenu. Les
           lignes portent des dates et des notes en `shrink-0`, cette plancher
           pushing la carte hors de l'écran sur un mobile étroit. `w-full` ne
-          change rien à ce calcul — le parent mesure déjà trop large. */}
+          change rien à ce calcul - le parent mesure déjà trop large. */}
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
         <StatGroup title="Derniers avis" className="flex w-full min-w-0 flex-col">
           {loading ? (

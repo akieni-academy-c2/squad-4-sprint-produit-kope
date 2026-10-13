@@ -8,7 +8,7 @@ import * as authRepository from '../auth/auth.repository.js';
  *
  * Un appel ou un message WhatsApp n'a pas de texte : la saisie n'est exigée
  * que pour le canal `message`. La paire n'étant plus unique, répéter un appel
- * ajoute une ligne au lieu d'échouer — c'est le cas normal, on appelle un
+ * ajoute une ligne au lieu d'échouer - c'est le cas normal, on appelle un
  * professionnel plusieurs fois.
  */
 export async function createContact(senderId, { toUserId, message, channel = 'message' }) {

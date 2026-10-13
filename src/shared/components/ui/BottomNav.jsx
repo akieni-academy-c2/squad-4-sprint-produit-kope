@@ -9,7 +9,7 @@ import { Sheet } from './Sheet.jsx';
  *
  * Cinq, et non quatre : c'est le nombre d'onglets du compte client, le plus
  * large que l'application ait. En dessous, le profil disparaissait derrière un
- * « Menu » — un onglet accessible en un geste de plus que les autres.
+ * « Menu » - un onglet accessible en un geste de plus que les autres.
  */
 const MAX_VISIBLE_ITEMS = 5;
 

@@ -17,6 +17,7 @@ export function ProfileDetails({ profile, user }) {
       <ProfileSection title="Contact" description="Vos coordonnées sont visibles des clients qui vous contactent.">
         <dl className="divide-y divide-gray-100">
           <ProfileRow label="Téléphone" value={user?.phone} />
+          <ProfileRow label="E-mail" value={user?.email} />
           <ProfileRow label="WhatsApp" value={profile?.whatsapp} />
         </dl>
       </ProfileSection>

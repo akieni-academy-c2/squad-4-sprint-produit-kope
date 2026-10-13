@@ -64,8 +64,8 @@ export const phoneSchema = z
  * Adresse e-mail de contact.
  *
  * La connexion se fait par téléphone : l'e-mail est facultatif et effaçable.
- * `nullish` couvre les trois états d'un champ jamais renseigné — absent,
- * chaîne vide, `null` explicite — et tous les trois finissent normalisés en
+ * `nullish` couvre les trois états d'un champ jamais renseigné - absent,
+ * chaîne vide, `null` explicite - et tous les trois finissent normalisés en
  * `null`. Sans lui, `z.string()` refuserait `null` et un client qui veut
  * simplement retirer son adresse verrait son formulaire rejeté.
  */

@@ -22,7 +22,7 @@ const PRO = {
   rating: { average: 4.6, count: 12 },
 };
 
-describe('ProfessionalCard — note', () => {
+describe('ProfessionalCard - note', () => {
   it('garde l’étoile et la moyenne sur une seule ligne (grille)', () => {
     const html = render(<ProfessionalCard mode="grid" item={PRO} />);
 
@@ -61,7 +61,7 @@ describe('ProfessionalCard — note', () => {
  * ("In HTML, <li> cannot be a descendant of <li>"). En mode grille, la <Link>
  * était posée comme enfant direct de <ul>. L appartient désormais au parent.
  */
-describe('ProfessionalCard — sémantique de liste', () => {
+describe('ProfessionalCard - sémantique de liste', () => {
   // `<li` seul matcherait `<linearGradient` (l'étoile à demi-remplie). On ne
   // retient que la balise réellement ouverte, sans attribut ni slash final.
   const hasListItem = (html) => /<li(\s|>)/.test(html);

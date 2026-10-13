@@ -17,6 +17,7 @@ import { ProfileAvatarCard } from './profile/ProfileAvatarCard.jsx';
 import { ProfileDetails } from './profile/ProfileDetails.jsx';
 import { ProfileEditForm } from './profile/ProfileEditForm.jsx';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
+import { submitLabel } from '@/shared/utils/submitLabel.js';
 import { extractInitial, getFullName } from './profile/profileForm.js';
 
 export function ProfileEditor({ profile, user, onUpdated }) {
@@ -32,6 +33,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
 
   const initial = useMemo(() => extractInitial(profile), [profile]);
 
@@ -42,16 +44,26 @@ export function ProfileEditor({ profile, user, onUpdated }) {
   );
 
   // Le formulaire couvre deux ensembles distincts : l'identité du compte
-  // (prénom, nom, téléphone) et la fiche professionnelle (métier, description…).
-  // Les deux sont envoyés par la même action, donc le bouton doit considérer
-  // une modification de l'un comme de l'autre.
+  // (prénom, nom, téléphone, e-mail) et la fiche professionnelle (métier,
+  // description…). Les deux sont envoyés par la même action, donc le bouton doit
+  // considérer une modification de l'un comme de l'autre.
   const identity = useMemo(
-    () => ({ firstName, lastName, phone }),
-    [firstName, lastName, phone],
+    () => ({ firstName, lastName, phone, email }),
+    [firstName, lastName, phone, email],
   );
   const identityForm = useFormReadiness(updateAccountSchema, identity);
   const profileForm = useFormReadiness(updateProfileSchema, values);
   const canSubmit = identityForm.ready && profileForm.ready && (identityForm.dirty || profileForm.dirty);
+
+  // Un bouton grisé sans dire quoi corriger est une impasse. L'ordre suit la
+  // lecture du formulaire : identité d'abord, puis fiche professionnelle.
+  const buttonLabel =
+    submitLabel(
+      identityForm.statuses,
+      ['firstName', 'lastName', 'phone', 'email'],
+      'Enregistrer',
+    ) || submitLabel(profileForm.statuses, Object.keys(updateProfileSchema.shape), 'Enregistrer');
+  const hint = buttonLabel !== 'Enregistrer' ? buttonLabel : null;
 
   const onSubmit = async (e) => {
     // `handleSubmit` ne valide que le schéma du profil. Sans ce contrôle
@@ -74,7 +86,14 @@ export function ProfileEditor({ profile, user, onUpdated }) {
       return;
     }
     try {
-      await updateAccount({ firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() });
+      await updateAccount({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim(),
+        // Vide = retrait de l'adresse. Le serveur distingue `null` (effacer)
+        // de l'absence de clé (ne pas toucher), d'où la clé toujours présente.
+        email: email.trim() || null,
+      });
       await refresh();
       setEditing(false);
       toast({ message: 'Profil mis à jour avec succès.', type: 'success' });
@@ -95,6 +114,13 @@ export function ProfileEditor({ profile, user, onUpdated }) {
       await refresh();
       setUploadProgress(100);
       toast({ message: 'Photo de profil mise à jour.', type: 'success' });
+
+      // L'avatar est enregistré à l'instant même, indépendamment du
+      // formulaire. Si aucun champ n'est modifié, il ne reste rien à
+      // enregistrer : sans cette sortie, l'utilisateur reste devant un
+      // formulaire dont « Enregistrer » est désactivé alors que sa photo vient
+      // d'être prise en compte.
+      if (!identityForm.dirty && !profileForm.dirty) setEditing(false);
     } catch (err) {
       toast({ message: err?.message || 'Erreur lors du téléversement.', type: 'error' });
     } finally {
@@ -105,6 +131,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
   const setAccountField = (field, value) => {
     if (field === 'firstName') setFirstName(value);
     else if (field === 'lastName') setLastName(value);
+    else if (field === 'email') setEmail(value);
     else setPhone(value);
   };
 
@@ -145,9 +172,12 @@ export function ProfileEditor({ profile, user, onUpdated }) {
           trades={trades}
           zones={zones}
           loadingRefs={loadingRefs}
-          account={{ firstName, lastName, phone }}
+          account={{ firstName, lastName, phone, email }}
+          accountErrors={identityForm.errors}
+          accountStatuses={identityForm.statuses}
           onAccountField={setAccountField}
           canSubmit={canSubmit}
+          submitHint={hint}
         />
       ) : (
         <ProfileDetails profile={profile} user={user} />

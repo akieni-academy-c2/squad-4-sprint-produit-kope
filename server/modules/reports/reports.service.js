@@ -70,7 +70,7 @@ export async function myReports(reporterId, { status, q, sort, ...pagination }) 
  * Retrait d'un signalement par son auteur.
  *
  * Seuls les signalements « pending » se retirent. Un signalement traité a
- * déjà produit ses effets — blocage ou suspension du professionnel — et le
+ * déjà produit ses effets - blocage ou suspension du professionnel - et le
  * retirer effacerait une décision d'administration. La règle est vérifiée
  * ici et non seulement dans l'interface, sinon un appel direct la contourne.
  *

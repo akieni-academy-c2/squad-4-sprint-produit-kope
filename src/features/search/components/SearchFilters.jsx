@@ -87,7 +87,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
 
         {/* La carte reste en place pendant le chargement : seuls les champs
             se remplissent. Un retour anticipé affichait un bloc de squelettes
-            sans bordure, donc la colonne disparaissait puis réapparaissait —
+            sans bordure, donc la colonne disparaissait puis réapparaissait -
             l'inverse du panneau d'affinage, qui reste visible en permanence. */}
         <div className="space-y-4 p-2" aria-busy={showSkeleton || undefined}>
           {showSkeleton ? (
@@ -180,7 +180,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
     // barre compacte du héros.
     return (
       // Même cadre que la sidebar : sans lui, les champs flottent sur le Sheet
-      // blanc et la sheet de filtres — qui, elle, garde sa card — paraîtrait
+      // blanc et la sheet de filtres - qui, elle, garde sa card - paraîtrait
       // revue. Pas de titre ici, le Sheet en porte déjà un.
       <form onSubmit={onSubmit} className={cn('rounded-md border border-gray-200 bg-white p-2', className)} noValidate>
         <div className="space-y-4 p-2">

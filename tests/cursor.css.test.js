@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
  * Tailwind ne pose aucun curseur par défaut sur les boutons et les liens :
  * sans règle explicite, presque toute l'interface affiche la flèche et paraît
  * inerte. Ces tests verrouillent l'existence de la règle et son placement dans
- * `@layer base` — c'est ce placement qui permet à un bouton désactivé de
+ * `@layer base` - c'est ce placement qui permet à un bouton désactivé de
  * conserver son `cursor-not-allowed` via un utilitaire.
  */
 const css = readFileSync(fileURLToPath(new URL('../src/index.css', import.meta.url)), 'utf8');
@@ -48,8 +48,8 @@ describe('Curseur des éléments cliquables', () => {
 
   it('place la règle dans @layer base pour laisser les utilitaires gagner', () => {
     // Le curseur de base est posé par une règle de couche `base`, donc
-    // n'importe quel utilitaire — dont `cursor-not-allowed` sur un bouton
-    // désactivé — reste prioritaire.
+    // n'importe quel utilitaire - dont `cursor-not-allowed` sur un bouton
+    // désactivé - reste prioritaire.
     expect(baseLayer).toContain('cursor: pointer');
     expect(baseLayer.length).toBeGreaterThan(0);
   });

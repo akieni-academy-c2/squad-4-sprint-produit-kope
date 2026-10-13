@@ -1,7 +1,7 @@
 -- Adresse e-mail du compte.
 --
 -- Nulable et non exigée à l'inscription : la connexion se fait par téléphone,
--- l'e-mail n'est qu'un canal de contact. `citext` n'est pas utilisé — la
+-- l'e-mail n'est qu'un canal de contact. `citext` n'est pas utilisé - la
 -- comparaison se fait sur la version lower stockée, donc `UNIQUE` porte sur
 -- `email` et le CHECK refuse la casse mélangée qui passerait la contrainte.
 ALTER TABLE users ADD COLUMN email text;

@@ -19,7 +19,7 @@ import { deleteMyReport, getMyReports } from '../services/reports.service.js';
 
 const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'neutral' };
 
-// Un signalement traité a déjà fait son office — le professionnel a été bloqué
+// Un signalement traité a déjà fait son office - le professionnel a été bloqué
 // ou le motif rejeté. Le retirer effacerait une décision prise par un
 // administrateur : le retrait n'est proposé que sur un signalement en attente.
 const WITHDRAWABLE = new Set(['pending']);

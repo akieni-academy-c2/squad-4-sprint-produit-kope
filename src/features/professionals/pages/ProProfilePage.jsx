@@ -3,6 +3,7 @@ import { Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lucide-r
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { cn } from '@/shared/utils';
 import { getMyProfile, setAvailability } from '../services/professionals.service.js';
 import { AvailabilityToggle } from '../components/AvailabilityToggle.jsx';
 import { OverviewSection } from '../components/OverviewSection.jsx';
@@ -22,6 +23,11 @@ const NAV_ITEMS = [
   { id: 'avis', label: 'Mes avis', shortLabel: 'Avis', icon: Star },
 ];
 
+// Sections qui portent des filtres : seules celles-là occupent la colonne de
+// droite, comme dans l'espace client et l'espace admin. Aperçu et profil
+// n'en ont pas, la grille retombe alors à deux colonnes.
+const WITH_FILTERS = new Set(['photos', 'contacts', 'avis']);
+
 export function ProProfilePage() {
   const { user } = useAuthContext();
   const { toast } = useNotification();
@@ -30,6 +36,8 @@ export function ProProfilePage() {
   const [error, setError] = useState(null);
   const [savingAvailability, setSavingAvailability] = useState(false);
   const [active, setActive] = useState('overview');
+  const [rightEl, setRightEl] = useState(null);
+  const withFilters = WITH_FILTERS.has(active);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,7 +81,20 @@ export function ProProfilePage() {
 
   return (
     <div className="container-kop py-10 lg:py-16">
-      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+      {/* Une seule grille pour les trois colonnes, comme les espaces client et
+          admin : navigation à gauche, contenu au centre, filtres à droite. Les
+          sections ne creusent pas leur propre colonne, elles y projettent
+          leurs filtres par portail — sans quoi la colonne de droite n'a pas la
+          même largeur que dans les deux autres espaces, et les deux barres
+          sticky ne s'alignent plus. */}
+      <div
+        className={cn(
+          'grid gap-6 lg:items-start',
+          withFilters
+            ? 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)]'
+            : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
+        )}
+      >
         <ProSidebar
           user={user}
           profile={profile}
@@ -83,7 +104,7 @@ export function ProProfilePage() {
           onChange={setActive}
         />
 
-        <main className="space-y-6">
+        <main className="min-w-0 space-y-6">
           {active === 'overview' && (
             <>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -100,12 +121,20 @@ export function ProProfilePage() {
 
           {active === 'profil' && <ProfileEditor profile={profile} user={user} onUpdated={setProfile} />}
 
-          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} />}
+          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} rightContainer={rightEl} />}
 
-          {active === 'contacts' && <ContactsSection />}
+          {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
 
-          {active === 'avis' && <ProReviewsSection professionalId={profile?.id} />}
+          {active === 'avis' && (
+            <ProReviewsSection professionalId={profile?.id} rightContainer={rightEl} />
+          )}
         </main>
+
+        <aside
+          ref={setRightEl}
+          aria-label="Filtres"
+          className={cn('lg:sticky lg:top-23', withFilters ? 'hidden lg:block' : 'hidden')}
+        />
       </div>
 
       <BottomNav

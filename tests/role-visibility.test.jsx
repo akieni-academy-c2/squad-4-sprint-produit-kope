@@ -147,7 +147,7 @@ describe('Recherche dans la navigation', () => {
   it('n\'affiche qu\'un seul lien de recherche par surface', () => {
     // Trois surfaces portent la recherche : la nav desktop, l'icône du header
     // mobile et la ligne du Sheet. Chacune n'en propose qu'une, mais le total
-    // monte à trois — d'où le plafond, et non « au plus deux ».
+    // monte à trois - d'où le plafond, et non « au plus deux ».
     for (const role of [null, 'client', 'professional', 'admin']) {
       connectAs(role);
       const desktop = render(<Navbar />);
@@ -200,7 +200,7 @@ describe('HomePage', () => {
 describe('Redirection de /', () => {
   /**
    * `<Navigate>` ne se déclenche qu'au montage, donc le rendu statique ne peut
-   * pas l'observer. C'est la décision — fonction pure — qui est testée ici, et
+   * pas l'observer. C'est la décision - fonction pure - qui est testée ici, et
    * le composant ne fait plus qu'appliquer son résultat.
    */
   it('renvoie le client vers la recherche et les autres vers leur gestion', () => {
