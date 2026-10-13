@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { LifeBuoy, Mail, Phone } from 'lucide-react';
 import { Button, Modal } from '@/shared/components/ui';
 import { SUSPENDED_EVENT } from '@/shared/lib/api.js';
@@ -72,7 +72,7 @@ export function SuspensionNotice() {
 
         <p className="text-xs text-gray-500">
           Vous pouvez aussi{' '}
-          <Link to={ROUTES.SEARCH} onClick={() => setOpen(false)} className="font-semibold text-primary-700 hover:underline">
+          <Link href={ROUTES.SEARCH} onClick={() => setOpen(false)} className="font-semibold text-primary-700 hover:underline">
             continuer à parcourir les professionnels
           </Link>{' '}
           sans votre compte.

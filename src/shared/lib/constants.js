@@ -47,3 +47,27 @@ export const ROUTES = {
   NOT_FOUND: '/404',
   PROFESSIONAL: (id) => `/professionals/${id}`,
 };
+
+/**
+ * Section courante d'un tableau de bord, déduite du chemin de l'URL.
+ *
+ * Les onglets sont adressables : `/dashboard/client/avis` recharge la page sur
+ * la bonne section, le bouton « retour » du navigateur défait une navigation
+ * entre onglets, et un lien de partage — « son avis » — ouvre la bonne vue.
+ *
+ * On ne compare pas des chaînes brutes mais le **dernier segment** : le chemin
+ * peut être préfixé (`/admin`), et une route inconnue doit retomber sur
+ * l'accueil du tableau de bord plutôt que sur un écran vide.
+ *
+ * `''` est la valeur de repli : la racine du tableau de bord reste valide et
+ * n'est pas un cas d'erreur.
+ */
+export function sectionFromPathname(pathname, sections) {
+  const segment = String(pathname || '').split('/').filter(Boolean).pop();
+  return sections.includes(segment) ? segment : '';
+}
+
+/** Chemin d'une section d'un tableau de bord, la racine si l'onglet est celui d'accueil. */
+export function sectionHref(base, id, rootId) {
+  return id && id !== rootId ? `${base}/${id}` : base;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
@@ -114,7 +115,7 @@ export function LoginForm({ bare = false } = {}) {
       <p className="text-sm">
         Je n'ai pas de compte.
         <Link
-          to={ROUTES.REGISTER_CLIENT}
+          href={ROUTES.REGISTER_CLIENT}
           className="text-primary-500 link-underline  font-semibold hover:text-primary-600 ml-1"
         > S'inscrire</Link>
       </p>

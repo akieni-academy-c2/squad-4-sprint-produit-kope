@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
+import { ROUTES } from '@/shared/lib/constants.js';
+import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
@@ -33,8 +35,15 @@ const TITLES = {
 
 const FILTERED_SECTIONS = ['professionals', 'reviews', 'reports', 'trades', 'zones', 'users'];
 
+const ROOT_ID = 'overview';
+const SECTION_IDS = SECTIONS.map((s) => s.id);
+
 export function AdminDashboardPage() {
-  const [section, setSection] = useState('overview');
+  // La section vit dans l'URL : rechargement, bouton « retour » et lien de
+  // partage restent corrects, comme dans les espaces client et professionnel.
+  const { active: urlSection, goTo: goToSection } = useSectionNav(ROUTES.ADMIN, SECTION_IDS, ROOT_ID);
+  const section = urlSection || ROOT_ID;
+
   const [sectionFilters, setSectionFilters] = useState({});
   const [rightEl, setRightEl] = useState(null);
   const withFilters = FILTERED_SECTIONS.includes(section);
@@ -44,8 +53,8 @@ export function AdminDashboardPage() {
   // les filtres d'initialisation ne s'appliqueraient jamais au second passage.
   const openSection = useCallback((id, filters = {}) => {
     setSectionFilters(filters);
-    setSection(id);
-  }, []);
+    goToSection(id);
+  }, [goToSection]);
 
   const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
 

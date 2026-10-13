@@ -1,5 +1,5 @@
 import { MapPin, Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -17,11 +17,11 @@ export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
       <nav aria-label="Fil d'Ariane" className="mb-3 px-2 text-sm text-gray-500">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
-            <Link to={ROUTES.SEARCH} className="text-primary-700">Recherche</Link>
+            <Link href={ROUTES.SEARCH} className="text-primary-700">Recherche</Link>
           </li>
           <li aria-hidden>»</li>
           <li>
-            <Link to={ROUTES.SEARCH} className="text-primary-700">{breadcrumbTrade}</Link>
+            <Link href={ROUTES.SEARCH} className="text-primary-700">{breadcrumbTrade}</Link>
           </li>
           <li aria-hidden>»</li>
           <li aria-current="page" className="truncate font-semibold text-gray-900">

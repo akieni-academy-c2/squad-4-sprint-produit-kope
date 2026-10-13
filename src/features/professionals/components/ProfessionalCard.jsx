@@ -5,7 +5,7 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { cn } from '@/shared/utils';
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 
 function fallbackPortrait(seed) {
@@ -54,7 +54,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
 
   if (mode === 'grid')
     return (
-      <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+      <Link href={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
         <Card className="border-[#BDC0C8]! flex h-full cursor-pointer flex-col overflow-hidden relative aspect-4/5.5 ">
           <ImageWithSkeleton
             src={coverSrc}
@@ -107,7 +107,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
   // qui enveloppe déjà chaque ligne, et laissait une <Link> nue comme enfant
   // direct de <ul> en mode grille.
   return (
-    <Link to={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+    <Link href={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
       <Card className={cn(
         'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
       )}>

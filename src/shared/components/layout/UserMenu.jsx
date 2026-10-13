@@ -1,4 +1,3 @@
-import { Link as RouterLink } from 'react-router-dom';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { ROUTES, ROLES, PROFILE_STATUS } from '@/shared/lib/constants.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
@@ -103,14 +102,14 @@ export function UserMenu({ onNavigate }) {
             </div>
             <div className="flex flex-col p-1.5 gap-0.5">
               {(hasRole(ROLES.CLIENT) || hasRole(ROLES.PRO) || hasRole(ROLES.ADMIN)) && (
-                <RouterLink
-                  to={dashboardHref(user.role)}
+                <Link
+                  href={dashboardHref(user.role)}
                   role="menuitem"
                   onClick={close}
                   className="rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   {hasRole(ROLES.PRO) ? 'Mon profil' : hasRole(ROLES.ADMIN) ? 'Administration' : 'Mon espace'}
-                </RouterLink>
+                </Link>
               )}
               {isPro && proStatus === PROFILE_STATUS.PUBLISHED && (
                 // Prévisualisation, même règle que le bouton du tableau de bord :

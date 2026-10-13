@@ -3,6 +3,8 @@ import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lu
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
+import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { getMyProfile, setAvailability } from '../services/professionals.service.js';
 import { AvailabilityToggle } from '../components/AvailabilityToggle.jsx';
@@ -33,14 +35,21 @@ const NAV_ITEMS = [
 // panneau : elles se parcourent d'un regard, un filtre n'y apporterait rien.
 const WITH_FILTERS = new Set(['contacts', 'avis', 'signalements']);
 
+const ROOT_ID = 'overview';
+const SECTIONS = NAV_ITEMS.map((item) => item.id);
+
 export function ProProfilePage() {
   const { user } = useAuthContext();
   const { toast } = useNotification();
+
+  // La section vit dans l'URL : rechargement, bouton « retour » et lien de
+  // partage restent corrects, ce qu'un état local ne permet pas.
+  const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_PRO, SECTIONS, ROOT_ID);
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [savingAvailability, setSavingAvailability] = useState(false);
-  const [active, setActive] = useState('overview');
   const [rightEl, setRightEl] = useState(null);
   const withFilters = WITH_FILTERS.has(active);
 
@@ -106,7 +115,7 @@ export function ProProfilePage() {
           displayName={displayName}
           items={NAV_ITEMS}
           active={active}
-          onChange={setActive}
+          onChange={goTo}
         />
 
         <main className="min-w-0 space-y-6">
@@ -120,7 +129,7 @@ export function ProProfilePage() {
                   loading={savingAvailability}
                 />
               </div>
-              <OverviewSection profile={profile} onNavigate={setActive} />
+              <OverviewSection profile={profile} onNavigate={goTo} />
             </>
           )}
 
@@ -149,7 +158,7 @@ export function ProProfilePage() {
       <BottomNav
         items={NAV_ITEMS}
         active={active}
-        onChange={setActive}
+        onChange={goTo}
         ariaLabel="Navigation de l'espace pro (mobile)"
       />
     </div>

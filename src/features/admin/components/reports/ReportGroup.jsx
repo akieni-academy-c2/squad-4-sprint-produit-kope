@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Check } from 'lucide-react';
 import { Button, Tooltip, UserAvatar } from '@/shared/components/ui';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -22,7 +22,7 @@ export function ReportGroup({ group, onResolveReport, onDismissReport, onUnblock
             iconSize={14}
           />
           <Link
-            to={ROUTES.PROFESSIONAL(professionalId)}
+            href={ROUTES.PROFESSIONAL(professionalId)}
             className="truncate text-sm font-bold text-gray-900 transition hover:text-primary-700 hover:underline"
           >
             {professionalName || `Pro #${professionalId}`}

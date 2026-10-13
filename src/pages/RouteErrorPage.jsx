@@ -1,4 +1,5 @@
-import { Link, useRouteError } from 'react-router-dom';
+import { useRouteError } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { TriangleAlert } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -35,7 +36,7 @@ export function RouteErrorPage() {
         )}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button onClick={() => window.location.reload()}>Recharger</Button>
-          <Button as={Link} to={ROUTES.HOME} variant="secondary">Retour à l'accueil</Button>
+          <Button as={Link} href={ROUTES.HOME} variant="secondary">Retour à l'accueil</Button>
         </div>
       </div>
     </div>

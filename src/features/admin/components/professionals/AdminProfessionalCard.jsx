@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Calendar, ExternalLink, Eye, EyeOff, MapPin, Phone, Wrench } from 'lucide-react';
 import { Badge, Button, Tooltip, UserAvatar } from '@/shared/components/ui';
 import {
@@ -60,7 +60,7 @@ export function AdminProfessionalCard({ pro, onToggleVisibility }) {
         <Tooltip content="Voir la fiche">
           <Button
             as={Link}
-            to={ROUTES.PROFESSIONAL(id)}
+            href={ROUTES.PROFESSIONAL(id)}
             target="_blank"
             rel="noopener noreferrer"
             size="icon-sm"

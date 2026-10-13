@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { SectionHeader } from '@/shared/components/sections/SectionHeader.jsx';
@@ -27,7 +27,7 @@ export function FeaturedProfessionalSection() {
           title="Des visages derrière chaque métier."
           intro="Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les professionnels de votre quartier et échangez directement avec eux."
         >
-          <Button as={Link} to={ROUTES.SEARCH} variant="outline" size="md" className="bg-transparent! border-gray-400!">
+          <Button as={Link} href={ROUTES.SEARCH} variant="outline" size="md" className="bg-transparent! border-gray-400!">
             Explorer les professionnels <ArrowRight size={16} aria-hidden className="inline" />
           </Button>
         </SectionHeader>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Ban, Calendar, Check, Phone } from 'lucide-react';
 import { Badge, Button, Tooltip, UserAvatar } from '@/shared/components/ui';
 import { ROLES, ROUTES } from '@/shared/lib/constants.js';
@@ -27,7 +27,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
       <div className="flex items-start gap-3 p-4">
         {isPro ? (
           <Link
-            to={ROUTES.PROFESSIONAL(user.id)}
+            href={ROUTES.PROFESSIONAL(user.id)}
             className="shrink-0 rounded-full transition hover:opacity-80"
             aria-label={`Voir la fiche publique de ${name}`}
           >
@@ -40,7 +40,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
         <div className="min-w-0 flex-1">
           {isPro ? (
             <Link
-              to={ROUTES.PROFESSIONAL(user.id)}
+              href={ROUTES.PROFESSIONAL(user.id)}
               className="block truncate font-semibold text-gray-900 transition hover:text-primary-700 hover:underline"
             >
               {name}

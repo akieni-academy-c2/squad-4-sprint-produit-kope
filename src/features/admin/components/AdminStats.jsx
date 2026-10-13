@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ArrowRight, Ban, CalendarClock, EyeOff, Flag, Phone, Star } from 'lucide-react';
 import { Badge, DataState, KpiCard, StatGroup as Group, UserAvatar } from '@/shared/components/ui';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
@@ -76,7 +76,7 @@ function RecentProfessionals({ items, onOpenAll }) {
           <li key={p.id}>
             <article className="flex flex-col gap-3 rounded-[14px] border border-[#e2e8e5] bg-white p-3 transition hover:border-primary-200 hover:shadow-sm sm:flex-row sm:items-center">
               <Link
-                to={ROUTES.PROFESSIONAL(p.id)}
+                href={ROUTES.PROFESSIONAL(p.id)}
                 className="shrink-0 self-start rounded-full transition hover:opacity-80 sm:self-auto"
                 aria-label={`Voir la fiche publique de ${p.displayName}`}
               >

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { UserMenu } from './UserMenu.jsx';
 import { DemoRoleSwitcher } from './DemoRoleSwitcher.jsx';
 import { displayNameFor, roleLabel, dashboardHref, landingHrefFor } from '@/shared/utils/userMenuUtils.js';
@@ -38,7 +39,7 @@ export function Navbar() {
   return (
     <header className={`sticky top-0 z-40 border-b  border-gray-100 bg-white/85 backdrop-blur`}>
       <div className="container-kop flex h-(--header-height) items-center gap-2 sm:gap-4">
-        <Link to={logoHref} className="flex items-center gap-2 focus-ring rounded-xl p-1 -ml-1 shrink-0 text-primary-500">
+        <Link href={logoHref} className="flex items-center gap-2 focus-ring rounded-xl p-1 -ml-1 shrink-0 text-primary-500">
           <span aria-hidden className="flex items-center gap-1.5">
             <Drill size={20} />
             <span className="font-extrabold moo-lah-lah-regular tracking-tight text-[27px]  -ml-0.5">
@@ -68,7 +69,7 @@ export function Navbar() {
                 return (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    href={item.to}
                     className="inline-flex items-center gap-2 rounded-[10px] border border-gray-300 bg-white/25 px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                   >
                     <Search size={16} aria-hidden />
@@ -79,7 +80,7 @@ export function Navbar() {
               return (
                 <NavLink
                   key={item.to}
-                  to={item.to}
+                  href={item.to}
                   className={({ isActive }) =>
                     cn(
                       'relative rounded-[10px] px-3 py-2 text-sm font-semibold transition',
@@ -111,7 +112,7 @@ export function Navbar() {
         <div className='flex md:hidden absolute right-3 gap-2 items-center border bg-gray-200/20 border-gray-200 px-3 py-2 rounded-md'>
 
         <Link
-          to={ROUTES.SEARCH}
+          href={ROUTES.SEARCH}
           className=""
           aria-label="Trouver un professionnel"
         >
@@ -135,7 +136,7 @@ export function Navbar() {
         <div className="flex h-full flex-col">
           
           <div className="border-b border-gray-100 px-5 pb-4 pt-6">
-            <Link to={logoHref} onClick={() => setOpen(false)} className="flex items-center gap-2 text-primary-500">
+            <Link href={logoHref} onClick={() => setOpen(false)} className="flex items-center gap-2 text-primary-500">
               <Drill size={20} aria-hidden />
               <span className="font-extrabold moo-lah-lah-regular tracking-tight text-[24px]">KOP</span>
             </Link>
@@ -162,7 +163,7 @@ export function Navbar() {
                   return (
                     <li key={item.to}>
                       <NavLink
-                        to={item.to}
+                        href={item.to}
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-2.5 rounded-md border border-gray-300 bg-white/25 px-3 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                       >
@@ -175,7 +176,7 @@ export function Navbar() {
                 return (
                   <li key={item.to}>
                     <NavLink
-                      to={item.to}
+                      href={item.to}
                       end
                       onClick={() => setOpen(false)}
                       className={({ isActive }) =>
@@ -239,7 +240,7 @@ export function Navbar() {
                   </div>
                   <Separator className="my-1 bg-gray-100" />
                   <Link
-                    to={dashboardHref(user.role)}
+                    href={dashboardHref(user.role)}
                     onClick={() => setOpen(false)}
                     className="flex items-center gap-2.5 rounded px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                   >

@@ -1,4 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
@@ -18,7 +19,7 @@ export function ForbiddenPage() {
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button onClick={() => navigate(-1)} variant="secondary">Revenir en arrière</Button>
-        <Button as={Link} to={ROUTES.HOME}>Retour à l'accueil</Button>
+        <Button as={Link} href={ROUTES.HOME}>Retour à l'accueil</Button>
       </div>
     </div>
   );

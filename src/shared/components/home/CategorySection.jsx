@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { SectionHeader } from '@/shared/components/sections/SectionHeader.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
@@ -16,7 +16,7 @@ export function CategorySection() {
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {HIGHLIGHTED_TRADES.map((c) => (
-          <Link key={c.id} to={`${ROUTES.SEARCH}?trade=${encodeURIComponent(c.tradeId)}`} className="group">
+          <Link key={c.id} href={`${ROUTES.SEARCH}?trade=${encodeURIComponent(c.tradeId)}`} className="group">
             <Card className="overflow-hidden h-full flex flex-col transition">
               <div className="relative">
                 <ImageWithSkeleton

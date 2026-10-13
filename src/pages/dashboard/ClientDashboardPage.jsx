@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Flag, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
+import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
 import { MyReviewsSection } from '@/features/reviews/components/MyReviewsSection.jsx';
@@ -20,6 +22,9 @@ const NAV_ITEMS = [
   { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
 ];
 
+const ROOT_ID = 'apercu';
+const SECTIONS = NAV_ITEMS.map((item) => item.id);
+
 // Sections qui portent des filtres : seules celles-là occupent la colonne de
 // droite. Les autres la laissent vide, comme l'admin masque la sienne hors des
 // sections filtrables.
@@ -27,7 +32,12 @@ const WITH_FILTERS = new Set(['avis', 'contacts', 'signalements']);
 
 export function ClientDashboardPage() {
   const { user } = useAuthContext();
-  const [active, setActive] = useState('apercu');
+
+  // La section vit dans l'URL, pas dans un état local. C'est ce qui rend le
+  // rechargement, le bouton « retour » du navigateur et un lien de partage
+  // corrects — trois choses qu'un `useState` ne sait pas faire.
+  const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_CLIENT, SECTIONS, ROOT_ID);
+
   const [rightEl, setRightEl] = useState(null);
   const withFilters = WITH_FILTERS.has(active);
 
@@ -35,9 +45,9 @@ export function ClientDashboardPage() {
     <div className="container-kop py-10 lg:py-16">
       {/* Une seule grille pour les trois colonnes, comme `AdminDashboardPage` :
           navigation à gauche, contenu au centre, filtres à droite. Les sections
-          ne creusent pas leur propre colonne, elles y projettent leurs filtres.
-          Sans filtres, la grille retombe à deux colonnes : garder la troisième
-          laisserait un vide de 280px à droite de l'aperçu et du profil. */}
+          ne creusent pas leur propre colonne, elles y projettent leurs filtres
+          par portail. Sans filtres, la grille retombe à deux colonnes : garder la
+          troisième laisserait un vide de 280px à droite de l'aperçu et du profil. */}
       <div
         className={cn(
           'grid gap-6 lg:items-start',
@@ -46,10 +56,10 @@ export function ClientDashboardPage() {
             : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
         )}
       >
-        <ClientDashboardSidebar items={NAV_ITEMS} active={active} onChange={setActive} />
+        <ClientDashboardSidebar items={NAV_ITEMS} active={active} onChange={goTo} />
 
         <section className="min-w-0">
-          {active === 'apercu' && <ClientOverviewSection onNavigate={setActive} />}
+          {active === 'apercu' && <ClientOverviewSection onNavigate={goTo} />}
           {active === 'profil' && <ClientProfileSection user={user} />}
           {active === 'avis' && <MyReviewsSection rightContainer={rightEl} />}
           {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
@@ -66,7 +76,7 @@ export function ClientDashboardPage() {
       <BottomNav
         items={NAV_ITEMS}
         active={active}
-        onChange={setActive}
+        onChange={goTo}
         ariaLabel="Navigation du profil (mobile)"
       />
     </div>

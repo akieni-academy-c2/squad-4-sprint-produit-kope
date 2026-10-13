@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
@@ -292,7 +293,7 @@ export function RegisterClientForm({ bare = false } = {}) {
 
       <div className="pt-4 pl-4 text-sm text-gray-600">
         Déjà inscrit ?{' '}
-        <Link className="link-underline font-medium text-primary-700" to={ROUTES.LOGIN}>
+        <Link className="link-underline font-medium text-primary-700" href={ROUTES.LOGIN}>
           Se connecter
         </Link>
       </div>

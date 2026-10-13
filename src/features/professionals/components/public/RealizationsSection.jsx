@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
@@ -19,11 +19,11 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
         <nav aria-label="Fil d'Ariane" className="hidden text-sm text-gray-500 pb-4 pt-2 border-b border-gray-200 lg:block">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
-              <Link to={ROUTES.SEARCH} className=" text-primary-700">Recherche</Link>
+              <Link href={ROUTES.SEARCH} className=" text-primary-700">Recherche</Link>
             </li>
             <li aria-hidden>»</li>
             <li>
-              <Link to={ROUTES.SEARCH} className=" text-primary-700">{breadcrumbTrade}</Link>
+              <Link href={ROUTES.SEARCH} className=" text-primary-700">{breadcrumbTrade}</Link>
             </li>
             <li aria-hidden>»</li>
             <li aria-current="page" className="font-semibold text-gray-900">{displayName}</li>
