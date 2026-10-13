@@ -17,14 +17,14 @@ const router = Router();
 
 router.post('/auth/register/client', rateLimit({ max: 10, key: 'register' }), validate(registerClientSchema), controller.registerClient);
 router.post('/auth/register/professional', rateLimit({ max: 10, key: 'register' }), validate(registerProfessionalSchema), controller.registerProfessional);
-router.post('/auth/become-professional', requireAuth, validate(becomeProfessionalSchema), controller.becomeProfessional);
+router.post('/auth/become-professional', requireAuth, rateLimit({ max: 5, key: 'become-pro', byUser: true }), validate(becomeProfessionalSchema), controller.becomeProfessional);
 router.post('/auth/login', rateLimit({ max: 10, key: 'login' }), validate(loginSchema), controller.login);
-router.post('/auth/refresh', rateLimit({ max: 30, key: 'refresh' }), controller.refresh);
 router.post('/auth/logout', controller.logout);
-router.get('/auth/me', requireAuth, controller.me);
+router.get('/auth/me', controller.me);
 router.put('/auth/me', requireAuth, validate(updateAccountSchema), controller.updateAccount);
 router.put('/auth/password', requireAuth, rateLimit({ max: 10, key: 'password' }), validate(changePasswordSchema), controller.changePassword);
-router.post('/auth/avatar', requireAuth, upload.single('avatar'), controller.uploadAvatar);
-
+// Limité par utilisateur : chaque appel écrit un fichier sur le disque, et
+// l'ancien avatar n'étant pas supprimé, des appels répétés saturaient le stockage.
+router.post('/auth/avatar', requireAuth, rateLimit({ max: 10, windowMs: 60 * 60 * 1000, key: 'avatar', byUser: true }), upload.single('avatar'), controller.uploadAvatar);
 
 export default router;

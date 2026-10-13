@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+    globalIgnores(['dist', 'dist-check']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -23,9 +23,66 @@ export default defineConfig([
     },
   },
   {
-    files: ['server/**/*.js', 'vite.config.js', 'vitest.config.js'],
+    files: [
+      'server/**/*.js',
+      'vite.config.js',
+      'vitest.config.js',
+      'scripts/**/*.mjs',
+      'tests/setup.js',
+      'tests/support/**/*.js',
+      'tests/server/**/*.js',
+      'tests/sql-live.test.js',
+    ],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  {
+    // Les tests sont rangés comme le code qu'ils vérifient : ce qui touche au
+    // serveur s'exécute avec les globales Node, ce qui touche à l'interface
+    // avec celles du navigateur. Un `.test.jsx` sous `tests/server/` est donc
+    // aussi un signal que le test est rangé du mauvais côté.
+    files: ['tests/src/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
+  {
+    // Un repository ne fait que traduire SQL. S'il importe un service, la
+    // frontière s'est dissoute et le module devient impossible à tester seul.
+    files: ['server/modules/**/*.repository.js'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['**/*.service.js', '**/*.controller.js'],
+          message: 'Un repository ne peut pas importer de service ni de controller : il appartient a la couche donnees.',
+        }],
+      }],
+    },
+  },
+  {
+    // Les couches ne se traversent que vers le bas : une route declare des
+    // middlewares, un controller appelle un service, un service passe par un
+    // repository. Sauter une couche rend le module dependant de ses voisins.
+    files: ['server/modules/**/*.controller.js'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['**/*.repository.js', '../../db/pool.js'],
+          message: 'Un controller passe par son service, jamais directement par le repository.',
+        }],
+      }],
+    },
+  },
+  {
+    files: ['src/shared/**/*.{js,jsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@/shared/mocks/*'],
+          message: 'shared/ ne doit pas consommer les mocks : les données de demonstration sont propres aux services de feature.',
+        }],
+      }],
     },
   },
 ])

@@ -9,15 +9,15 @@ CREATE TYPE request_status AS ENUM ('new', 'seen', 'done');
 CREATE TABLE users (
   id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   role          user_role NOT NULL,
-  phone         text NOT NULL UNIQUE,            
+  phone         text NOT NULL UNIQUE,
   password_hash text NOT NULL,
-  first_name    text,                            
-  last_name     text,                           
+  first_name    text,
+  last_name     text,
   consented_at  timestamptz,
   created_at    timestamptz NOT NULL DEFAULT now()
 );
 
--- Référentiels 
+-- Référentiels
 CREATE TABLE trades (
   id   smallint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name text NOT NULL UNIQUE
@@ -40,9 +40,9 @@ CREATE TABLE professionals (
   trade_id         smallint NOT NULL REFERENCES trades(id),
   description      text CHECK (description IS NULL OR char_length(description) BETWEEN 30 AND 500),
   years_experience smallint CHECK (years_experience IS NULL OR years_experience BETWEEN 0 AND 60),
-  whatsapp         text,                         
+  whatsapp         text,
   is_available     boolean NOT NULL DEFAULT true,
-  is_hidden        boolean NOT NULL DEFAULT false, 
+  is_hidden        boolean NOT NULL DEFAULT false,
   updated_at       timestamptz NOT NULL DEFAULT now()
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE professional_zones (
 CREATE TABLE photos (
   id              bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   professional_id bigint NOT NULL REFERENCES professionals(user_id) ON DELETE CASCADE,
-  file_path       text NOT NULL,                 
+  file_path       text NOT NULL,
   thumb_path      text NOT NULL,
   caption         varchar(100),
   created_at      timestamptz NOT NULL DEFAULT now()
@@ -79,7 +79,7 @@ CREATE TABLE reviews (
   comment         varchar(300),
   is_hidden       boolean NOT NULL DEFAULT false,
   created_at      timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (client_id, professional_id)            
+  UNIQUE (client_id, professional_id)
 );
 
 CREATE INDEX ON professionals (trade_id);

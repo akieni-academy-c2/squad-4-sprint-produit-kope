@@ -1,35 +1,48 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar.jsx';
 import { Footer } from './Footer.jsx';
+import { SuspensionNotice } from './SuspensionNotice.jsx';
 import { AuthModal } from '@/features/auth/components/AuthModal.jsx';
-import { useMockMode } from '@/shared/lib/dataSource.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
 
-const BOTTOM_NAV_ROUTES = [ROUTES.DASHBOARD_PRO, ROUTES.DASHBOARD_CLIENT];
+const BOTTOM_NAV_ROUTES = [ROUTES.DASHBOARD_PRO, ROUTES.DASHBOARD_CLIENT, ROUTES.ADMIN];
+
+// Pages qui partagent le fond pointillé des tableaux de bord.
+const DOTTED_BG_ROUTES = [...BOTTOM_NAV_ROUTES, ROUTES.SEARCH];
+
+/**
+ * Une route et ses sous-sections.
+ *
+ * La comparaison était une égalité exacte : elle ne voyait plus que `/admin`.
+ * Dès que l'onglet portait l'URL — `/admin/users`, `/dashboard/client/avis` —
+ * la page n'était plus reconnue comme tableau de bord. Le fond pointillé
+ * disparaissait, et la réserve d'espace pour la barre du bas avec lui, ce qui
+ * décalait toute la mise en page : changer d'onglet ressemblait à un
+ * rechargement.
+ */
+const isUnder = (pathname, base) =>
+  pathname === base || (Boolean(base) && pathname.startsWith(`${base}/`));
 
 export function RootLayout() {
-  const demo = useMockMode();
   const { pathname } = useLocation();
-  const hasBottomNav = BOTTOM_NAV_ROUTES.includes(pathname);
+
+  const hasBottomNav = BOTTOM_NAV_ROUTES.some((route) => isUnder(pathname, route));
+  const hasDottedBg =
+    DOTTED_BG_ROUTES.some((route) => isUnder(pathname, route)) ||
+    pathname.startsWith(ROUTES.PROFESSIONAL(''));
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Navbar />
-      <main id="main-content" className={cn('flex-1', hasBottomNav && 'bg-dots')}>
+      <main id="main-content" className={cn('flex-1', hasDottedBg && 'bg-dots')}>
         <div className=" animate-fade-in">
           <Outlet />
         </div>
       </main>
       <Footer className={hasBottomNav ? 'pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0' : undefined} />
       <AuthModal />
-      {demo && (
-        <div className={cn(
-          'fixed left-1/2 z-80 -translate-x-1/2 rounded-full bg-gray-900/90 px-4 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur',
-          hasBottomNav ? 'bottom-24 lg:bottom-4' : 'bottom-4',
-        )}>
-          Mode démo - données factices (backend indisponible)
-        </div>
-      )}
+      <SuspensionNotice />
     </div>
   );
 }

@@ -33,12 +33,6 @@ export function formatDateFr(value) {
   }).format(date);
 }
 
-export function initials(firstName, lastName) {
-  const a = firstName?.trim()?.[0] || '';
-  const b = lastName?.trim()?.[0] || '';
-  return `${a}${b}`.toUpperCase();
-}
-
 export function fullNameInitials(firstName, lastName) {
   const first = firstName?.trim() || '';
   const last = lastName?.trim() || '';

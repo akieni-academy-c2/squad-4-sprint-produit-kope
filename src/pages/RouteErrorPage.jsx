@@ -1,10 +1,14 @@
-import { Link, useRouteError } from 'react-router-dom';
+import { useRouteError } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { TriangleAlert } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 
 export function RouteErrorPage() {
   const error = useRouteError();
+
+  usePageTitle('Erreur');
   const status = error?.status;
   const message =
     error?.data?.message ||
@@ -32,7 +36,7 @@ export function RouteErrorPage() {
         )}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button onClick={() => window.location.reload()}>Recharger</Button>
-          <Button as={Link} to={ROUTES.HOME} variant="secondary">Retour à l'accueil</Button>
+          <Button as={Link} href={ROUTES.HOME} variant="secondary">Retour à l'accueil</Button>
         </div>
       </div>
     </div>

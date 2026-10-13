@@ -1,15 +1,16 @@
+import { requiredUserId } from '../../middlewares/identity.js';
 import * as service from './professionals.service.js';
 
 export async function getMyProfile(req, res) {
-  res.json({ profile: await service.getOwnProfile((req.user ?? req.session.user).id) });
+  res.json({ profile: await service.getOwnProfile(requiredUserId(req)) });
 }
 
 export async function updateMyProfile(req, res) {
-  res.json({ profile: await service.updateOwnProfile((req.user ?? req.session.user).id, req.validated.body) });
+  res.json({ profile: await service.updateOwnProfile(requiredUserId(req), req.validated.body) });
 }
 
 export async function setAvailability(req, res) {
   const { isAvailable } = req.validated.body;
-  await service.setAvailability((req.user ?? req.session.user).id, isAvailable);
+  await service.setAvailability(requiredUserId(req), isAvailable);
   res.json({ isAvailable });
 }

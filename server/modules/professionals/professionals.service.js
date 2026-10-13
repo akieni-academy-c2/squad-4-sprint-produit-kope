@@ -36,26 +36,34 @@ export async function getOwnProfile(userId) {
   return { ...rest, photos, status, missing };
 }
 
+const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
+
 /** US-04 */
 export async function updateOwnProfile(userId, { displayName, tradeId, description, yearsExperience, whatsapp, zoneIds }) {
-  if (!(await repository.tradeExists(tradeId))) 
+  if (!(await repository.tradeExists(tradeId)))
     throw ApiError.badRequest('Choisissez un métier valide', { tradeId: 'Choisissez un métier' });
-  
 
-  await withTransaction(async (tx) => {
-    await repository.updateProfile(
-      userId,
-      {
-        displayName,
-        tradeId,
-        description,
-        yearsExperience,
-        ...(whatsapp !== undefined ? { whatsapp } : {}),
-      },
-      tx,
-    );
-    await repository.replaceZones(userId, zoneIds, tx);
-  });
+  try {
+    await withTransaction(async (tx) => {
+      await repository.updateProfile(
+        userId,
+        {
+          displayName,
+          tradeId,
+          description,
+          yearsExperience,
+          ...(whatsapp !== undefined ? { whatsapp } : {}),
+        },
+        tx,
+      );
+      await repository.replaceZones(userId, zoneIds, tx);
+    });
+  } catch (err) {
+    // 23505 sur l'index professionals_display_name_unique.
+    if (err.code === '23505')
+      throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
+    throw err;
+  }
   return getOwnProfile(userId);
 }
 
@@ -64,7 +72,6 @@ export function setAvailability(userId, isAvailable) {
   return repository.setAvailability(userId, isAvailable);
 }
 
-/** Fiche publique */
 export async function getPublishedDetail(id) {
   const profile = await repository.findPublishedDetail(id);
   if (!profile) throw ApiError.notFound('Profil introuvable');

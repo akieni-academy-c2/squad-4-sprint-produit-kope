@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { phoneSchema, zoneIdsSchema, requiredText, idSchema } from '../../utils/commonSchemas.js';
+import { displayNameSchema, phoneSchema, zoneIdsSchema, idSchema } from '../../utils/commonSchemas.js';
 
 /** US-04 */
 export const updateProfileSchema = z.object({
-  displayName: requiredText(100, 'Le nom affiché est obligatoire'),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
   description: z
     .string({ error: 'La description est obligatoire' })
@@ -16,6 +16,12 @@ export const updateProfileSchema = z.object({
     .min(0, "Les années d'expérience doivent être comprises entre 0 et 60")
     .max(60, "Les années d'expérience doivent être comprises entre 0 et 60"),
   whatsapp: z.preprocess((value) => (value === '' ? null : value), phoneSchema.nullish()),
+  // La ville vient du catalogue de l'administrateur, d'où `idSchema` borné à
+  // 32767 : une ville qui n'existe pas est refusée avant d'atteindre la clé
+  // étrangère, pas transformée en 500.
+  // Facultative : les profils antérieurs à cette colonne n'en ont pas, et les
+  // rendre obligatoires les mettrait hors conformité au premier enregistrement.
+  cityId: z.preprocess((value) => (value === '' ? null : value), idSchema('Choisissez une ville').nullish()),
   zoneIds: zoneIdsSchema,
 });
 

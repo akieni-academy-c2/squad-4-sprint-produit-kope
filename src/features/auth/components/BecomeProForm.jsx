@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
@@ -7,12 +7,13 @@ import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { Input } from '@/shared/components/ui/Input.jsx';
-import { Select } from '@/shared/components/ui/Select.jsx';
+import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
 import { Textarea } from '@/shared/components/ui/Textarea.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { useForm } from '@/shared/hooks/useForm.js';
 import { becomeProfessionalSchema } from '@/shared/utils/validators.js';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { becomeProfessional } from '../services/auth.service.js';
 import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -34,6 +35,11 @@ export function BecomeProForm({ bare = false } = {}) {
     INITIAL,
     async (data) => becomeProfessional(data),
   );
+
+  // Étape 1 : nom affiché, métier et zones doivent être valides pour continuer.
+  const step1Schema = useMemo(() => becomeProfessionalSchema.pick(STEP1_FIELDS), []);
+  const { ready: step1Ready } = useFormReadiness(step1Schema, values);
+  const { ready: allReady } = useFormReadiness(becomeProfessionalSchema, values);
 
   const goNext = () => {
     const r = becomeProfessionalSchema.pick(STEP1_FIELDS).safeParse(values);
@@ -91,20 +97,22 @@ export function BecomeProForm({ bare = false } = {}) {
               value={values.displayName}
               onChange={(e) => setField('displayName', e.target.value.slice(0, 100))}
             />
-            <FormField id="bp-trade" label="Métier" required error={errors.tradeId} as="select">
-              <Select
+            <FormField id="bp-trade" label="Métier" required error={errors.tradeId}>
+              <CustomSelect
                 id="bp-trade"
                 name="tradeId"
-                className="border border-gray-200 "
-                value={values.tradeId}
-                error={errors.tradeId}
-                onChange={(e) => setField('tradeId', e.target.value)}
-              >
-                <option value="">Choisissez un métier</option>
-                {trades.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </Select>
+                className="w-full"
+                value={values.tradeId ?? ''}
+                placeholder="Choisissez un métier"
+                onChange={(value) => setField('tradeId', value)}
+                options={[
+                  { value: '', label: 'Choisissez un métier' },
+                  ...trades.map((t) => ({ value: String(t.id), label: t.name })),
+                ]}
+                aria-label="Métier"
+                aria-invalid={Boolean(errors.tradeId) || undefined}
+                aria-describedby={errors.tradeId ? 'bp-trade-error' : undefined}
+              />
             </FormField>
             <MultiSelect
               label="Zone"
@@ -115,7 +123,7 @@ export function BecomeProForm({ bare = false } = {}) {
               value={values.zoneIds || []}
               onChange={(ids) => setField('zoneIds', ids)}
             />
-            <Button type="button" onClick={goNext} size="lg" className="w-full">
+            <Button type="button" onClick={goNext} disabled={!step1Ready} size="lg" className="w-full">
               Suivant
             </Button>
           </>
@@ -165,7 +173,7 @@ export function BecomeProForm({ bare = false } = {}) {
               <Button type="button" variant="secondary" size="lg" onClick={() => setStep(1)} className="w-1/2">
                 Précédent
               </Button>
-              <Button type="submit" loading={submitting} size="lg" className="w-1/2">
+              <Button type="submit" loading={submitting} disabled={!allReady} size="lg" className="w-1/2">
                 Valider
               </Button>
             </div>

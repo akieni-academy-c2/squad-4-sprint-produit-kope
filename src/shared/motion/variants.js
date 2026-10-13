@@ -1,0 +1,147 @@
+import { DURATION, EASE, SPRING, exitOf } from './timing.js';
+
+/**
+ * Recettes de mouvement, nommées par **intention**.
+ *
+ * Une variante s'appelle `overlayPanel`, pas `slideUpFromBottom`. Le premier
+ * nom dit ce que l'élément *est* dans l'interface et donc à quoi son
+ * mouvement doit servir ; le second ne dit que la géométrie, et devient faux
+ * dès qu'on change de côté sur mobile. Une bibliothèque de mouvement qui ne
+ * contient que des géométries ne peut pas être gouvernée : on ne peut plus
+ * dire « les entrées doivent toutes décélérer » sans relire chaque animation.
+ *
+ * ## La règle qui décide de ce qui figure ici
+ *
+ * **Ce qui peut être interrompu, ou qui a une sortie, passe par Framer Motion.
+ * Tout le reste est du CSS.**
+ *
+ * Une feuille qu'on rouvre à mi-parcours doit repartir de sa vitesse ; un
+ * message qui disparaît doit se retirer. Ni l'un ni l'autre ne se règle en
+ * CSS, parce qu'une transition CSS ne connaît ni l'interruption ni l'état
+ * suivant.
+ *
+ * Un bouton enfoncé ne peut être ni l'un ni l'autre — au relâchement le doigt
+ * est déjà parti. Le CSS s'en charge donc : `:active` pose une transformation,
+ * le compositeur la joue, et JavaScript n'intervient pas.
+ *
+ * Deux invariants tiennent toutes les variantes ci-dessous :
+ *
+ *   - on n'anime que `transform` et `opacity`, les deux seules propriétés que
+ *     le navigateur calcule sur le GPU sans refaire la mise en page ;
+ *   - une entrée et sa sortie sont construites par la même fonction, pour
+ *     qu'elles ne puissent pas diverger.
+ */
+
+/** Bandeau derrière une surface superposée : il n'a pas de géométrie, que du ton. */
+export const overlayBackdrop = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: DURATION.standard, ease: EASE.enter } },
+  exit: { opacity: 0, transition: { duration: exitOf(DURATION.standard), ease: EASE.exit } },
+};
+
+/**
+ * Feuille remontant du bas — la surface la plus heavy de l'application : elle
+ * recouvre l'écran entier et porte un formulaire.
+ *
+ * Deux détails la séparent d'un simple `translateY` animé :
+ *
+ *   - **le ressort plutôt qu'une courbe.** Une feuille est un objet qu'on
+ *     manipule : si l'utilisateur la referme à mi-parcours, elle doit repartir
+ *     de sa vitesse, pas recommencer. Une courbe repartirait de zéro et
+ *     produirait un à-coup visible ;
+ *   - **un léger recul de l'échelle.** À `scale: 1` au repos, la feuille arrive
+ *     à plat et sans épaisseur. À `0.98`, elle grandit en même temps qu'elle
+ *     monte — le geste se lit comme un tirage vers soi.
+ */
+export const sheetPanel = {
+  initial: { y: '100%', scale: 0.98 },
+  animate: {
+    y: '0%',
+    scale: 1,
+    transition: SPRING.surface,
+  },
+  exit: {
+    y: '100%',
+    scale: 1,
+    transition: { duration: exitOf(DURATION.deliberate), ease: EASE.exit },
+  },
+};
+
+/** Même surface, tirée du côté. Le ressort est partagé : même objet, autre bord. */
+export const sidePanel = {
+  initial: { x: '100%' },
+  animate: { x: '0%', transition: SPRING.surface },
+  exit: { x: '100%', transition: { duration: exitOf(DURATION.deliberate), ease: EASE.exit } },
+};
+
+/**
+ * Boîte de dialogue : elle **apparaît**, elle ne se déplace pas depuis un bord.
+ *
+ * L'échelle part de `0.96` et non de `0.9`. En dessous, la boîte rétrécit
+ * assez pour que ses coins et son ombre se voient se-contracter, et l'effet
+ * devient comique ; au-dessus, le rapport entre la taille et le déplacement
+ * perçu n'est plus lisible.
+ */
+export const dialogPanel = {
+  initial: { opacity: 0, scale: 0.96, y: 8 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 400, damping: 34, mass: 0.7, visualDuration: 0.26, bounce: 0 },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.97,
+    y: 4,
+    transition: { duration: exitOf(DURATION.entrance), ease: EASE.exit },
+  },
+};
+
+/**
+ * Bascule d'onglet d'un tableau de bord.
+ *
+ * Celle-ci répond à une plainte concrète : changer d'onglet paraissait
+ * recharger la page. Le blanc de chargement — même bref — lit comme un
+ * rechargement, parce que c'est ce que fait un rechargement.
+ *
+ * La réponse n'est pas d'allonger le fondu : c'est de rendre la substitution
+ * **visible**. L'ancien contenu s'efface pendant 90 ms, le nouveau entre sur
+ * 8 px. Un voyage de 8 px en 220 ms est perçu ; un fondu de 200 ms ne l'est
+ * pas, et c'est pour cela qu'un changement d'onglet « ne se voit pas » quand
+ * la requête est en cache.
+ *
+ * `mode: 'popLayout'` et non `'sync'` : en mode synchrone, les deux contenus
+ * se chevauchent pendant toute la transition et la colonne grandit puis se
+ * rétracte. En `popLayout`, le sortant est retiré du flux immédiatement.
+ */
+export const sectionSwap = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: DURATION.standard, ease: EASE.enter } },
+  exit: { opacity: 0, transition: { duration: 0.09, ease: EASE.exit } },
+};
+
+/**
+ * Message éphémère qui entre par le bas : il ne doit jamais couper le contenu.
+ *
+ * Seule variante où `y` dépasse 16 px. Le message apparaît au-dessus de ce que
+ * l'utilisateur est en train de lire sans le pousser : il doit se détacher du
+ * bas de l'écran, pas simplement apparaître sur place. En contrepartie, il
+ * part sur 16 px et non sur `translateY(100%)` — un message qui traverse toute
+ * la hauteur ne se lit plus comme un message, mais comme un chargement.
+ */
+export const toast = {
+  initial: { opacity: 0, y: 16, scale: 0.98 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring', stiffness: 420, damping: 35, mass: 0.7, visualDuration: 0.28, bounce: 0 },
+  },
+  exit: {
+    opacity: 0,
+    y: 8,
+    scale: 0.98,
+    transition: { duration: exitOf(DURATION.standard), ease: EASE.exit },
+  },
+};

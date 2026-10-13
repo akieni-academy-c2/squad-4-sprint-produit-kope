@@ -1,26 +1,21 @@
 import { ApiError } from '../utils/ApiError.js';
-import { env } from '../config/env.js';
-import { verifyToken } from '../utils/tokens.js';
+import { currentUser, loadActiveUser } from './identity.js';
 
 export function requireRole(...roles) {
-  return (req, res, next) => {
-    let user = null;
-    const authHeader = req.headers.authorization;
-    if (authHeader?.startsWith('Bearer ')) 
-      try {
-        const payload = verifyToken(authHeader.slice(7), env.ACCESS_TOKEN_SECRET);
-        user = { id: Number(payload.sub), role: payload.role };
-        req.user = user;
-      } catch {
-        req.bearerExpired = true;
-      }
-    
-    if (!user && req.session?.user) {
-      user = req.session.user;
+  return async (req, res, next) => {
+    try {
+      const identity = currentUser(req);
+      if (!identity) throw ApiError.unauthorized();
+      // Sans ce contrôle, un administrateur bloqué garde ses droits jusqu'à
+      // l'expiration de sa session. Le rôle est lui aussi relu en base :
+      // un compte rétrogradé perd ses droits immédiatement.
+      const user = await loadActiveUser(identity.id);
+      if (!roles.includes(user.role)) throw ApiError.forbidden();
+
       req.user = user;
+      return next();
+    } catch (err) {
+      return next(err);
     }
-    if (!user) throw ApiError.unauthorized();
-    if (!roles.includes(user.role)) throw ApiError.forbidden();
-    next();
   };
 }

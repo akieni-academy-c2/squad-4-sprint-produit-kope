@@ -1,3 +1,10 @@
+/**
+ * Mêmes règles que server/utils/phone.js : 9 chiffres commençant par 04, 05 ou 06.
+ * Exporté pour que le formulaire affiche la même indication que le serveur.
+ */
+export const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
+export const MOBILE_HINT = '9 chiffres commençant par 04, 05 ou 06 - ex. 06 12 34 56 7';
+
 export function normalizePhone(raw) {
   if (raw == null) return null;
   let digits = String(raw).replace(/[\s().-]/g, '');
@@ -7,10 +14,23 @@ export function normalizePhone(raw) {
 
   if (digits.startsWith('242') && digits.length === 12) digits = digits.slice(3);
 
-  if (!/^0\d{8}$/.test(digits)) return null;
+  if (!MOBILE_PATTERN.test(digits)) return null;
   return `+242${digits}`;
 }
 
-export function isPhoneValid(raw) {
-  return Boolean(normalizePhone(raw));
+/**
+ * Une saisie contenant autre chose que des chiffres (ou un préfixe interdit)
+ * ne deviendra jamais valide en ajoutant des caractères : c'est une erreur,
+ * pas un « presque ».
+ */
+export function isHopelessPhone(raw) {
+  const v = String(raw ?? '');
+  // Aucun chiffre du tout, ou présence de lettres : rien à corriger en ajoutant.
+  if (!/\d/.test(v)) return true;
+  if (/[^\d\s().+-]/.test(v)) return true;
+
+  const digits = v.replace(/\D/g, '');
+  const national = digits.length === 12 && digits.startsWith('242') ? digits.slice(3) : digits;
+  // Ni 04, ni 05, ni 06 : le préfixe ne se corrige pas en ajoutant des chiffres.
+  return !/^0[456]/.test(national);
 }

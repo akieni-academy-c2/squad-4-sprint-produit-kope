@@ -25,35 +25,48 @@ export async function listPhotos(professionalId) {
 
 /** US-05 */
 export async function addPhoto(professionalId, file, { title, description }) {
-  if (!file) 
+  if (!file)
     throw ApiError.badRequest('Aucune photo reçue', { photo: 'Choisissez une photo' });
-  
 
-  if ((await repository.count(professionalId)) >= MAX_PHOTOS) 
-    throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
-  
-
+  // L'écriture disque (ou les deux uploads Cloudinary) a lieu AVANT la
+  // transaction : une transaction SQL ne couvre pas le système de fichiers.
+  // La tenir dedans retenait une connexion du pool et un verrou FOR UPDATE
+  // pendant toute la durée du transfert réseau - 10 uploads simultanés
+  // suffisaient à répondre 503 à toute l'API.
   const processed = await storage.processImage(file.buffer);
   const paths = storage.newPaths(professionalId);
 
-  const photo = await withTransaction(async (tx) => {
-    await repository.lockProfessional(professionalId, tx);
-    if ((await repository.count(professionalId, tx)) >= MAX_PHOTOS) 
-      throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
-    
+  try {
+    await storage.save(paths, processed);
+  } catch {
+    throw ApiError.badRequest("L'image n'a pas pu être enregistrée", {
+      photo: "L'image n'a pas pu être enregistrée",
+    });
+  }
 
-    const created = await repository.create(
-      { professionalId, filePath: paths.filePath, thumbPath: paths.thumbPath, title, description },
-      tx,
-    );
-    await storage.save(paths, processed); 
-    return created;
-  });
+  try {
+    const photo = await withTransaction(async (tx) => {
+      await repository.lockProfessional(professionalId, tx);
+      // Re-compte sous verrou : le contrôle preliminaire ci-dessus est
+      // optimiste, deux ajouts concurrents pourraient tous deux le passer.
+      if ((await repository.count(professionalId, tx)) >= MAX_PHOTOS)
+        throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
 
-  return toDto(photo);
+      return repository.create(
+        { professionalId, filePath: paths.filePath, thumbPath: paths.thumbPath, title, description },
+        tx,
+      );
+    });
+
+    return toDto(photo);
+  } catch (error) {
+    // Le fichier est déjà sur le disque : sans ce nettoyage, un COMMIT en
+    // échec laisse une image orpheline que rien ne référencera jamais.
+    await storage.remove(paths).catch(() => {});
+    throw error;
+  }
 }
 
-/** Modification du titre */
 export async function updatePhoto(professionalId, photoId, { title, description }) {
   const updated = await repository.update(photoId, professionalId, { title, description });
   if (!updated) throw ApiError.notFound('Photo introuvable');

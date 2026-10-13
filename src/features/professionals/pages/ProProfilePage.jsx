@@ -1,118 +1,58 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronRight, LayoutDashboard, User, Image as ImageIcon, Phone, Star, Activity, MapPin, Clock, BadgeCheck } from 'lucide-react';
-import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { getMyProfile, setAvailability } from '../services/professionals.service.js';
-import { listReviews, getClientReviews } from '@/features/reviews/services/reviews.service.js';
+import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { PublicationStatus } from '../components/PublicationStatus.jsx';
-import { AvailabilityToggle } from '../components/AvailabilityToggle.jsx';
-import { ProfileEditor } from '../components/ProfileEditor.jsx';
-import { PhotoManager } from '../components/PhotoManager.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
-import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
-import { fullNameInitials } from '@/shared/utils';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
+import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
+import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
+import { cn } from '@/shared/utils';
+import { getMyProfile, setAvailability } from '../services/professionals.service.js';
+import { AvailabilityToggle } from '../components/AvailabilityToggle.jsx';
+import { OverviewSection } from '../components/OverviewSection.jsx';
+import { PhotoManager } from '../components/PhotoManager.jsx';
+import { ProfileEditor } from '../components/ProfileEditor.jsx';
+import { ProfileErrorState, ProfileLoadingState } from '../components/ProfileStates.jsx';
+import { ProSidebar } from '../components/ProSidebar.jsx';
+import { PublicationStatus } from '../components/PublicationStatus.jsx';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
-import { ROUTES, PROFILE_STATUS, PROFILE_STATUS_LABELS } from '@/shared/lib/constants.js';
+import { MyReportsSection } from '@/features/reports/components/MyReportsSection.jsx';
+import { ProReviewsSection } from '@/features/reviews/components/ProReviewsSection.jsx';
 
+// Le profil ferme la liste, comme dans l'espace client : le compte se parcourt
+// du plus utile au plus administratif.
 const NAV_ITEMS = [
   { id: 'overview', label: 'Vue d’ensemble', shortLabel: 'Aperçu', icon: LayoutDashboard },
-  { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
-  { id: 'photos', label: 'Mes photos', shortLabel: 'Photos', icon: ImageIcon },
+  { id: 'photos', label: 'Mes réalisations', shortLabel: 'Réalis.', icon: ImageIcon },
   { id: 'contacts', label: 'Mes contacts', shortLabel: 'Contacts', icon: Phone },
   { id: 'avis', label: 'Mes avis', shortLabel: 'Avis', icon: Star },
+  { id: 'signalements', label: 'Mes signalements', shortLabel: 'Signal.', icon: Flag },
+  { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
 ];
 
-function ProReviewsSection({ professionalId }) {
-  const { data, loading } = useAsyncData(async () => {
-    if (!professionalId) return null;
-    return listReviews(professionalId);
-  }, [professionalId]);
-  const [expanded, setExpanded] = useState(null);
-  const [expandedData, setExpandedData] = useState({});
+// Sections qui portent des filtres : seules celles-là occupent la colonne de
+// droite, comme dans l'espace client et l'espace admin. Aperçu et profil n'en
+// ont pas, la grille retombe alors à deux colonnes. Les photos n'ont pas de
+// panneau : elles se parcourent d'un regard, un filtre n'y apporterait rien.
+const WITH_FILTERS = new Set(['contacts', 'avis', 'signalements']);
 
-  const toggleClient = (clientId) => {
-    if (expanded === clientId) {
-      setExpanded(null);
-      return;
-    }
-    setExpanded(clientId);
-    if (!expandedData[clientId]) 
-      getClientReviews(clientId)
-        .then((d) => setExpandedData((m) => ({ ...m, [clientId]: d.items || [] })))
-        .catch(() => {});
-    
-  };
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-base font-bold text-gray-900">Avis reçus</h3>
-      {loading ? (
-        <div className="space-y-3">
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-        </div>
-      ) : (data?.items || []).length === 0 ? (
-        <Card className="p-6"><p className="text-sm text-gray-500">Aucun avis pour le moment.</p></Card>
-      ) : (
-        (data.items || []).map((r) => (
-          <Card key={r.id} className="p-4 space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <UserAvatar
-                  user={{
-                    firstName: r.client?.firstName,
-                    lastName: r.client?.lastName,
-                    avatarUrl: r.client?.avatarUrl,
-                  }}
-                  name={r.client?.displayName || fullNameInitials(r.client?.firstName, r.client?.lastName) || 'Client'}
-                  className="h-8 w-8"
-                />
-                <p className="font-semibold text-gray-900">{r.client?.displayName || fullNameInitials(r.client?.firstName, r.client?.lastName) || 'Client'}</p>
-              </div>
-              <span className="text-sm font-bold text-amber-500">★ {r.rating}/5</span>
-            </div>
-            {r.comment && <p className="text-sm leading-6 text-gray-600">{r.comment}</p>}
-            <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('fr-FR')}</p>
-            {r.clientId != null && (
-              <button
-                type="button"
-                onClick={() => toggleClient(r.clientId)}
-                className="text-xs font-bold text-primary-500 hover:underline"
-              >
-                {expanded === r.clientId ? 'Masquer les avis de ce client' : 'Voir tous les avis de ce client'}
-              </button>
-            )}
-            {expanded === r.clientId && (
-              <ul className="mt-2 space-y-2 border-t border-gray-100 pt-2">
-                {(expandedData[r.clientId] ?? []).map((o) => (
-                  <li key={o.id} className="text-xs text-gray-600">
-                    Sur « {o.professionalName} » : <span className="font-semibold text-gray-900">★ {o.rating}/5</span> {o.comment ? `- ${o.comment}` : ''}
-                  </li>
-                ))}
-                {(expandedData[r.clientId] ?? []).length === 0 && <li className="text-xs text-gray-400">Aucun autre avis.</li>}
-              </ul>
-            )}
-          </Card>
-        ))
-      )}
-    </div>
-  );
-}
+const ROOT_ID = 'overview';
+const SECTIONS = NAV_ITEMS.map((item) => item.id);
 
 export function ProProfilePage() {
   const { user } = useAuthContext();
   const { toast } = useNotification();
+
+  // La section vit dans l'URL : rechargement, bouton « retour » et lien de
+  // partage restent corrects, ce qu'un état local ne permet pas.
+  const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_PRO, SECTIONS, ROOT_ID);
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [savingAvailability, setSavingAvailability] = useState(false);
-  const [active, setActive] = useState('overview');
+  const [rightEl, setRightEl] = useState(null);
+  const withFilters = WITH_FILTERS.has(active);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -149,67 +89,39 @@ export function ProProfilePage() {
     load();
   };
 
-  if (loading) 
-    return (
-      <div className="container-kop space-y-4 py-10" aria-busy="true">
-        <Skeleton className="h-8 w-1/3" />
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  
-
-  if (error && !profile) 
-    return (
-      <div className="mx-auto max-w-xl rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-700 shadow-sm">
-        <h1 className="text-xl font-bold">Erreur de chargement du profil</h1>
-        <p className="mt-1 text-sm">{error.message || 'Impossible de charger votre profil.'}</p>
-        <div className="mt-4 flex gap-2">
-          <Button onClick={load}>Réessayer</Button>
-        </div>
-      </div>
-    );
-  
+  if (loading) return <ProfileLoadingState />;
+  if (error && !profile) return <ProfileErrorState error={error} onRetry={load} />;
 
   const displayName = user?.displayName || profile?.displayName || 'Professionnel';
 
   return (
     <div className="container-kop py-10 lg:py-16">
-      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="space-y-6 lg:sticky lg:top-(--header-height) lg:self-start">
-          <Card className="p-0 overflow-hidden">
-            <div className="p-5 pb-4 bg-gradient-to-r from-primary-50 to-kop-mint/60">
-              <div className="flex items-center gap-4">
-                <UserAvatar user={user} src={profile?.avatarUrl ?? undefined} name={displayName} className="h-14 w-14" />
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-gray-900">{displayName}</p>
-                  <p className="text-xs text-gray-500">{profile?.tradeName || 'Professionnel'}</p>
-                </div>
-              </div>
-            </div>
-            <div className="px-5 py-4">
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Statut</p>
-              <p className="mt-1 text-sm font-semibold text-gray-900 capitalize">{profile?.status ?? '-'}</p>
-            </div>
-          </Card>
-          <div className="hidden lg:block">
-            <SidebarNav
-              items={NAV_ITEMS}
-              active={active}
-              onChange={setActive}
-              ariaLabel="Navigation de l'espace pro"
-            />
-          </div>
-          {profile?.status === PROFILE_STATUS.PUBLISHED && (
-            <Button as={Link} to={ROUTES.PROFESSIONAL(user?.id || profile?.userId || profile?.id || '0')} variant="secondary" size="md" className="w-full">
-              Voir ma fiche publique <ChevronRight size={16} className="inline" aria-hidden />
-            </Button>
-          )}
-        </aside>
+      {/* Une seule grille pour les trois colonnes, comme les espaces client et
+          admin : navigation à gauche, contenu au centre, filtres à droite. Les
+          sections ne creusent pas leur propre colonne, elles y projettent
+          leurs filtres par portail — sans quoi la colonne de droite n'a pas la
+          même largeur que dans les deux autres espaces, et les deux barres
+          sticky ne s'alignent plus. */}
+      <div
+        className={cn(
+          'grid gap-6 lg:items-start',
+          withFilters
+            ? 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)]'
+            : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
+        )}
+      >
+        <ProSidebar
+          user={user}
+          profile={profile}
+          displayName={displayName}
+          items={NAV_ITEMS}
+          active={active}
+          onChange={goTo}
+        />
 
-        <main className="space-y-6">
+        <SectionSwap sectionKey={active} className="min-w-0 space-y-6">
           {active === 'overview' && (
-            <div className="space-y-5">
+            <>
               <div className="grid gap-5 sm:grid-cols-2">
                 <PublicationStatus status={profile?.status} missing={profile?.missing || []} />
                 <AvailabilityToggle
@@ -218,70 +130,36 @@ export function ProProfilePage() {
                   loading={savingAvailability}
                 />
               </div>
-              <Card className="overflow-hidden">
-                <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/70 px-5 py-4">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-sm bg-primary-50 text-primary-500">
-                    <Activity size={18} aria-hidden />
-                  </span>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900">Vue d'ensemble de votre activité</p>
-                    <p className="text-xs text-gray-500">Les chiffres clés de votre espace pro</p>
-                  </div>
-                </div>
-                <dl className="grid grid-cols-2 gap-4 p-5 sm:grid-cols-4">
-                  <div className="rounded-sm border border-gray-200 bg-gray-50/60 p-4">
-                    <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                      <ImageIcon size={14} className="text-primary-500" aria-hidden /> Photos
-                    </dt>
-                    <dd className="mt-2 text-2xl font-extrabold text-gray-900">
-                      {profile?.photos?.length ?? 0}
-                      <span className="ml-1 text-sm font-semibold text-gray-400">/ 10</span>
-                    </dd>
-                  </div>
-                  <div className="rounded-sm border border-gray-200 bg-gray-50/60 p-4">
-                    <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                      <MapPin size={14} className="text-primary-500" aria-hidden /> Zones
-                    </dt>
-                    <dd className="mt-2 text-2xl font-extrabold text-gray-900">
-                      {profile?.zones?.length ?? 0}
-                    </dd>
-                  </div>
-                  <div className="rounded-sm border border-gray-200 bg-gray-50/60 p-4">
-                    <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                      <Clock size={14} className="text-primary-500" aria-hidden /> Disponibilité
-                    </dt>
-                    <dd className={`mt-2 text-lg font-bold ${profile?.isAvailable ? 'text-emerald-600' : 'text-gray-400'}`}>
-                      {profile?.isAvailable ? 'Disponible' : 'Indisponible'}
-                    </dd>
-                  </div>
-                  <div className="rounded-sm border border-gray-200 bg-gray-50/60 p-4">
-                    <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                      <BadgeCheck size={14} className="text-primary-500" aria-hidden /> Statut
-                    </dt>
-                    <dd className="mt-2 text-lg font-bold text-gray-900">
-                      {PROFILE_STATUS_LABELS[profile?.status] || '-'}
-                    </dd>
-                  </div>
-                </dl>
-              </Card>
-            </div>
+              <OverviewSection profile={profile} onNavigate={goTo} />
+            </>
           )}
 
-          {active === 'profil' && (
-            <ProfileEditor profile={profile} user={user} onUpdated={(p) => setProfile(p)} />
-          )}
+          {active === 'profil' && <ProfileEditor profile={profile} user={user} onUpdated={setProfile} />}
 
           {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} />}
 
-          {active === 'contacts' && <ContactsSection />}
+          {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
 
-          {active === 'avis' && <ProReviewsSection professionalId={profile?.id} />}
-        </main>
+          {active === 'avis' && (
+            <ProReviewsSection professionalId={profile?.id} rightContainer={rightEl} />
+          )}
+
+          {active === 'signalements' && (
+            <MyReportsSection rightContainer={rightEl} />
+          )}
+        </SectionSwap>
+
+        <aside
+          ref={setRightEl}
+          aria-label="Filtres"
+          className={cn('lg:sticky lg:top-(--header-height)', withFilters ? 'hidden lg:block' : 'hidden')}
+        />
       </div>
+
       <BottomNav
         items={NAV_ITEMS}
         active={active}
-        onChange={setActive}
+        onChange={goTo}
         ariaLabel="Navigation de l'espace pro (mobile)"
       />
     </div>

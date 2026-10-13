@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-@layer font {
-  .moirai-one-regular {
-    font-family: "Moirai One", system-ui;
-    font-weight: 400;
-    font-style: normal;
-  }
+/* Les polices sont déclarées dans index.html, pas ici.
+   Un `@import url()` en tête de CSS est bloquant : le navigateur découvre la
+   feuille de style seulement après avoir téléchargé celle de Google Fonts,
+   puis découvre les polices en second. Les balises <link> du <head> permettent
+   au navigateur de paralléliser et, avec `display=swap`, d'afficher le texte
+   tout de suite. */
 
+@layer font {
   .moo-lah-lah-regular {
     font-family: "Moo Lah Lah", sans-serif;
     font-weight: 400;
@@ -30,27 +30,20 @@
   --color-primary-600: #244a3b;
   --color-primary-700: #1b382d;
   --color-primary-800: #142a21;
-  --color-primary-900: #0d1d17;
 
   --color-mint-50: #f1f7f3;
   --color-mint-100: #e3efe6;
   --color-mint-200: #c7dfcd;
-  --color-mint-300: #aacfb4;
 
   --color-accent-500: #2d5c4a;
-  --color-accent-600: #244a3b;
 
   --color-available-50: #eaf3ec;
   --color-available-500: #306c4a;
   --color-unavailable-50: #fff6d6;
   --color-unavailable-500: #b98a1a;
 
-  --color-success-500: #10b981;
   --color-danger-500: #b42318;
   --color-danger-50: #fef3f2;
-  --color-warning-500: #b98a1a;
-  --color-warning-50: #fff8e6;
-  --color-muted-500: #667085;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -60,8 +53,6 @@
 
   --header-height: 72px;
 
-  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.04);
-  --shadow-soft: 0 8px 32px -18px rgb(45 92 74 / 0.25);
   --shadow-pop: 0 14px 40px -18px rgb(45 92 74 / 0.35);
 }
 
@@ -78,21 +69,52 @@ body,
 *{
   corner-shape: superellipse(1.3);
 }
-body {
-  font-family: var(--font-sans);
-  background-color: #ffffff;
-  color: #101828;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'cv11', 'ss01';
-}
+/* Styles de base : placés dans @layer base pour que les utilitaires Tailwind
+   (ex. text-white sur un titre) puissent les surcharger. Hors layer, ils
+   l'emportent sur tous les utilitaires. */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #ffffff;
+    color: #101828;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01';
+  }
 
-h1,
-h2,
-h3,
-h4 {
-  color: #0f172a;
-  letter-spacing: -0.01em;
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+
+  /* iOS affiche un rectangle gris sur tout élément pressable, par-dessus le
+     fond du bouton. Il ne se déclenche qu'au tap, pas au clic de souris :
+     inoffensif sur desktop, cassé sur mobile. Le bouton se signale
+     lui-même — son enfoncement `active:scale` suffit. */
+  a[href],
+  button,
+  [role='button'],
+  summary,
+  label {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Tout ce qui se clique doit le signaler. Tailwind ne pose pas de curseur
+     par défaut sur les boutons ni les liens : sans cette règle, la quasi-totalité
+     de l'interface affiche la flèche et paraît inerte.
+     Placée dans @layer base, les utilitaires gardent la priorité - un bouton
+     désactivé conserve ainsi son `cursor-not-allowed`. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  a[href],
+  select:not(:disabled),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
 }
 
 p {
@@ -109,11 +131,6 @@ p {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes slideX {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
 }
 
 @keyframes fadeIn {
@@ -138,37 +155,12 @@ p {
   }
 }
 
-@keyframes floatSlow {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
 .animate-fade-in {
   animation: fadeIn .22s ease-out both;
 }
 
 .animate-scale-in {
   animation: scaleIn .18s ease-out both;
-}
-
-.animate-float {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-.animate-slide-in-right {
-  animation: slideInRight 0.22s ease-out both;
 }
 
 .container-kop {
@@ -217,8 +209,9 @@ p {
 }
 
 .focus-ring:focus-visible {
-  & .error{
-    --color-primary-500: #b42318 !important;
+  /* Anneau rouge sur un champ invalide (Input/Textarea ajoutent `is-invalid`). */
+  &.is-invalid {
+    --color-primary-500: #b42318;
   }
   outline: none;
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary-500) 22%, transparent);
@@ -253,8 +246,4 @@ p {
 
 .bg-kop-rose {
   background: #fce8e6;
-}
-
-.bg-kop-ink {
-  background: #102a20;
 }

@@ -1,15 +1,77 @@
-import { Phone, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { MessageCircle, Phone, Users } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
 import { getMyContacts } from '../services/contacts.service.js';
+import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
+import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
+import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
+import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
-import { formatPhoneFR } from '@/shared/utils';
+import { useNotification } from '@/shared/context/NotificationContext.jsx';
+import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
+import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
+import { REPORT_REASON_OPTIONS } from '@/shared/constants/reports.js';
+import { reportContact } from '@/features/reports/services/reports.service.js';
+import { ReportDialog, ReportTrigger } from '@/features/reports/components/ReportDialog.jsx';
+import { logContact } from '../services/contacts.service.js';
+import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
+import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
 
-function ContactRow({ contact }) {
+// Plafond de la liste chargée. Les filtres contacts sont tous côté client, il
+// faut donc la totalité pour qu'une recherche ne porte que sur la page affichée.
+const FETCH_LIMIT = 100;
+
+const PAGE_SIZE = 10;
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Du plus récent' },
+  { value: 'name', label: 'Nom (A → Z)' },
+];
+
+// « Qui a pris l'initiative » est la seule distinction qui change la lecture
+// d'un contact : un professionnel qui m'a écrit et moi qui l'ai Joint ne se
+// relisent pas de la même façon.
+const ORIGIN_OPTIONS = [
+  { value: 'all', label: 'Tous les contacts' },
+  { value: 'outgoing', label: 'Contactés par moi' },
+  { value: 'incoming', label: 'Qui m’ont contacté' },
+];
+
+// Le canal dit *comment* on a été joint. Il répond à une question que
+// l'origine ne couvre pas : « qui ai-je déjà réussi à appeler ? » n'a rien à
+// voir avec « qui m'a écrit en premier ? ».
+//
+// Ni « Messages » ni « Aucun » ne sont proposés. Un contact issu d'une demande
+// de message est une ligne sans échange — ni appel, ni WhatsApp — et la
+// filtrer n'isolerait que des conversations vides. Elle reste consultable,
+// elle ne mérite pas une option.
+const CHANNEL_OPTIONS = [
+  { value: 'all', label: 'Tous les canaux' },
+  { value: 'call', label: 'Appels' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+];
+
+function ContactRow({ contact, onReach, onReport, reported }) {
   const name = contact.displayName || 'Utilisateur';
+  const { toast } = useNotification();
+
+  const reach = (channel, href, newTab) => {
+    if (newTab) window.open(href, '_blank', 'noopener,noreferrer');
+    else window.location.href = href;
+
+    logContact(contact.userId, channel)
+      .then(() => onReach())
+      .catch((err) =>
+        toast({ message: err?.message || 'Contact non enregistré.', type: 'error' }),
+      );
+  };
+
+  const tel = contact.phone ? `tel:${String(contact.phone).replace(/\D/g, '')}` : null;
+  const wa = toWhatsappUrl(contact.phone);
+
   return (
     <li>
       <Card className="p-4">
@@ -32,60 +94,247 @@ function ContactRow({ contact }) {
             <Badge variant={contact.outgoing ? 'info' : 'primary'} size="sm">
               {contact.outgoing ? 'Contacté' : 'Vous a contacté'}
             </Badge>
-            {!contact.outgoing && contact.status === 'new' && (
-              <Badge variant="warning" size="sm">Nouveau</Badge>
+            {/* « Nouveau » signalait un message entrant jamais ouvert. C'est un
+                état de lecture, pas un statut de la relation : ce qui compte
+                sur la carte, c'est l'état du signalement. */}
+            {reported && (
+              <Badge variant="danger" size="sm">
+                Signalé
+              </Badge>
+            )}
+
+            {/* Signalement possible pour tout correspondant, client comme
+                professionnel : le serveur refuse toute cible sans conversation
+                réelle, et un signalement de professionnel ne compte pas au
+                seuil de blocage automatique — il est traité par un
+                administrateur, jamais suspendu par un compteur.
+
+                À côté de « Contacté », pas avec « Appeler ». Le signalement est
+                un geste de recours sur la relation, il appartient au même
+                registre que le badge qui la décrit. Sur la ligne des canaux, il
+                se lisait comme un troisième moyen de joindre — exactement ce que
+                la ternaire du pied cherche à éviter. */}
+            {!reported && (
+              <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />
             )}
           </div>
         </div>
 
-        {contact.message && (
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-gray-600">{contact.message}</p>
-        )}
+        
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+          <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
+            <span aria-hidden>·</span>
+            {formatDateFr(contact.createdAt)}
+          </span>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
-          <p className="text-xs text-gray-400">
-            {new Date(contact.createdAt).toLocaleDateString('fr-FR')}
-          </p>
-          {contact.phone && (
-            <a
-              href={`tel:${contact.phone}`}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-primary-700 hover:underline"
-            >
-              <Phone size={14} aria-hidden /> {formatPhoneFR(contact.phone)}
-            </a>
-          )}
+          {/* Un seul bouton, jamais les deux : la carte propose de reprendre contact
+              par le dernier canal utilisé. Après un appel, c'est Appeler ;
+              sinon c'est WhatsApp, le canal principal du site. Proposer les
+              deux à la fois transforme une fiche en liste de choix. */}
+          {contact.phone &&
+            (contact.channel === 'call' ? (
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={() => reach('call', tel, false)}
+              >
+                <Phone size={14} aria-hidden /> Appeler
+              </Button>
+            ) : (
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={() => reach('whatsapp', wa, true)}
+              >
+                <MessageCircle size={14} aria-hidden /> WhatsApp
+              </Button>
+            ))}
         </div>
       </Card>
     </li>
   );
 }
 
-export function ContactsSection() {
-  const { data: itemsData, loading } = useAsyncData(async () => {
-    const data = await getMyContacts();
+export function ContactsSection({ rightContainer = null }) {
+  const [reload, setReload] = useState(0);
+  const [reporting, setReporting] = useState(null);
+  const [reportedIds, setReportedIds] = useState([]);
+  const { data: itemsData, loading, error } = useAsyncData(async () => {
+    const data = await getMyContacts({ pageSize: FETCH_LIMIT });
     return data.items || [];
-  }, []);
-  const items = itemsData ?? [];
+  }, [reload]);
+
+  const items = useMemo(() => itemsData ?? [], [itemsData]);
+
+  const refresh = () => setReload((n) => n + 1);
+
+  const [q, setQ] = useState('');
+  const [sort, setSort] = useState('recent');
+  const [origin, setOrigin] = useState('all');
+  const [channel, setChannel] = useState('all');
+  const [page, setPage] = useState(1);
+
+  const dirty = Boolean(q || sort !== 'recent' || origin !== 'all' || channel !== 'all');
+
+  // Changer un filtre ramène en première page : rester sur la page 3 d'un
+  // résultat filtré affiche un vide alors que des contacts existent.
+  const changeFilter = (setter) => (value) => {
+    setter(value);
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    setQ('');
+    setSort('recent');
+    setOrigin('all');
+    setChannel('all');
+    setPage(1);
+  };
+
+  const visible = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    let matched = needle
+      ? items.filter(
+          (c) =>
+            (c.displayName || '').toLowerCase().includes(needle) ||
+            (c.tradeName || '').toLowerCase().includes(needle) ||
+            (c.phone || '').toLowerCase().includes(needle),
+        )
+      : items;
+
+    if (origin === 'outgoing') matched = matched.filter((c) => c.outgoing);
+    if (origin === 'incoming') matched = matched.filter((c) => !c.outgoing);
+    if (channel !== 'all') matched = matched.filter((c) => c.channel === channel);
+
+    return [...matched].sort((a, b) =>
+      sort === 'name'
+        ? (a.displayName || '').localeCompare(b.displayName || '', 'fr')
+        : new Date(b.createdAt) - new Date(a.createdAt),
+    );
+  }, [items, q, sort, origin, channel]);
+
+  // Pagination sur la liste filtrée, pas sur la page serveur. Les filtres
+  // vivent tous dans le navigateur : paginer côté serveur afficherait un
+  // « aucun contact » sur la page 3 alors que la page 1 en contenait trois qui
+  // correspondaient. Filtres et pagination portent donc sur le même ensemble.
+  const paged = useMemo(
+    () => visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [visible, page],
+  );
+
+  const filters = (searchId) => (
+    <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
+      <div className="divide-y divide-gray-100">
+        <AdminFilterGroup title="Recherche">
+          <SearchInput
+            id={searchId}
+            value={q}
+            onChange={(e) => changeFilter(setQ)(e.target.value)}
+            onClear={() => changeFilter(setQ)('')}
+            placeholder="Nom, métier ou téléphone..."
+            aria-label="Rechercher dans mes contacts"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Origine">
+          <CustomSelect
+            value={origin}
+            onChange={changeFilter(setOrigin)}
+            options={ORIGIN_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par origine du contact"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Canal">
+          <CustomSelect
+            value={channel}
+            onChange={changeFilter(setChannel)}
+            options={CHANNEL_OPTIONS}
+            className="w-full"
+            aria-label="Filtrer par canal de contact"
+          />
+        </AdminFilterGroup>
+
+        <AdminFilterGroup title="Trier par">
+          <CustomSelect
+            value={sort}
+            onChange={changeFilter(setSort)}
+            options={SORT_OPTIONS}
+            className="w-full"
+            aria-label="Trier les contacts"
+          />
+        </AdminFilterGroup>
+      </div>
+    </AdminFilterPanel>
+  );
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes contacts</h2>
-      {loading ? (
-        <div className="space-y-3">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          icon={Users}
-          title="Aucun contact pour le moment"
-          description="Les clients et les professionnels que vous contactez apparaîtront ici."
-        />
-      ) : (
-        <ul className="space-y-3">
-          {items.map((c) => <ContactRow key={c.id} contact={c} />)}
-        </ul>
-      )}
+    <div className="space-y-5">
+      <div>
+        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes contacts</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Les professionnels et clients que vous avez appelés ou écrits.
+        </p>
+      </div>
+
+      <AccountSectionLayout
+        ariaLabel="de mes contacts"
+        rightContainer={rightContainer}
+        searchId="my-contacts-search"
+        filters={filters}
+      >
+        <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos contacts">
+          {visible.length === 0 ? (
+            <EmptyState
+              icon={Users}
+              title={items.length === 0 ? 'Aucun contact pour le moment' : 'Aucun résultat'}
+              description={
+                items.length === 0
+                  ? 'Les clients et les professionnels que vous contactez apparaîtront ici.'
+                  : 'Aucun contact ne correspond à cette recherche.'
+              }
+            />
+          ) : (
+            <>
+              <ul className="space-y-3">
+                {paged.map((c) => (
+                  <ContactRow
+                    key={c.id}
+                    contact={c}
+                    onReach={refresh}
+                    onReport={setReporting}
+                    reported={reportedIds.includes(c.userId)}
+                  />
+                ))}
+              </ul>
+
+              <Pagination
+                page={page}
+                pageSize={PAGE_SIZE}
+                total={visible.length}
+                onPageChange={setPage}
+                variant="summary"
+                className={PAGINATION_BAR}
+              />
+            </>
+          )}
+        </DataState>
+      </AccountSectionLayout>
+
+      <ReportDialog
+        open={reporting != null}
+        onClose={() => setReporting(null)}
+        title="Signaler ce contact"
+        description={`Votre signalement concerne ${reporting?.displayName || 'ce contact'} et sera transmis à l’administration.`}
+        reasonOptions={REPORT_REASON_OPTIONS}
+        notice="Le signalement est possible uniquement pour un contact avec qui vous avez déjà échangé."
+        submit={async (payload) => {
+          const id = reporting?.userId;
+          await reportContact(id, payload);
+          setReportedIds((prev) => [...prev, id]);
+        }}
+      />
     </div>
   );
 }

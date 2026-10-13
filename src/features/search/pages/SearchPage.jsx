@@ -1,27 +1,33 @@
 import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { Select } from '@/shared/components/ui/Select.jsx';
+import { useSearchParams } from 'react-router-dom';
+import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { SearchFilters } from '../components/SearchFilters.jsx';
+import { SearchRefineFilters } from '../components/SearchRefineFilters.jsx';
 import { Sheet } from '@/shared/components/ui/Sheet.jsx';
-import { Search } from 'lucide-react';
 import { SearchResults } from '../components/SearchResults.jsx';
+import { SearchActionBar } from '../components/SearchActionBar.jsx';
 import { useSearch } from '../hooks/useSearch.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
-import { ROUTES } from '@/shared/lib/constants.js';
-
-const SORTS = [
-  { value: 'recommended', label: 'Tri recommandé' },
-  { value: 'rating', label: 'Mieux notés' },
-  { value: 'experience', label: "Plus d'expérience" },
-];
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 
 export function SearchPage() {
+  usePageTitle('Rechercher un professionnel');
   const [params, setParams] = useSearchParams();
-  const { trade, zone, page, q } = Object.fromEntries(params.entries());
+  const { trade, zone, city, page, q, available, minRating, minExperience } = Object.fromEntries(params.entries());
   const [sort, setSort] = useState(params.get('sort') || 'recommended');
-  const { results, loading, error } = useSearch({ trade, zone, q, page, sort });
+  const { results, loading, error, refresh } = useSearch({
+    trade,
+    zone,
+    city,
+    q,
+    available,
+    minRating,
+    minExperience,
+    page,
+    sort,
+  });
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const onChangeSort = (val) => {
     setSort(val);
@@ -31,39 +37,76 @@ export function SearchPage() {
     setParams(next);
   };
 
+  const refineDirty = Boolean(available || minRating || minExperience);
+
+  const onRefineChange = (patch) => {
+    const next = new URLSearchParams(params);
+    for (const [key, value] of Object.entries(patch)) {
+      const empty = value === '' || value == null;
+      if (empty) next.delete(key);
+      else next.set(key, String(value));
+    }
+    next.set('page', '1');
+    setParams(next);
+  };
+
+  const resetRefine = () => {
+    const next = new URLSearchParams(params);
+    next.delete('available');
+    next.delete('minRating');
+    next.delete('minExperience');
+    next.set('page', '1');
+    setParams(next);
+  };
+
+  // Propriétés communes aux deux rendus : le panneau est affiché deux fois,
+  // en colonne fixe sur desktop et dans le Sheet sur mobile. Seul le second
+  // reçoit la fermeture, l'autre n'a rien à fermer.
+  const refineProps = {
+    available: available ?? '',
+    minRating: minRating ?? '',
+    minExperience: minExperience ?? '',
+    sort,
+    onChange: onRefineChange,
+    onSortChange: onChangeSort,
+    onReset: resetRefine,
+    dirty: refineDirty,
+  };
+
   return (
     <div>
-      <div className="container-kop page-padding">
-        <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:items-start">
-          <aside className="hidden lg:block lg:sticky lg:top-23 space-y-4">
-            <SearchFilters variant="sidebar" initial={{ trade, zone, keyword: q }} />
+      {/* pb-20 : la barre fixe mesure 64px (48px de bouton + 8px de marge
+          interne), plus l'espace sûr de l'iPhone. pb-24 laissait 32px
+          d'inutile sous la pagination sur mobile ; 80px suffisent à ce que
+          la dernière page reste atteignable sans coller à la barre.
+          lg:pb-8 la désactive sur desktop, où la barre est masquée. */}
+      <div className="container-kop page-padding pb-20 lg:pb-8">
+        <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
+          <aside className="hidden lg:block lg:sticky lg:top-(--header-height) space-y-4">
+            <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
           </aside>
 
           <section className="min-w-0 space-y-5">
+            {/* Titre conservé mais invisible : la page a besoin d'un `h1` pour
+                les lecteurs d'écran et le référencement, sans ajouter de
+                bandeau qui répète ce que dit déjà la barre de recherche. */}
+            <h1 className="sr-only">
+              {trade || zone || city ? 'Professionnels' : 'Trouver un professionnel'}
+            </h1>
+
+            {/* Compteur seul : l'accès aux filtres est porté par la barre fixe
+                du bas, sur toute la hauteur de la page. Un bouton ici le
+                doublait et disparaissait dès le premier défilement. */}
             {results?.total > 0 && (
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div >
-                  <p className="text-md font-semibold uppercase tracking-[0.12em] ">
-                    {results?.total ?? 0} Résultats
-                  </p>
-                  <p className='text-xs'>Disponibles d'abord, puis note et date de mise à jour décroissantes.</p>
-
-                </div>
-                <div className="w-full sm:w-auto">
-                  <Select
-                    value={sort}
-                    onChange={(e) => onChangeSort(e.target.value)}
-                    className="h-10.5! rounded-[10px]! border-[#dde4e1] bg-white text-[14px]"
-                  >
-                    {SORTS.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </Select>
-                </div>
+              <div>
+                <p className="text-md font-semibold uppercase tracking-[0.12em]">
+                  {results?.total ?? 0} Résultats
+                </p>
+                <p className="text-xs">
+                  Disponibles d'abord, puis note et date de mise à jour décroissantes.
+                </p>
               </div>
-            )
-
-            }
+            )}
 
             {loading && (
               <div className="space-y-4" aria-busy="true">
@@ -80,34 +123,53 @@ export function SearchPage() {
               </div>
             )}
             {error && !loading && (
-              <div role="alert" className="rounded-3xl border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700">
-                {error.message || 'Erreur de chargement des résultats.'}
-                <div className="mt-3">
-                  <Button variant="outline" as={Link} to={ROUTES.SEARCH}>Réessayer</Button>
-                </div>
-              </div>
+              <DataState
+                error={error}
+                errorPrefix="Erreur de chargement des résultats"
+                onRetry={refresh}
+              />
             )}
             {!loading && !error && (
               <SearchResults data={results} listMode />
             )}
           </section>
+
+          <aside className="hidden lg:block lg:sticky lg:top-(--header-height) space-y-4">
+            <SearchRefineFilters {...refineProps} />
+          </aside>
         </div>
 
-        <Button
-          type="button"
-          aria-label="Rechercher"
-          onClick={() => setFiltersOpen(true)}
-          className="fixed! bottom-4 left-1/2 z-40 -translate-x-1/2 h-14 w-[90%] lg:hidden"
-        >
-          <Search size={18} aria-hidden /> Rechercher
-        </Button>
+        {/* Sur mobile, les deux surfaces de la page sont atteintes par la barre
+            fixe du bas : le champ de recherche (colonne de gauche sur desktop)
+            et l'icône de filtres (colonne de droite). Le bouton flottant
+            « Rechercher » qui les ouvrait toutes les deux est retiré. */}
+        <SearchActionBar
+          onSearchClick={() => setSearchOpen(true)}
+          onFiltersClick={() => setFiltersOpen(true)}
+          keyword={q ?? ''}
+          filtersActive={refineDirty}
+          total={results?.total ?? 0}
+        />
+
+        {/* Les deux feuilles se referment sur validation : les résultats sont à
+            jour derrière, le panneau n'a plus rien à apporter et il masque
+            la liste qu'on vient de mettre à jour. */}
+        <Sheet open={searchOpen} onOpenChange={setSearchOpen} side="bottom">
+          <div className="space-y-4 overflow-y-auto">
+            <h2 className="text-lg font-bold text-gray-900">Recherche</h2>
+            <SearchFilters
+              variant="sheet"
+              initial={{ trade, zone, city, keyword: q }}
+              searching={loading}
+              onApply={() => setSearchOpen(false)}
+            />
+          </div>
+        </Sheet>
 
         <Sheet open={filtersOpen} onOpenChange={setFiltersOpen} side="bottom">
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-gray-900">Filtres de recherche</h2>
-            <div onSubmit={() => setFiltersOpen(false)}>
-              <SearchFilters variant="home-k" initial={{ trade, zone, keyword: q }} />
-            </div>
+          <div className="space-y-4 overflow-y-auto">
+            <h2 className="text-lg font-bold text-gray-900">Filtres</h2>
+            <SearchRefineFilters {...refineProps} onApply={() => setFiltersOpen(false)} />
           </div>
         </Sheet>
       </div>

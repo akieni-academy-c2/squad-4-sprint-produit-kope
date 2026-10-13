@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from './Button.jsx';
 import { Input } from './Input.jsx';
 import { Edit, Trash2 } from 'lucide-react';
@@ -46,6 +46,24 @@ export function FileUpload({
     onChange?.(file);
   };
 
+  // `URL.createObjectURL` dans le rendu alloue une URL à chaque passe : le
+  // `src` change donc à chaque rendu, l'image est rechargée à chaque fois et
+  // les anciennes URL ne sont jamais libérées. Mémoïsée sur le fichier, une
+  // seule URL existe, et le `revoke` la rend quand le fichier change ou que le
+  // composant se démonte - sans lui le blob resterait en mémoire jusqu'au
+  // rechargement de la page.
+  const previewUrl = useMemo(
+    () => (typeof value === 'string' ? value : value ? URL.createObjectURL(value) : null),
+    [value],
+  );
+
+  useEffect(
+    () => () => {
+      if (previewUrl && typeof value !== 'string') URL.revokeObjectURL(previewUrl);
+    },
+    [previewUrl, value],
+  );
+
   return (
     <div className="space-y-2">
       <input
@@ -61,8 +79,9 @@ export function FileUpload({
         <div className="rounded-sm border border-gray-200 bg-white p-1 ">
           <div className="flex items-center gap-3 relative">
             <img
-              src={typeof value === 'string' ? value : URL.createObjectURL(value)}
+              src={previewUrl ?? undefined}
               alt=""
+              decoding="async"
               className="h-20 w-20 shrink-0 rounded-sm object-cover ring-1 ring-gray-200"
             />
             <div className="min-w-0 flex-1 ">
@@ -73,7 +92,14 @@ export function FileUpload({
                 <p className="text-xs text-gray-500">{formatSize(value.size)}</p>
               )}
               <div className="mt-1 flex flex-col items-center  w-fit absolute top-0 right-0">
-                <Button size="sm" variant="ghost" onClick={pick} disabled={disabled}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={pick}
+                  disabled={disabled}
+                  aria-label="Changer le fichier"
+                  title="Changer le fichier"
+                >
                   <Edit size={16} aria-hidden className="inline" />
                 </Button>
                 <Button
@@ -84,6 +110,8 @@ export function FileUpload({
                     setFileError('');
                   }}
                   disabled={disabled}
+                  aria-label="Retirer le fichier"
+                  title="Retirer le fichier"
                 >
                   <Trash2 size={16} aria-hidden className="inline" />
                 </Button>

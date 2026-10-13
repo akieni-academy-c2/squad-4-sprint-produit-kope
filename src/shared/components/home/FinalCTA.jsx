@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Search } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -35,7 +35,7 @@ export function FinalCTA() {
             Commencez par trouver le bon professionnel.
           </p>
         </div>
-        <Button as={Link} to={ROUTES.SEARCH} size="lg">
+        <Button as={Link} href={ROUTES.SEARCH} size="lg">
           Trouver un professionnel <Search size={16} aria-hidden className="inline" />
         </Button>
       </div>

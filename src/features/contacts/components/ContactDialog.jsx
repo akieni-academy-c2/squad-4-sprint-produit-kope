@@ -12,6 +12,7 @@ import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { Textarea } from '@/shared/components/ui/Textarea.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { createContactSchema } from '@/shared/utils/validators.js';
+import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { createContact } from '../services/contacts.service.js';
 
 const MESSAGE_MAX = 500;
@@ -28,8 +29,13 @@ export function ContactDialog({ open, onOpenChange, toUserId, recipientName }) {
     onOpenChange?.(false);
   };
 
+  const { ready } = useFormReadiness(createContactSchema, { toUserId, message }, {
+    ignore: ['toUserId'],
+  });
+
   const submit = async (e) => {
     e.preventDefault();
+    if (!ready) return;
     const parsed = createContactSchema.safeParse({ toUserId, message });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? 'Message invalide');
@@ -87,7 +93,7 @@ export function ContactDialog({ open, onOpenChange, toUserId, recipientName }) {
             <Button type="button" variant="ghost" size="md" onClick={close}>
               Annuler
             </Button>
-            <Button type="submit" loading={sending} size="md">
+            <Button type="submit" loading={sending} disabled={!ready} size="md">
               Envoyer le message
             </Button>
           </DialogFooter>

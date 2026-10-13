@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { ROUTES, ROLES, PROFILE_STATUS } from '@/shared/lib/constants.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { cn } from '@/shared/utils';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { displayNameFor, roleLabel, dashboardHref } from '@/shared/utils/userMenuUtils.js';
 import { getMyProfile } from '@/features/professionals/services/professionals.service.js';
 
@@ -13,6 +13,7 @@ export function UserMenu({ onNavigate }) {
   const { user, loading, logout, hasRole } = useAuthContext();
   const { open: openModal } = useAuthModal();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
   const [proStatus, setProStatus] = useState(null);
   const isPro = Boolean(user) && hasRole(ROLES.PRO);
 
@@ -25,16 +26,35 @@ export function UserMenu({ onNavigate }) {
     return () => { cancelled = true; };
   }, [open, isPro, proStatus]);
 
-  const close = () => {
+  const close = useCallback(() => {
     setOpen(false);
     onNavigate?.();
-  };
+  }, [onNavigate]);
 
-  if (loading) 
+  // Même comportement que CustomSelect : le menu se ferme au clic sur
+  // n'importe quel élément extérieur, y compris ceux placés au-dessus
+  // de la superposition (modales, toast…).
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointerDown = (event) => {
+      if (!menuRef.current?.contains(event.target)) close();
+    };
+    const onKey = (event) => {
+      if (event.key === 'Escape') close();
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, close]);
+
+  if (loading)
     return <div className="h-9 w-24 rounded-lg bg-gray-100 animate-pulse" />;
-  
 
-  if (!user) 
+
+  if (!user)
     return (
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="ghost" size="sm" onClick={() => { onNavigate?.(); openModal('login'); }}>
@@ -45,7 +65,7 @@ export function UserMenu({ onNavigate }) {
         </Button>
       </div>
     );
-  
+
 
   return (
     <div className="relative">
@@ -72,6 +92,7 @@ export function UserMenu({ onNavigate }) {
         <>
           <div className="fixed inset-0 z-30" onClick={close} aria-hidden />
           <div
+            ref={menuRef}
             role="menu"
             className="absolute right-0 z-40 mt-2 w-64 origin-top-right overflow-hidden rounded-sm border border-gray-200 bg-white shadow-[var(--shadow-pop)] animate-scale-in"
           >
@@ -82,7 +103,7 @@ export function UserMenu({ onNavigate }) {
             <div className="flex flex-col p-1.5 gap-0.5">
               {(hasRole(ROLES.CLIENT) || hasRole(ROLES.PRO) || hasRole(ROLES.ADMIN)) && (
                 <Link
-                  to={dashboardHref(user.role)}
+                  href={dashboardHref(user.role)}
                   role="menuitem"
                   onClick={close}
                   className="rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -91,11 +112,14 @@ export function UserMenu({ onNavigate }) {
                 </Link>
               )}
               {isPro && proStatus === PROFILE_STATUS.PUBLISHED && (
+                // Prévisualisation, même règle que le bouton du tableau de bord :
+                // on veut comparer et revenir, pas perdre la page d'origine.
                 <Link
-                  to={ROUTES.PROFESSIONAL(user.id)}
+                  href={ROUTES.PROFESSIONAL(user.id)}
+                  target="_blank"
                   role="menuitem"
                   onClick={close}
-                  className="rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="block rounded px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Voir ma fiche publique
                 </Link>

@@ -14,7 +14,7 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
 
   if (readOnly || !onChange)
     return (
-      <div className="flex items-center gap-0.5" aria-label={`Note ${value} sur ${count}`}>
+      <div className="flex items-center gap-0.5 hover:scale-110 transition-all duration-300" aria-label={`Note ${value} sur ${count}`}>
         {items.map((n) => {
           const filled = n <= Math.round(value || 0);
           return (
@@ -30,7 +30,7 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
       name={groupName}
       value={value}
       onChange={onChange}
-      className="flex items-center gap-1"
+      className="flex flex-row items-center gap-1"
     >
       {items.map((n) => (
         <Radio
