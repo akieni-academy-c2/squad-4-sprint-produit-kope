@@ -33,7 +33,8 @@ Tout le reste est du CSS.**
 | onglet d'un tableau de bord | — | oui | non |
 | message éphémère | — | oui | non |
 | parallaxe du héros | non | — | non, `useScroll` |
-| bouton enfoncé | non | non | **oui** |
+| icône d'action (28 px) | non | non | **non**, `whileTap` |
+| bouton de texte (44 px) | non | non | **oui**, `:active` |
 | survol, couleur, opacité | non | non | **oui** |
 
 Un bouton ne peut pas être interrompu : au relâchement le doigt est déjà parti,
@@ -41,6 +42,11 @@ et personne ne voit la vitesse de retour. Le remplacer par une instance
 `motion` coûte un type à construire, une instance à abonner et une prop à
 propager à travers `as={Link}`, pour 30 ms que `:active` rend sur le
 compositeur, en JavaScript zéro.
+
+Une icône de 28 px est dans l'autre cas : elle est **sous le doigt**, donc le
+retour se voit, et il n'y en a jamais assez pour que la facture compte. Ce qui
+la distingue d'un bouton de texte n'est pas sa taille — c'est le **nombre
+d'occurrences**.
 
 Une feuille, si : on la rouvre à mi-parcours, elle doit repartir de sa vitesse.
 Une transition CSS ne connaît ni l'interruption, ni l'état suivant.

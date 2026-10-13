@@ -62,7 +62,24 @@ export function Dialog({ open, onOpenChange, children }) {
   );
 }
 
-export function DialogContent({ className, children, footer, onClose, ref: forwardedRef }) {
+/**
+ * `variants` est ici un paramètre à part entière, pas une propriété qu'on laisse
+ * passer.
+ *
+ * `Dialog` l'injecte sur le panneau par `cloneElement`. Si `DialogContent`
+ * destructurait ses props sans le nommer, la variante tomberait dans le vide :
+ * le composant la recevrait, ne la relèverait pas, et le dialogue n'aurait
+ * **que** le mouvement de son fond. Une signature qui énumère ses props vaut
+ * mieux ici qu'un `...rest` : c'est ce qui rend le oubli visible à la lecture.
+ */
+export function DialogContent({
+  className,
+  children,
+  footer,
+  onClose,
+  variants,
+  ref: forwardedRef,
+}) {
   const labelId = useId();
 
   // Le panneau est une colonne flex : le header est hors de la zone de
@@ -76,6 +93,9 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
   return (
     <motion.div
       ref={forwardedRef}
+      // La variante est réinjectée : c'est elle qui fait monter la boîte. Sans
+      // cette ligne, seul le fond est animé.
+      variants={variants}
       role="dialog"
       aria-modal="true"
       // L'id est celui que `DialogTitle` reprend via le contexte. Tous les

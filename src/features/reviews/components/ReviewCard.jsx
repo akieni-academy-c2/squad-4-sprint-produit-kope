@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, Flag, Pencil, Trash2 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { ActionGroup } from '@/shared/components/ui/ActionGroup.jsx';
+import { IconButton } from '@/shared/components/ui/IconButton.jsx';
 import { ConfirmDialog } from '@/shared/components/ui/ConfirmDialog.jsx';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
@@ -88,59 +89,47 @@ export function ReviewCard({
 
         <ActionGroup label={`Actions sur l'avis de ${name}`}>
           {onEdit && !isHidden && (
-            <button
-              type="button"
-              onClick={onEdit}
-              disabled={pending}
+            <IconButton
+              icon={Pencil}
+              label={`Modifier l'avis sur ${name}`}
               title="Modifier"
-              aria-label={`Modifier l'avis sur ${name}`}
-              className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
-            >
-              <Pencil size={16} aria-hidden />
-            </button>
+              disabled={pending}
+              onClick={onEdit}
+            />
           )}
 
           {onToggleHidden && (
-            <button
-              type="button"
+            <IconButton
+              icon={isHidden ? Eye : EyeOff}
+              label={isHidden ? `Réafficher l'avis sur ${name}` : `Masquer l'avis sur ${name}`}
+              title={isHidden ? 'Réafficher' : 'Masquer'}
               disabled={pending}
               onClick={() => setAsking(isHidden ? 'reveal' : 'hide')}
-              title={isHidden ? 'Réafficher' : 'Masquer'}
-              aria-label={
-                isHidden ? `Réafficher l'avis sur ${name}` : `Masquer l'avis sur ${name}`
-              }
-              className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
-            >
-              {isHidden ? <Eye size={16} aria-hidden /> : <EyeOff size={16} aria-hidden />}
-            </button>
+            />
           )}
 
           {onReport &&
             (reported ? (
               <span className="px-1.5 text-[11px] font-medium text-gray-400">Signalé</span>
             ) : (
-              <button
-                type="button"
-                onClick={onReport}
+              <IconButton
+                icon={Flag}
+                tone="report"
+                label={`Signaler l'avis laissé par ${name}`}
                 title="Signaler cet avis"
-                aria-label={`Signaler l'avis laissé par ${name}`}
-                className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-danger-500 focus-ring"
-              >
-                <Flag size={16} aria-hidden />
-              </button>
+                onClick={onReport}
+              />
             ))}
 
           {onDelete && (
-            <button
-              type="button"
+            <IconButton
+              icon={Trash2}
+              tone="danger"
+              label={`Supprimer l'avis sur ${name}`}
+              title="Supprimer"
               disabled={pending}
               onClick={() => setAsking('delete')}
-              title="Supprimer"
-              aria-label={`Supprimer l'avis sur ${name}`}
-              className="cursor-pointer rounded p-1.5 text-gray-500 transition hover:bg-white hover:text-danger-500 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
-            >
-              <Trash2 size={16} aria-hidden />
-            </button>
+            />
           )}
         </ActionGroup>
       </div>
