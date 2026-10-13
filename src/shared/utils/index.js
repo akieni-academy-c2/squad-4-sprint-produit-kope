@@ -20,17 +20,34 @@ export function toWhatsappUrl(phone) {
   return `https://wa.me/${digits}`;
 }
 
-export function formatDateFr(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return new Intl.DateTimeFormat('fr-FR', {
+/**
+ * Formateur partagé.
+ *
+ * `new Intl.DateTimeFormat(...)` n'est pas une opération anodine : la première
+ * construction force le chargement synchrone des données de locale ICU, et
+ * chaque construction suivante reparse les options et réalloue. Dans une liste
+ * de 100 lignes - ActivityTiles, CatalogItemCard, ReviewList, AdminStats - la
+ * fonction était appelée autant de fois qu'il y avait d'éléments, à chaque
+ * rendu. Le formateur est donc construit une fois et réutilisé.
+ */
+let dateFormatter = null;
+
+function frDateTime() {
+  dateFormatter ??= new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(date);
+  });
+  return dateFormatter;
+}
+
+export function formatDateFr(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return frDateTime().format(date);
 }
 
 export function fullNameInitials(firstName, lastName) {

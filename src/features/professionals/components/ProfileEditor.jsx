@@ -13,6 +13,7 @@ import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.servi
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 import { ProfileAvatarCard } from './profile/ProfileAvatarCard.jsx';
 import { ProfileDetails } from './profile/ProfileDetails.jsx';
 import { ProfileEditForm } from './profile/ProfileEditForm.jsx';
@@ -141,7 +142,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
         <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mon profil</h2>
         <div className="flex items-center gap-2">
           <div className="hidden sm:block">
-            <Button variant="outline" size="sm" onClick={() => openModal('change-password')}>
+            <Button variant="outline" size="sm" onClick={() => openModal(AUTH_MODAL_MODES.CHANGE_PASSWORD)}>
               Changer le mot de passe
             </Button>
           </div>
@@ -185,7 +186,7 @@ export function ProfileEditor({ profile, user, onUpdated }) {
       )}
 
       <div className="sm:hidden">
-        <Button variant="outline" size="md" className="w-full" onClick={() => openModal('change-password')}>
+        <Button variant="outline" size="md" className="w-full" onClick={() => openModal(AUTH_MODAL_MODES.CHANGE_PASSWORD)}>
           Changer le mot de passe
         </Button>
       </div>

@@ -45,7 +45,7 @@ export function RootLayout() {
           <Outlet />
         </div>
       </main>
-      <Footer className={hasBottomNav ? 'pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0' : undefined} />
+      <Footer className={hasBottomNav ? 'pb-safe-nav lg:pb-0' : undefined} />
       <AuthModal />
       <SuspensionNotice />
     </div>

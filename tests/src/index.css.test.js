@@ -68,3 +68,78 @@ describe('Curseur des éléments cliquables', () => {
     expect(baseLayer).not.toContain('textarea');
   });
 });
+/**
+ * Cascade Tailwind v4 : `@layer` decide, pas l'ordre du fichier.
+ *
+ * Une regle ecrite hors de toute couche appartient a la couche implicite
+ * externe, qui l'emporte sur **toutes** les utilitaires, quelle que soit leur
+ * specificite. Treize classes du projet etaient dans ce cas. Deux
+ * consequences reelles, sans le moindre avertissement du compilateur :
+ *
+ * - `p { line-height: 1.65 }` neutralisait tous les `leading-*` du projet. Les
+ *   `leading-7` des descriptions de profil et des CGU etaient du code mort.
+ * - `.focus-ring:focus-visible` posait un `box-shadow` non surchargeable, donc
+ *   aucun anneau de focus ne pouvait le remplacer sur ses 33 usages.
+ */
+
+/** Contenu d'un bloc `@layer <nom> { ... }`, accolades imbriquees comprises. */
+function layerContent(source, name) {
+  const start = source.indexOf(`@layer ${name}`);
+  if (start === -1) return '';
+
+  const open = source.indexOf('{', start);
+  let depth = 0;
+  // Deux 'if' plutot qu'un 'else if' : la regle curly du projet retire les
+  // accolades apres 'for', et un 'if' seul sous 'for' se lit comme une faute.
+  for (let index = open; index < source.length; index++) {
+    const char = source[index];
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) return source.slice(open + 1, index);
+  }
+  return '';
+}
+
+const utilitiesLayer = layerContent(css, 'utilities');
+
+describe('cascades Tailwind', () => {
+  it('declare le bloc @layer utilities', () => {
+    expect(utilitiesLayer.length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    ['.animate-fade-in'],
+    ['.animate-scale-in'],
+    ['.container-kop'],
+    ['.page-padding'],
+    ['.bg-checkers'],
+    ['.nav-link-active'],
+    ['.bg-dots'],
+    ['.focus-ring'],
+    ['.link-underline'],
+    ['.bg-kop-mint'],
+  ])('place %s dans @layer utilities', (selector) => {
+    expect(utilitiesLayer, selector).toContain(selector);
+  });
+
+  it('place le line-height des paragraphes dans @layer base', () => {
+    // Hors couche, cette regle ecrasait tous les `leading-*`. Dans `base`, elle
+    // ne sert plus que de valeur par defaut, ce qu'un `leading-7` peut
+    // remplacer.
+    expect(baseLayer).toMatch(/\bp\s*\{[^}]*line-height/);
+  });
+});
+
+describe('jetons de conception', () => {
+  it.each([
+    '--z-index-overlay',
+    '--z-index-popover',
+    '--z-index-toast',
+    '--color-tint-mint',
+    '--color-tint-cream',
+    '--color-tint-rose',
+    '--radius-sm',
+  ])('declare %s dans @theme', (token) => {
+    expect(css, token).toContain(token);
+  });
+});

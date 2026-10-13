@@ -6,6 +6,7 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { getStats } from '../services/admin.service.js';
 import { cn, formatDateFr } from '@/shared/utils';
+import { formatPhoneFR } from '@/shared/utils';
 
 const RECENT_COUNT = 4;
 
@@ -96,7 +97,7 @@ function RecentProfessionals({ items, onOpenAll }) {
                     <>
                       <span aria-hidden>·</span>
                       <Phone size={12} className="shrink-0" aria-hidden />
-                      <span className="truncate">{p.phone}</span>
+                      <span className="truncate">{formatPhoneFR(p.phone)}</span>
                     </>
                   )}
                 </p>

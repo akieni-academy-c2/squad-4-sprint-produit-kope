@@ -1,5 +1,6 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 
 export function ClientCTA() {
   const { open: openModal } = useAuthModal();
@@ -39,7 +40,7 @@ export function ClientCTA() {
             Inscrivez-vous gratuitement et gardez vos contacts et vos avis au même endroit.
           </p>
         </div>
-        <Button onClick={() => openModal('register-client')} size="lg">
+        <Button onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_CLIENT)} size="lg">
           Créer mon compte gratuit
         </Button>
       </div>

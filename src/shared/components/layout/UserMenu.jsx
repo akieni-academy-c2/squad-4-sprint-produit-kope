@@ -4,6 +4,8 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { cn } from '@/shared/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
+import { useDismissOnOutside } from '@/shared/hooks/useDismissOnOutside.js';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { Link } from '@/shared/components/ui/Link.jsx';
 import { displayNameFor, roleLabel, dashboardHref } from '@/shared/utils/userMenuUtils.js';
@@ -34,21 +36,7 @@ export function UserMenu({ onNavigate }) {
   // Même comportement que CustomSelect : le menu se ferme au clic sur
   // n'importe quel élément extérieur, y compris ceux placés au-dessus
   // de la superposition (modales, toast…).
-  useEffect(() => {
-    if (!open) return undefined;
-    const onPointerDown = (event) => {
-      if (!menuRef.current?.contains(event.target)) close();
-    };
-    const onKey = (event) => {
-      if (event.key === 'Escape') close();
-    };
-    document.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open, close]);
+  useDismissOnOutside(menuRef, close, { active: open });
 
   if (loading)
     return <div className="h-9 w-24 rounded-lg bg-gray-100 animate-pulse" />;
@@ -57,10 +45,10 @@ export function UserMenu({ onNavigate }) {
   if (!user)
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={() => { onNavigate?.(); openModal('login'); }}>
+        <Button variant="ghost" size="sm" onClick={() => { onNavigate?.(); openModal(AUTH_MODAL_MODES.LOGIN); }}>
           Connexion
         </Button>
-        <Button variant="primary" size="sm" onClick={() => { onNavigate?.(); openModal('register-client'); }}>
+        <Button variant="primary" size="sm" onClick={() => { onNavigate?.(); openModal(AUTH_MODAL_MODES.REGISTER_CLIENT); }}>
           S'inscrire
         </Button>
       </div>

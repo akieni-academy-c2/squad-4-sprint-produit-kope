@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_LABELS, AUTH_MODAL_DEFAULT_LABEL } from '@/shared/context/authModalModes.js';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { LoginForm } from '../pages/LoginPage.jsx';
 import { RegisterClientForm } from '../pages/RegisterClientPage.jsx';
@@ -13,12 +14,8 @@ import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { User } from 'lucide-react';
 
-const DIALOG_LABEL = {
-  login: 'Connexion',
-  register: 'Inscription',
-  pro: 'Devenir professionnel',
-  password: 'Changer le mot de passe',
-};
+const DIALOG_LABEL = AUTH_MODAL_LABELS;
+const DEFAULT_DIALOG_LABEL = AUTH_MODAL_DEFAULT_LABEL;
 
 /**
  * Le panneau de gauche accompagne le formulaire affiché : un visiteur qui
@@ -65,7 +62,7 @@ export function AuthModal() {
   return (
     <Dialog open={mode != null} onOpenChange={(o) => !o && close()}>
       <DialogContent className="max-w-4xl p-2  " onClose={close}>
-        <DialogTitle className="sr-only">{DIALOG_LABEL[mode] ?? 'Compte'}</DialogTitle>
+        <DialogTitle className="sr-only">{DIALOG_LABEL[mode] ?? DEFAULT_DIALOG_LABEL}</DialogTitle>
         <div className="grid lg:grid-cols-2 lg:items-start min-h-140">
           <aside className="relative hidden h-full lg:flex flex-col justify-between gap-3 overflow-hidden rounded-[16px] bg-radial from-[#28604B] to-[#183E30] p-2 text-white">
             <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 640 960" preserveAspectRatio="xMidYMid slice" fill="none">

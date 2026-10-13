@@ -67,19 +67,38 @@ export const becomeProfessionalSchema = z.object({
 /** US-03 */
 export const loginSchema = z.object({
   phone: z.string({ error: 'Champ obligatoire' }).trim().min(1, 'Champ obligatoire'),
-  password: z.string({ error: 'Champ obligatoire' }).min(1, 'Champ obligatoire'),
+  // 72 octets est la limite de bcrypt : au-dela, le mot de passe est tronque
+  // silencieusement et deux valeurs distinctes produiraient le meme hash.
+  // Sans plafond, un corps de 100 ko alloue un tableau JS par caractere.
+  password: z
+    .string({ error: 'Champ obligatoire' })
+    .min(1, 'Champ obligatoire')
+    .max(72, 'Mot de passe trop long'),
 });
 
+/**
+ * Modification du compte.
+ *
+ * `currentPassword` est exige des que le telephone ou l'e-mail change : le
+ * telephone est le seul identifiant de connexion du produit, en changer sans
+ * re-authentification offre un verrouillage definitif du titulaire legitime
+ * pour quiconque detient une session volee.
+ */
 export const updateAccountSchema = z.object({
   firstName: personNameSchema.optional(),
   lastName: personNameSchema.optional(),
   phone: phoneSchema.optional(),
-  // `emailSchema` est déjà `nullish` : absent laisse la colonne intacte,
-  // `null` ou chaîne vide la retirent.
+  // `emailSchema` est deja `nullish` : absent laisse la colonne intacte,
+  // `null` ou chaine vide la retirent.
   email: emailSchema,
+  currentPassword: z
+    .string({ error: 'Champ obligatoire' })
+    .min(1, 'Champ obligatoire')
+    .max(72, 'Mot de passe trop long')
+    .optional(),
 });
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string({ error: 'Champ obligatoire' }).min(1, 'Champ obligatoire'),
+  currentPassword: z.string({ error: 'Champ obligatoire' }).min(1, 'Champ obligatoire').max(72, 'Mot de passe trop long'),
   newPassword: passwordSchema,
 });

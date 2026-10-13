@@ -107,11 +107,19 @@ beforeEach(() => {
  */
 const asSession = (sid) => ({ Cookie: `sid=s:${sign(sid, env.SESSION_SECRET)}` });
 
+/**
+ * Un navigateur envoie toujours ces deux en-têtes sur une requête vers l'API,
+ * et `csrfGuard` refuse une requête mutante qui n'en porte aucun : c'est
+ * précisément le profil d'un script qui tente d'utiliser le cookie de session
+ * d'un visiteur. Les tests doivent donc se comporter comme un navigateur.
+ */
+const asBrowser = (extra = {}) => ({ 'Sec-Fetch-Site': 'same-origin', Origin: baseUrl, ...extra });
+
 const get = (path, headers = {}) => fetch(`${baseUrl}${path}`, { headers });
 const post = (path, body, headers = {}) =>
   fetch(`${baseUrl}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
+    headers: asBrowser({ 'Content-Type': 'application/json', ...headers }),
     body: JSON.stringify(body),
   });
 

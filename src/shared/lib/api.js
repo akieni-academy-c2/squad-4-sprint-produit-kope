@@ -50,14 +50,49 @@ async function parseResponse(res) {
   return payload;
 }
 
+/**
+ * Délai au-delà duquel une requête est abandonnée.
+ *
+ * Sans lui, une connexion qui reste ouverte laisse le chargement correspondant
+ * en suspens indéfiniment, et il n'existe aucun chemin d'annulation : changer de
+ * filtre ne.stoppe pas la requête précédente.
+ */
+const REQUEST_TIMEOUT_MS = 15_000;
+
 export async function fetchApi(url, options = {}) {
-  const { headers, ...rest } = options;
-  const res = await fetch(resolveUrl(url), {
-    credentials: 'include',
-    headers: { ...DEFAULT_HEADERS, ...headers },
-    ...rest,
-  });
-  return parseResponse(res);
+  const { headers, signal, timeoutMs = REQUEST_TIMEOUT_MS, ...rest } = options;
+
+  const controller = new AbortController();
+  // Un `signal` externe (démontage de composant, changement de filtre) annule
+  // la requête ; le minuteur couvre le cas où rien ne l'annule à notre place.
+  const onAbort = () => controller.abort(signal.reason);
+  if (signal) {
+    if (signal.aborted) throw new ApiError(0, 'Requête annulée');
+    signal.addEventListener('abort', onAbort, { once: true });
+  }
+  const timer = setTimeout(() => controller.abort(new DOMException('Délai dépassé', 'TimeoutError')), timeoutMs);
+
+  try {
+    const res = await fetch(resolveUrl(url), {
+      credentials: 'include',
+      headers: { ...DEFAULT_HEADERS, ...headers },
+      signal: controller.signal,
+      ...rest,
+    });
+    return await parseResponse(res);
+  } catch (err) {
+    // Une annulation n'est pas une panne réseau : la remonter telle quelle
+    // ferait afficher une erreur à l'utilisateur alors que c'est son action qui
+    // l'a provoquée.
+    if (controller.signal.aborted && !controller.signal.reason?.name?.includes('Timeout'))
+      throw new ApiError(0, 'Requête annulée');
+    if (controller.signal.reason?.name === 'TimeoutError')
+      throw new ApiError(408, 'Le serveur met trop de temps à répondre');
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onAbort);
+  }
 }
 
 export const api = {

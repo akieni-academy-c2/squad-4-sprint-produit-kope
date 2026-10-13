@@ -7,6 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Journaux de build et de serveur. Un `*.txt` de log a déjà été commité par
+# mégarde : le motif ci-dessous évite que ça se reproduise, et `public/robots.txt`
+# reste suivi car il est servi.
+vite*.txt
+*-log.txt
+*.log.txt
+
 node_modules
 dist
 dist-ssr

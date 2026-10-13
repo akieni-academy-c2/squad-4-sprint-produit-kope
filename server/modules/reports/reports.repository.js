@@ -79,7 +79,10 @@ export async function list({ limit, offset, status, q }, db = pool) {
                 'avatarUrl', u.avatar_url
               ) AS reporter
          FROM account_reports r
-         JOIN professionals p ON p.user_id = r.professional_id
+         -- La cible est un compte, pas forcément un professionnel : en JOIN
+         -- interne, tout signalement contre un client disparaît de la file de
+         -- modération et de son total (listByReporter fait déjà ce JOIN en LEFT).
+         LEFT JOIN professionals p ON p.user_id = r.professional_id
          JOIN users u ON u.id = r.reporter_id
          JOIN users pu ON pu.id = r.professional_id
          ${where}
@@ -133,7 +136,7 @@ export async function countGrouped({ status, q }, db = pool) {
   const { rows } = await db.query(
     `SELECT COUNT(DISTINCT r.professional_id)::int AS count
        FROM account_reports r
-       JOIN professionals p ON p.user_id = r.professional_id
+       LEFT JOIN professionals p ON p.user_id = r.professional_id
        JOIN users u ON u.id = r.reporter_id
        ${where}`,
     values,
@@ -183,17 +186,18 @@ export async function listByReporter(reporterId, { limit, offset, status, q, sor
     `SELECT r.id, r.professional_id AS "professionalId",
             r.target_role AS "targetRole",
             COALESCE(p.display_name, NULLIF(BTRIM(cu.first_name || ' ' || cu.last_name), ''), 'Util #' || cu.id) AS "professionalName",
-            pu.avatar_url AS "professionalAvatarUrl",
+            cu.avatar_url AS "professionalAvatarUrl",
             t.name AS "professionalTrade",
             r.reason, r.message, r.status,
             r.created_at AS "createdAt", r.resolved_at AS "resolvedAt",
             COUNT(*) OVER()::int AS total
        FROM account_reports r
-       -- La cible est un compte, pas forcément un professionnel : ces trois
-       -- jointures sont toutes à LEFT JOIN, sinon un signalement contre un
-       -- client disparaîtrait de « Mes signalements ».
+       -- La cible est un compte, pas forcément un professionnel : ces jointures
+       -- sont toutes à LEFT JOIN, sinon un signalement contre un client
+       -- disparaîtrait de « Mes signalements ». L'alias cu (la cible) sert
+       -- aussi d'avatar : un second alias sur la même ligne était une jointure
+       -- imbriquée inutile sur la clé primaire de users.
        LEFT JOIN professionals p ON p.user_id = r.professional_id
-       JOIN users pu ON pu.id = r.professional_id
        JOIN users cu ON cu.id = r.professional_id
        LEFT JOIN trades t ON t.id = p.trade_id
       WHERE ${conditions.join(' AND ')}

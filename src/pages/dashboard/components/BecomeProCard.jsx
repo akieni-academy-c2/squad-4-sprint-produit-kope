@@ -1,4 +1,5 @@
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 
@@ -15,7 +16,7 @@ export function BecomeProCard() {
         variant="primary"
         size="md"
         className="mt-4 w-full"
-        onClick={() => openModal('register-pro')}
+        onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_PRO)}
       >
         Devenir prestataire
       </Button>

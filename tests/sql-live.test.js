@@ -38,6 +38,9 @@ const enabled = Boolean(url);
 let pool;
 let reachable = false;
 
+/** Fenêtre du limiteur : 15 minutes, comme le défaut de `consumeRateLimitSlot`. */
+const RATE_WINDOW_MS = 15 * 60_000;
+
 /**
  * Test nécessitant la base. Si celle-ci est injoignable (réseau coupé, machine
  * éteinte), le test est ignoré et non mis en échec : une coupure réseau ne doit
@@ -190,26 +193,26 @@ describe.skipIf(!enabled)('SQL reel', () => {
     // limite n'est jamais atteinte. Le store PostgreSQL la rend commune.
     itDb('compte de façon partagée entre deux instances', async () => {
       const key = `test:rl:${Date.now()}`;
-      expect(await consumeRateLimitSlot(key, pool)).toBe(1);
-      expect(await consumeRateLimitSlot(key, pool)).toBe(2);
+      expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(1);
+      expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(2);
       // « Deuxième instance » : nouveau processus, même base.
-      expect(await consumeRateLimitSlot(key, pool)).toBe(3);
+      expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(3);
     });
 
     itDb('redémarre le compteur une fois la fenêtre dépassée', async () => {
       const key = `test:rl-exp:${Date.now()}`;
-      await consumeRateLimitSlot(key, pool);
-      await consumeRateLimitSlot(key, pool);
+      await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
+      await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
       await pool.query(
         "UPDATE rate_limits SET window_start = now() - interval '16 minutes' WHERE key = $1",
         [key],
       );
-      expect(await consumeRateLimitSlot(key, pool)).toBe(1);
+      expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(1);
     });
 
     itDb('purge les compteurs expirés', async () => {
       const key = `test:rl-purge:${Date.now()}`;
-      await consumeRateLimitSlot(key, pool);
+      await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
       await pool.query("UPDATE rate_limits SET window_start = now() - interval '2 hours' WHERE key = $1", [key]);
       expect(await purgeRateLimits(pool)).toBeGreaterThan(0);
       const { rows } = await pool.query('SELECT key FROM rate_limits WHERE key = $1', [key]);
@@ -219,9 +222,9 @@ describe.skipIf(!enabled)('SQL reel', () => {
     itDb('isole les clés entre elles', async () => {
       const a = `test:rl-a:${Date.now()}`;
       const b = `test:rl-b:${Date.now()}`;
-      await consumeRateLimitSlot(a, pool);
-      await consumeRateLimitSlot(a, pool);
-      expect(await consumeRateLimitSlot(b, pool)).toBe(1);
+      await consumeRateLimitSlot(a, RATE_WINDOW_MS, pool);
+      await consumeRateLimitSlot(a, RATE_WINDOW_MS, pool);
+      expect(await consumeRateLimitSlot(b, RATE_WINDOW_MS, pool)).toBe(1);
     });
   });
 

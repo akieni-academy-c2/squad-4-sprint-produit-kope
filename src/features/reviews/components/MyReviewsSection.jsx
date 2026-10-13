@@ -11,7 +11,7 @@ import { ReviewCard } from './ReviewCard.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteReview, getMyReviews, setReviewVisibility } from '../services/reviews.service.js';
-import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
 // Page assez courte pour que la liste reste lisible sans défilement interminable,
 // assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
@@ -218,7 +218,6 @@ export function MyReviewsSection({ rightContainer = null }) {
               total={total}
               onPageChange={setPage}
               variant="summary"
-              className={PAGINATION_BAR}
             />
             </>
           )}

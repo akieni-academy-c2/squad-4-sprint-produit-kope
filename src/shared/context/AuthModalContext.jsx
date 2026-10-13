@@ -5,7 +5,10 @@ const AuthModalContext = createContext(null);
 export function AuthModalProvider({ children }) {
   const [mode, setMode] = useState(null);
 
-  const open = useCallback((m) => setMode(m), []);
+  // `m ?? null` et non `setMode` nu : passé tel quel, `open` aurait accepté une
+  // fonction de mise à jour, que React interpréterait comme un état précédent -
+  // `open(mode => mode)` aurait renvoyé le mode courant au lieu de le poser.
+  const open = useCallback((m) => setMode(m ?? null), []);
   const close = useCallback(() => setMode(null), []);
 
   const value = useMemo(() => ({ mode, open, close }), [mode, open, close]);

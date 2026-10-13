@@ -1,5 +1,5 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 import { ProfessionalCard } from '@/features/professionals/components/ProfessionalCard.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { PAGE_SIZE, ROUTES } from '@/shared/lib/constants.js';
@@ -88,7 +88,6 @@ export function SearchResults({ data, listMode = true }) {
         total={total}
         onPageChange={onPage}
         variant="summary"
-        className={PAGINATION_BAR}
       />
     </div>
   );

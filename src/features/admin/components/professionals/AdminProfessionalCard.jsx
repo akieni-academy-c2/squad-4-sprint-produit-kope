@@ -10,6 +10,7 @@ import {
 } from '@/shared/lib/constants.js';
 import { formatDateFr } from '@/shared/utils';
 import { getProIdentity, statusVariant } from './professionalFilters.js';
+import { formatPhoneFR } from '@/shared/utils';
 
 export function AdminProfessionalCard({ pro, onToggleVisibility }) {
   const { id, name } = getProIdentity(pro);
@@ -45,7 +46,7 @@ export function AdminProfessionalCard({ pro, onToggleVisibility }) {
         {pro.phone && (
           <p className="flex items-center gap-1.5">
             <Phone className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{pro.phone}</span>
+            <span className="truncate">{formatPhoneFR(pro.phone)}</span>
           </p>
         )}
         {pro.createdAt && (

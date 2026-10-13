@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../../middlewares/validate.js';
 import { requireAuth } from '../../middlewares/requireAuth.js';
-import { rateLimit } from '../../middlewares/rateLimit.js';
+import { rateLimit, loginLimit } from '../../middlewares/rateLimit.js';
 import { upload } from '../../middlewares/upload.js';
 import {
   becomeProfessionalSchema,
@@ -18,8 +18,10 @@ const router = Router();
 router.post('/auth/register/client', rateLimit({ max: 10, key: 'register' }), validate(registerClientSchema), controller.registerClient);
 router.post('/auth/register/professional', rateLimit({ max: 10, key: 'register' }), validate(registerProfessionalSchema), controller.registerProfessional);
 router.post('/auth/become-professional', requireAuth, rateLimit({ max: 5, key: 'become-pro', byUser: true }), validate(becomeProfessionalSchema), controller.becomeProfessional);
-router.post('/auth/login', rateLimit({ max: 10, key: 'login' }), validate(loginSchema), controller.login);
-router.post('/auth/logout', controller.logout);
+// `validate` précède `loginLimit` : le limiteur par compte lit le numéro dans
+// `req.validated.body`, il n'existe pas avant.
+router.post('/auth/login', validate(loginSchema), loginLimit(), controller.login);
+router.post('/auth/logout', requireAuth, controller.logout);
 router.get('/auth/me', controller.me);
 router.put('/auth/me', requireAuth, validate(updateAccountSchema), controller.updateAccount);
 router.put('/auth/password', requireAuth, rateLimit({ max: 10, key: 'password' }), validate(changePasswordSchema), controller.changePassword);

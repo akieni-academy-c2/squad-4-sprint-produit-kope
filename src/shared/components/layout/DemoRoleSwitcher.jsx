@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Beaker, ChevronDown, LogOut, Shield, User, Wrench } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useMockMode, enableMockMode, resetMockMode } from '@/shared/lib/dataSource.js';
+import { useDismissOnOutside } from '@/shared/hooks/useDismissOnOutside.js';
+import { useMockMode, enableMockMode, resetMockMode, areMocksAllowed } from '@/shared/lib/dataSource.js';
 import { demoRoles, loginAsDemo, leaveDemo } from '@/features/auth/services/auth.service.js';
 import { ROUTES, ROLES } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
@@ -22,8 +23,17 @@ const ROLE_ICON = {
  *
  * Le retour est aussi explicite : « Quitter la démo » efface la session locale et
  * rend la main à la vraie API.
+ *
+ * Le composant lui-même rend `null` là où la démo est interdite : même garde que
+ * `dataSource`, pour qu'un build de production n'expose ni le sélecteur ni le
+ * code qui fabrique une identité d'administrateur.
  */
 export function DemoRoleSwitcher() {
+  if (!areMocksAllowed()) return null;
+  return <DemoRoleMenu />;
+}
+
+function DemoRoleMenu() {
   const { user, refresh } = useAuthContext();
   const demo = useMockMode();
   const navigate = useNavigate();
@@ -32,21 +42,7 @@ export function DemoRoleSwitcher() {
 
   const close = useCallback(() => setOpen(false), []);
 
-  useEffect(() => {
-    if (!open) return undefined;
-    const onPointerDown = (event) => {
-      if (!menuRef.current?.contains(event.target)) close();
-    };
-    const onKey = (event) => {
-      if (event.key === 'Escape') close();
-    };
-    document.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open, close]);
+  useDismissOnOutside(menuRef, close, { active: open });
 
   const roles = demoRoles();
 

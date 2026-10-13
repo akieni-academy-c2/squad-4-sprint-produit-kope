@@ -61,7 +61,13 @@ export function SectionLayout({
       <SlidersHorizontal className="h-4 w-4" aria-hidden />
       Filtres
       {dirty && (
-        <span className="h-1.5 w-1.5 rounded-full bg-primary-500" aria-label="Filtres actifs" />
+        // `sr-only` et non `aria-label` : un `aria-label` sur un `<span>` sans
+        // rôle est ignoré par les lecteurs d'écran. La pastille est purely
+        // décorative, le mot « filtres actifs » est ce qu'il faut annoncer.
+        <>
+          <span className="sr-only">- filtres actifs</span>
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-primary-500" />
+        </>
       )}
     </Button>
   );

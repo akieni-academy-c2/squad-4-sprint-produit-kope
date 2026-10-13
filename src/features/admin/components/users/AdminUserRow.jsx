@@ -4,6 +4,7 @@ import { Badge, Button, Tooltip, UserAvatar } from '@/shared/components/ui';
 import { ROLES, ROUTES } from '@/shared/lib/constants.js';
 import { formatDateFr } from '@/shared/utils';
 import { getUserName, ROLE_LABELS, ROLE_VARIANTS } from './adminUserOptions.js';
+import { formatPhoneFR } from '@/shared/utils';
 
 export function AdminUserRow({ user, isSelf, onToggleBlock }) {
   const name = getUserName(user);
@@ -51,7 +52,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
           {user.phone && (
             <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
               <Phone className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{user.phone}</span>
+              <span className="truncate">{formatPhoneFR(user.phone)}</span>
             </p>
           )}
           

@@ -29,6 +29,21 @@ import { useOverlay } from './useOverlay.js';
  * qui se recouvrent de la même façon ne peuvent pas lectures différemment -
  * celle qui n'est pas floutée paraît posée sur la page au lieu de devant.
  */
+const WIDTHS = {
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-2xl',
+  full: 'max-w-5xl',
+};
+
+/** Variante mobile : glissement depuis le bas, partagé par les deux paliers. */
+const SHEET_PANEL = {
+  initial: { y: '40%', scale: 1 },
+  animate: { y: '0%', scale: 1, transition: dialogPanel.animate.transition },
+  exit: { y: '40%', scale: 1, transition: dialogPanel.exit.transition },
+};
+
 export function Modal({
   open,
   onClose,
@@ -44,32 +59,23 @@ export function Modal({
   const isDesktop = useIsDesktop();
 
   if (typeof document === 'undefined') return null;
-  const widths = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-2xl',
-    full: 'max-w-5xl',
-  }[size] || 'max-w-md';
+  const widths = WIDTHS[size] || WIDTHS.md;
 
   // Moins de 4 sections (titre, description, contenu, actions) : réduire le rayon des coins.
   const sections = [title, description, children, actions].filter(Boolean).length;
   const radiusTop = sections < 4 ? 'rounded-t-xl' : 'rounded-t-2xl';
   const radiusMain = sections < 4 ? 'sm:rounded-xl' : 'sm:rounded-2xl';
 
-  const panelVariants = isDesktop
-    ? dialogPanel
-    : {
-        initial: { y: '40%', scale: 1 },
-        animate: { y: '0%', scale: 1, transition: dialogPanel.animate.transition },
-        exit: { y: '40%', scale: 1, transition: dialogPanel.exit.transition },
-      };
+  // Constante de module et non littéral dans le corps : `motion` compare
+  // l'identité de `variants` à chaque rendu, et un objet reconstruit ici
+  // invalidait la comparaison à chaque ouverture.
+  const panelVariants = isDesktop ? dialogPanel : SHEET_PANEL;
 
   return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-checkers backdrop-blur-sm p-0 sm:items-center sm:p-4"
+          className="fixed inset-0 z-overlay flex items-end justify-center bg-checkers backdrop-blur-sm p-0 sm:items-center sm:p-4"
           variants={overlayBackdrop}
           initial="initial"
           animate="animate"
@@ -111,7 +117,7 @@ export function Modal({
                 {description && <p className="mt-1 text-sm text-gray-600">{description}</p>}
               </div>
             )}
-            {children && <div className="px-4 py-3 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-5 sm:py-4">{children}</div>}
+            {children && <div className="px-4 py-3 pb-safe sm:px-5 sm:py-4">{children}</div>}
             {actions && (
               <div className="flex flex-col-reverse gap-2 border-t border-gray-100 px-5 py-3 sm:flex-row sm:justify-end">
                 {actions}
