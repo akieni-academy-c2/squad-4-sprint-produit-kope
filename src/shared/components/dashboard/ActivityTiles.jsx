@@ -112,20 +112,6 @@ export function OverviewEmpty({ children }) {
   );
 }
 
-/**
- * Décalage sous la barre de navigation collante.
- *
- * Toutes les colonnes latérales d'un tableau de bord s'y alignent, sinon la
- * colonne de filtres se décale de quelques pixels par rapport à la navigation
- * et le décalage s'accroît avec la hauteur de l'écran.
- *
- * La valeur vient de la même variable CSS que l'en-tête : `lg:top-23` avait l'air
- * d'être un décalage d'en-tête, mais 23 n'existe pas dans l'échelle Tailwind.
- * La classe n'était jamais générée, `position: sticky` se retrouvait avec
- * `top: auto` et rien ne collait — la colonne de filtres était la seule touchée,
- * ce qui la faisait contrairement à la navigation qui, elle, était correcte.
- */
-export const STICKY_OFFSET = 'lg:top-(--header-height)';
 
 /** Squelette de tuile : la hauteur réelle d'une tuile, pas celle d'une ligne. */
 export function TileSkeleton() {

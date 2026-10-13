@@ -139,7 +139,20 @@ export function RegisterClientForm({ bare = false } = {}) {
   return (
     <aside className={bare ? 'p-4 sm:p-5' : 'p-5 sm:p-8'}>
       <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">Créer un compte</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      {/*
+        La hauteur du sous-titre est réservée.
+
+        Il change d'une étape à l'autre, et les deux libellés ne font pas le
+        même nombre de lignes dans la colonne étroite du dialogue. Le formulaire
+        — titre du champ, bouton, tout — se retrouvait décalé de 20 px entre
+        l'étape 1 et l'étape 2, alors que rien n'y avait changé : le premier
+        champ sautait sous le doigt.
+
+        `min-h` et non une hauteur fixe : sur un écran très étroit, un libellé
+        plus long peut encore passer à trois lignes. La place réservée garantit
+        l'alignement entre les deux étapes sans jamais tronquer le texte.
+      */}
+      <p className="mt-1 min-h-10 text-sm text-gray-500">
         {step === 1
           ? 'En 1 minute, créez votre compte pour contacter des artisans qualifiés.'
           : 'Presque terminé : choisissez un mot de passe solide.'}

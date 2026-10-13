@@ -9,6 +9,7 @@ import { SearchActionBar } from '../components/SearchActionBar.jsx';
 import { useSearch } from '../hooks/useSearch.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
+import { STICKY_TOP } from '@/shared/lib/constants.js';
 
 export function SearchPage() {
   usePageTitle('Rechercher un professionnel');
@@ -82,7 +83,7 @@ export function SearchPage() {
           lg:pb-8 la désactive sur desktop, où la barre est masquée. */}
       <div className="container-kop page-padding pb-20 lg:pb-8">
         <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
-          <aside className="hidden lg:block lg:sticky lg:top-(--header-height) space-y-4">
+          <aside className={`hidden lg:block ${STICKY_TOP} space-y-4`}>
             <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
           </aside>
 
@@ -134,7 +135,7 @@ export function SearchPage() {
             )}
           </section>
 
-          <aside className="hidden lg:block lg:sticky lg:top-(--header-height) space-y-4">
+          <aside className={`hidden lg:block ${STICKY_TOP} space-y-4`}>
             <SearchRefineFilters {...refineProps} />
           </aside>
         </div>

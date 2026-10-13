@@ -67,6 +67,17 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
             // La variante n'est pas propagée depuis le fond : elle dépend du
             // bord d'entrée, que le parent ignore.
             variants={side === 'bottom' ? sheetPanel : sidePanel}
+            // États nommés explicites plutôt qu'hérités du fond.
+            //
+            // La propagation implicite fonctionne — mais elle est implicite.
+            // Une refonte du fond, un `variants` oublié, une réorganisation du
+            // JSX suffisaient à faire disparaître la sortie, **sans erreur et
+            // sans avertissement** : la feuille se refermait d'un coup. Nommer
+            // les trois états rend la sortie visible à la lecture, et impossible
+            // à perdre par accident.
+            initial="initial"
+            animate="animate"
+            exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
             <button

@@ -1,5 +1,6 @@
 import { Plus, ShieldCheck, UserPlus, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui';
+import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { PASSWORD_RULES } from '@/shared/hooks/useFieldStatus.js';
 import { createAdminSchema } from '@/shared/utils/validators.js';
@@ -7,12 +8,25 @@ import { createAdminSchema } from '@/shared/utils/validators.js';
 const INPUT_CLASS =
   'h-9 rounded-sm border border-gray-300 bg-white px-2.5 text-sm outline-none focus:border-primary-500';
 
+/**
+ * Les champs de ce formulaire.
+ *
+ * `phone` est absent de la liste : c'est le seul des quatre à avoir une saisie
+ * particulière, et il est rendu à part juste après. Le lister ici et le traiter
+ * à part aurait laissé deux endroits où le téléphone est défini — c'est
+ * exactement ce qui a fait que les autres formulaires de l'application
+ * avaient un champ libre.
+ */
 const FIELDS = [
   { key: 'firstName', placeholder: 'Prénom', type: 'text', autoFocus: true },
   { key: 'lastName', placeholder: 'Nom', type: 'text' },
-  { key: 'phone', placeholder: 'Téléphone (06 12 34 56 7)', type: 'text' },
-  { key: 'password', placeholder: 'Mot de passe (8 caractères min.)', type: 'password' },
 ];
+
+const PASSWORD_FIELD = {
+  key: 'password',
+  placeholder: 'Mot de passe (8 caractères min.)',
+  type: 'password',
+};
 
 export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOpen, onCancel }) {
 
@@ -48,6 +62,30 @@ export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOp
             className={INPUT_CLASS}
           />
         ))}
+
+        {/*
+          Le téléphone sort de la grille : `PhoneInput` est une coque à deux
+          volets et ne prend pas la hauteur de 36 px des autres champs. Le
+          laisser dans `FIELDS` aurait produit une ligne de hauteur différente
+          dans une grille censée être homogène.
+        */}
+        <PhoneInput
+          id="create-admin-phone"
+          value={draft.phone}
+          onChange={(value) => onChange('phone', value)}
+          aria-label="Téléphone"
+          className="sm:col-span-1"
+        />
+
+        <input
+          key={PASSWORD_FIELD.key}
+          type={PASSWORD_FIELD.type}
+          value={draft[PASSWORD_FIELD.key]}
+          onChange={(e) => onChange(PASSWORD_FIELD.key, e.target.value)}
+          placeholder={PASSWORD_FIELD.placeholder}
+          aria-label={PASSWORD_FIELD.placeholder}
+          className={INPUT_CLASS}
+        />
       </div>
 
       {error && <p className="mt-2 text-sm text-danger-500">{error}</p>}

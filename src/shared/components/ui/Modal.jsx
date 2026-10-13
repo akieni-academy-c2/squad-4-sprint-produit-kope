@@ -94,6 +94,12 @@ export function Modal({
               widths,
             )}
             variants={panelVariants}
+            // États nommés explicites : voir `Sheet`. La propagation implicite
+            // depuis le fond fonctionne, mais disparait sans erreur si le fond
+            // change — et la fermeture de la modale devient instantanée.
+            initial="initial"
+            animate="animate"
+            exit="exit"
           >
             {(title || description) && (
               <div className="border-b border-gray-100 px-5 py-4">

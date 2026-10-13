@@ -96,6 +96,12 @@ export function DialogContent({
       // La variante est réinjectée : c'est elle qui fait monter la boîte. Sans
       // cette ligne, seul le fond est animé.
       variants={variants}
+      // États nommés explicites : voir `Sheet`. La propagation implicite depuis
+      // le fond fonctionne, mais une réorganisation du JSX suffit à la faire
+      // disparaître — et le dialogue se referme alors d'un coup, sans erreur.
+      initial="initial"
+      animate="animate"
+      exit="exit"
       role="dialog"
       aria-modal="true"
       // L'id est celui que `DialogTitle` reprend via le contexte. Tous les

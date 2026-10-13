@@ -5,6 +5,7 @@ import { Separator } from '@/shared/components/ui/Separator.jsx';
 import { formatDateFr } from '@/shared/utils';
 import { ReportTrigger } from '../ReportDialog.jsx';
 import { CITY, initialsOf } from './profileView.js';
+import { STICKY_TOP } from '@/shared/lib/constants.js';
 
 function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName }) {
   return (
@@ -152,7 +153,7 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
         </Card>
       </section>
 
-      <Card className="hidden items-center gap-3 p-3 lg:sticky lg:top-(--header-height) lg:flex">
+      <Card className={`hidden items-center gap-3 p-3 ${STICKY_TOP} lg:flex`}>
         <Avatar
           src={avatarSrc}
           name={profile.displayName}

@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar.jsx';
 import { Footer } from './Footer.jsx';
+import { ScrollToTop } from './ScrollToTop.jsx';
 import { SuspensionNotice } from './SuspensionNotice.jsx';
 import { AuthModal } from '@/features/auth/components/AuthModal.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -35,6 +36,10 @@ export function RootLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Navbar />
+      {/* Le retour en haut se décide ici, une fois : chaque tableau de bord
+          a une route par onglet, et passer de l'une à l'autre en gardant la
+          hauteur de défilement atterrit au milieu de la nouvelle section. */}
+      <ScrollToTop />
       <main id="main-content" className={cn('flex-1', hasDottedBg && 'bg-dots')}>
         <div className=" animate-fade-in">
           <Outlet />

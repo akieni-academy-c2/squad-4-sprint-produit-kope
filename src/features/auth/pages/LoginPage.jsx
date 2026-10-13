@@ -7,6 +7,7 @@ import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { Input } from '@/shared/components/ui/Input.jsx';
+import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
 import { useForm } from '@/shared/hooks/useForm.js';
 import { loginSchema } from '@/shared/utils/validators.js';
 import { login } from '../services/auth.service.js';
@@ -73,12 +74,23 @@ export function LoginForm({ bare = false } = {}) {
           label="Numéro de téléphone"
           required
           error={errors.phone}
-          placeholder="+242 06 000 00 00"
-          value={values.phone}
-          onChange={(e) => setField('phone', e.target.value)}
-          autoComplete="tel"
-          inputMode="tel"
-        />
+        >
+          {/*
+            Même champ que l'inscription, et pour la même raison : le serveur
+            stocke `+242061234567`, un compte doit donc se saisir des deux
+            côtés de la même façon. Le champ libre demandait de taper
+            l'indicatif — et un utilisateur qui le tapait autrement qu'à
+            l'inscription ne se connectait pas, sans comprendre pourquoi.
+          */}
+          <PhoneInput
+            id="login-phone"
+            value={values.phone}
+            onChange={(value) => setField('phone', value)}
+            autoComplete="tel"
+            error={errors.phone}
+          />
+        </FormField>
+
         <FormField
           id="login-password"
           label="Mot de passe"

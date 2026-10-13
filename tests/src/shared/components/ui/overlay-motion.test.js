@@ -117,6 +117,56 @@ describe('Dialog', () => {
   });
 });
 
+describe('fermeture des surfaces', () => {
+  /**
+   * Pourquoi exiger des états nommés, et pas seulement une variante.
+   *
+   * La propagation implicite — le panneau hérite de `exit` du fond — fonctionne.
+   * Mais elle est **implicite** : une réorganisation du JSX, un `variants`
+   * oublié sur le fond, un panneau déplacé hors de sa portée suffisent à la
+   * faire disparaître. Sans erreur, sans avertissement : la feuille se referme
+   * d'un coup.
+   *
+   * Nommer `initial` / `animate` / `exit` rend la sortie visible à la lecture
+   * et impossible à perdre par accident. C'est ce que ces tests verrouillent.
+   */
+  const SURFACES = [
+    ['Sheet', 'src/shared/components/ui/Sheet.jsx', 'sheetPanel'],
+    ['Modal', 'src/shared/components/ui/Modal.jsx', 'panelVariants'],
+    ['Dialog', 'src/shared/components/ui/Dialog.jsx', 'variants'],
+  ];
+
+  for (const [name, path, variantProp] of SURFACES) 
+    it(`${name} nomme ses trois états sur le panneau`, () => {
+      const tags = motionTags(source(path));
+      const panel = tags.find((tag) => tag.includes(variantProp));
+
+      expect(panel, `le panneau de ${name} ne porte pas ${variantProp}`).toBeDefined();
+      for (const state of ['initial', 'animate', 'exit']) 
+        expect(panel, `${name} : état « ${state} » absent du panneau`).toMatch(
+          new RegExp(`\\b${state}="${state}"`),
+        );
+      
+    });
+  
+
+  it('chaque surface a bien une variante de sortie à jouer', () => {
+    // Les trois durees de sortie sont plus courtes que leurs entrées — vérifié
+    // sur les variantes elles-mêmes dans `motion.test.js`. Ce qui est vérifié
+    // ici, c'est que chaque surface **référence** bien celle qu'elle doit jouer :
+    // une feuille qui sortie sur la variante du dialogue sortirait à la mauvaise
+    // vitesse, sans qu'aucune erreur n'apparaisse.
+    const code = source('src/shared/components/ui/Sheet.jsx');
+    expect(code).toContain('sheetPanel');
+
+    const modal = source('src/shared/components/ui/Modal.jsx');
+    expect(modal).toContain('dialogPanel');
+
+    const dialog = source('src/shared/components/ui/Dialog.jsx');
+    expect(dialog).toContain('dialogPanel');
+  });
+});
+
 describe('boutons d’icône', () => {
   const code = source('src/shared/components/ui/IconButton.jsx');
 

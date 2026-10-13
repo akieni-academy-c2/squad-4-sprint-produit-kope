@@ -3,7 +3,7 @@ import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lu
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
 import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
@@ -152,7 +152,7 @@ export function ProProfilePage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn('lg:sticky lg:top-(--header-height)', withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn(STICKY_TOP, withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 
