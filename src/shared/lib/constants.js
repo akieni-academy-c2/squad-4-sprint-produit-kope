@@ -63,6 +63,25 @@ export const ROUTES = {
  * `''` est la valeur de repli : la racine du tableau de bord reste valide et
  * n'est pas un cas d'erreur.
  */
+
+/**
+ * Haut collant des colonnes latérales.
+ *
+ * Toutes les colonnes collantes de l'application — filtres de `/search`,
+ * colonnes de filtres des tableaux de bord, mini fiche et carte de contact de la
+ * fiche publique — s'arrêtent sous le header, au même endroit.
+ *
+ * Écrire `lg:top-(--header-height)` à chaque fois est une recopie : la valeur a
+ * déjà changé une fois (`lg:top-23`, une classe Tailwind qui n'existe pas — le
+ * maximum de l'échelle est 20, puis 24), et elle changera encore. Une seule
+ * déclaration, un seul point à corriger.
+ *
+ * Le palier est dans la chaîne et non devant : la colonne n'existe qu'à partir
+ * de `lg`, et énumérer la moitié des propriétés à la main est exactement
+ * l'erreur que ce jeton supprime.
+ */
+export const STICKY_TOP = 'lg:sticky lg:top-(--header-height)';
+
 export function sectionFromPathname(pathname, sections) {
   const segment = String(pathname || '').split('/').filter(Boolean).pop();
   return sections.includes(segment) ? segment : '';

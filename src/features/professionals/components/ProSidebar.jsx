@@ -11,7 +11,7 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
   const publicId = user?.id || profile?.userId || profile?.id || '0';
 
   return (
-    <aside className="space-y-6 lg:sticky lg:top-(--header-height) lg:self-start">
+    <aside className="space-y-6 ${STICKY_TOP} lg:self-start">
       <Card className="overflow-hidden p-0">
         <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
           <div className="flex items-center gap-4">

@@ -4,6 +4,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 import { cn } from '@/shared/utils';
+import { STICKY_TOP } from '@/shared/lib/constants.js';
 
 /**
  * Colonne de filtres d'une section de tableau de bord — espace client,
@@ -88,7 +89,7 @@ export function SectionLayout({
       {rightContainer
         ? createPortal(filters(searchId), rightContainer)
         : (
-          <aside className="hidden lg:sticky lg:top-(--header-height) lg:block">
+          <aside className={`hidden ${STICKY_TOP} lg:block`}>
             {filters(searchId)}
           </aside>
         )}

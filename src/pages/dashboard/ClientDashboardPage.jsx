@@ -70,7 +70,7 @@ export function ClientDashboardPage() {
         <aside
           ref={setRightEl}
           aria-label="Filtres"
-          className={cn('lg:sticky lg:top-(--header-height)', withFilters ? 'hidden lg:block' : 'hidden')}
+          className={cn('${STICKY_TOP}', withFilters ? 'hidden lg:block' : 'hidden')}
         />
       </div>
 

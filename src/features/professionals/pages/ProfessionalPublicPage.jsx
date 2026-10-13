@@ -171,7 +171,22 @@ export function ProfessionalPublicPage() {
             />
           </section>
 
-          <Card id="contact" className="space-y-4 p-5 lg:sticky lg:top-(--header-height) lg:bottom-4">
+          {/*
+            Même haut collant que les autres colonnes de l'application —
+            la barre de recherche de `/search`, la mini fiche de la colonne de
+            droite. Les trois s'arrêtent sous le header, alignés.
+
+            `lg:bottom-4` retiré : il transformait cette carte en bande qui se
+            colle **au bas** de la fenêtre dès que la fiche est courte. Elle
+            flottait donc à mi-hauteur de l'écran pendant que la mini fiche
+            restait en haut — deux cartes d'un même geste, à deux hauteurs
+            différentes sur la même page.
+
+            Sans ce `bottom`, la carte se colle en haut et suit le défilement
+            sur la hauteur de la colonne, ce qui est le comportement attendu
+            d'un bouton de contact persistant.
+          */}
+          <Card id="contact" className="space-y-4 p-5 ${STICKY_TOP}">
             <div className="space-y-1.5">
               <h2 className="text-lg font-bold text-gray-900">Parlons de votre besoin.</h2>
               <p className="text-sm leading-6 text-gray-600">

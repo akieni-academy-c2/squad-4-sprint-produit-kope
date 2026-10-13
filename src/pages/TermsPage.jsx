@@ -52,7 +52,7 @@ export function TermsPage() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:items-start">
         <nav
           aria-label="Sommaire des conditions"
-          className="rounded-md border border-gray-200 bg-white p-4 lg:sticky lg:top-(--header-height)"
+          className="rounded-md border border-gray-200 bg-white p-4 ${STICKY_TOP}"
         >
           <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Sommaire</p>
           <ol className="mt-3 space-y-1.5">
