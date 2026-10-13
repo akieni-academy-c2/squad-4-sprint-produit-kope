@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
@@ -32,10 +32,15 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
               se lisait comme un bouton de plus parmi les onglets — et il
               disparaissait sur mobile, où la colonne est remplacée par la barre
               du bas. */}
+          {/* Prévisualisation : on quitte le tableau de bord pour voir sa
+              fiche comme un visiteur, on compare, on revient corriger. D'où le
+              nouvel onglet — et d'où `Link` plutôt que `RouterLink` : ce dernier
+              intercepte le clic et annulerait l'ouverture. */}
           {isPublished && (
             <Button
               as={Link}
-              to={ROUTES.PROFESSIONAL(publicId)}
+              href={ROUTES.PROFESSIONAL(publicId)}
+              target="_blank"
               variant="subtle"
               size="sm"
               className="mt-3 w-full"

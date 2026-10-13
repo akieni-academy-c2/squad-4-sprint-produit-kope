@@ -6,11 +6,14 @@ import { cn } from '@/shared/utils';
  *
  * Exporté plutôt que recopié : la barre est posée sur le fond de la page, pas
  * sur une carte, et sans ce bandeau elle flotte sans contour au milieu du
- * contenu. La même valeur est reprise par la recherche, l'espace client,
- * l'espace professionnel et l'administration — une copie divergerait au
- * premier ajustement.
+ * contenu.
+ *
+ * `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes
+ * voisines. Une pagination se lit comme un objet de la page, pas comme un
+ * encadré d'attention — à `gray-300` elle dessinait une boîte plus sombre que
+ * tout ce qu'elle controls.
  */
-export const PAGINATION_BAR = 'mt-4 rounded-md border border-gray-100 bg-white px-4 py-2';
+export const PAGINATION_BAR = 'mt-4 rounded-md border border-gray-200 bg-white px-4 py-2';
 
 function getButtons(current, totalPages) {
   if (totalPages <= 7)

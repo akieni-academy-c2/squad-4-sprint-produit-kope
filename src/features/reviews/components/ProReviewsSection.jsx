@@ -59,7 +59,63 @@ const clientName = (review) =>
   fullNameInitials(review.client?.firstName, review.client?.lastName) ||
   'Client';
 
+/**
+ * Un bloc titré d'avis : état de chargement, d'erreur, vide ou liste, puis sa
+ * propre pagination.
+ *
+ * Le composant, et non la section, parce que « Tous » affiche deux blocs
+ * côte à côte. Chaque moitié a ses états — l'une peut être vide pendant que
+ * l'autre est pleine — et les écrire deux fois les ferait diverger au premier
+ * ajustement.
+ */
+function ReviewBlock({
+  title,
+  loading,
+  error,
+  onRetry,
+  isEmpty,
+  emptyTitle,
+  emptyDescription,
+  notice,
+  pagination,
+  children,
+}) {
+  const items = Array.isArray(children) ? children : [children];
+
+  return (
+    <section className="space-y-3">
+      <h4 className="text-sm font-bold uppercase tracking-[0.08em] text-gray-500">{title}</h4>
+
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
+      ) : error ? (
+        <DataState error={error} onRetry={onRetry} />
+      ) : isEmpty ? (
+        <EmptyState title={emptyTitle} description={emptyDescription} />
+      ) : (
+        <>
+          <ul className="space-y-3">
+            {items.filter(Boolean).map((child) => (
+              <li key={child.key}>{child}</li>
+            ))}
+          </ul>
+          {notice}
+          {pagination}
+        </>
+      )}
+    </section>
+  );
+}
+
+// « Tous » n'est pas un simple confort : le professionnel cherche le plus
+// souvent à voir *ce qu'il a reçu* ou *ce qu'il a donné*, mais il vérifie aussi
+// l'ensemble. Sans cette option, retrouver le total demande de choisir une
+// moitié au hasard.
 const ORIGIN_OPTIONS = [
+  { value: 'all', label: 'Tous les avis' },
   { value: 'recus', label: 'Avis reçus' },
   { value: 'donnes', label: 'Avis donnés' },
 ];
@@ -67,6 +123,10 @@ const ORIGIN_OPTIONS = [
 // Page assez courte pour que la liste reste lisible sans défilement interminable,
 // assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
 const PAGE_SIZE = 10;
+
+// Plafond de la portion d'avis donnés chargée pour la vue « Tous ». La fusion
+// se fait dans le navigateur, donc il faut les deux ensembles complets.
+const MERGE_LIMIT = 100;
 
 /**
  * Onglet « Mes avis » de l'espace professionnel.
@@ -85,7 +145,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
   const [q, setQ] = useState("");
   const [rating, setRating] = useState("");
   const [sort, setSort] = useState("recent");
-  const [origin, setOrigin] = useState("recus");
+  const [origin, setOrigin] = useState('all');
   const [page, setPage] = useState(1);
   const [givenReload, setGivenReload] = useState(0);
   const [reportingId, setReportingId] = useState(null);
@@ -101,30 +161,29 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
     return listReviews(professionalId, { pageSize: FETCH_LIMIT });
   }, [professionalId]);
 
-  // « Avis reçus » passe par l'endpoint public, sans filtres : le filtrage se
-  // fait sur la portion chargée, puis on pagine cette portion. « Avis donnés »
-  // passe par l'endpoint du compte, qui sait filtrer et paginer côté serveur —
-  // les deux moitiés partagent donc les mêmes filtres, par des chemins
-  // différents.
+  // « Tous » a besoin des deux ensembles **complets** pour les fusionner, donc
+  // d'une requête qui ne pagine pas côté serveur : sinon la page 1 du mélange
+  // ne contiendrait que les avis reçus, et les avis donnés n'arriveraient
+  // qu'en deuxième page. « Avis donnés » seul garde la pagination serveur, qui
+  // sait appliquer les filtres.
   const given = useAsyncData(
     () =>
       getMyReviews({
-        page,
-        pageSize: PAGE_SIZE,
+        ...(origin === 'donnes' ? { page, pageSize: PAGE_SIZE } : { pageSize: MERGE_LIMIT }),
         sort,
         ...(q ? { q } : {}),
         ...(rating ? { rating } : {}),
       }),
-    [page, sort, q, rating, givenReload],
+    [page, origin, sort, q, rating, givenReload],
   );
 
-  const dirty = Boolean(q || rating || sort !== 'recent' || origin !== 'recus');
+  const dirty = Boolean(q || rating || sort !== 'recent' || origin !== 'all');
 
   const resetFilters = () => {
     setQ('');
     setRating('');
     setSort('recent');
-    setOrigin('recus');
+    setOrigin('all');
   };
 
   // Changer un filtre ramène en première page : rester sur la page 3 d'un
@@ -141,12 +200,10 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
 
   const givenItems = useMemo(() => given.data?.items ?? [], [given.data]);
   const givenTotal = given.data?.total ?? 0;
-  const isRecus = origin === 'recus';
 
   // « Avis reçus » passe par l'endpoint public, sans filtres : le filtrage se
-  // fait sur la portion chargée, puis on pagine cette portion. « Avis donnés »
-  // passe par l'endpoint du compte, qui sait filtrer et paginer côté serveur.
-  const visibleReceived = useMemo(() => {
+  // fait sur la portion chargée, puis on pagine cette portion.
+  const filteredReceived = useMemo(() => {
     const needle = q.trim().toLowerCase();
     let rows = needle
       ? receivedItems.filter(
@@ -158,22 +215,42 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
 
     if (rating) rows = rows.filter((r) => String(r.rating) === rating);
 
-    const sorted = [...rows].sort(SORTERS[sort] ?? SORTERS.recent);
-    return sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  }, [receivedItems, q, rating, sort, page]);
+    return [...rows].sort(SORTERS[sort] ?? SORTERS.recent);
+  }, [receivedItems, q, rating, sort]);
 
-  const visibleReceivedCount = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    let rows = needle
-      ? receivedItems.filter(
-          (r) =>
-            clientName(r).toLowerCase().includes(needle) ||
-            (r.comment || '').toLowerCase().includes(needle),
-        )
-      : receivedItems;
-    if (rating) rows = rows.filter((r) => String(r.rating) === rating);
-    return rows.length;
-  }, [receivedItems, q, rating]);
+  /**
+   * « Tous » : un seul tableau, fusionné et rangé par date.
+   *
+   * Deux listes juxtaposées sous leurs titres.fontions deux tableaux, et
+   * obligent à comparer leurs dates de part et d'autre. Un professionnel veut
+   * une chronologie : ce qui s'est passé, dans l'ordre.
+   *
+   * `kind` sert seulement à choisir la carte — un avis donné et un avis reçu ne
+   * se gèrent pas pareil — jamais à les séparer dans le rendu.
+   */
+  const merged = useMemo(() => {
+    if (origin !== 'all') return [];
+    const rows = [
+      ...filteredReceived.map((r) => ({ ...r, kind: 'recus' })),
+      ...givenItems.map((r) => ({ ...r, kind: 'donnes' })),
+    ];
+    return rows.sort(SORTERS.recent);
+  }, [origin, filteredReceived, givenItems]);
+
+  const visibleReceived = useMemo(
+    () => (origin === 'recus' ? filteredReceived.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) : []),
+    [origin, filteredReceived, page],
+  );
+
+  const visibleGiven = useMemo(
+    () => (origin === 'donnes' ? givenItems : []),
+    [origin, givenItems],
+  );
+
+  const visibleMerged = useMemo(
+    () => (origin === 'all' ? merged.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) : []),
+    [origin, merged, page],
+  );
 
   const editing = givenItems.find((r) => r.id === editingId) ?? null;
 
@@ -210,11 +287,25 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
 
   const filters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
+      {/* L'origine est un filtre et non un onglet : les deux listes partagent
+          recherche, note et tri. En onglet, ces filtres ne s'appliqueraient
+          qu'à une moitié de l'écran sans que rien ne le dise. */}
       <div className="divide-y divide-gray-100">
-        {/* L'origine est un filtre et non un onglet : les deux listes partagent
-            la recherche, la note et le tri. En onglet, ces filtres
-            s'appliqueraient à une seule moitié de l'écran sans le dire, et le
-            retour à la première page serait perdu à chaque changement. */}
+        <AdminFilterGroup title="Recherche">
+          <SearchInput
+            id={searchId}
+            value={q}
+            onChange={(e) => changeFilter(setQ)(e.target.value)}
+            onClear={() => changeFilter(setQ)('')}
+            placeholder="Professionnel ou client..."
+            aria-label="Rechercher dans mes avis"
+          />
+        </AdminFilterGroup>
+
+        {/* L'origine vient après la recherche, pas avant. C'est le filtre le
+            plus large — il garde les deux listes — alors que la recherche est le
+            geste que l'utilisateur fait en premier : en dessous, on commence par
+            taper. */}
         <AdminFilterGroup title="Origine">
           <CustomSelect
             value={origin}
@@ -222,17 +313,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
             options={ORIGIN_OPTIONS}
             className="w-full"
             aria-label="Origine des avis"
-          />
-        </AdminFilterGroup>
-
-        <AdminFilterGroup title="Recherche">
-          <SearchInput
-            id={searchId}
-            value={q}
-            onChange={(e) => changeFilter(setQ)(e.target.value)}
-            onClear={() => changeFilter(setQ)('')}
-            placeholder="Professional ou client..."
-            aria-label="Rechercher dans mes avis"
           />
         </AdminFilterGroup>
 
@@ -269,85 +349,61 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
         searchId="pro-reviews-search"
         filters={filters}
       >
-        {isRecus ? (
-          received.loading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-            </div>
-          ) : received.error ? (
-            <DataState error={received.error} onRetry={received.reload} />
-          ) : visibleReceived.length === 0 ? (
-            <EmptyState
-              title={dirty ? 'Aucun avis ne correspond' : 'Aucun avis pour le moment'}
-              description={
+        {/* « Tous » rend un seul tableau fusionné et rangé par date : deux
+            listes sous leurs titres font deux tableaux, et obligent à comparer
+            leurs dates de part et d'autre. Le professionnel veut une
+            chronologie. */}
+        <div className="space-y-4">
+          {origin === 'all' ? (
+            <ReviewBlock
+              loading={received.loading || given.loading}
+              error={received.error ?? given.error}
+              onRetry={() => {
+                received.reload();
+                given.reload();
+              }}
+              isEmpty={visibleMerged.length === 0}
+              emptyTitle={dirty ? 'Aucun avis ne correspond' : 'Aucun avis'}
+              emptyDescription={
                 dirty
-                  ? 'Aucun avis reçu ne correspond à ces filtres.'
-                  : 'Les avis laissés par vos clients apparaîtront ici.'
+                  ? 'Aucun avis ne correspond à ces filtres.'
+                  : 'Les avis reçus et déposés apparaîtront ici.'
               }
-            />
-          ) : (
-            <>
-              <ul className="space-y-3">
-                {visibleReceived.map((review) => (
-                  <li key={review.id}>
-                    <ReviewCard
-                      id={review.id}
-                      name={clientName(review)}
-                      avatarUrl={review.client?.avatarUrl}
-                      rating={review.rating}
-                      comment={review.comment}
-                      createdAt={review.createdAt}
-                      reported={reportedIds.includes(review.id)}
-                      onReport={() => setReportingId(review.id)}
-                    />
-                  </li>
-                ))}
-              </ul>
-
-              {/* L'avertissement ne s'affiche qu'au-delà d'une page : sans lui,
-                  la liste est censée tout montrer, et le signaler serait une
-                  information fausse. */}
-              {truncated && visibleReceivedCount > PAGE_SIZE && (
-                <>
+              notice={
+                truncated && merged.length > PAGE_SIZE ? (
                   <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-                    Seuls les {FETCH_LIMIT} avis les plus récents sont chargés : la
-                    recherche et le tri portent sur cette portion.
+                    Seuls les {FETCH_LIMIT} avis reçus les plus récents sont
+                    chargés : la recherche et le tri portent sur cette portion.
                   </p>
-                  <Pagination
-                    page={page}
-                    pageSize={PAGE_SIZE}
-                    total={visibleReceivedCount}
-                    onPageChange={setPage}
-                    variant="summary"
-                    className={PAGINATION_BAR}
-                  />
-                </>
-              )}
-            </>
-          )
-        ) : given.loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </div>
-        ) : given.error ? (
-          <DataState error={given.error} onRetry={given.reload} />
-        ) : givenItems.length === 0 ? (
-          <EmptyState
-            title={dirty ? 'Aucun avis ne correspond' : 'Aucun avis déposé'}
-            description={
-              dirty
-                ? 'Aucun avis déposé ne correspond à ces filtres.'
-                : 'Les avis que vous laissez aux autres professionnels apparaîtront ici.'
-            }
-          />
-        ) : (
-          <>
-            <ul className="space-y-3">
-              {givenItems.map((review) => (
-                <li key={review.id}>
+                ) : null
+              }
+              pagination={
+                <Pagination
+                  page={page}
+                  pageSize={PAGE_SIZE}
+                  total={merged.length}
+                  onPageChange={setPage}
+                  variant="summary"
+                  className={PAGINATION_BAR}
+                />
+              }
+            >
+              {visibleMerged.map((review) =>
+                review.kind === 'recus' ? (
                   <ReviewCard
+                    key={review.id}
+                    id={review.id}
+                    name={clientName(review)}
+                    avatarUrl={review.client?.avatarUrl}
+                    rating={review.rating}
+                    comment={review.comment}
+                    createdAt={review.createdAt}
+                    reported={reportedIds.includes(review.id)}
+                    onReport={() => setReportingId(review.id)}
+                  />
+                ) : (
+                  <ReviewCard
+                    key={review.id}
                     id={review.id}
                     name={review.professionalName}
                     avatarUrl={review.professionalAvatarUrl}
@@ -361,20 +417,103 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
                     onToggleHidden={() => toggleHidden(review)}
                     onDelete={() => remove(review)}
                   />
-                </li>
-              ))}
-            </ul>
+                ),
+              )}
+            </ReviewBlock>
+          ) : (
+            <>
+              {origin === 'recus' && (
+                <ReviewBlock
+                  loading={received.loading}
+                  error={received.error}
+                  onRetry={received.reload}
+                  isEmpty={visibleReceived.length === 0}
+                  emptyTitle={dirty ? 'Aucun avis ne correspond' : 'Aucun avis reçu'}
+                  emptyDescription={
+                    dirty
+                      ? 'Aucun avis reçu ne correspond à ces filtres.'
+                      : 'Les avis laissés par vos clients apparaîtront ici.'
+                  }
+                  notice={
+                    truncated && filteredReceived.length > PAGE_SIZE ? (
+                      <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                        Seuls les {FETCH_LIMIT} avis les plus récents sont chargés :
+                        la recherche et le tri portent sur cette portion.
+                      </p>
+                    ) : null
+                  }
+                  pagination={
+                    <Pagination
+                      page={page}
+                      pageSize={PAGE_SIZE}
+                      total={filteredReceived.length}
+                      onPageChange={setPage}
+                      variant="summary"
+                      className={PAGINATION_BAR}
+                    />
+                  }
+                >
+                  {visibleReceived.map((review) => (
+                    <ReviewCard
+                      key={review.id}
+                      id={review.id}
+                      name={clientName(review)}
+                      avatarUrl={review.client?.avatarUrl}
+                      rating={review.rating}
+                      comment={review.comment}
+                      createdAt={review.createdAt}
+                      reported={reportedIds.includes(review.id)}
+                      onReport={() => setReportingId(review.id)}
+                    />
+                  ))}
+                </ReviewBlock>
+              )}
 
-            <Pagination
-              page={given.data?.page ?? 1}
-              pageSize={PAGE_SIZE}
-              total={givenTotal}
-              onPageChange={setPage}
-              variant="summary"
-              className={PAGINATION_BAR}
-            />
-          </>
-        )}
+              {origin === 'donnes' && (
+                <ReviewBlock
+                  loading={given.loading}
+                  error={given.error}
+                  onRetry={given.reload}
+                  isEmpty={visibleGiven.length === 0}
+                  emptyTitle={dirty ? 'Aucun avis ne correspond' : 'Aucun avis déposé'}
+                  emptyDescription={
+                    dirty
+                      ? 'Aucun avis déposé ne correspond à ces filtres.'
+                      : 'Les avis que vous laissez aux autres professionnels apparaîtront ici.'
+                  }
+                  pagination={
+                    <Pagination
+                      page={given.data?.page ?? 1}
+                      pageSize={PAGE_SIZE}
+                      total={givenTotal}
+                      onPageChange={setPage}
+                      variant="summary"
+                      className={PAGINATION_BAR}
+                    />
+                  }
+                >
+                  {visibleGiven.map((review) => (
+                    <ReviewCard
+                      key={review.id}
+                      id={review.id}
+                      name={review.professionalName}
+                      avatarUrl={review.professionalAvatarUrl}
+                      tradeName={review.professionalTrade}
+                      rating={review.rating}
+                      comment={review.comment}
+                      createdAt={review.createdAt}
+                      isHidden={review.isHidden}
+                      pending={pendingId === review.id}
+                      onEdit={() => setEditingId(review.id)}
+                      onToggleHidden={() => toggleHidden(review)}
+                      onDelete={() => remove(review)}
+                    />
+                  ))}
+                </ReviewBlock>
+              )}
+            </>
+          )}
+        </div>
       </AccountSectionLayout>
 
       {/* Retirer l'avis est une décision d'administration, pas du professionnel :

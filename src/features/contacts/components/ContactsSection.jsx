@@ -42,12 +42,16 @@ const ORIGIN_OPTIONS = [
 
 // Le canal dit *comment* on a été joint. Il répond à une question que
 // l'origine ne couvre pas : « qui ai-je déjà réussi à appeler ? » n'a rien à
-// voir avec « qui m'a écrit en premier ».
+// voir avec « qui m'a écrit en premier ? ».
+//
+// Ni « Messages » ni « Aucun » ne sont proposés. Un contact issu d'une demande
+// de message est une ligne sans échange — ni appel, ni WhatsApp — et la
+// filtrer n'isolerait que des conversations vides. Elle reste consultable,
+// elle ne mérite pas une option.
 const CHANNEL_OPTIONS = [
   { value: 'all', label: 'Tous les canaux' },
   { value: 'call', label: 'Appels' },
   { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'message', label: 'Messages' },
 ];
 
 function ContactRow({ contact, onReach, onReport, reported }) {

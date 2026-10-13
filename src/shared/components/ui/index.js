@@ -1,5 +1,6 @@
 export { Button } from './Button.jsx';
 export { ActionGroup } from './ActionGroup.jsx';
+export { Link } from './Link.jsx';
 export { Input } from './Input.jsx';
 export { Textarea } from './Textarea.jsx';
 export { CustomSelect } from './CustomSelect.jsx';
