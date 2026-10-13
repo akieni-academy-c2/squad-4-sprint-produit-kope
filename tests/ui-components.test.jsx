@@ -71,15 +71,18 @@ describe('BottomNav', () => {
     { id: 'f', label: 'Section F', shortLabel: 'S-F', icon: Star },
   ];
 
-  it('garde 5 destinations puis un bouton Menu pour les suivantes', () => {
+  it('ne dépasse jamais 5 cellules, bouton Menu compris', () => {
     const html = renderToStaticMarkup(
       <BottomNav items={manyItems} active="a" onChange={() => {}} ariaLabel="Navigation" />,
     );
 
-    // 5 destinations visibles + le bouton Menu, jamais les 6 d'un coup.
-    expect(html.split('<button').length - 1).toBe(6);
+    // La barre compte au maximum cinq cellules : quatre destinations et le
+    // bouton Menu. Compter le Menu à part donnerait six icônes sur 360 px, soit
+    // ~60 px chacune — sous la cible tactile confortable.
+    expect(html.split('<button').length - 1).toBe(5);
     expect(html).toContain('S-A');
-    expect(html).toContain('S-E');
+    expect(html).toContain('S-D');
+    expect(html).not.toContain('S-E');
     expect(html).not.toContain('S-F');
     // Le menu est un dialogue (Sheet), pas un simple lien.
     expect(html).toContain('aria-haspopup="dialog"');

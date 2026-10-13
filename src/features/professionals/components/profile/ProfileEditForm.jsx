@@ -38,6 +38,16 @@ export function ProfileEditForm({
 }) {
   const descLen = String(values.description ?? '').length;
 
+  // Brazzaville par défaut : c'est la ville de la quasi-totalité des
+  // professionnels de la démo, et laisser le champ vide les forcerait à
+  // descendre le voir avant de choisir quoi que ce soit. Le défaut est
+  // appliqué à la ville *affichée*, pas enregistré : tant que le formulaire
+  // n'est pas soumis, `cityId` reste vide et le professionnel peut changer
+  // d'avis sans avoir modifié quoi que ce soit.
+  const defaultCity = cities.find((c) => /brazzaville/i.test(c.name)) ?? null;
+  const effectiveCityId = values.cityId ?? defaultCity?.id ?? null;
+  const cityZones = zones.filter((z) => String(z.cityId) === String(effectiveCityId));
+
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <ProfileSection title="Informations personnelles">
@@ -166,7 +176,7 @@ export function ProfileEditForm({
               id="pe-city"
               name="cityId"
               className="w-full"
-              value={values.cityId == null ? '' : String(values.cityId)}
+              value={effectiveCityId == null ? '' : String(effectiveCityId)}
               placeholder="Choisissez une ville"
               disabled={loadingRefs}
               onChange={(value) => setField('cityId', value === '' ? null : value)}
@@ -179,6 +189,7 @@ export function ProfileEditForm({
               aria-describedby={errors.cityId ? 'pe-city-error' : undefined}
             />
           </FormField>
+
           <FormField
             id="pe-years"
             label="Années d'expérience"
@@ -194,14 +205,28 @@ export function ProfileEditForm({
           />
         </div>
 
+        {/* La ville passe avant les zones, et pas seulement dans l'ordre du
+            formulaire : elle les restreint. Une zone appartient à une ville
+            (`zones.city_id`), et proposer celles de Pointe-Noire pendant qu'on
+            a choisi Brazzaville conduit à un profil incohérent — on ne peut pas
+            être à la fois dans les deux.
+
+            Changer de ville ne vide pas la sélection : elle reste visible pour
+            que l'utilisateur voie pourquoi elle ne convient plus, et le serveur
+            la refusera à l'enregistrement. */}
         <div className="mt-4">
+          {/* Les zones affichées sont celles de la ville choisie — rien d'autre. */}
           <MultiSelect
-            label="Zone"
+            label="Zones"
             required
-            hint="Sélectionnez au moins une zone."
+            hint={
+              effectiveCityId == null
+                ? 'Choisissez d’abord une ville pour voir ses zones.'
+                : 'Sélectionnez au moins une zone.'
+            }
             error={errors.zoneIds}
-            disabled={loadingRefs}
-            options={zones.map((z) => ({ value: z.id, label: z.name }))}
+            disabled={loadingRefs || effectiveCityId == null}
+            options={cityZones.map((z) => ({ value: z.id, label: z.name }))}
             value={values.zoneIds || []}
             onChange={(ids) => setField('zoneIds', ids)}
           />
