@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from '@/shared/components/ui/Link.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
 import { TERMS_SECTIONS, TERMS_VERSION } from '@/shared/content/terms.js';
 import { SUPPORT_EMAIL } from '@/shared/constants/support.js';
 
@@ -52,7 +52,7 @@ export function TermsPage() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:items-start">
         <nav
           aria-label="Sommaire des conditions"
-          className="rounded-md border border-gray-200 bg-white p-4 ${STICKY_TOP}"
+          className={`rounded-md border border-gray-200 bg-white p-4 ${STICKY_TOP}`}
         >
           <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Sommaire</p>
           <ol className="mt-3 space-y-1.5">

@@ -46,20 +46,19 @@ export function PhoneInput({ id, value, onChange, error, success, disabled, clas
     <div className={shell}>
       <span
         aria-hidden
-        className="flex shrink-0 select-none items-stretch border-r border-gray-200 bg-gray-50"
+        className="flex shrink-0 select-none items-center border-r border-gray-200 bg-gray-50"
       >
-        <span className="flex items-center py-3 pl-3 pr-2.5 text-sm font-semibold text-gray-700">
-          +242
-        </span>
+        <span className="py-3 pl-3 pr-3 text-sm font-semibold text-gray-700">+242</span>
         {/*
-          Séparateur pleine hauteur de la zone de saisie, pas 16 px.
+          Séparateur à la hauteur du texte, pas de la zone.
 
-          Un trait de 16 px centré dans une zone de 44 px ressemble à une
-          apostrophe et ne marque pas la frontière entre le préfixe et la
-          saisie. `w-px` étiré sur toute la hauteur indique l'endroit exact où
-          commencer à taper.
+          Étiré sur les 44 px du champ (`self-stretch`), il touchait les bordures
+          haute et basse et pesait plus lourd que la bordure du champ lui-même —
+          un trait qui estructurait la boîte au lieu de la séparer en deux
+          parties. Centré sur la ligne de `+242`, il dit seulement « le préfixe
+          finit ici », et la bordure du champ reste le seul cadre.
         */}
-        <span className="w-px self-stretch bg-gray-300" />
+        <span className="h-4 w-px bg-gray-300" />
       </span>
 
       <input

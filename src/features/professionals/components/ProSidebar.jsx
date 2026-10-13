@@ -4,14 +4,14 @@ import { Link } from '@/shared/components/ui/Link.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
-import { ROUTES, PROFILE_STATUS } from '@/shared/lib/constants.js';
+import { ROUTES, PROFILE_STATUS, STICKY_TOP } from '@/shared/lib/constants.js';
 
 export function ProSidebar({ user, profile, displayName, items, active, onChange }) {
   const isPublished = profile?.status === PROFILE_STATUS.PUBLISHED;
   const publicId = user?.id || profile?.userId || profile?.id || '0';
 
   return (
-    <aside className="space-y-6 ${STICKY_TOP} lg:self-start">
+    <aside className={`space-y-6 ${STICKY_TOP} lg:self-start`}>
       <Card className="overflow-hidden p-0">
         <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
           <div className="flex items-center gap-4">

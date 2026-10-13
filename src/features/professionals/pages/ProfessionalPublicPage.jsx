@@ -13,7 +13,7 @@ import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { ROLES } from '@/shared/lib/constants.js';
+import { ROLES, STICKY_TOP } from '@/shared/lib/constants.js';
 import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { PhotoLightbox } from '../components/public/PhotoLightbox.jsx';
 import { PublicProfileMobileIntro } from '../components/public/PublicProfileMobileIntro.jsx';
@@ -186,7 +186,7 @@ export function ProfessionalPublicPage() {
             sur la hauteur de la colonne, ce qui est le comportement attendu
             d'un bouton de contact persistant.
           */}
-          <Card id="contact" className="space-y-4 p-5 ${STICKY_TOP}">
+          <Card id="contact" className={`space-y-4 p-5 ${STICKY_TOP}`}>
             <div className="space-y-1.5">
               <h2 className="text-lg font-bold text-gray-900">Parlons de votre besoin.</h2>
               <p className="text-sm leading-6 text-gray-600">
