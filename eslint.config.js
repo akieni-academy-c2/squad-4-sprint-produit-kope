@@ -23,9 +23,28 @@ export default defineConfig([
     },
   },
   {
-    files: ['server/**/*.js', 'vite.config.js', 'vitest.config.js', 'tests/setup.js', 'tests/sql-live.test.js', 'tests/rateLimit.test.js'],
+    files: [
+      'server/**/*.js',
+      'vite.config.js',
+      'vitest.config.js',
+      'scripts/**/*.mjs',
+      'tests/setup.js',
+      'tests/support/**/*.js',
+      'tests/server/**/*.js',
+      'tests/sql-live.test.js',
+    ],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  {
+    // Les tests sont rangés comme le code qu'ils vérifient : ce qui touche au
+    // serveur s'exécute avec les globales Node, ce qui touche à l'interface
+    // avec celles du navigateur. Un `.test.jsx` sous `tests/server/` est donc
+    // aussi un signal que le test est rangé du mauvais côté.
+    files: ['tests/src/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
     },
   },
   {

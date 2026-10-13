@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const FOCUSABLE = [
   'a[href]',
@@ -10,26 +10,33 @@ const FOCUSABLE = [
 ].join(',');
 
 /**
- * Comportement commun aux surfaces superposées (Modal, Dialog, Sheet) :
- * animation d'ouverture/fermeture, touche Échap, blocage du scroll,
- * piégeage du focus et restitution du focus à l'élément déclencheur.
+ * Comportement d'une surface superposée (Modal, Dialog, Sheet) :
+ * touche Échap, blocage du scroll, piégeage du focus et restitution du focus
+ * à l'élément déclencheur.
+ *
+ * ## Ce que ce hook ne fait plus, et pourquoi
+ *
+ * Il portait jusqu'ici l'animation : un état `show` basculé sur
+ * `requestAnimationFrame` et un `setTimeout` de 300 ms qui démontrait le
+ * portail à la fin. Deux problèmes.
+ *
+ * Le premier est que la durée d'une animation CSS **vit dans la classe** —
+ * `transition-* duration-300` — tandis que le délai de démontage vit dans le
+ * hook. Les deux chiffres sont écrits à deux endroits, à 60 lignes de distance,
+ * et divergent au premier changement : la surface disparaît avant d'avoir fini
+ * de partir, ou reste 300 ms dans le vide.
+ *
+ * Le second est qu'un `setTimeout` ne connaît pas l'interruption. Si
+ * l'utilisateur rouvre la feuille pendant qu'elle se referme, l'ancien minuteur
+ * la démonte 300 ms plus tard, en plein milieu de l'ouverture. `AnimatePresence`
+ * fait le même travail en connaissant l'état réel : tant qu'un élément est dans
+ * l'arbre, il reste.
+ *
+ * Le mouvement appartient donc à `AnimatePresence` et aux variantes de
+ * `@/shared/motion` ; ce hook ne garde que le **comportement**.
  */
-export function useOverlay({ open, onClose, dismissable = true, duration = 300 }) {
-  const [render, setRender] = useState(open);
-  const [show, setShow] = useState(open);
+export function useOverlay({ open, onClose, dismissable = true }) {
   const panelRef = useRef(null);
-
-  useEffect(() => {
-    if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRender(true);
-      const frame = requestAnimationFrame(() => setShow(true));
-      return () => cancelAnimationFrame(frame);
-    }
-    setShow(false);
-    const timer = setTimeout(() => setRender(false), duration);
-    return () => clearTimeout(timer);
-  }, [open, duration]);
 
   useEffect(() => {
     if (!open) return;
@@ -81,5 +88,5 @@ export function useOverlay({ open, onClose, dismissable = true, duration = 300 }
     };
   }, [open, dismissable, onClose]);
 
-  return { render, show, panelRef };
+  return { panelRef };
 }

@@ -1,8 +1,38 @@
 import { Handshake, Search, User, Phone } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { SearchFilters } from '@/features/search/components/SearchFilters.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
+import { EASE } from '@/shared/motion/timing.js';
+import { staggerChild, staggerParent } from '@/shared/motion/stagger.js';
 import hero from '@/shared/assets/hero.png';
+
+/**
+ * Le héros est le seul endroit de l'application où une **chorégraphie** se
+ * justifie.
+ *
+ * Partout ailleurs, un contenu qui arrive doit arriver vite et sans spectacle.
+ * Ici l'exception est réelle : c'est la première image de la page, elle est
+ * au-dessus de la ligne de flottaison, et elle est lue en même temps que le
+ * reste. Un écran qui apparaît d'un bloc se lit comme une page vide qu'on
+ * remplit ; un écran qui se pose en 340 ms se lit comme une composition.
+ *
+ * ## Ce qui évite le résultat générique
+ *
+ * - **le total est borné** à 340 ms, pas à 340 ms × le nombre d'éléments ;
+ * - **les décalages sont de 8 à 12 px**, pas de 40 : au-delà, un élément
+ *   paraît *arriver d'ailleurs* ;
+ * - **la photo n'est pas traduite**. Le texte se pose en montant ; une image
+ *   se pose en se calant, par un léger recul d'échelle. Traduire les deux,
+ *   c'est les traiter comme le même objet alors que ce ne sont pas les mêmes.
+ *
+ * ## Pourquoi pas de `whileInView` plus bas dans la page
+ *
+ * Le contenu sous la ligne de flottaison est **déjà voulu** : l'utilisateur a
+ * fait défiler pour le voir. Le faire apparaître en plus retarde sa lecture
+ * pour un effet qu'il n'a pas demandé, et rien ne l'avertit. C'est la
+ * signature des animations générées : partout, toujours, dans le même sens.
+ */
 
 export function HeroSection() {
   return (
@@ -32,24 +62,43 @@ export function HeroSection() {
         <rect x="1140" y="420" width="20" height="20" rx="6" transform="rotate(-30 1150 430)" fill="#2d5c4a" opacity="0.09" />
         <circle cx="950" cy="300" r="4" fill="#2d5c4a" opacity="0.14" />
       </svg>
-      <div className="container-kop relative z-10 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center">
+      {/* Le parent porte la cadence, les enfants ne portent que leur état.
+          `initial={false}` : c'est le premier rendu de la page, la composition
+          est déjà là — l'animer en entrée n'ajouterait qu'un blanc de 340 ms
+          avant le premier mot. */}
+      <motion.div
+        variants={staggerParent(5)}
+        initial={false}
+        animate="animate"
+        className="container-kop relative z-10 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center"
+      >
         <div className="space-y-8">
-          <p className='text-primary-500 font-semibold'><Handshake size={16} aria-hidden className="inline" /> LES SAVOIR-FAIRE DU CONGO </p>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
+          <motion.p variants={staggerChild} className='text-primary-500 font-semibold'><Handshake size={16} aria-hidden className="inline" /> LES SAVOIR-FAIRE DU CONGO </motion.p>
+          <motion.h1 variants={staggerChild} className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
             Le bon artisan.
             Tout près de vous.
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-gray-600 sm:text-lg">
+          </motion.h1>
+          <motion.p variants={staggerChild} className="mt-5 max-w-xl text-base leading-7 text-gray-600 sm:text-lg">
             Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les
             professionnels de votre quartier et échangez directement avec eux.
-          </p>
-          <ul className="mt-8 hidden flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 sm:flex">
+          </motion.p>
+          <motion.ul variants={staggerChild} className="mt-8 hidden flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 sm:flex">
             <li className="flex items-center gap-2 border border-gray-400  font-medium px-3 py-1.5 rounded-full"><User size={16} aria-hidden />Des profils à découvrir</li>
             <li className="flex items-center gap-2 border border-gray-400 font-medium px-3 py-1.5 rounded-full"><Phone size={16} aria-hidden />Un contact direct</li>
-          </ul>
+          </motion.ul>
         </div>
 
-        <div className="relative mx-auto w-full max-w-130">
+        {/* La photo se cale au lieu de monter. `scale: 1.03` : au-delà de 1.05
+            le recadrage se voit pendant l'animation et l'image semble glisser ;
+            en dessous de 1.02 le mouvement est trop faible pour être lu et elle
+            apparaît simplement. */}
+        <motion.div
+          variants={{
+            initial: { opacity: 0, scale: 1.03 },
+            animate: { opacity: 1, scale: 1, transition: { duration: 0.32, ease: EASE.enter } },
+          }}
+          className="relative mx-auto w-full max-w-130"
+        >
           <div className="rounded-[16px] overflow-hidden  ">
             <ImageWithSkeleton
               src={hero}
@@ -67,8 +116,8 @@ export function HeroSection() {
             />
           </div>
 
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* 2. SEARCH WIDGET */}
       <aside className="container-kop relative -space-y-px z-10">

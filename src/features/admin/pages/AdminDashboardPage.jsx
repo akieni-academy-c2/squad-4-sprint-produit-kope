@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
 import { ROUTES } from '@/shared/lib/constants.js';
+import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
@@ -85,7 +86,7 @@ export function AdminDashboardPage() {
           <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
-        <section className="min-w-0">
+        <SectionSwap sectionKey={section} className="min-w-0">
           <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
           {section === 'overview' && <AdminStats onNavigate={openSection} />}
           {section === 'professionals' && (
@@ -102,7 +103,7 @@ export function AdminDashboardPage() {
           {section === 'users' && (
             <AdminUsersTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
           )}
-        </section>
+        </SectionSwap>
 
         <aside
           ref={setRightEl}

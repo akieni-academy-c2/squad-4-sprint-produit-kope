@@ -1,7 +1,9 @@
 import { isValidElement, cloneElement, useId, useContext, createContext, Children } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/utils';
+import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
 import { useOverlay } from './useOverlay.js';
 
 /**
@@ -14,32 +16,48 @@ import { useOverlay } from './useOverlay.js';
  */
 const DialogLabelContext = createContext(null);
 
+/**
+ * Le panneau reçoit la variante du dialogue, pas un fondu d'opacité.
+ *
+ * `animate-scale-in` — l'animation CSS du projet — ne faisait qu'un `scale` sur
+ * 180 ms, sans ressort ni recul. Une surface qui apparaît à la taille exacte
+ * n'a aucune direction : on ne sait pas d'où elle vient. Ici, elle arrive par
+ * le bas et se pose.
+ *
+ * Le panneau est donc un `motion.div`, sans quoi la variante reçue par
+ * `cloneElement` resterait une propriété inerte sur une balise qui ne sait pas
+ * l'animer.
+ */
 export function Dialog({ open, onOpenChange, children }) {
-  const { render, show, panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
+  const { panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
 
-  if (!render || typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') return null;
 
   let body = children;
   if (isValidElement(children))
     body = cloneElement(children, {
       ref: panelRef,
-      className: cn(
-        children.props.className,
-        'transition-opacity duration-300',
-        show ? 'opacity-100' : 'opacity-0',
-      ),
+      // La variante se propage depuis le fond : le panneau n'a pas à répéter
+      // `initial`/`animate`, et l'état de sortie reste cohérent si le dialogue
+      // est fermé au milieu de son ouverture.
+      variants: dialogPanel,
     });
 
   return createPortal(
-    <div
-      className={cn(
-        'fixed inset-0 z-90 flex items-end justify-center bg-checkers backdrop-blur p-0 sm:items-center sm:p-2 transition-opacity duration-300',
-        show ? 'opacity-100' : 'opacity-0',
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="fixed inset-0 z-90 flex items-end justify-center bg-checkers backdrop-blur p-0 sm:items-center sm:p-2"
+          variants={overlayBackdrop}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          onClick={() => onOpenChange?.(false)}
+        >
+          {body}
+        </motion.div>
       )}
-      onClick={() => onOpenChange?.(false)}
-    >
-      {body}
-    </div>,
+    </AnimatePresence>,
     document.body,
   );
 }
@@ -56,7 +74,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
   const header = headerIndex >= 0 ? childArray.splice(headerIndex, 1)[0] : null;
 
   return (
-    <div
+    <motion.div
       ref={forwardedRef}
       role="dialog"
       aria-modal="true"
@@ -70,7 +88,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
         // est coupé - iOS ne réduit pas la page sous le clavier, donc rien ne
         // viendrait le faire remonter. `sm:max-h-none` rend la hauteur libre
         // sur desktop, où le dialogue est centré.
-        'relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) animate-scale-in sm:max-h-none sm:rounded-3xl',
+        'relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) sm:max-h-none sm:rounded-3xl',
         className,
       )}
       onClick={(e) => e.stopPropagation()}
@@ -109,7 +127,7 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
           )}
         </div>
       </DialogLabelContext.Provider>
-    </div>
+    </motion.div>
   );
 }
 

@@ -4,6 +4,7 @@ import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
+import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { cn } from '@/shared/utils';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
 import { MyReviewsSection } from '@/features/reviews/components/MyReviewsSection.jsx';
@@ -58,13 +59,13 @@ export function ClientDashboardPage() {
       >
         <ClientDashboardSidebar items={NAV_ITEMS} active={active} onChange={goTo} />
 
-        <section className="min-w-0">
+        <SectionSwap sectionKey={active} className="min-w-0">
           {active === 'apercu' && <ClientOverviewSection onNavigate={goTo} />}
           {active === 'profil' && <ClientProfileSection user={user} />}
           {active === 'avis' && <MyReviewsSection rightContainer={rightEl} />}
           {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
           {active === 'signalements' && <MyReportsSection rightContainer={rightEl} />}
-        </section>
+        </SectionSwap>
 
         <aside
           ref={setRightEl}

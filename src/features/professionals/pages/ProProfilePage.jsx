@@ -4,6 +4,7 @@ import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
+import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { getMyProfile, setAvailability } from '../services/professionals.service.js';
@@ -118,7 +119,7 @@ export function ProProfilePage() {
           onChange={goTo}
         />
 
-        <main className="min-w-0 space-y-6">
+        <SectionSwap sectionKey={active} className="min-w-0 space-y-6">
           {active === 'overview' && (
             <>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -146,7 +147,7 @@ export function ProProfilePage() {
           {active === 'signalements' && (
             <MyReportsSection rightContainer={rightEl} />
           )}
-        </main>
+        </SectionSwap>
 
         <aside
           ref={setRightEl}

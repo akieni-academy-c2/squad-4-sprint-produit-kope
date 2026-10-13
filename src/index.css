@@ -90,6 +90,18 @@ body,
     letter-spacing: -0.01em;
   }
 
+  /* iOS affiche un rectangle gris sur tout élément pressable, par-dessus le
+     fond du bouton. Il ne se déclenche qu'au tap, pas au clic de souris :
+     inoffensif sur desktop, cassé sur mobile. Le bouton se signale
+     lui-même — son enfoncement `active:scale` suffit. */
+  a[href],
+  button,
+  [role='button'],
+  summary,
+  label {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* Tout ce qui se clique doit le signaler. Tailwind ne pose pas de curseur
      par défaut sur les boutons ni les liens : sans cette règle, la quasi-totalité
      de l'interface affiche la flèche et paraît inerte.

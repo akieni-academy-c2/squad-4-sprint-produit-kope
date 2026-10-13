@@ -33,6 +33,39 @@ const SIZES = {
   'icon-sm': 'h-8 w-8 rounded-[8px] gap-0 p-0',
 };
 
+/**
+ * Enfoncement sous le doigt.
+ *
+ * ## Pourquoi du CSS et non un ressort de Framer Motion
+ *
+ * C'est la question à se poser, et la réponse est « du CSS », pour une raison
+ * concrète : **au relâchement, le doigt est déjà parti.** La seule chose qu'un
+ * ressort apporte de plus est de conserver la vitesse courante quand
+ * l'animation est interrompue — ce qui compte pour une feuille qu'on rouvre à
+ * mi-parcours, et pas pour un appui. Ici, personne ne voit la vitesse de retour.
+ *
+ * En échange, un ressort coûte à chaque bouton de l'application : un type
+ * `motion` à construire, une instance à abonner à la boucle d'animation, une
+ * props `whileTap` à propager à travers `as={Link}`. Pour 30 ms de retour que
+ * `:active` rend gratuitement, sur le compositeur, en JavaScript zéro.
+ *
+ * Le ressort est réservé à ce qui peut **vraiment** être interrompu et repris —
+ * voir `src/shared/motion/timing.js`.
+ *
+ * ## Les valeurs
+ *
+ * `0.97` : en dessous de `0.95` le bouton s'enfonce au lieu de s'appuyer ; au
+ * dessus de `0.98`, le retour est plus court que l'appui et ça tremble.
+ *
+ * `100 ms` à l'aller, `150 ms` au retour — un ressort appliqué à la main ferait
+ * exactement la même chose, sans la dépendance.
+ *
+ * `active:` disparaît sur un bouton désactivé grâce à `disabled:active:scale-100`
+ * : sinon l'interface dirait « tu peux appuyer » le temps du geste.
+ */
+const PRESS =
+  'transition-[color,background-color,border-color,box-shadow,transform] duration-100 ease-out active:scale-[0.97] active:duration-150 disabled:active:scale-100';
+
 export function Button({
   as: As = 'button',
   variant = 'primary',
@@ -51,8 +84,9 @@ export function Button({
       disabled={isDisabled}
       aria-busy={Boolean(loading)}
       className={cn(
-        'cursor-pointer relative inline-flex select-none items-center justify-center leading-none transition-colors whitespace-nowrap',
+        'cursor-pointer relative inline-flex select-none items-center justify-center leading-none whitespace-nowrap',
         'focus-ring focus:outline-none',
+        PRESS,
         VARIANTS[variant] || VARIANTS.primary,
         SIZES[size] || SIZES.md,
         isDisabled && 'cursor-not-allowed opacity-80',
