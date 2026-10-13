@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ArrowUpRight } from 'lucide-react';
 import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
 import { ROUTES } from '@/shared/lib/constants.js';
@@ -26,7 +26,7 @@ export function ZoneSection() {
             zones.map((z, index) => (
               <Link
                 key={z.id}
-                to={`${ROUTES.SEARCH}?zone=${encodeURIComponent(z.id)}`}
+                href={`${ROUTES.SEARCH}?zone=${encodeURIComponent(z.id)}`}
                 hidden={index >= 6}
                 className="flex items-center justify-between rounded-sm border border-gray-200 bg-white p-3  font-semibold text-gray-800  hover:bg-primary-50 hover:text-primary-700 transition group"
               >

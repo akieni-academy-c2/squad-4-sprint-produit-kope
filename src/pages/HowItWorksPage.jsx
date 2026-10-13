@@ -1,9 +1,10 @@
 import { Search, Star, Phone, User, Image as ImageIcon, MapPin } from 'lucide-react';
 import { SplitShowcase } from '@/shared/components/sections/SplitShowcase.jsx';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 import { ClientCTA } from '@/shared/components/home/ClientCTA.jsx';
 import { ProCTA } from '@/shared/components/home/ProCTA.jsx';
 import hero from '@/shared/assets/hero.png';
-import user2 from '@/shared/assets/user2.png';
+import form from '@/shared/assets/form.png';
 
 const CLIENT_STEPS = [
   { icon: Search, title: 'Je décris mon besoin', body: 'Choisissez un métier et un quartier à Brazzaville. La recherche ne montre que des profils publiés et complétés.' },
@@ -18,6 +19,7 @@ const PRO_STEPS = [
 ];
 
 export function HowItWorksPage() {
+  usePageTitle('Comment ça marche');
   return (
     <div>
       <section className="relative overflow-hidden bg-kop-mint py-8 lg:py-16">
@@ -67,8 +69,8 @@ export function HowItWorksPage() {
         eyebrow="Côté professionnel"
         title="Le parcours pro."
         intro="Rendez-vous visible dans votre ville et recevez les demandes directement."
-        imageSrc={user2}
-        imageAlt="Professionnel KOP"
+        imageSrc={form}
+        imageAlt="Professionnel KOP à son atelier"
         caption={['Se faire connaître, chez soi', 'Votre savoir-faire, visible dans votre quartier.']}
         items={PRO_STEPS}
         reverse

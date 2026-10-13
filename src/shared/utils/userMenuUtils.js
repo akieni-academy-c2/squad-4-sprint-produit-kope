@@ -1,11 +1,4 @@
 import { ROUTES, ROLES } from '@/shared/lib/constants.js';
-import { initials } from '@/shared/utils';
-
-export function avatarFor(user) {
-  if (!user) return '?';
-  if (user.role === ROLES.PRO) return initials(user.displayName || '', '');
-  return initials(user.firstName, user.lastName);
-}
 
 export function displayNameFor(user) {
   if (!user) return null;
@@ -26,4 +19,21 @@ export function dashboardHref(role) {
   if (role === ROLES.PRO) return ROUTES.DASHBOARD_PRO;
   if (role === ROLES.ADMIN) return ROUTES.ADMIN;
   return ROUTES.HOME;
+}
+
+/**
+ * Point d'entrée d'un utilisateur connecté, depuis le logo comme depuis `/`.
+ *
+ * Un professionnel gère un profil et un administrateur gère le site : ils ont
+ * une page qui leur est propre. Un client, lui, n'a rien à gérer - son espace
+ * ne contient que ses demandes et ses avis, tous accessibles depuis la
+ * recherche. La recherche est donc son point d'entrée, pas son tableau de bord.
+ *
+ * `dashboardHref` reste inchangée : le lien « Mon espace » du menu continue
+ * d'ouvrir l'espace client.
+ */
+export function landingHrefFor(user) {
+  if (!user) return ROUTES.HOME;
+  if (user.role === ROLES.CLIENT) return ROUTES.SEARCH;
+  return dashboardHref(user.role);
 }

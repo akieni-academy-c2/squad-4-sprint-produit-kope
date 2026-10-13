@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { RootLayout } from '@/shared/components/layout/RootLayout.jsx';
+import { HomeRoute } from './HomeRoute.jsx';
 import { RoleRoute } from './RoleRoute.jsx';
 import { ROLES, ROUTES } from '@/shared/lib/constants.js';
 import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 
 const HomePage = lazy(() => import('@/pages/HomePage.jsx').then((m) => ({ default: m.HomePage })));
 const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage.jsx').then((m) => ({ default: m.HowItWorksPage })));
+const TermsPage = lazy(() => import('@/pages/TermsPage.jsx').then((m) => ({ default: m.TermsPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage.jsx').then((m) => ({ default: m.NotFoundPage })));
 const ForbiddenPage = lazy(() => import('@/pages/ForbiddenPage.jsx').then((m) => ({ default: m.ForbiddenPage })));
 const AuthModalRedirect = lazy(() => import('@/features/auth/pages/AuthModalRedirect.jsx').then((m) => ({ default: m.AuthModalRedirect })));
@@ -46,16 +48,21 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <Suspense fallback={<PageSkeleton />}><RouteErrorPage /></Suspense>,
     children: [
-      { index: true, element: page(<HomePage />) },
+      { index: true, element: <HomeRoute>{page(<HomePage />)}</HomeRoute> },
       { path: ROUTES.HOW_IT_WORKS, element: page(<HowItWorksPage />) },
       { path: ROUTES.SEARCH, element: page(<SearchPage />) },
+      { path: ROUTES.TERMS, element: page(<TermsPage />) },
       { path: '/professionals/:id', element: page(<ProfessionalPublicPage />) },
       { path: ROUTES.LOGIN, element: page(<AuthModalRedirect mode="login" />) },
       { path: ROUTES.REGISTER_CLIENT, element: page(<AuthModalRedirect mode="register-client" />) },
       { path: ROUTES.REGISTER_PRO, element: page(<AuthModalRedirect mode="register-pro" />) },
-      { path: ROUTES.DASHBOARD_CLIENT, element: protectedPage(ROLES.CLIENT, ClientDashboardPage) },
-      { path: ROUTES.DASHBOARD_PRO, element: protectedPage(ROLES.PRO, ProProfilePage) },
-      { path: ROUTES.ADMIN, element: protectedPage(ROLES.ADMIN, AdminDashboardPage) },
+      // Les sections de tableau de bord sont adressables : `/dashboard/client/avis`
+      // ouvre la même page sur le bon onglet. La section est lue dans le chemin,
+      // pas dans un état local - le rechargement et le bouton « retour » du
+      // navigateur fonctionnent alors, et un lien de partage est exact.
+      { path: `${ROUTES.DASHBOARD_CLIENT}/:section?`, element: protectedPage(ROLES.CLIENT, ClientDashboardPage) },
+      { path: `${ROUTES.DASHBOARD_PRO}/:section?`, element: protectedPage(ROLES.PRO, ProProfilePage) },
+      { path: `${ROUTES.ADMIN}/:section?`, element: protectedPage(ROLES.ADMIN, AdminDashboardPage) },
       { path: '/forbidden', element: page(<ForbiddenPage />) },
       { path: '*', element: page(<NotFoundPage />) },
     ],

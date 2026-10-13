@@ -58,5 +58,3 @@ export function deletePhoto(photoId) {
     },
   );
 }
-
-export default { listPhotos, addPhoto, updatePhoto, deletePhoto };

@@ -5,9 +5,9 @@ pg.types.setTypeParser(20, Number);
 
 export const pool = new pg.Pool({
   connectionString: env.DATABASE_URL,
-  max: Number(process.env.PG_POOL_MAX) || 10,
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 10000,
+  max: env.PG_POOL_MAX,
+  connectionTimeoutMillis: env.PG_CONNECTION_TIMEOUT_MS,
+  idleTimeoutMillis: env.PG_IDLE_TIMEOUT_MS,
   keepAlive: true,
   keepAliveInitialDelayMillis: 5000,
 });
@@ -15,6 +15,12 @@ export const pool = new pg.Pool({
 pool.on('error', (err) => {
   console.error('Erreur inattendue du pool Postgres', err);
 });
+
+/** Sonde de disponibilité : une seule requête, aucun accès aux données métier. */
+export async function isDatabaseReachable(db = pool) {
+  await db.query('SELECT 1');
+  return true;
+}
 
 /**
  * Exécute fn(client) dans une transaction.

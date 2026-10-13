@@ -1,6 +1,8 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { mockImage, PRO_CTA_IMAGE_PROMPT } from '@/shared/mocks/images.js';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
+import cta from '@/shared/assets/cta.png';
 
 export function ProCTA({ imageLeft = false } = {}) {
   const { open: openModal } = useAuthModal();
@@ -20,7 +22,7 @@ export function ProCTA({ imageLeft = false } = {}) {
               </p>
               <div className="mt-7">
                 <Button
-                  onClick={() => openModal('register-pro')}
+                  onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_PRO)}
                   variant="secondary"
                   size="lg"
                   className="bg-white! text-gray-900! hover:bg-gray-100! border-white!"
@@ -30,13 +32,14 @@ export function ProCTA({ imageLeft = false } = {}) {
               </div>
             </div>
             <div className={`relative max-w-115 ${imageLeft ? 'lg:order-1 lg:mr-auto' : 'lg:ml-auto'}`}>
-              <div className="rounded-[16px] overflow-hidden ">
-                <img
-                  src={mockImage(PRO_CTA_IMAGE_PROMPT)}
-                  alt="Devenir prestataire KOP"
-                  className="w-full h-88 object-cover"
-                />
-              </div>
+<ImageWithSkeleton
+                src={cta}
+                alt="Devenir prestataire KOP"
+                // 4/3 plutôt que 16/9 : la section est haute et l'image doit
+                // occuper de la hauteur sur mobile comme sur grand écran.
+                ratio="aspect-4/3"
+                className="rounded-[16px]"
+              />
             </div>
           </div>
         </div>

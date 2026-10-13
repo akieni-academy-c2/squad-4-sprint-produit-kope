@@ -25,35 +25,52 @@ export async function listPhotos(professionalId) {
 
 /** US-05 */
 export async function addPhoto(professionalId, file, { title, description }) {
-  if (!file) 
+  if (!file)
     throw ApiError.badRequest('Aucune photo reçue', { photo: 'Choisissez une photo' });
-  
 
-  if ((await repository.count(professionalId)) >= MAX_PHOTOS) 
-    throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
-  
-
+  // L'écriture disque (ou les deux uploads Cloudinary) a lieu AVANT la
+  // transaction : une transaction SQL ne couvre pas le système de fichiers.
+  // La tenir dedans retenait une connexion du pool et un verrou FOR UPDATE
+  // pendant toute la durée du transfert réseau - 10 uploads simultanés
+  // suffisaient à répondre 503 à toute l'API.
   const processed = await storage.processImage(file.buffer);
   const paths = storage.newPaths(professionalId);
 
-  const photo = await withTransaction(async (tx) => {
-    await repository.lockProfessional(professionalId, tx);
-    if ((await repository.count(professionalId, tx)) >= MAX_PHOTOS) 
-      throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
-    
+  try {
+    await storage.save(paths, processed);
+  } catch (err) {
+    // Une panne de stockage - disque plein, droits, Cloudinary injoignable -
+    // n'est pas une erreur du client. La rapporter en 400 la faisait passer
+    // pour une faute de saisie, et le catch vide la rendait invisible.
+    console.error('[photos] enregistrement impossible', err);
+    throw new ApiError(503, "Le service d'enregistrement est indisponible");
+  }
 
-    const created = await repository.create(
-      { professionalId, filePath: paths.filePath, thumbPath: paths.thumbPath, title, description },
-      tx,
-    );
-    await storage.save(paths, processed); 
-    return created;
-  });
+  try {
+    const photo = await withTransaction(async (tx) => {
+      await repository.lockProfessional(professionalId, tx);
+      // Re-compte sous verrou : le contrôle preliminaire ci-dessus est
+      // optimiste, deux ajouts concurrents pourraient tous deux le passer.
+      if ((await repository.count(professionalId, tx)) >= MAX_PHOTOS)
+        throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
 
-  return toDto(photo);
+      return repository.create(
+        { professionalId, filePath: paths.filePath, thumbPath: paths.thumbPath, title, description },
+        tx,
+      );
+    });
+
+    return toDto(photo);
+  } catch (error) {
+    // Le fichier est déjà sur le disque : sans ce nettoyage, un COMMIT en
+    // échec laisse une image orpheline que rien ne référencera jamais.
+    await storage.remove(paths).catch((cleanupError) => {
+      console.error('[photos] fichier orphelin après échec', paths, cleanupError);
+    });
+    throw error;
+  }
 }
 
-/** Modification du titre */
 export async function updatePhoto(professionalId, photoId, { title, description }) {
   const updated = await repository.update(photoId, professionalId, { title, description });
   if (!updated) throw ApiError.notFound('Photo introuvable');
@@ -64,5 +81,13 @@ export async function updatePhoto(professionalId, photoId, { title, description 
 export async function removePhoto(professionalId, photoId) {
   const removed = await withTransaction((tx) => repository.remove(photoId, professionalId, tx)); // filtre par propriétaire
   if (!removed) throw ApiError.notFound('Photo introuvable');
-  await storage.remove(removed);
+
+  // La ligne est déjà supprimée : la réponse doit dire ce qui s'est réellement
+  // passé. Renvoyer 500 pour un fichier resté sur le disque ferait croire à
+  // l'appelant que la suppression a échoué, donc qu'il doit réessayer.
+  try {
+    await storage.remove(removed);
+  } catch (err) {
+    console.error('[photos] ligne supprimée, fichier non supprimé', removed, err);
+  }
 }

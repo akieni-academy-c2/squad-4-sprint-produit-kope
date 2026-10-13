@@ -14,6 +14,10 @@ const VARIANTS = {
     'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200',
   secondary:
     'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400',
+  // Actions groupées d'une fiche. Le fond translucide les détache du texte de
+  // la carte sans rivaliser avec l'action principale, qui reste en `primary`.
+  subtle:
+    'bg-gray-200/20 border border-gray-200 text-gray-700 hover:bg-gray-200/40 hover:text-gray-900 disabled:text-gray-400 disabled:border-gray-200',
   mint:
     'bg-mint-50 text-primary-700 border border-mint-200 hover:bg-mint-100 disabled:opacity-60',
   dark:
@@ -21,12 +25,49 @@ const VARIANTS = {
 };
 
 const SIZES = {
-  xs:   'h-8 px-2.5 text-[12px] rounded-[8px] gap-1 font-semibold',
-  sm:   'h-9 px-3.5 text-sm rounded-[8px] gap-1.5 font-semibold',
-  md:   'h-11 px-5 text-sm rounded-[8px] gap-2 font-semibold',
-  lg:   'h-[48px] px-[20px] text-[15px] rounded-[8px] gap-2 font-bold',
+  // `rounded-sm` et non `rounded-[8px]` : `--radius-sm: 8px` est déjà déclaré
+  // dans le bloc `@theme` de index.css. L'arbitraire était un jeton recopié
+  // cinq fois, donc invulnerable à un changement de rayon de l'application.
+  xs:   'h-8 px-2.5 text-[12px] rounded-sm gap-1 font-semibold',
+  sm:   'h-9 px-3.5 text-sm rounded-sm gap-1.5 font-semibold',
+  md:   'h-11 px-5 text-sm rounded-sm gap-2 font-semibold',
+  lg:   'h-[48px] px-[20px] text-[15px] rounded-sm gap-2 font-bold',
   icon: 'h-11 w-11 rounded-xl',
+  'icon-sm': 'h-8 w-8 rounded-sm gap-0 p-0',
 };
+
+/**
+ * Enfoncement sous le doigt.
+ *
+ * ## Pourquoi du CSS et non un ressort de Framer Motion
+ *
+ * C'est la question à se poser, et la réponse est « du CSS », pour une raison
+ * concrète : **au relâchement, le doigt est déjà parti.** La seule chose qu'un
+ * ressort apporte de plus est de conserver la vitesse courante quand
+ * l'animation est interrompue - ce qui compte pour une feuille qu'on rouvre à
+ * mi-parcours, et pas pour un appui. Ici, personne ne voit la vitesse de retour.
+ *
+ * En échange, un ressort coûte à chaque bouton de l'application : un type
+ * `motion` à construire, une instance à abonner à la boucle d'animation, une
+ * props `whileTap` à propager à travers `as={Link}`. Pour 30 ms de retour que
+ * `:active` rend gratuitement, sur le compositeur, en JavaScript zéro.
+ *
+ * Le ressort est réservé à ce qui peut **vraiment** être interrompu et repris -
+ * voir `src/shared/motion/timing.js`.
+ *
+ * ## Les valeurs
+ *
+ * `0.97` : en dessous de `0.95` le bouton s'enfonce au lieu de s'appuyer ; au
+ * dessus de `0.98`, le retour est plus court que l'appui et ça tremble.
+ *
+ * `100 ms` à l'aller, `150 ms` au retour - un ressort appliqué à la main ferait
+ * exactement la même chose, sans la dépendance.
+ *
+ * `active:` disparaît sur un bouton désactivé grâce à `disabled:active:scale-100`
+ * : sinon l'interface dirait « tu peux appuyer » le temps du geste.
+ */
+const PRESS =
+  'transition-[color,background-color,border-color,box-shadow,transform] duration-100 ease-out active:scale-[0.97] active:duration-150 disabled:active:scale-100';
 
 export function Button({
   as: As = 'button',
@@ -46,8 +87,9 @@ export function Button({
       disabled={isDisabled}
       aria-busy={Boolean(loading)}
       className={cn(
-        'cursor-pointer relative inline-flex select-none items-center justify-center leading-none transition-colors whitespace-nowrap',
+        'cursor-pointer relative inline-flex select-none items-center justify-center leading-none whitespace-nowrap',
         'focus-ring focus:outline-none',
+        PRESS,
         VARIANTS[variant] || VARIANTS.primary,
         SIZES[size] || SIZES.md,
         isDisabled && 'cursor-not-allowed opacity-80',
@@ -56,8 +98,16 @@ export function Button({
       {...rest}
     >
       {loading && <Spinner size="xs" className={children ? '' : 'mx-auto'} />}
+      {/* L'étiquette est masquée visuellement pendant le chargement pour ne pas
+          faire sauter la largeur du bouton. `aria-hidden` est indispensable :
+          sans lui, un lecteur d'écran annonce le libellé deux fois - une fois
+          pour la copie visible en cours de chargement, une fois pour le titre
+          accessible du bouton. `inert` empêche aussi le focus ou la sélection
+          d'atteindre ce texte fantôme. */}
       {loading ? (
-        <span className="opacity-0 absolute pointer-events-none">{children}</span>
+        <span className="opacity-0 absolute pointer-events-none" aria-hidden="true" inert="">
+          {children}
+        </span>
       ) : (
         children
       )}

@@ -2,16 +2,64 @@
 <html lang="fr-CG">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="KOP - l'annuaire des artisans du bâtiment du Congo (Brazzaville). Plombier, électricien, maçon, menuisier." />
-    <meta name="theme-color" content="#f97316" />
+
+    <title>KOP | Annuaire des artisans du Congo</title>
+    <meta
+      name="description"
+      content="KOP - l'annuaire des artisans du bâtiment au Congo (Brazzaville). Plombier, électricien, maçon, menuisier. Trouvez un professionnel vérifié près de chez vous."
+    />
+
+    <!-- Les balises author / creator et le JSON-LD sont injectés au build par le
+plugin `kop-head-tags` (vite.config.js), depuis src/shared/data/credits.js. -->
+    <meta name="publisher" content="Espoir LOEMBA" />
+    <meta
+      name="keywords"
+      content="artisan Congo Brazzaville plombier électricien maçon menuisier,KOP,Espoir LOEMBA"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Palette verte de l'application. La valeur précédente était orange,
+         couleur qui n'apparaît nulle part dans le design. -->
+    <meta name="theme-color" content="#2d5c4a" />
+
+    <!-- Partage sur les réseaux sociaux : sans og:*, un lien partagé sur
+         WhatsApp ou Facebook s'affiche sans titre ni aperçu. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="KOP" />
+    <meta property="og:locale" content="fr_CG" />
+    <meta property="og:title" content="KOP | Annuaire des artisans du Congo" />
+    <meta
+      property="og:description"
+      content="L'annuaire des artisans du bâtiment au Congo. Plombier, électricien, maçon, menuisier."
+    />
+    <!-- PNG et non SVG : les réseaux sociaux refusent le SVG en aperçu. -->
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="KOP - Annuaire des artisans, Congo" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="KOP | Annuaire des artisans du Congo" />
+    <meta
+      name="twitter:description"
+      content="L'annuaire des artisans du bâtiment au Congo. Plombier, électricien, maçon, menuisier."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <meta name="robots" content="index, follow" />
+
+    <!-- Polices déclarées ici et non dans index.css : le navigateur découvre
+         les deux en parallèle au lieu d'attendre la feuille de style. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Moirai+One&family=Moo+Lah+Lah&display=swap" rel="stylesheet">
-    <title>KOP | Annuaire des artisans</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Moo+Lah+Lah&display=swap"
+    />
   </head>
   <body>
     <div id="root"></div>

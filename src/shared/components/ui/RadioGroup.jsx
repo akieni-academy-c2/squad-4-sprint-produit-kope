@@ -7,10 +7,13 @@ export function RadioGroup({ name, value, onChange, children, className }) {
   const autoName = useId();
   const groupName = name || `radio-${autoName}`;
   const ctx = { name: groupName, value, onChange };
+  // `role` et `className` ne peuvent pas être passés au Provider : React n'y
+  // rend aucun DOM, ils seraient silencieusement perdus. Le groupe a besoin
+  // d'un élément réel pour porter la sémantique radiogroup et la mise en page.
   return (
-    <RadioGroupContext.Provider value={ctx} role="radiogroup" className={className}>
-      {children}
-    </RadioGroupContext.Provider>
+    <div role="radiogroup" className={className}>
+      <RadioGroupContext.Provider value={ctx}>{children}</RadioGroupContext.Provider>
+    </div>
   );
 }
 

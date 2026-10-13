@@ -21,9 +21,9 @@ function randomPhone() {
 }
 
 async function main() {
-  if (PASSWORD.length < 8) 
+  if (PASSWORD.length < 8)
     throw new Error('SEED_CLIENT_PASSWORD doit faire au moins 8 caractères');
-  
+
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
   let created = 0;
 

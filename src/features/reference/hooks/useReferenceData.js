@@ -1,10 +1,23 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { listTrades, listZones, invalidateReferenceCache } from '../services/reference.service.js';
+import {
+  listCities,
+  listTrades,
+  listZones,
+  invalidateReferenceCache,
+  peekReferenceData,
+} from '../services/reference.service.js';
 
 export function useReferenceData() {
-  const [trades, setTrades] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Le cache est lu de façon synchrone pour que le premier rendu affiche les
+  // données disponibles. Sans cela, le hook démarre à vide et l'interface
+  // affiche des squelettes même quand la réponse est déjà en mémoire.
+  const cached = peekReferenceData();
+  const hasCache = Boolean(cached.trades && cached.zones && cached.cities);
+
+  const [trades, setTrades] = useState(cached.trades ?? []);
+  const [zones, setZones] = useState(cached.zones ?? []);
+  const [cities, setCities] = useState(cached.cities ?? []);
+  const [loading, setLoading] = useState(!hasCache);
   const [error, setError] = useState(null);
   const mounted = useRef(true);
 
@@ -12,10 +25,11 @@ export function useReferenceData() {
     setLoading(true);
     setError(null);
     try {
-      const [t, z] = await Promise.all([listTrades(), listZones()]);
+      const [t, z, c] = await Promise.all([listTrades(), listZones(), listCities()]);
       if (!mounted.current) return;
       setTrades(t);
       setZones(z);
+      setCities(c);
     } catch (err) {
       if (!mounted.current) return;
       setError(err);
@@ -31,20 +45,14 @@ export function useReferenceData() {
 
   useEffect(() => {
     mounted.current = true;
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
+    if (!hasCache) load();
+
     return () => {
       mounted.current = false;
     };
-  }, [load]);
+  }, [load, hasCache]);
 
-  return { trades, zones, loading, error, reload };
-}
-
-export function useTrades() {
-  return useReferenceData().trades;
-}
-
-export function useZones() {
-  return useReferenceData().zones;
+  return { trades, zones, cities, loading, error, reload };
 }

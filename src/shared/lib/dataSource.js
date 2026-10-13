@@ -1,13 +1,41 @@
 import { useSyncExternalStore } from 'react';
 
-const forcedMocks = import.meta.env?.VITE_USE_MOCKS === 'true';
-const isProd = import.meta.env?.PROD === true;
+/**
+ * Activation de la démo par variable d'environnement.
+ *
+ * ## Sens par défaut
+ *
+ * Le mode démo est **opt-in** : `VITE_USE_MOCKS=true` l'active, tout le reste
+ * le laisse éteint. Il était jusqu'ici inversé - `VITE_USE_MOCKS=false` le
+ * désactivait, et son absence l'activait - ce qui revenait à livrer en
+ * production un sélecteur de rôle « Administrateur » et une identité factice
+ * persistée dans le localStorage, sur toute personne qui n'avait pas posé la
+ * variable. Une base injoignable suffisait ensuite à faire afficher des données
+ * de démonstration à l'ensemble des visiteurs comme si tout allait bien.
+ *
+ * Le développement local garde le mode démo sans rien déclarer : `import.meta.env.DEV`
+ * est vrai dans `vite dev` et faux dans toute construction de production.
+ *
+ * La comparaison ignore la casse et les espaces : un .env écrit à la main
+ * contient souvent « true » encadré, et une variable apparemment ignorée est
+ * plus difficile à diagnostiquer qu'une activation franche.
+ */
+const mocksAllowed =
+  import.meta.env?.DEV === true ||
+  String(import.meta.env?.VITE_USE_MOCKS ?? '')
+    .trim()
+    .toLowerCase() === 'true';
 
-let mockMode = forcedMocks === true;
+let mockMode = mocksAllowed;
 const listeners = new Set();
 
 function notify() {
   listeners.forEach((fn) => fn());
+}
+
+/** Le mode démo est-il autorisé par l'environnement de build ? */
+export function areMocksAllowed() {
+  return mocksAllowed;
 }
 
 export function isMockMode() {
@@ -16,13 +44,14 @@ export function isMockMode() {
 
 export function enableMockMode() {
   if (mockMode) return;
-  if (isProd && !forcedMocks) return;
+  // Un environnement qui interdit la démo ne peut pas la rouvrir par programme :
+  // « Activer la démo » n'est qu'une demande, l'environnement a le dernier mot.
+  if (!mocksAllowed) return;
   mockMode = true;
   notify();
 }
 
 export function resetMockMode() {
-  if (forcedMocks) return;
   mockMode = false;
   notify();
 }
@@ -36,25 +65,29 @@ export function useMockMode() {
   return useSyncExternalStore(subscribeMockMode, isMockMode, () => false);
 }
 
+export async function callApi(apiFn, mockFn) {
+  if (mockMode) return mockFn();
+  try {
+    return await apiFn();
+  } catch (err) {
+    // Démo interdite par l'environnement : le repli serait contraire à la
+    // demande, l'erreur remonte.
+    if (!mocksAllowed) throw err;
+    // Une panne réseau ou un 5xx ne doit pas s'afficher comme des données de
+    // démonstration saines en silence : on bascule, mais on le signale.
+    if (isUnavailable(err)) {
+      console.error('[dataSource] API indisponible, repli sur les mocks', err);
+      enableMockMode();
+      return mockFn();
+    }
+    throw err;
+  }
+}
+
 function isUnavailable(err) {
   if (!err) return false;
   if (err instanceof TypeError) return true; // fetch réseau en échec
   if (typeof err.status === 'number' && err.status >= 500) return true;
   if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND' || err.code === 'ETIMEDOUT') return true;
   return false;
-}
-
-export async function callApi(apiFn, mockFn) {
-  if (mockMode) return mockFn();
-  try {
-    return await apiFn();
-  } catch (err) {
-    // En production sans flag explicite, pas de fallback : l'erreur remonte.
-    if (isProd && !forcedMocks) throw err;
-    if (isUnavailable(err)) {
-      enableMockMode();
-      return mockFn();
-    }
-    throw err;
-  }
 }

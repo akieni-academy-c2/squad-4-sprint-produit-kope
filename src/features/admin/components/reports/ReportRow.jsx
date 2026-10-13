@@ -1,0 +1,61 @@
+import { Calendar, Check, Flag, X } from 'lucide-react';
+import { ActionGroup, Button, UserAvatar } from '@/shared/components/ui';
+import { reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
+import { formatDateFr, fullNameInitials } from '@/shared/utils';
+
+const STATUS_BADGES = {
+  pending: 'bg-amber-100 text-amber-800',
+  resolved: 'bg-mint-100 text-primary-700',
+  dismissed: 'bg-gray-100 text-gray-600',
+};
+
+export function ReportRow({ report, onResolve, onDismiss }) {
+  return (
+    <li className="space-y-2 rounded-sm bg-gray-100/80 p-3 ">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-gray-700 ring-1 ring-gray-200">
+          <Flag size={11} aria-hidden />
+          {reportReasonLabel(report.reason)}
+        </span>
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_BADGES[report.status]}`}>
+          {reportStatusLabel(report.status)}
+        </span>
+      </div>
+
+      {report.message && (
+        <p className="whitespace-pre-wrap border-l-2 border-primary-300 bg-white py-1.5 px-3 text-sm leading-6 text-gray-700">
+          {report.message}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <UserAvatar user={report.reporter} className="h-5 w-5" iconSize={11} />
+          <span className="text-xs text-gray-500">
+            {fullNameInitials(report.reporter?.firstName, report.reporter?.lastName) || 'Client'}
+          </span>
+          <span className="flex items-center gap-1 text-xs text-gray-400">
+            <Calendar size={11} aria-hidden />
+            {formatDateFr(report.createdAt)}
+          </span>
+        </div>
+
+        {report.status === 'pending' && (
+          <ActionGroup label={`Actions sur le signalement de ${report.professionalName ?? 'ce profil'}`}>
+            <Button size="icon-sm" variant="ghost" onClick={() => onDismiss(report)} aria-label="Rejeter le signalement">
+              <X className="size-3.5 text-rose-600" />
+            </Button>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => onResolve(report)}
+              aria-label="Marquer le signalement comme traité"
+            >
+              <Check className="size-3.5 text-primary-600" />
+            </Button>
+          </ActionGroup>
+        )}
+      </div>
+    </li>
+  );
+}
