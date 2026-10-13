@@ -25,12 +25,15 @@ const VARIANTS = {
 };
 
 const SIZES = {
-  xs:   'h-8 px-2.5 text-[12px] rounded-[8px] gap-1 font-semibold',
-  sm:   'h-9 px-3.5 text-sm rounded-[8px] gap-1.5 font-semibold',
-  md:   'h-11 px-5 text-sm rounded-[8px] gap-2 font-semibold',
-  lg:   'h-[48px] px-[20px] text-[15px] rounded-[8px] gap-2 font-bold',
+  // `rounded-sm` et non `rounded-[8px]` : `--radius-sm: 8px` est déjà déclaré
+  // dans le bloc `@theme` de index.css. L'arbitraire était un jeton recopié
+  // cinq fois, donc invulnerable à un changement de rayon de l'application.
+  xs:   'h-8 px-2.5 text-[12px] rounded-sm gap-1 font-semibold',
+  sm:   'h-9 px-3.5 text-sm rounded-sm gap-1.5 font-semibold',
+  md:   'h-11 px-5 text-sm rounded-sm gap-2 font-semibold',
+  lg:   'h-[48px] px-[20px] text-[15px] rounded-sm gap-2 font-bold',
   icon: 'h-11 w-11 rounded-xl',
-  'icon-sm': 'h-8 w-8 rounded-[8px] gap-0 p-0',
+  'icon-sm': 'h-8 w-8 rounded-sm gap-0 p-0',
 };
 
 /**
@@ -95,8 +98,16 @@ export function Button({
       {...rest}
     >
       {loading && <Spinner size="xs" className={children ? '' : 'mx-auto'} />}
+      {/* L'étiquette est masquée visuellement pendant le chargement pour ne pas
+          faire sauter la largeur du bouton. `aria-hidden` est indispensable :
+          sans lui, un lecteur d'écran annonce le libellé deux fois - une fois
+          pour la copie visible en cours de chargement, une fois pour le titre
+          accessible du bouton. `inert` empêche aussi le focus ou la sélection
+          d'atteindre ce texte fantôme. */}
       {loading ? (
-        <span className="opacity-0 absolute pointer-events-none">{children}</span>
+        <span className="opacity-0 absolute pointer-events-none" aria-hidden="true" inert="">
+          {children}
+        </span>
       ) : (
         children
       )}

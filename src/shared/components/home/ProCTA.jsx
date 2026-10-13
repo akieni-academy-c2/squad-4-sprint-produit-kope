@@ -1,6 +1,7 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 import cta from '@/shared/assets/cta.png';
 
 export function ProCTA({ imageLeft = false } = {}) {
@@ -21,7 +22,7 @@ export function ProCTA({ imageLeft = false } = {}) {
               </p>
               <div className="mt-7">
                 <Button
-                  onClick={() => openModal('register-pro')}
+                  onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_PRO)}
                   variant="secondary"
                   size="lg"
                   className="bg-white! text-gray-900! hover:bg-gray-100! border-white!"

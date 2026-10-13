@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { cn } from '@/shared/utils';
 
@@ -9,6 +8,13 @@ import { cn } from '@/shared/utils';
  * importé, jamais ailleurs : c'est ce qui libère le nom `Link` pour ce
  * composant, et évite d'avoir deux « Link » différents dans un même fichier -
  * l'un qui prend `to`, l'autre `href`.
+ *
+ * ## `ref` est une prop ordinaire
+ *
+ * Depuis React 19, `forwardRef` est devenu inutile : `ref` figure dans les
+ * props, se transmet par le spread et atteint le premier élément rendu. Le
+ * composant suit donc la forme moderne - `ref` est simplement listé parmi les
+ * props déstructurées, comme `Dialog.jsx` le fait déjà.
  *
  * ## Deux rendus, une seule API
  *
@@ -43,10 +49,7 @@ import { cn } from '@/shared/utils';
  * `rel="noopener noreferrer"` est systématique : sans lui, la page cible peut
  * piloter l'onglet d'origine via `window.opener`.
  */
-export const Link = forwardRef(function Link(
-  { href, target, replace, className, children, ...rest },
-  ref,
-) {
+export function Link({ href, target, replace, className, children, ref, ...rest }) {
   const isExternal =
     target === '_blank' ||
     /^(https?:|mailto:|tel:)/i.test(href ?? '') ||
@@ -72,4 +75,4 @@ export const Link = forwardRef(function Link(
       {children}
     </RouterLink>
   );
-});
+}

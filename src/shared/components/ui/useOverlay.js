@@ -37,6 +37,15 @@ const FOCUSABLE = [
  */
 export function useOverlay({ open, onClose, dismissable = true }) {
   const panelRef = useRef(null);
+  // `onClose` est presque toujours une flèche recréée à chaque rendu du parent.
+  // Le garder en dépendance relançait l'effet à chaque rendu : le focus était
+  // rendu au déclencheur puis immédiatement repris par un requestAnimationFrame,
+  // en plein milieu d'une saisie. La ref lit la valeur courante sans jamais
+  // ré-abonner l'effet.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +58,7 @@ export function useOverlay({ open, onClose, dismissable = true }) {
     const onKeyDown = (event) => {
       if (event.key === 'Escape' && dismissable) {
         event.stopPropagation();
-        onClose?.();
+        onCloseRef.current?.();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -76,17 +85,18 @@ export function useOverlay({ open, onClose, dismissable = true }) {
 
     document.addEventListener('keydown', onKeyDown, true);
     // Focus initial sur le premier élément interactif de la surface.
-    requestAnimationFrame(() => {
+    const frame = requestAnimationFrame(() => {
       const target = panelRef.current?.querySelector(FOCUSABLE);
       target?.focus();
     });
 
     return () => {
+      cancelAnimationFrame(frame);
       document.removeEventListener('keydown', onKeyDown, true);
       body.style.overflow = previousOverflow;
       if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
     };
-  }, [open, dismissable, onClose]);
+  }, [open, dismissable]);
 
   return { panelRef };
 }

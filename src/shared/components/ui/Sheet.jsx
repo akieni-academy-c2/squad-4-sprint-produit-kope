@@ -44,7 +44,7 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-90 bg-checkers backdrop-blur-sm"
+          className="fixed inset-0 z-overlay bg-checkers backdrop-blur-sm"
           variants={overlayBackdrop}
           initial="initial"
           animate="animate"
@@ -61,7 +61,7 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
               // Sans cela, un formulaire long est tronqué sur iOS, qui ne réduit
               // pas la page sous le clavier.
               side === 'bottom'
-                ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-2xl'
+                ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-safe-sheet shadow-2xl'
                 : 'absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col overflow-y-auto overscroll-contain bg-white shadow-2xl',
             )}
             // La variante n'est pas propagée depuis le fond : elle dépend du

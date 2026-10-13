@@ -47,7 +47,7 @@ export function Dialog({ open, onOpenChange, children }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-90 flex items-end justify-center bg-checkers backdrop-blur p-0 sm:items-center sm:p-2"
+          className="fixed inset-0 z-overlay flex items-end justify-center bg-checkers backdrop-blur p-0 sm:items-center sm:p-2"
           variants={overlayBackdrop}
           initial="initial"
           animate="animate"

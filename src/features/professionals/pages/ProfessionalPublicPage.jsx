@@ -117,7 +117,7 @@ export function ProfessionalPublicPage() {
   };
 
   return (
-    <div className="container-kop page-padding space-y-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div className="container-kop page-padding space-y-6 pb-safe-nav lg:pb-0">
       <h1 className="sr-only">
         {profile.displayName} - {tradeName} à {CITY}
       </h1>

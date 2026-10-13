@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import { Flag, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
-import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
-import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
-import { cn } from '@/shared/utils';
+import { DashboardShell } from '@/shared/components/layout/DashboardShell.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
 import { MyReviewsSection } from '@/features/reviews/components/MyReviewsSection.jsx';
 import { MyReportsSection } from '@/features/reports/components/MyReportsSection.jsx';
@@ -23,9 +19,6 @@ const NAV_ITEMS = [
   { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
 ];
 
-const ROOT_ID = 'apercu';
-const SECTIONS = NAV_ITEMS.map((item) => item.id);
-
 // Sections qui portent des filtres : seules celles-là occupent la colonne de
 // droite. Les autres la laissent vide, comme l'admin masque la sienne hors des
 // sections filtrables.
@@ -37,49 +30,25 @@ export function ClientDashboardPage() {
   // La section vit dans l'URL, pas dans un état local. C'est ce qui rend le
   // rechargement, le bouton « retour » du navigateur et un lien de partage
   // corrects - trois choses qu'un `useState` ne sait pas faire.
-  const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_CLIENT, SECTIONS, ROOT_ID);
-
-  const [rightEl, setRightEl] = useState(null);
-  const withFilters = WITH_FILTERS.has(active);
-
   return (
-    <div className="container-kop py-10 lg:py-16">
-      {/* Une seule grille pour les trois colonnes, comme `AdminDashboardPage` :
-          navigation à gauche, contenu au centre, filtres à droite. Les sections
-          ne creusent pas leur propre colonne, elles y projettent leurs filtres
-          par portail. Sans filtres, la grille retombe à deux colonnes : garder la
-          troisième laisserait un vide de 280px à droite de l'aperçu et du profil. */}
-      <div
-        className={cn(
-          'grid gap-6 lg:items-start',
-          withFilters
-            ? 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)]'
-            : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
-        )}
-      >
-        <ClientDashboardSidebar items={NAV_ITEMS} active={active} onChange={goTo} />
-
-        <SectionSwap sectionKey={active} className="min-w-0">
-          {active === 'apercu' && <ClientOverviewSection onNavigate={goTo} />}
+    <DashboardShell
+      items={NAV_ITEMS}
+      basePath={ROUTES.DASHBOARD_CLIENT}
+      rootId="apercu"
+      filteredSections={WITH_FILTERS}
+      navAriaLabel="Navigation du profil"
+      sidebar={({ items, active, onChange }) => (
+        <ClientDashboardSidebar items={items} active={active} onChange={onChange} />
+      )}
+      renderSection={(active, rightContainer, navigate) => (
+        <>
+          {active === 'apercu' && <ClientOverviewSection onNavigate={navigate} />}
           {active === 'profil' && <ClientProfileSection user={user} />}
-          {active === 'avis' && <MyReviewsSection rightContainer={rightEl} />}
-          {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
-          {active === 'signalements' && <MyReportsSection rightContainer={rightEl} />}
-        </SectionSwap>
-
-        <aside
-          ref={setRightEl}
-          aria-label="Filtres"
-          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
-        />
-      </div>
-
-      <BottomNav
-        items={NAV_ITEMS}
-        active={active}
-        onChange={goTo}
-        ariaLabel="Navigation du profil (mobile)"
-      />
-    </div>
+          {active === 'avis' && <MyReviewsSection rightContainer={rightContainer} />}
+          {active === 'contacts' && <ContactsSection rightContainer={rightContainer} />}
+          {active === 'signalements' && <MyReportsSection rightContainer={rightContainer} />}
+        </>
+      )}
+    />
   );
 }

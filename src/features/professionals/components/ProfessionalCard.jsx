@@ -47,10 +47,13 @@ function ProfileMedia({ item, homePreview }) {
   );
 }
 
-export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePreview = false }) {
+export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
   const avg = Number(item.rating?.average ?? 0);
   const cnt = Number(item.rating?.count ?? 0);
-  const coverSrc = coverImage({ ...item, featuredPrompt }, homePreview);
+  // `item` est passé tel quel : l'éventuelle copie `{ ...item, featuredPrompt }`
+  // créait une nouvelle identité à chaque rendu, ce qui interdisait toute
+  // mémoïsation de la carte la plus utilisée de l'application.
+  const coverSrc = coverImage(item, homePreview);
 
   if (mode === 'grid')
     return (
@@ -68,7 +71,7 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt, homePrev
 
             <div className=" flex flex-wrap justify-between gap-1.5">
               <Badge variant="primary">{item.trade}</Badge>
-              <Availability isAvailable={item.isAvailable}  variant="outline" />
+              <Availability isAvailable={item.isAvailable} />
             </div>
             <p className="font-extrabold tracking-tight text-gray-900 text-lg leading-tight">{item.displayName}</p>
             <p className="text-[12px] text-gray-500">

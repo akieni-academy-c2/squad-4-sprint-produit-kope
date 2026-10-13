@@ -10,6 +10,7 @@ import { cn } from '@/shared/utils';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Separator } from '@/shared/components/ui/Separator.jsx';
@@ -58,7 +59,7 @@ export function Navbar() {
                   <button
                     key={item.to}
                     type="button"
-                    onClick={() => openModal('register-pro')}
+                    onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_PRO)}
                     className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
                   >
                     {item.label}
@@ -98,10 +99,10 @@ export function Navbar() {
           <span className='opacity-30'>|</span>
           {!loading && !user && (
             <>
-              <Button variant="outline" size="sm" onClick={() => openModal('login')}>
+              <Button variant="outline" size="sm" onClick={() => openModal(AUTH_MODAL_MODES.LOGIN)}>
                 Se connecter
               </Button>
-              <Button variant="primary" size="sm" onClick={() => openModal('register-client')}>
+              <Button variant="primary" size="sm" onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_CLIENT)}>
                 S'inscrire
               </Button>
             </>
@@ -150,7 +151,7 @@ export function Navbar() {
                     <li key={item.to}>
                       <button
                         type="button"
-                        onClick={() => { setOpen(false); openModal('register-pro'); }}
+                        onClick={() => { setOpen(false); openModal(AUTH_MODAL_MODES.REGISTER_PRO); }}
                         className="flex w-full cursor-pointer items-center gap-2.5 rounded px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                       >
                         <item.icon size={16} aria-hidden className="shrink-0 text-gray-400" />
@@ -204,7 +205,7 @@ export function Navbar() {
               toujours de la navigation. Seule la fiche utilisateur mérite une
               card - pour un visiteur, ce sont deux portes d'entrée, pas une
               identité à afficher. */}
-          <div className="border-t border-gray-100 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="border-t border-gray-100 p-4 pb-safe">
             {loading ? (
               <div className="h-14 w-full animate-pulse rounded-md bg-gray-100" />
             ) : !user ? (
@@ -215,7 +216,7 @@ export function Navbar() {
                   variant="outline"
                   size="md"
                   className="w-full"
-                  onClick={() => { setOpen(false); openModal('login'); }}
+                  onClick={() => { setOpen(false); openModal(AUTH_MODAL_MODES.LOGIN); }}
                 >
                   Se connecter
                 </Button>
@@ -223,7 +224,7 @@ export function Navbar() {
                   variant="primary"
                   size="md"
                   className="w-full"
-                  onClick={() => { setOpen(false); openModal('register-client'); }}
+                  onClick={() => { setOpen(false); openModal(AUTH_MODAL_MODES.REGISTER_CLIENT); }}
                 >
                   S&apos;inscrire
                 </Button>

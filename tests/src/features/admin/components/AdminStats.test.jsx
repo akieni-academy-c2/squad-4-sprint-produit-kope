@@ -132,7 +132,10 @@ describe('Vue d’ensemble - mise en page', () => {
     // Carte utilisateur : avatar, métier + téléphone, badge de rôle et date.
     expect(list).toContain('h-10 w-10');
     expect(list).toContain('Menuiserie');
-    expect(list).toContain('+242061234567');
+    // Le téléphone passe par `formatPhoneFR` : `+242061234567` devient
+    // `+242 06 123 45 67`. La valeur brute n'a plus à être affichée nulle part.
+    expect(list).toContain('+242 06 123 45 67');
+    expect(list).not.toContain('+242061234567');
     expect(list).toContain('Professionnel');
     expect(list).toContain('Inscrit le');
     expect(list).toContain('aria-label="Voir la fiche publique de Atelier Kengo"');

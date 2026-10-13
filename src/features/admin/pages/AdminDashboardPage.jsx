@@ -1,11 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
-import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
-import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
-import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
-import { cn } from '@/shared/utils';
-import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
-import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { DashboardShell } from '@/shared/components/layout/DashboardShell.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
 import { AdminStats } from '../components/AdminStats.jsx';
 import { AdminProfessionalsGrid } from '../components/AdminProfessionalsGrid.jsx';
 import { AdminReviewsTable } from '../components/AdminReviewsTable.jsx';
@@ -34,85 +30,69 @@ const TITLES = {
   users: 'Utilisateurs',
 };
 
-const FILTERED_SECTIONS = ['professionals', 'reviews', 'reports', 'trades', 'zones', 'users'];
-
-const ROOT_ID = 'overview';
-const SECTION_IDS = SECTIONS.map((s) => s.id);
+const FILTERED_SECTIONS = new Set(['professionals', 'reviews', 'reports', 'trades', 'zones', 'users']);
 
 export function AdminDashboardPage() {
-  // La section vit dans l'URL : rechargement, bouton « retour » et lien de
-  // partage restent corrects, comme dans les espaces client et professionnel.
-  const { active: urlSection, goTo: goToSection } = useSectionNav(ROUTES.ADMIN, SECTION_IDS, ROOT_ID);
-  const section = urlSection || ROOT_ID;
-
   // Filtres d'ouverture, attachés à la section qui les a demandés.
   //
   // Un simple `useState` survivrait au changement de section : ouvrir
   // « Signalements » depuis un KPI, puis revenir par l'URL ou le bouton
-  // « retour » afficherait encore ce filtre-la. La portée suit donc la section
+  // « retour » afficherait encore ce filtre-là. La portée suit donc la section
   // qui l'a demandé - pas d'effet pour la purger, la valeur cesse simplement
   // d'être lue dès que la section change.
   const [pendingFilters, setPendingFilters] = useState(null);
-  const [rightEl, setRightEl] = useState(null);
-  const withFilters = FILTERED_SECTIONS.includes(section);
 
-  const sectionFilters = pendingFilters?.section === section ? pendingFilters.filters : {};
-
-  // Une vue d'ensemble n'a de valeur que si elle mène au travail à faire :
-  // chaque KPI ouvre sa section déjà filtrée. `key` force le remontage, sinon
-  // les filtres d'initialisation ne s'appliqueraient jamais au second passage.
-  const openSection = useCallback(
-    (id, filters = {}) => {
-      setPendingFilters(Object.keys(filters).length ? { section: id, filters } : null);
-      goToSection(id);
-    },
-    [goToSection],
-  );
-
-  const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
+  const openSection = useCallback((id, filters = {}) => {
+    setPendingFilters(Object.keys(filters).length ? { section: id, filters } : null);
+    return id;
+  }, []);
 
   return (
-    <div className="container-kop page-padding pb-24 lg:pb-8">
+    <DashboardShell
+      items={SECTIONS}
+      basePath={ROUTES.ADMIN}
+      rootId="overview"
+      filteredSections={FILTERED_SECTIONS}
+      navAriaLabel="Sections d’administration"
+      className="container-kop page-padding pb-24 lg:pb-8"
+      // `onNavigate` ne renvoie rien : `DashboardShell` appelle ensuite `goTo`,
+      // qui est la seule chose qui écrit dans l'URL.
+      onNavigate={(id, filters) => {
+        openSection(id, filters);
+        return id;
+      }}
+      renderSection={(active, rightContainer) => {
+        const section = active || 'overview';
+        const sectionFilters = pendingFilters?.section === section ? pendingFilters.filters : {};
+        // `key` force le remontage, sinon les filtres d'initialisation ne
+        // s'appliqueraient jamais au second passage dans la même section.
+        const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
 
-      <div
-        className={cn(
-          'grid gap-6 lg:items-start',
-          withFilters
-            ? 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)]'
-            : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
-        )}
-      >
-        <aside className={`hidden lg:block ${STICKY_COLUMN}`}>
-          <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
-        </aside>
-
-        <SectionSwap sectionKey={section} className="min-w-0">
-          <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
-          {section === 'overview' && <AdminStats onNavigate={openSection} />}
-          {section === 'professionals' && (
-            <AdminProfessionalsGrid key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
-          )}
-          {section === 'reviews' && (
-            <AdminReviewsTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
-          )}
-          {section === 'reports' && (
-            <AdminReportsTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
-          )}
-          {section === 'trades' && <AdminTradesBoard key={mountKey} rightContainer={rightEl} />}
-          {section === 'zones' && <AdminZonesBoard key={mountKey} rightContainer={rightEl} />}
-          {section === 'users' && (
-            <AdminUsersTable key={mountKey} rightContainer={rightEl} initialFilters={sectionFilters} />
-          )}
-        </SectionSwap>
-
-        <aside
-          ref={setRightEl}
-          aria-label="Filtres"
-          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
-        />
-      </div>
-
-      <BottomNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
-    </div>
+        return (
+          <>
+            <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
+            {section === 'overview' && <AdminStats onNavigate={openSection} />}
+            {section === 'professionals' && (
+              <AdminProfessionalsGrid
+                key={mountKey}
+                rightContainer={rightContainer}
+                initialFilters={sectionFilters}
+              />
+            )}
+            {section === 'reviews' && (
+              <AdminReviewsTable key={mountKey} rightContainer={rightContainer} initialFilters={sectionFilters} />
+            )}
+            {section === 'reports' && (
+              <AdminReportsTable key={mountKey} rightContainer={rightContainer} initialFilters={sectionFilters} />
+            )}
+            {section === 'trades' && <AdminTradesBoard key={mountKey} rightContainer={rightContainer} />}
+            {section === 'zones' && <AdminZonesBoard key={mountKey} rightContainer={rightContainer} />}
+            {section === 'users' && (
+              <AdminUsersTable key={mountKey} rightContainer={rightContainer} initialFilters={sectionFilters} />
+            )}
+          </>
+        );
+      }}
+    />
   );
 }

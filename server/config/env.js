@@ -53,11 +53,26 @@ export const env = {
   // Compteur de tentatives partagé : `postgres` ou `memory`.
   RATE_LIMIT_STORE: process.env.RATE_LIMIT_STORE ?? 'postgres',
 
-  // Coût bcrypt. 10 est le compromis habituel entre sécurité et latence de
-  // connexion ; au-delà de 12, l'authentification devient plus lente que le
-  // mot de passe n'est long à saisir.
-  BCRYPT_ROUNDS: Number(process.env.BCRYPT_ROUNDS) || 10,
+  // Coût bcrypt. 12 est le plancher recommandé par l'OWASP depuis 2022 :
+  // à 10, un GPU courant casse un hash environ cent fois plus vite, ce qui ne
+  // change rien à l'expérience de connexion (une saisie de mot de passe dure
+  // bien plus longtemps que ~250 ms) mais change tout si la base fuit.
+  BCRYPT_ROUNDS: clampRounds(Number(process.env.BCRYPT_ROUNDS) || 12),
 
   SESSION_MAX_AGE_MS: Number(process.env.SESSION_MAX_AGE_MS) || 7 * 24 * 60 * 60 * 1000,
   SESSION_TABLE: process.env.SESSION_TABLE ?? 'session',
+
+  // Origines autorisées à émettre une requête mutante (CSRF). Vide signifie
+  // « même origine que la requête » : le cas normal du SPA servi à côté de
+  // l'API. À renseigner derrière un domaine distinct de l'API.
+  ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
 };
+
+/** Borne le coût bcrypt : sous 10 il est trivial, au-dessus de 15 la
+ *  vérification bloque le pool de connexions plus qu'elle ne protège. */
+function clampRounds(rounds) {
+  return Math.min(Math.max(Math.round(rounds), 10), 15);
+}

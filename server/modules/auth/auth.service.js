@@ -13,6 +13,7 @@ const DUPLICATE_PHONE = 'Ce numéro est déjà utilisé';
 const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
 const INVALID_CREDENTIALS = 'Numéro ou mot de passe incorrect';
 const ACCOUNT_BLOCKED = 'Ce compte a été bloqué par un administrateur. Contactez le support.';
+const ACCOUNT_SUSPENDED = 'Ce compte est suspendu. Contactez le support.';
 const DUPLICATE_EMAIL = 'Cette adresse e-mail est déjà utilisée par un autre compte';
 
 const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', env.BCRYPT_ROUNDS);
@@ -68,8 +69,13 @@ export async function login({ phone, password }) {
   const passwordMatches = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
   if (!user || !passwordMatches) throw ApiError.unauthorized(INVALID_CREDENTIALS);
   if (user.blockedAt) throw ApiError.forbidden(ACCOUNT_BLOCKED);
+  // Un compte suspendu doit l'être aussi lorsque rien n'a positionné
+  // `blockedAt` : le blocage était le seul contrôle ici, alors que les deux
+  // colonnes existent et qu'une suspension posée autrement donnait un compte
+  // connectable.
+  if (user.suspendedAt) throw ApiError.forbidden(ACCOUNT_SUSPENDED);
 
-  const { passwordHash: _passwordHash, blockedAt: _blockedAt, ...publicUser } = user;
+  const { passwordHash: _passwordHash, blockedAt: _blockedAt, suspendedAt: _suspendedAt, ...publicUser } = user;
   return publicUser;
 }
 
@@ -96,13 +102,7 @@ export function getCurrentUser(userId) {
 }
 
 export async function changePassword(userId, { currentPassword, newPassword }, currentSessionId) {
-  const passwordHash = await repository.getPasswordHash(userId);
-  if (!passwordHash) throw ApiError.notFound('Compte introuvable');
-
-  const matches = await bcrypt.compare(currentPassword ?? '', passwordHash);
-  if (!matches)
-    throw ApiError.unauthorized('Mot de passe actuel incorrect');
-
+  await verifyCurrentPassword(userId, currentPassword);
 
   const newHash = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS);
   await repository.updatePasswordHash(userId, newHash);
@@ -110,7 +110,38 @@ export async function changePassword(userId, { currentPassword, newPassword }, c
   await sessions.destroyUserSessions(userId, { exceptSessionId: currentSessionId });
 }
 
-export async function updateAccount(userId, { firstName, lastName, phone, email }) {
+/**
+ * Vérifie un mot de passe courant sans révéler l'existence du compte.
+ *
+ * Le hachage factice est utilisé quand aucun compte ne correspond : sans cela,
+ * un numéro inconnu répond en quelques dizaines de microsecondes et un numéro
+ * existant en ~250 ms, ce qui suffit à énumérer le registre des comptes.
+ */
+async function verifyCurrentPassword(userId, currentPassword) {
+  const passwordHash = await repository.getPasswordHash(userId);
+  const exists = Boolean(passwordHash);
+  // Le hachage a lieu dans les deux cas, avant tout branchement : lever une 404
+  // avant la comparaison reviendrait à ne rien hacher pour un compte inconnu,
+  // donc à répondre en quelques dizaines de microsecondes au lieu de ~250 ms.
+  // C'est suffisant pour énumérer le registre des comptes.
+  const matches = await bcrypt.compare(currentPassword ?? '', passwordHash ?? DUMMY_HASH);
+
+  if (!exists) throw ApiError.notFound('Compte introuvable');
+  if (!matches) throw ApiError.unauthorized('Mot de passe actuel incorrect');
+}
+
+/**
+ * Modification du compte.
+ *
+ * Changer le téléphone ou l'e-mail exige le mot de passe actuel. Le téléphone
+ * est le seul identifiant de connexion : sans cette re-authentification, une
+ * session volée suffit à prendre le compte de façon définitive, puisque le
+ * titulaire légitime ne pourra plus se connecter. Le prénom se change librement :
+ * il ne sert pas à s'authentifier.
+ */
+export async function updateAccount(userId, { firstName, lastName, phone, email, currentPassword }) {
+  if (phone !== undefined || email !== undefined) await verifyCurrentPassword(userId, currentPassword);
+
   try {
     return await repository.updateAccount(userId, { firstName, lastName, phone, email });
   } catch (err) {

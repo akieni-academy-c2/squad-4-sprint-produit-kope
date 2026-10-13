@@ -38,10 +38,12 @@ export async function addPhoto(professionalId, file, { title, description }) {
 
   try {
     await storage.save(paths, processed);
-  } catch {
-    throw ApiError.badRequest("L'image n'a pas pu être enregistrée", {
-      photo: "L'image n'a pas pu être enregistrée",
-    });
+  } catch (err) {
+    // Une panne de stockage - disque plein, droits, Cloudinary injoignable -
+    // n'est pas une erreur du client. La rapporter en 400 la faisait passer
+    // pour une faute de saisie, et le catch vide la rendait invisible.
+    console.error('[photos] enregistrement impossible', err);
+    throw new ApiError(503, "Le service d'enregistrement est indisponible");
   }
 
   try {
@@ -62,7 +64,9 @@ export async function addPhoto(professionalId, file, { title, description }) {
   } catch (error) {
     // Le fichier est déjà sur le disque : sans ce nettoyage, un COMMIT en
     // échec laisse une image orpheline que rien ne référencera jamais.
-    await storage.remove(paths).catch(() => {});
+    await storage.remove(paths).catch((cleanupError) => {
+      console.error('[photos] fichier orphelin après échec', paths, cleanupError);
+    });
     throw error;
   }
 }
@@ -77,5 +81,13 @@ export async function updatePhoto(professionalId, photoId, { title, description 
 export async function removePhoto(professionalId, photoId) {
   const removed = await withTransaction((tx) => repository.remove(photoId, professionalId, tx)); // filtre par propriétaire
   if (!removed) throw ApiError.notFound('Photo introuvable');
-  await storage.remove(removed);
+
+  // La ligne est déjà supprimée : la réponse doit dire ce qui s'est réellement
+  // passé. Renvoyer 500 pour un fichier resté sur le disque ferait croire à
+  // l'appelant que la suppression a échoué, donc qu'il doit réessayer.
+  try {
+    await storage.remove(removed);
+  } catch (err) {
+    console.error('[photos] ligne supprimée, fichier non supprimé', removed, err);
+  }
 }

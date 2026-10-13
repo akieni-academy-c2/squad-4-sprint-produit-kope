@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Flag, Image as ImageIcon, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ROUTES, STICKY_COLUMN } from '@/shared/lib/constants.js';
-import { SectionSwap } from '@/shared/motion/SectionSwap.jsx';
-import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
-import { cn } from '@/shared/utils';
+import { DashboardShell } from '@/shared/components/layout/DashboardShell.jsx';
+import { ROUTES } from '@/shared/lib/constants.js';
+import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
+import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
+import { MyReportsSection } from '@/features/reports/components/MyReportsSection.jsx';
+import { ProReviewsSection } from '@/features/reviews/components/ProReviewsSection.jsx';
 import { getMyProfile, setAvailability } from '../services/professionals.service.js';
 import { AvailabilityToggle } from '../components/AvailabilityToggle.jsx';
 import { OverviewSection } from '../components/OverviewSection.jsx';
@@ -15,9 +16,6 @@ import { ProfileEditor } from '../components/ProfileEditor.jsx';
 import { ProfileErrorState, ProfileLoadingState } from '../components/ProfileStates.jsx';
 import { ProSidebar } from '../components/ProSidebar.jsx';
 import { PublicationStatus } from '../components/PublicationStatus.jsx';
-import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
-import { MyReportsSection } from '@/features/reports/components/MyReportsSection.jsx';
-import { ProReviewsSection } from '@/features/reviews/components/ProReviewsSection.jsx';
 
 // Le profil ferme la liste, comme dans l'espace client : le compte se parcourt
 // du plus utile au plus administratif.
@@ -36,47 +34,22 @@ const NAV_ITEMS = [
 // panneau : elles se parcourent d'un regard, un filtre n'y apporterait rien.
 const WITH_FILTERS = new Set(['contacts', 'avis', 'signalements']);
 
-const ROOT_ID = 'overview';
-const SECTIONS = NAV_ITEMS.map((item) => item.id);
-
 export function ProProfilePage() {
   const { user } = useAuthContext();
   const { toast } = useNotification();
-
-  // La section vit dans l'URL : rechargement, bouton « retour » et lien de
-  // partage restent corrects, ce qu'un état local ne permet pas.
-  const { active, goTo } = useSectionNav(ROUTES.DASHBOARD_PRO, SECTIONS, ROOT_ID);
-
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [savingAvailability, setSavingAvailability] = useState(false);
-  const [rightEl, setRightEl] = useState(null);
-  const withFilters = WITH_FILTERS.has(active);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      setProfile(await getMyProfile());
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
-  }, [load]);
+  const loadProfile = useCallback(() => getMyProfile(), []);
+  const { data: profile, loading, error, reload, mutate } = useAsyncData(loadProfile, []);
 
   const handleAvailabilityChange = async (next) => {
     setSavingAvailability(true);
     try {
-      const res = await setAvailability(Boolean(next));
-      setProfile((p) => ({ ...(p || {}), isAvailable: res }));
-      toast({ message: `Disponibilité : ${res ? 'Disponible' : 'Indisponible'}`, type: 'info' });
+      const isAvailable = await setAvailability(Boolean(next));
+      // Mise à jour locale plutôt qu'un rechargement complet : basculer un
+      // interrupteur ne doit pas faire clignoter toute la page.
+      mutate((p) => ({ ...(p ?? {}), isAvailable }));
+      toast({ message: `Disponibilité : ${isAvailable ? 'Disponible' : 'Indisponible'}`, type: 'info' });
     } catch (err) {
       toast({ message: err?.message || 'Erreur.', type: 'error' });
     } finally {
@@ -84,42 +57,30 @@ export function ProProfilePage() {
     }
   };
 
-  const updatePhotos = (photos) => {
-    setProfile((p) => ({ ...(p || {}), photos }));
-    load();
-  };
-
   if (loading) return <ProfileLoadingState />;
-  if (error && !profile) return <ProfileErrorState error={error} onRetry={load} />;
+  if (error && !profile) return <ProfileErrorState error={error} onRetry={reload} />;
 
   const displayName = user?.displayName || profile?.displayName || 'Professionnel';
 
   return (
-    <div className="container-kop py-10 lg:py-16">
-      {/* Une seule grille pour les trois colonnes, comme les espaces client et
-          admin : navigation à gauche, contenu au centre, filtres à droite. Les
-          sections ne creusent pas leur propre colonne, elles y projettent
-          leurs filtres par portail - sans quoi la colonne de droite n'a pas la
-          même largeur que dans les deux autres espaces, et les deux barres
-          sticky ne s'alignent plus. */}
-      <div
-        className={cn(
-          'grid gap-6 lg:items-start',
-          withFilters
-            ? 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)]'
-            : 'lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]',
-        )}
-      >
+    <DashboardShell
+      items={NAV_ITEMS}
+      basePath={ROUTES.DASHBOARD_PRO}
+      rootId="overview"
+      filteredSections={WITH_FILTERS}
+      navAriaLabel="Navigation de l’espace pro"
+      sidebar={({ items, active, onChange }) => (
         <ProSidebar
           user={user}
           profile={profile}
           displayName={displayName}
-          items={NAV_ITEMS}
+          items={items}
           active={active}
-          onChange={goTo}
+          onChange={onChange}
         />
-
-        <SectionSwap sectionKey={active} className="min-w-0 space-y-6">
+      )}
+      renderSection={(active, rightContainer, navigate) => (
+        <div className="space-y-6">
           {active === 'overview' && (
             <>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -130,38 +91,23 @@ export function ProProfilePage() {
                   loading={savingAvailability}
                 />
               </div>
-              <OverviewSection profile={profile} onNavigate={goTo} />
+              <OverviewSection profile={profile} onNavigate={navigate} />
             </>
           )}
 
-          {active === 'profil' && <ProfileEditor profile={profile} user={user} onUpdated={setProfile} />}
+          {active === 'profil' && <ProfileEditor profile={profile} user={user} onUpdated={reload} />}
 
-          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={updatePhotos} />}
+          {active === 'photos' && <PhotoManager photos={profile?.photos || []} onChange={reload} />}
 
-          {active === 'contacts' && <ContactsSection rightContainer={rightEl} />}
+          {active === 'contacts' && <ContactsSection rightContainer={rightContainer} />}
 
           {active === 'avis' && (
-            <ProReviewsSection professionalId={profile?.id} rightContainer={rightEl} />
+            <ProReviewsSection professionalId={profile?.id} rightContainer={rightContainer} />
           )}
 
-          {active === 'signalements' && (
-            <MyReportsSection rightContainer={rightEl} />
-          )}
-        </SectionSwap>
-
-        <aside
-          ref={setRightEl}
-          aria-label="Filtres"
-          className={cn(STICKY_COLUMN, withFilters ? 'hidden lg:block' : 'hidden')}
-        />
-      </div>
-
-      <BottomNav
-        items={NAV_ITEMS}
-        active={active}
-        onChange={goTo}
-        ariaLabel="Navigation de l'espace pro (mobile)"
-      />
-    </div>
+          {active === 'signalements' && <MyReportsSection rightContainer={rightContainer} />}
+        </div>
+      )}
+    />
   );
 }

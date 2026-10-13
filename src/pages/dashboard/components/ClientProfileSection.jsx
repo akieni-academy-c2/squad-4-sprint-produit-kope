@@ -3,6 +3,7 @@ import { Pencil } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
+import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { ProfileAvatarCard } from '@/features/professionals/components/profile/ProfileAvatarCard.jsx';
 import { ProfileRow, ProfileSection } from '@/features/professionals/components/profile/ProfileSection.jsx';
@@ -13,6 +14,7 @@ import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { updateAccountSchema } from '@/shared/utils/validators.js';
 import { formatDateFr } from '@/shared/utils';
 import { BecomeProCard } from './BecomeProCard.jsx';
+import { formatPhoneFR } from '@/shared/utils';
 
 /**
  * Champ de saisie avec son état.
@@ -124,7 +126,7 @@ export function ClientProfileSection({ user }) {
         <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mon profil</h2>
         <div className="flex items-center gap-2">
           <div className="hidden sm:block">
-            <Button variant="outline" size="sm" onClick={() => openModal('change-password')}>
+            <Button variant="outline" size="sm" onClick={() => openModal(AUTH_MODAL_MODES.CHANGE_PASSWORD)}>
               Changer le mot de passe
             </Button>
           </div>
@@ -221,7 +223,7 @@ export function ClientProfileSection({ user }) {
               description="Ces coordonnées sont celles que les professionnels utilisent pour vous joindre."
             >
               <dl className="divide-y divide-gray-100">
-                <ProfileRow label="Téléphone" value={user?.phone} />
+                <ProfileRow label="Téléphone" value={formatPhoneFR(user?.phone)} />
                 <ProfileRow label="E-mail" value={user?.email} />
               </dl>
             </ProfileSection>
@@ -241,7 +243,7 @@ export function ClientProfileSection({ user }) {
       {/* Déconnexion en dernier, seulement sur mobile. Desktop la trouve dans le
           menu compte du header ; ici, ce serait la seule sortie de l'écran. */}
       <div className="space-y-4 sm:hidden">
-        <Button variant="outline" size="md" className="w-full" onClick={() => openModal('change-password')}>
+        <Button variant="outline" size="md" className="w-full" onClick={() => openModal(AUTH_MODAL_MODES.CHANGE_PASSWORD)}>
           Changer le mot de passe
         </Button>
         <Button variant="outline" size="md" className="w-full" onClick={logout}>

@@ -165,7 +165,7 @@ export function CustomSelect({
               ...(coords.openUp ? { bottom: coords.bottom } : { top: coords.top }),
             }}
             className={cn(
-              'fixed z-95 overflow-y-auto overscroll-contain rounded-md border border-gray-200 bg-white p-1 shadow-pop',
+              'fixed z-popover overflow-y-auto overscroll-contain rounded-md border border-gray-200 bg-white p-1 shadow-pop',
               // Même animation d'apparition que le menu du header (animate-scale-in),
               // avec l'origine alignée sur le sens d'ouverture.
               coords.openUp ? 'origin-bottom' : 'origin-top',
