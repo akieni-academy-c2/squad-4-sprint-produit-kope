@@ -1,5 +1,8 @@
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
+import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
+import { FIELD_STATUS } from '@/shared/hooks/useFieldStatus.js';
+import { MOBILE_HINT } from '@/shared/utils/normalizePhone.js';
 import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
 import { MultiSelect } from '@/shared/components/ui/MultiSelect.jsx';
 import { Textarea } from '@/shared/components/ui/Textarea.jsx';
@@ -93,21 +96,40 @@ export function ProfileEditForm({
           <FormField
             id="pe-phone"
             label="Téléphone"
-            value={account.phone}
-            onChange={(e) => onAccountField('phone', e.target.value)}
             error={accountErrors.phone}
             liveStatus={statusOf(accountStatuses, 'phone')}
-            inputMode="tel"
-          />
+            hint={MOBILE_HINT}
+          >
+            {/*
+              Même composant que l'inscription et la connexion : un numéro se
+              saisit partout de la même façon, indicatif compris. Trois
+              implémentations du même champ auraient divergé au premier ajustement
+              — et c'est ce qui s'était produit.
+            */}
+            <PhoneInput
+              id="pe-phone"
+              value={account.phone}
+              onChange={(value) => onAccountField('phone', value)}
+              error={accountErrors.phone}
+              success={statusOf(accountStatuses, 'phone').status === FIELD_STATUS.OK}
+            />
+          </FormField>
+
           <FormField
             id="pe-whatsapp"
             label="Numéro WhatsApp"
             error={errors.whatsapp}
-            placeholder="+242... (laisser vide pour utiliser votre numéro de compte)"
-            value={values.whatsapp}
-            onChange={(e) => setField('whatsapp', e.target.value)}
-            inputMode="tel"
-          />
+            help="Laissez vide pour utiliser votre numéro de compte."
+          >
+            {/* Même champ, même indicatif : un lien WhatsApp doit partir du même
+                numéro que celui affiché sur la fiche. */}
+            <PhoneInput
+              id="pe-whatsapp"
+              value={values.whatsapp}
+              onChange={(value) => setField('whatsapp', value)}
+              error={errors.whatsapp}
+            />
+          </FormField>
           {/* En dernier : c'est le canal de repli, celui que le professionnel
               renseigne le moins souvent. Laisser le téléphone et WhatsApp côte à
               côte, puis l'e-mail, suit l'ordre de préférence du contact. */}
