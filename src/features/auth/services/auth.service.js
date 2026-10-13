@@ -9,10 +9,11 @@ import {
   setDemoUser,
 } from '@/shared/mocks/appMock.js';
 import { ROUTES, ROLES } from '@/shared/lib/constants.js';
+import { TERMS_VERSION } from '@/shared/content/terms.js';
 
 export function registerClient(payload) {
   return callApi(
-    () => api.postJson('/auth/register/client', payload).then((r) => r?.user),
+    () => api.postJson('/auth/register/client', { ...payload, termsVersion: TERMS_VERSION }).then((r) => r?.user),
     async () => {
       const user = {
         id: Date.now() % 100000,
@@ -29,7 +30,7 @@ export function registerClient(payload) {
 
 export function registerProfessional(payload) {
   return callApi(
-    () => api.postJson('/auth/register/professional', payload).then((r) => r?.user),
+    () => api.postJson('/auth/register/professional', { ...payload, termsVersion: TERMS_VERSION }).then((r) => r?.user),
     async () => {
       const user = {
         id: Date.now() % 100000,

@@ -8,6 +8,7 @@ import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 
 const HomePage = lazy(() => import('@/pages/HomePage.jsx').then((m) => ({ default: m.HomePage })));
 const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage.jsx').then((m) => ({ default: m.HowItWorksPage })));
+const TermsPage = lazy(() => import('@/pages/TermsPage.jsx').then((m) => ({ default: m.TermsPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage.jsx').then((m) => ({ default: m.NotFoundPage })));
 const ForbiddenPage = lazy(() => import('@/pages/ForbiddenPage.jsx').then((m) => ({ default: m.ForbiddenPage })));
 const AuthModalRedirect = lazy(() => import('@/features/auth/pages/AuthModalRedirect.jsx').then((m) => ({ default: m.AuthModalRedirect })));
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomeRoute>{page(<HomePage />)}</HomeRoute> },
       { path: ROUTES.HOW_IT_WORKS, element: page(<HowItWorksPage />) },
       { path: ROUTES.SEARCH, element: page(<SearchPage />) },
+      { path: ROUTES.TERMS, element: page(<TermsPage />) },
       { path: '/professionals/:id', element: page(<ProfessionalPublicPage />) },
       { path: ROUTES.LOGIN, element: page(<AuthModalRedirect mode="login" />) },
       { path: ROUTES.REGISTER_CLIENT, element: page(<AuthModalRedirect mode="register-client" />) },

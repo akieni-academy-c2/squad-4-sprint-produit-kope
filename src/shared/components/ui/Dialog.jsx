@@ -1,6 +1,6 @@
 import { isValidElement, cloneElement, useId, useContext, createContext, Children } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { cn } from '@/shared/utils';
 import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
@@ -94,26 +94,56 @@ export function DialogContent({ className, children, footer, onClose, ref: forwa
       onClick={(e) => e.stopPropagation()}
     >
       <DialogLabelContext.Provider value={labelId}>
-        {/* mb-3 et non mb-4 : la marge du panneau s'y ajoute. Sur le modal
-            d'avis, p-5 + mb-4 laissait 36px sous le titre - le tiers de
-            l'écran sur un sheet. */}
-        <div className="mb-3 flex shrink-0 items-start gap-3">
-          {header
-            ? cloneElement(header, { className: cn(header.props.className, 'mb-0 min-w-0 flex-1') })
-            : <span className="flex-1" />}
+        {/*
+          Pas de bandeau quand le dialogue n'a pas d'en-tête.
+
+          Les quatre modales d'authentification - connexion, inscription client,
+          inscription pro, changement de mot de passe - n'en ont pas : leur titre
+          est un `sr-only` destiné aux lecteurs d'écran. Elles affichaient
+          malgré tout une rangée de 36 px ne contenant qu'un bouton Fermer, donc
+          une bande vide au-dessus du premier champ.
+
+          Le bouton devient alors **flottant**, hors du flux : il ne pousse plus
+          le formulaire et reste visible quelle que soit la hauteur. `pr-11` sur
+          le corps lui réserve la place, sinon le premier champ passe dessous.
+        */}
+        {header ? (
+          // mb-3 et non mb-4 : la marge du panneau s'y ajoute. Sur le modal
+          // d'avis, p-5 + mb-4 laissait 36px sous le titre - le tiers de
+          // l'écran sur un sheet.
+          <div className="mb-3 flex shrink-0 items-start gap-3">
+            {cloneElement(header, { className: cn(header.props.className, 'mb-0 min-w-0 flex-1') })}
+            <button
+              type="button"
+              aria-label="Fermer"
+              className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
+              onClick={() => onClose?.()}
+            >
+              <X size={16} aria-hidden />
+            </button>
+          </div>
+        ) : (
           <button
             type="button"
             aria-label="Fermer"
-            className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 focus-ring"
+            className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white/80 text-gray-500 backdrop-blur-sm hover:bg-gray-50 focus-ring"
             onClick={() => onClose?.()}
           >
             <X size={16} aria-hidden />
           </button>
-        </div>
+        )}
+
 
         {/* min-h-0 : sans lui, un enfant flex refuse de rétrécir sous sa
             hauteur naturelle et la colonne déborde au lieu de défiler. */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div
+          className={cn(
+            'min-h-0 flex-1 overflow-y-auto overscroll-contain',
+            // Réserve la place du bouton Fermer flottant, sans quoi le premier
+            // champ du formulaire passe dessous.
+            !header && 'pr-11',
+          )}
+        >
           {childArray}
 
           {/* Le footer vit dans le parent qui défile, mais reste `sticky`

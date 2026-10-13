@@ -1,10 +1,11 @@
 import { Handshake, Search, User, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SearchFilters } from '@/features/search/components/SearchFilters.jsx';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { EASE } from '@/shared/motion/timing.js';
 import { staggerChild, staggerParent } from '@/shared/motion/stagger.js';
+import { ScrollDepth } from '@/shared/motion/ScrollDepth.jsx';
 import hero from '@/shared/assets/hero.png';
 
 /**
@@ -65,59 +66,66 @@ export function HeroSection() {
       {/* Le parent porte la cadence, les enfants ne portent que leur état.
           `initial={false}` : c'est le premier rendu de la page, la composition
           est déjà là — l'animer en entrée n'ajouterait qu'un blanc de 340 ms
-          avant le premier mot. */}
-      <motion.div
-        variants={staggerParent(5)}
-        initial={false}
-        animate="animate"
+          avant le premier mot.
+
+          `ScrollDepth` enveloppe les deux colonnes pour y lier un parallaxe :
+          le texte se retire plus vite que la page, le visuel moins vite. */}
+      <ScrollDepth
         className="container-kop relative z-10 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center"
-      >
-        <div className="space-y-8">
-          <motion.p variants={staggerChild} className='text-primary-500 font-semibold'><Handshake size={16} aria-hidden className="inline" /> LES SAVOIR-FAIRE DU CONGO </motion.p>
-          <motion.h1 variants={staggerChild} className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
-            Le bon artisan.
-            Tout près de vous.
-          </motion.h1>
-          <motion.p variants={staggerChild} className="mt-5 max-w-xl text-base leading-7 text-gray-600 sm:text-lg">
-            Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les
-            professionnels de votre quartier et échangez directement avec eux.
-          </motion.p>
-          <motion.ul variants={staggerChild} className="mt-8 hidden flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 sm:flex">
-            <li className="flex items-center gap-2 border border-gray-400  font-medium px-3 py-1.5 rounded-full"><User size={16} aria-hidden />Des profils à découvrir</li>
-            <li className="flex items-center gap-2 border border-gray-400 font-medium px-3 py-1.5 rounded-full"><Phone size={16} aria-hidden />Un contact direct</li>
-          </motion.ul>
-        </div>
+        text={
+          <motion.div
+            variants={staggerParent(5)}
+            initial={false}
+            animate="animate"
+            className="space-y-8"
+          >
+            <motion.p variants={staggerChild} className='text-primary-500 font-semibold'><Handshake size={16} aria-hidden className="inline" /> LES SAVOIR-FAIRE DU CONGO </motion.p>
+            <motion.h1 variants={staggerChild} className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
+              Le bon artisan.
+              Tout près de vous.
+            </motion.h1>
+            <motion.p variants={staggerChild} className="mt-5 max-w-xl text-base leading-7 text-gray-600 sm:text-lg">
+              Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les
+              professionnels de votre quartier et échangez directement avec eux.
+            </motion.p>
+            <motion.ul variants={staggerChild} className="mt-8 hidden flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 sm:flex">
+              <li className="flex items-center gap-2 border border-gray-400  font-medium px-3 py-1.5 rounded-full"><User size={16} aria-hidden />Des profils à découvrir</li>
+              <li className="flex items-center gap-2 border border-gray-400 font-medium px-3 py-1.5 rounded-full"><Phone size={16} aria-hidden />Un contact direct</li>
+            </motion.ul>
+          </motion.div>
+        }
+        visual={
+          /* La photo se cale au lieu de monter. `scale: 1.03` : au-delà de 1.05
+             le recadrage se voit pendant l'animation et l'image semble glisser ;
+             en dessous de 1.02 le mouvement est trop faible pour être lu et elle
+             apparaît simplement. */
+          <motion.div
+            variants={{
+              initial: { opacity: 0, scale: 1.03 },
+              animate: { opacity: 1, scale: 1, transition: { duration: 0.32, ease: EASE.enter } },
+            }}
+            className="relative mx-auto w-full max-w-130"
+          >
+            <div className="rounded-[16px] overflow-hidden  ">
+              <ImageWithSkeleton
+                src={hero}
+                alt="Artisanne KOP"
+                // Premier visuel de la page : il doit être prioritaire sur le
+                // reste, sinon le héros s'affiche après les images du bas.
+                eager
+                ratio="h-85 sm:h-100"
+                skeletonClassName="bg-accent-500/30"
+              />
+              <FloatingCaption
+                align="right"
+                title="Les mains qui font votre quartier"
+                subtitle="Des professionnels, près de chez vous."
+              />
+            </div>
+          </motion.div>
+        }
+      />
 
-        {/* La photo se cale au lieu de monter. `scale: 1.03` : au-delà de 1.05
-            le recadrage se voit pendant l'animation et l'image semble glisser ;
-            en dessous de 1.02 le mouvement est trop faible pour être lu et elle
-            apparaît simplement. */}
-        <motion.div
-          variants={{
-            initial: { opacity: 0, scale: 1.03 },
-            animate: { opacity: 1, scale: 1, transition: { duration: 0.32, ease: EASE.enter } },
-          }}
-          className="relative mx-auto w-full max-w-130"
-        >
-          <div className="rounded-[16px] overflow-hidden  ">
-            <ImageWithSkeleton
-              src={hero}
-              alt="Artisanne KOP"
-              // Premier visuel de la page : il doit être prioritaire sur le
-              // reste, sinon le héros s'affiche après les images du bas.
-              eager
-              ratio="h-85 sm:h-100"
-              skeletonClassName="bg-accent-500/30"
-            />
-            <FloatingCaption
-              align="right"
-              title="Les mains qui font votre quartier"
-              subtitle="Des professionnels, près de chez vous."
-            />
-          </div>
-
-        </motion.div>
-      </motion.div>
 
       {/* 2. SEARCH WIDGET */}
       <aside className="container-kop relative -space-y-px z-10">

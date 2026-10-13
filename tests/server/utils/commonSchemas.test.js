@@ -7,6 +7,7 @@ import {
 } from '@server/utils/commonSchemas.js';
 import { registerClientSchema } from '@server/modules/auth/auth.schemas.js';
 import { updateProfileSchema } from '@server/modules/professionals/professionals.schemas.js';
+import { TERMS_VERSION } from '@/shared/content/terms.js';
 
 describe('règles de mot de passe', () => {
   it('accepte un mot de passe conforme', () => {
@@ -98,7 +99,16 @@ describe('règles de nom affiché', () => {
 
 describe('intégration des règles dans les formulaires', () => {
   it('inscription client refuse un prénom numérique', () => {
-    const base = { firstName: 'Ada', lastName: 'Kopé', phone: '061234567', password: 'Motdepasse1', consent: true };
+    const base = {
+      firstName: 'Ada',
+      lastName: 'Kopé',
+      phone: '061234567',
+      password: 'Motdepasse1',
+      consent: true,
+      // Le serveur exige la version lue. Une inscription sans elle est une
+      // inscription dont on ne saura pas, plus tard, ce que le compte a accepté.
+      termsVersion: TERMS_VERSION,
+    };
     expect(registerClientSchema.safeParse(base).success).toBe(true);
     expect(registerClientSchema.safeParse({ ...base, firstName: 'Ada99' }).success).toBe(false);
     expect(registerClientSchema.safeParse({ ...base, password: 'motdepasse1' }).success).toBe(false);

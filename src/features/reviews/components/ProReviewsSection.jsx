@@ -538,7 +538,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
       />
 
       <Dialog open={editingId != null} onOpenChange={(o) => !o && setEditingId(null)}>
-        <DialogContent className="max-w-lg p-5" onClose={() => setEditingId(null)}>
+        <DialogContent className="max-w-2xl p-5" onClose={() => setEditingId(null)}>
           <DialogHeader>
             <DialogTitle>Modifier mon avis</DialogTitle>
             <DialogDescription>{editing?.professionalName}</DialogDescription>

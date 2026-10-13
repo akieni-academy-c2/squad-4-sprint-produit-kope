@@ -232,7 +232,7 @@ export function ProfessionalPublicPage() {
       </Dialog>
 
       <Dialog open={reviewFormOpen} onOpenChange={(o) => !o && setReviewFormOpen(false)}>
-        <DialogContent className="max-w-lg min-h-[45vh] p-5" onClose={() => setReviewFormOpen(false)}>
+        <DialogContent className="max-w-2xl min-h-[45vh] p-5" onClose={() => setReviewFormOpen(false)}>
           <DialogHeader>
             <DialogTitle>Donner votre avis</DialogTitle>
             <DialogDescription>Client ou professionnel, votre retour aide à faire leur choix.</DialogDescription>
