@@ -1,6 +1,6 @@
 import { useId } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '@/shared/utils';
 import { useIsDesktop } from '@/shared/hooks/useMediaQuery.js';
 import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
@@ -22,6 +22,12 @@ import { useOverlay } from './useOverlay.js';
  * 90 dvh ; partir du bas exact la ferait cheminer devant toute la page, et le
  * retour n'était plus un retour. Le reste de la course — jusqu'au bord — est un
  * glissement que l'on ne voit pas, pas une distance d'animation.
+ *
+ * ## Le fond est flouté, comme les deux autres surfaces
+ *
+ * `Sheet` et `Dialog` l'étaient ; seule la modale ne l'était pas. Trois surfaces
+ * qui se recouvrent de la même façon ne peuvent pas lectures différemment —
+ * celle qui n'est pas floutée paraît posée sur la page au lieu de devant.
  */
 export function Modal({
   open,
@@ -63,7 +69,7 @@ export function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-checkers p-0 sm:items-center sm:p-4"
+          className="fixed inset-0 z-[90] flex items-end justify-center bg-checkers backdrop-blur-sm p-0 sm:items-center sm:p-4"
           variants={overlayBackdrop}
           initial="initial"
           animate="animate"

@@ -69,7 +69,7 @@ export function Navbar() {
                 return (
                   <NavLink
                     key={item.to}
-                    href={item.to}
+                    to={item.to}
                     className="inline-flex items-center gap-2 rounded-[10px] border border-gray-300 bg-white/25 px-3.5 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                   >
                     <Search size={16} aria-hidden />
@@ -80,7 +80,7 @@ export function Navbar() {
               return (
                 <NavLink
                   key={item.to}
-                  href={item.to}
+                  to={item.to}
                   className={({ isActive }) =>
                     cn(
                       'relative rounded-[10px] px-3 py-2 text-sm font-semibold transition',
@@ -163,7 +163,7 @@ export function Navbar() {
                   return (
                     <li key={item.to}>
                       <NavLink
-                        href={item.to}
+                        to={item.to}
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-2.5 rounded-md border border-gray-300 bg-white/25 px-3 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 focus-ring"
                       >
@@ -176,7 +176,7 @@ export function Navbar() {
                 return (
                   <li key={item.to}>
                     <NavLink
-                      href={item.to}
+                      to={item.to}
                       end
                       onClick={() => setOpen(false)}
                       className={({ isActive }) =>

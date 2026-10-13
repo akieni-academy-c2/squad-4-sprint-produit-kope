@@ -75,12 +75,15 @@ export async function updateAvatarUrl(userId, avatarUrl, db = pool) {
   await db.query('UPDATE users SET avatar_url = $2 WHERE id = $1', [userId, avatarUrl]);
 }
 
-export async function createUser({ role, phone, passwordHash, firstName = null, lastName = null }, db = pool) {
+export async function createUser(
+  { role, phone, passwordHash, firstName = null, lastName = null, termsVersion = null },
+  db = pool,
+) {
   const { rows } = await db.query(
-    `INSERT INTO users (role, phone, password_hash, first_name, last_name, consented_at)
-     VALUES ($1, $2, $3, $4, $5, now())
+    `INSERT INTO users (role, phone, password_hash, first_name, last_name, consented_at, terms_version)
+     VALUES ($1, $2, $3, $4, $5, now(), $6)
      RETURNING id, role, phone, first_name AS "firstName", last_name AS "lastName"`,
-    [role, phone, passwordHash, firstName, lastName],
+    [role, phone, passwordHash, firstName, lastName, termsVersion],
   );
   return rows[0];
 }

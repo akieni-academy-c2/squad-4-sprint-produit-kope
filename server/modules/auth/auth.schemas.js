@@ -11,12 +11,27 @@ import {
 } from '../../utils/commonSchemas.js';
 
 /** US-01 */
+
+/**
+ * Version des conditions acceptees.
+ *
+ * Meme forme que le CHECK SQL `users_terms_version_format` : une date de
+ * publication. Le laisser libre donnerait la possibilite d'enregistrer « v3 »,
+ * qu'on ne saurait plus rattacher a aucun texte.
+ */
+export const termsVersionSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Version des conditions invalide');
 export const registerClientSchema = z.object({
   firstName: personNameSchema,
   lastName: personNameSchema,
   phone: phoneSchema,
   password: passwordSchema,
   consent: consentSchema,
+  // Ce QUI a ete accepte, pas seulement QUAND. `consented_at` existe deja ;
+  // sans la version, un consentement n'est opposable que face a un texte
+  // qui n'existe plus.
+  termsVersion: termsVersionSchema,
 });
 
 /** US-02 */
@@ -27,6 +42,10 @@ export const registerProfessionalSchema = z.object({
   tradeId: idSchema('Choisissez un métier'),
   zoneIds: zoneIdsSchema,
   consent: consentSchema,
+  // Ce QUI a ete accepte, pas seulement QUAND. `consented_at` existe deja ;
+  // sans la version, un consentement n'est opposable que face a un texte
+  // qui n'existe plus.
+  termsVersion: termsVersionSchema,
 });
 
 export const becomeProfessionalSchema = z.object({

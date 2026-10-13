@@ -24,6 +24,7 @@ import { registerClientSchema } from '@/shared/utils/validators.js';
 import { registerClient } from '../services/auth.service.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { submitLabel } from '@/shared/utils/submitLabel.js';
+import { TERMS_VERSION } from '@/shared/content/terms.js';
 
 const INITIAL = { firstName: '', lastName: '', phone: '', password: '', consent: false };
 const STEPS = ['Identité', 'Sécurité'];
@@ -254,7 +255,21 @@ export function RegisterClientForm({ bare = false } = {}) {
                 id="rc-consent"
                 label={
                   <span className="text-sm leading-5 text-gray-700">
-                    J'accepte les conditions d'utilisation de KOP.
+                    J’accepte les{' '}
+                    {/*
+                      Le mot « conditions » est un lien. Sans lui, la case
+                      invite à accepter un texte que rien ne permet de lire — et
+                      le clic se fait sans savoir.
+                    */}
+                    <a
+                      href={ROUTES.TERMS}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-primary-700 hover:underline"
+                    >
+                      conditions d’utilisation de KOP
+                    </a>{' '}
+                    (version {TERMS_VERSION}).
                   </span>
                 }
                 checked={Boolean(values.consent)}

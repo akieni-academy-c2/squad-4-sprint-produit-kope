@@ -1,4 +1,5 @@
 export { MotionRoot } from './MotionRoot.jsx';
+export { ScrollDepth } from './ScrollDepth.jsx';
 export { SectionSwap } from './SectionSwap.jsx';
 export { DURATION, EASE, PERCEPTIBLE, SPRING, exitOf, isWorthAnimating } from './timing.js';
 export {

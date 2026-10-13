@@ -44,6 +44,7 @@ export const ROUTES = {
   DASHBOARD_CLIENT: '/dashboard/client',
   DASHBOARD_PRO: '/dashboard/pro',
   ADMIN: '/admin',
+  TERMS: '/conditions-utilisation',
   NOT_FOUND: '/404',
   PROFESSIONAL: (id) => `/professionals/${id}`,
 };

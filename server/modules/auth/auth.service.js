@@ -39,18 +39,18 @@ async function insertUser(data, db) {
 }
 
 /** US-01 */
-export async function registerClient({ firstName, lastName, phone, password }) {
+export async function registerClient({ firstName, lastName, phone, password, termsVersion }) {
   const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
-  return insertUser({ role: 'client', phone, passwordHash, firstName, lastName });
+  return insertUser({ role: 'client', phone, passwordHash, firstName, lastName, termsVersion });
 }
 
 /** US-02 */
-export async function registerProfessional({ displayName, phone, password, tradeId, zoneIds }) {
+export async function registerProfessional({ displayName, phone, password, tradeId, zoneIds, termsVersion }) {
   const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
 
   try {
     return await withTransaction(async (tx) => {
-      const user = await insertUser({ role: 'professional', phone, passwordHash }, tx);
+      const user = await insertUser({ role: 'professional', phone, passwordHash, termsVersion }, tx);
       await professionalsRepository.create({ userId: user.id, displayName, tradeId }, tx);
       await professionalsRepository.replaceZones(user.id, zoneIds, tx);
       return { ...user, displayName };

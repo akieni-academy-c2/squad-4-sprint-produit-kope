@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Eye, EyeOff, Flag, Pencil, Trash2 } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { ActionGroup } from '@/shared/components/ui/ActionGroup.jsx';
+import { ConfirmDialog } from '@/shared/components/ui/ConfirmDialog.jsx';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { formatDateFr } from '@/shared/utils';
@@ -10,7 +12,7 @@ import { formatDateFr } from '@/shared/utils';
  *
  * Un professionnel est aussi un client : il dépose des avis sur d'autres
  * professionnels et doit les retrouver dans le même espace, avec les mêmes
- * gestes. Deux implémentations auraient divergé au premier ajustement — et
+ * gestes. Deux implémentations auraient divergé au premier ajustement - et
  * c'est ce qui s'était produit avant que ce composant existe.
  *
  * Les actions sont adaptatives :
@@ -19,6 +21,22 @@ import { formatDateFr } from '@/shared/utils';
  *     garder « Modifier » laisserait croire qu'on peut encore travailler un
  *     texte que personne ne voit ;
  *   - « Signaler » n'a de sens que sur un avis reçu, jamais sur le sien.
+ *
+ * ## Pourquoi la confirmation vit ici, et pas chez l'appelant
+ *
+ * Masquer et supprimer sont les deux seules actions de cette carte qu'on ne
+ * peut pas reprendre : le texte d'un avis supprimé n'existe plus, celui d'un
+ * avis masqué disparaît de toutes les fiches publiques.
+ *
+ * Tant que la demande de confirmation était laissée aux sections qui rendent la
+ * carte, chacune pouvait l'oublier — et il suffisait d'en oublier une pour que
+ * la règle ne vaille plus nulle part. Elle est donc appliquée **dans** la carte :
+ * un nouvel appelant reçoit la garantie sans avoir à la réécrire, et le test qui
+ * vérifie la règle porte sur le composant qui l'applique.
+ *
+ * « Réafficher » reste immédiat : l'avis est déjà dans l'espace du lecteur, on
+ * ne fait que le remettre en ligne, et une confirmation là serait un obstacle
+ * à corriger une erreur de clic.
  */
 export function ReviewCard({
   name,
@@ -35,6 +53,16 @@ export function ReviewCard({
   onDelete,
   onReport,
 }) {
+  // null | 'hide' | 'reveal' | 'delete' — ce qui attend une confirmation.
+  const [asking, setAsking] = useState(null);
+
+  const confirm = () => {
+    if (asking === 'delete') onDelete?.();
+    if (asking === 'hide') onToggleHidden?.();
+    if (asking === 'reveal') onToggleHidden?.();
+    setAsking(null);
+  };
+
   return (
     <Card className={`p-4 ${isHidden ? 'opacity-70' : ''}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -58,14 +86,14 @@ export function ReviewCard({
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-200 pt-3">
         <p className="text-xs text-gray-400">{formatDateFr(createdAt)}</p>
 
-        <ActionGroup label={`Actions sur l’avis de ${name}`}>
+        <ActionGroup label={`Actions sur l'avis de ${name}`}>
           {onEdit && !isHidden && (
             <button
               type="button"
               onClick={onEdit}
               disabled={pending}
               title="Modifier"
-              aria-label={`Modifier l’avis sur ${name}`}
+              aria-label={`Modifier l'avis sur ${name}`}
               className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
             >
               <Pencil size={16} aria-hidden />
@@ -76,10 +104,10 @@ export function ReviewCard({
             <button
               type="button"
               disabled={pending}
-              onClick={onToggleHidden}
+              onClick={() => setAsking(isHidden ? 'reveal' : 'hide')}
               title={isHidden ? 'Réafficher' : 'Masquer'}
               aria-label={
-                isHidden ? `Réafficher l’avis sur ${name}` : `Masquer l’avis sur ${name}`
+                isHidden ? `Réafficher l'avis sur ${name}` : `Masquer l'avis sur ${name}`
               }
               className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
             >
@@ -95,7 +123,7 @@ export function ReviewCard({
                 type="button"
                 onClick={onReport}
                 title="Signaler cet avis"
-                aria-label={`Signaler l’avis laissé par ${name}`}
+                aria-label={`Signaler l'avis laissé par ${name}`}
                 className="cursor-pointer rounded p-1.5 text-gray-600 transition hover:bg-white hover:text-danger-500 focus-ring"
               >
                 <Flag size={16} aria-hidden />
@@ -106,9 +134,9 @@ export function ReviewCard({
             <button
               type="button"
               disabled={pending}
-              onClick={onDelete}
+              onClick={() => setAsking('delete')}
               title="Supprimer"
-              aria-label={`Supprimer l’avis sur ${name}`}
+              aria-label={`Supprimer l'avis sur ${name}`}
               className="cursor-pointer rounded p-1.5 text-gray-500 transition hover:bg-white hover:text-danger-500 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
             >
               <Trash2 size={16} aria-hidden />
@@ -116,6 +144,40 @@ export function ReviewCard({
           )}
         </ActionGroup>
       </div>
+
+      {/*
+        Le titre porte l'objet et non le verbe : « Supprimer » seul ne dit pas
+        ce qui disparaît. La description dit ce que la perte est concrète, pour
+        qu'on puisse décider — « définitivement » pour une suppression, ce qui
+        n'est pas vrai d'un masquage.
+      */}
+      <ConfirmDialog
+        open={asking === 'delete'}
+        danger
+        title={`Supprimer l'avis sur ${name} ?`}
+        description="Cet avis sera définitivement effacé. Cette action est irréversible."
+        confirmLabel="Supprimer"
+        onCancel={() => setAsking(null)}
+        onConfirm={confirm}
+      />
+
+      <ConfirmDialog
+        open={asking === 'hide'}
+        title={`Masquer l'avis sur ${name} ?`}
+        description="Il n'apparaîtra plus sur la fiche publique. Vous pourrez le réafficher à tout moment."
+        confirmLabel="Masquer"
+        onCancel={() => setAsking(null)}
+        onConfirm={confirm}
+      />
+
+      <ConfirmDialog
+        open={asking === 'reveal'}
+        title={`Réafficher l'avis sur ${name} ?`}
+        description="Il redeviendra visible sur la fiche publique et dans les recherches."
+        confirmLabel="Réafficher"
+        onCancel={() => setAsking(null)}
+        onConfirm={confirm}
+      />
     </Card>
   );
 }

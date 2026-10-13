@@ -12,12 +12,19 @@ variants.js   quoi animer, et dans quel but
 stagger.js    comment un groupe arrive ensemble
 ```
 
-Plus `MotionRoot.jsx` (préférence système, courbe par défaut) et
-`SectionSwap.jsx` (la colonne centrale des tableaux de bord).
+Plus `MotionRoot.jsx` (préférence système, courbe par défaut),
+`SectionSwap.jsx` (la colonne centrale des tableaux de bord) et
+`ScrollDepth.jsx` (profondeur liée au défilement).
+
+## Le paquet
+
+`motion`, importé depuis `motion/react`. C'est le nom officiel depuis le
+renommage : `framer-motion` reste publié et fonctionne, mais la documentation
+et le type-check pointent sur `motion`. Même version, même API.
 
 ## La règle qui décide de tout
 
-**Ce qui peut être interrompu, ou qui a une sortie, passe par Framer Motion.
+**Ce qui peut être interrompu, ou qui a une sortie, passe par Motion.
 Tout le reste est du CSS.**
 
 | | interruption | sortie | CSS suffit ? |
@@ -25,6 +32,7 @@ Tout le reste est du CSS.**
 | feuille, dialogue | oui | oui | non |
 | onglet d'un tableau de bord | — | oui | non |
 | message éphémère | — | oui | non |
+| parallaxe du héros | non | — | non, `useScroll` |
 | bouton enfoncé | non | non | **oui** |
 | survol, couleur, opacité | non | non | **oui** |
 
