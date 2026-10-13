@@ -60,6 +60,25 @@ export const phoneSchema = z
     return normalized;
   });
 
+/**
+ * Adresse e-mail de contact.
+ *
+ * La connexion se fait par téléphone : l'e-mail est facultatif et effaçable.
+ * `nullish` couvre les trois états d'un champ jamais renseigné — absent,
+ * chaîne vide, `null` explicite — et tous les trois finissent normalisés en
+ * `null`. Sans lui, `z.string()` refuserait `null` et un client qui veut
+ * simplement retirer son adresse verrait son formulaire rejeté.
+ */
+export const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .nullish()
+  .transform((value) => value ?? '')
+  .refine((value) => value.length <= 254, 'L’adresse e-mail est trop longue')
+  .refine((value) => !value || z.email().safeParse(value).success, 'Adresse e-mail invalide')
+  .transform((value) => value || null);
+
 export const passwordSchema = z
   .string({ error: 'Le mot de passe est obligatoire' })
   .min(8, 'Le mot de passe doit contenir au moins 8 caractères')

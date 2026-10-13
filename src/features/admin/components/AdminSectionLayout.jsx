@@ -83,10 +83,22 @@ export function AdminSectionLayout({
           referme, pas un panneau qu'on parcourt. Sur le côté, ils occupaient la
           moitié de l'écran et repoussaient la liste hors de champ. */}
       <Sheet open={open} onOpenChange={setOpen} side="bottom">
-        {/* pt-10 : le panneau applique déjà `p-4` et le bouton de fermeture descend
-            jusqu'à 52px du bord haut. On complète jusqu'à 56px pour que le
-            bouton « Réinitialiser » passe dessous sans être recouvert. */}
-        <div className="w-full overflow-y-auto pt-10">{filters(`${searchId}-mobile`)}</div>
+        {/* Colonne flex et non bloc défilant : le bouton doit rester visible
+            pendant qu'on fait défiler les filtres, sinon il sort du champ au
+            premier groupe supplémentaire. `max-h` déduit des 2rem de `p-4` que
+            la feuille pose déjà — le panneau est en `border-box`, son plafond
+            les comprend. */}
+        <div className="flex max-h-[calc(90dvh-2rem)] flex-col pt-10">
+          <div className="w-full flex-1 overflow-y-auto">{filters(`${searchId}-mobile`)}</div>
+
+          {/* Sans ce pied, fermer la feuille demandait de viser la croix en
+              haut à droite : le geste de validation n'existait pas. */}
+          <div className="shrink-0 border-t border-gray-100 pt-3">
+            <Button variant="primary" size="md" className="w-full" onClick={() => setOpen(false)}>
+              Appliquer
+            </Button>
+          </div>
+        </div>
       </Sheet>
     </div>
   );

@@ -17,6 +17,25 @@ const phoneSchema = z
   });
 
 /**
+ * Adresse e-mail de contact — aligné sur `emailSchema` de
+ * server/utils/commonSchemas.js, qui fait foi.
+ *
+ * `nullish` couvre absent, chaîne vide et `null` : le champ est facultatif et
+ * effaçable, vider doit rester possible. Les trois finissent en `null`. Sans
+ * lui, un formulaire jamais touché — aucun `email` dans l'objet — serait
+ * refusé et « Enregistrer » resterait éteint en permanence.
+ */
+const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .nullish()
+  .transform((v) => v ?? '')
+  .refine((v) => v.length <= 254, 'L’adresse e-mail est trop longue')
+  .refine((v) => !v || z.email().safeParse(v).success, 'Adresse e-mail invalide')
+  .transform((v) => v || null);
+
+/**
  * Doit rester aligné sur `passwordSchema` de server/utils/commonSchemas.js :
  * c'est lui qui fait foi. Un écart afficherait un état vert sur une valeur
  * que le serveur refusera.
@@ -111,6 +130,7 @@ export const updateAccountSchema = z.object({
   firstName: personNameSchema('prénom'),
   lastName: personNameSchema('nom'),
   phone: phoneSchema,
+  email: emailSchema,
 });
 
 export const changePasswordSchema = z.object({

@@ -1,53 +1,29 @@
 import { useState } from 'react';
-import { Camera, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
+import { ProfileAvatarCard } from '@/features/professionals/components/profile/ProfileAvatarCard.jsx';
+import { ProfileRow, ProfileSection } from '@/features/professionals/components/profile/ProfileSection.jsx';
 import { updateAccount, uploadAvatar } from '@/features/auth/services/auth.service.js';
 import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
 import { updateAccountSchema } from '@/shared/utils/validators.js';
 import { formatDateFr } from '@/shared/utils';
 import { BecomeProCard } from './BecomeProCard.jsx';
 
-function Field({ label, value, onChange }) {
+function Field({ label, value, onChange, type = 'text', placeholder, hint }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-semibold text-gray-600">{label}</label>
       <input
+        type={type}
         className="w-full rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm"
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
       />
-    </div>
-  );
-}
-
-function Detail({ label, value }) {
-  return (
-    <div className="grid grid-cols-[120px_1fr] gap-4 px-6 py-4">
-      <dt className="text-gray-500">{label}</dt>
-      <dd className="font-semibold text-gray-900">{value}</dd>
-    </div>
-  );
-}
-
-/**
- * Sous-ensemble du profil : « Informations personnelles » et « Contacts ».
- *
- * Un seul `<dl>` par bloc, pas un seul pour les deux : ce sont deux listes de
- * définitions distinctes, et l'espaceur après « Rôle » dans un `<dl>` unique
- * se lirait comme un contact sans libellé.
- */
-function ProfileBlock({ title, children }) {
-  return (
-    <div className="border-t border-gray-100 pt-4">
-      <p className="px-6 pb-1 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
-        {title}
-      </p>
-      <dl className="text-sm">{children}</dl>
+      {hint && <p className="text-[11px] text-gray-400">{hint}</p>}
     </div>
   );
 }
@@ -61,6 +37,7 @@ export function ClientProfileSection({ user }) {
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
   const [saving, setSaving] = useState(false);
   const [avatar, setAvatar] = useState(user?.avatarUrl ?? null);
   const [uploading, setUploading] = useState(false);
@@ -70,7 +47,7 @@ export function ClientProfileSection({ user }) {
 
   // Formulaire de modification : le bouton n'est actif que si les valeurs
   // sont valides ET différentes de celles enregistrées.
-  const { ready, dirty } = useFormReadiness(updateAccountSchema, { firstName, lastName, phone });
+  const { ready, dirty } = useFormReadiness(updateAccountSchema, { firstName, lastName, phone, email });
   const canSubmit = ready && dirty;
 
   const save = async (e) => {
@@ -78,7 +55,14 @@ export function ClientProfileSection({ user }) {
     if (!canSubmit) return;
     setSaving(true);
     try {
-      await updateAccount({ firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() });
+      await updateAccount({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim(),
+        // Vide = retrait de l'adresse. Le serveur distingue `null` (effacer)
+        // de l'absence de clé (ne pas toucher), d'où les deux Spread.
+        ...(email.trim() ? { email: email.trim() } : { email: null }),
+      });
       await refresh();
       setEditing(false);
       toast({ message: 'Informations enregistrées.', type: 'success' });
@@ -100,6 +84,13 @@ export function ClientProfileSection({ user }) {
       await refresh();
       setUploadProgress(100);
       toast({ message: 'Photo de profil mise à jour.', type: 'success' });
+
+      // L'avatar est enregistré à l'instant même, indépendamment du formulaire.
+      // Si aucun champ texte n'est modifié, il ne reste donc rien à
+      // enregistrer : sans cette sortie, l'utilisateur reste devant un
+      // formulaire dont « Enregistrer » est désactivé alors que sa photo vient
+      // d'être prise en compte.
+      if (!dirty) setEditing(false);
     } catch (err) {
       toast({ message: err?.message || 'Erreur lors du téléversement.', type: 'error' });
     } finally {
@@ -123,93 +114,75 @@ export function ClientProfileSection({ user }) {
         </div>
       </div>
 
-      <Card className="overflow-hidden p-0">
-        {/* Bandeau d'identité sur dégradé : même composition que la carte de
-            statut de `ProSidebar` — dégradé en haut, informations en dessous.
-            Deux sections qui affichent la même personne doivent se ressembler. */}
-        <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
-          <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-gray-100">
-              <UserAvatar user={user} src={avatar} className="h-full w-full" rounded="rounded-none" />
-              {editing && (
-                <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 text-white">
-                  <Camera size={18} aria-hidden />
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png"
-                    className="sr-only"
-                    disabled={uploading}
-                    onChange={onAvatarChange}
-                  />
-                </label>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold text-gray-900">{name}</p>
-              <p className="text-xs text-gray-500">{user?.phone || 'Aucun numéro'}</p>
-              {editing &&
-                (uploading ? (
-                  <div className="mt-2 w-40 overflow-hidden rounded-full bg-gray-200">
-                    <div
-                      className="h-2 rounded-full bg-primary-500 transition-all duration-200"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                ) : (
-                  <p className="mt-1 text-[12px] font-semibold text-primary-600">
-                    Cliquez sur la photo pour la changer
-                  </p>
-                ))}
-            </div>
-          </div>
-        </div>
+      {/* Même composant que l'espace pro : les deux profils décrivent la même
+          personne, ils ne peuvent pas diverger sur la carte d'identité. */}
+      <ProfileAvatarCard
+        user={user}
+        avatar={avatar}
+        name={name}
+        tradeName="Client"
+        editing={editing}
+        uploading={uploading}
+        uploadProgress={uploadProgress}
+        onAvatarChange={onAvatarChange}
+      />
 
         {editing ? (
-          <form onSubmit={save} className="space-y-5 px-5 py-5">
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
-                Informations personnelles
-              </p>
+          <form onSubmit={save} className="space-y-4">
+            <ProfileSection title="Informations personnelles">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Prénom(s)" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                 <Field label="Nom(s)" value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
-            </div>
+            </ProfileSection>
 
-            <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.08em] text-gray-400">
-                Contacts
-              </p>
+            <ProfileSection title="Contact">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Téléphone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                {/* L'adresse est la clé de connexion : elle n'appartient pas au
-                    formulaire d'édition, seulement à la lecture. */}
-                <div className="space-y-1">
-                  <span className="block text-xs font-semibold text-gray-600">E-mail</span>
-                  <p className="rounded-sm border border-dashed border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">
-                    {user?.email || '—'}
-                  </p>
-                </div>
+                <Field
+                  label="Téléphone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                <Field
+                  type="email"
+                  label="E-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="vous@exemple.com"
+                  hint="Facultatif — laissez vide pour le retirer."
+                />
               </div>
-            </div>
+            </ProfileSection>
 
             <Button type="submit" loading={saving} disabled={!canSubmit}>Enregistrer</Button>
           </form>
         ) : (
-          <div className="space-y-4 p-5">
-            <ProfileBlock title="Informations personnelles">
-              <Detail label="Nom complet" value={name} />
-              <Detail label="Rôle" value="Client" />
-              <Detail label="Inscrit depuis" value={formatDateFr(user?.createdAt) || '—'} />
-            </ProfileBlock>
+          <>
+            <ProfileSection title="Informations personnelles">
+              <dl className="divide-y divide-gray-100">
+                <ProfileRow label="Prénom" value={user?.firstName} />
+                <ProfileRow label="Nom" value={user?.lastName} />
+                <ProfileRow label="Inscrit depuis" value={formatDateFr(user?.createdAt)} />
+              </dl>
+            </ProfileSection>
 
-            <ProfileBlock title="Contacts">
-              <Detail label="Téléphone" value={user?.phone || '-'} />
-              <Detail label="E-mail" value={user?.email || '-'} />
-            </ProfileBlock>
-          </div>
+            <ProfileSection
+              title="Contact"
+              description="Ces coordonnées sont celles que les professionnels utilisent pour vous joindre."
+            >
+              <dl className="divide-y divide-gray-100">
+                <ProfileRow label="Téléphone" value={user?.phone} />
+                <ProfileRow label="E-mail" value={user?.email} />
+              </dl>
+            </ProfileSection>
+          </>
         )}
-      </Card>
+
+      {editing && (
+        <p className="-mt-2 text-[12px] font-semibold text-primary-600">
+          Cliquez sur la photo pour la changer
+        </p>
+      )}
 
       <div className="lg:hidden">
         <BecomeProCard />

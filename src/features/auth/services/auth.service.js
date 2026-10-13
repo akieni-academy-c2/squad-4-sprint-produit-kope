@@ -1,6 +1,13 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { getDemoUser, setDemoUser, MOCK_PROS } from '@/shared/mocks/appMock.js';
+import {
+  DEMO_AVATAR_MARKER,
+  MOCK_PROS,
+  getDemoAvatarUrl,
+  getDemoUser,
+  setDemoAvatarFile,
+  setDemoUser,
+} from '@/shared/mocks/appMock.js';
 import { ROUTES, ROLES } from '@/shared/lib/constants.js';
 
 export function registerClient(payload) {
@@ -120,6 +127,11 @@ export function demoRoles() {
         firstName: 'Client',
         lastName: 'Démo',
         phone: '+242065000002',
+        // Champ laissé vide à dessein : la démo doit montrer le formulaire
+        // d'e-mail dans l'état « non renseigné », où l'utilisateur voit qu'il
+        // peut le remplir. Une adresse pré-remplie le ferait croire en lecture.
+        email: '',
+        createdAt: new Date(Date.now() - 84 * 86400000).toISOString(),
       },
       href: ROUTES.DASHBOARD_CLIENT,
     },
@@ -202,10 +214,13 @@ export function uploadAvatar(file, onProgress) {
     async () => {
       if (file) {
         if (onProgress) onProgress(100);
-        const avatarUrl = URL.createObjectURL(file);
+        // Le fichier est gardé en mémoire et l'URL reconstruite à la lecture :
+        // une URL `blob:` écrite dans `localStorage` redevient morte au
+        // rechargement et l'avatar tombe en `ERR_FILE_NOT_FOUND`.
+        setDemoAvatarFile(file);
         const demo = getDemoUser();
-        if (demo) setDemoUser({ ...demo, avatarUrl });
-        return avatarUrl;
+        if (demo) setDemoUser({ ...demo, avatarUrl: DEMO_AVATAR_MARKER });
+        return getDemoAvatarUrl();
       }
       return null;
     },

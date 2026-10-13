@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   consentSchema,
   displayNameSchema,
+  emailSchema,
   idSchema,
   passwordSchema,
   personNameSchema,
@@ -54,6 +55,9 @@ export const updateAccountSchema = z.object({
   firstName: personNameSchema.optional(),
   lastName: personNameSchema.optional(),
   phone: phoneSchema.optional(),
+  // `emailSchema` est déjà `nullish` : absent laisse la colonne intacte,
+  // `null` ou chaîne vide la retirent.
+  email: emailSchema,
 });
 
 export const changePasswordSchema = z.object({

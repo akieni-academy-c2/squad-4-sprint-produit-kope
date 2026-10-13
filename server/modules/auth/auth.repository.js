@@ -4,15 +4,20 @@ export async function updateRole(userId, role, db = pool) {
   await db.query('UPDATE users SET role = $2 WHERE id = $1', [userId, role]);
 }
 
-export async function updateAccount(userId, { firstName, lastName, phone }, db = pool) {
+export async function updateAccount(userId, { firstName, lastName, phone, email }, db = pool) {
   const { rows } = await db.query(
     `UPDATE users
         SET first_name = COALESCE($2, first_name),
             last_name = COALESCE($3, last_name),
-            phone = COALESCE($4, phone)
+            phone = COALESCE($4, phone),
+            email = $5
       WHERE id = $1
-  RETURNING id, role, phone, first_name AS "firstName", last_name AS "lastName"`,
-    [userId, firstName ?? null, lastName ?? null, phone ?? null],
+  RETURNING id, role, phone, email,
+            first_name AS "firstName", last_name AS "lastName"`,
+    // L'e-mail est le seul champ effaçable : `COALESCE` interdirait de le
+    // retirer, `email` prend donc la valeur telle quelle — `null` pour vider,
+    // une chaîne pour la poser. Les autres restent inchangés si absents.
+    [userId, firstName ?? null, lastName ?? null, phone ?? null, email ?? null],
   );
   return rows[0] ?? null;
 }
@@ -53,7 +58,7 @@ export async function getAccountState(id, db = pool) {
 
 export async function findById(id, db = pool) {
   const { rows } = await db.query(
-    `SELECT u.id, u.role, u.phone,
+    `SELECT u.id, u.role, u.phone, u.email,
             u.first_name AS "firstName", u.last_name AS "lastName",
             u.avatar_url AS "avatarUrl",
             u.blocked_at AS "blockedAt",

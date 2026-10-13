@@ -52,6 +52,29 @@ describe('Édition du profil - identité du compte', () => {
     expect(validateFrontend(updateAccountSchema, { ...ACCOUNT, phone: '+242061261008' }).success).toBe(true);
   });
 
+  it('traite l\'e-mail comme facultatif et effaçable', () => {
+    // Les trois états d'un champ jamais renseigné doivent passer : absent
+    // (aucun `email` dans l'objet), chaîne vide, `null` explicite. Un `z.string()`
+    // nu refuse les deux derniers et garde « Enregistrer » éteint pour toujours.
+    expect(validateFrontend(updateAccountSchema, { ...ACCOUNT }).success).toBe(true);
+    expect(validateFrontend(updateAccountSchema, { ...ACCOUNT, email: '' }).success).toBe(true);
+    expect(validateFrontend(updateAccountSchema, { ...ACCOUNT, email: null }).success).toBe(true);
+  });
+
+  it('normalise l\'e-mail et refuse une adresse invalide', () => {
+    const { success, data } = validateFrontend(updateAccountSchema, {
+      ...ACCOUNT,
+      email: '  Simone.Adoua@Exemple.COM ',
+    });
+
+    expect(success).toBe(true);
+    // Minuscules et sans espaces : c'est la forme stockée, celle que porte
+    // l'index unique. Garder la casse ferait dépendre l'unicité de la frappe.
+    expect(data.email).toBe('simone.adoua@exemple.com');
+
+    expect(validateFrontend(updateAccountSchema, { ...ACCOUNT, email: 'pas-une-adresse' }).success).toBe(false);
+  });
+
   it('n\'est pas validé par le schéma du profil', () => {
     // Les deux schémas sont disjoints : sans agrégation explicite, la validité
     // de l'identité n'est jamais consultée.

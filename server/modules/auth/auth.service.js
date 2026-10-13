@@ -13,6 +13,7 @@ const DUPLICATE_PHONE = 'Ce numéro est déjà utilisé';
 const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
 const INVALID_CREDENTIALS = 'Numéro ou mot de passe incorrect';
 const ACCOUNT_BLOCKED = 'Ce compte a été bloqué par un administrateur. Contactez le support.';
+const DUPLICATE_EMAIL = 'Cette adresse e-mail est déjà utilisée par un autre compte';
 
 const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', env.BCRYPT_ROUNDS);
 
@@ -21,6 +22,11 @@ function rethrowDuplicate(err) {
   // Le nom du champ est dans l'erreur PostgreSQL ; on n'expose que le nôtre.
   if (err.constraint === 'professionals_display_name_unique' || err.detail?.includes('display_name'))
     throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
+  // Index partiel : la violation porte sur `users_email_unique`, pas sur une
+  // contrainte de colonne. Sans ce cas, une adresse déjà prise serait rapportée
+  // comme un numéro en double — un message qui désigne le mauvais champ.
+  if (err.constraint === 'users_email_unique' || err.detail?.includes('email'))
+    throw ApiError.conflict(DUPLICATE_EMAIL, { email: DUPLICATE_EMAIL });
   throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });
 }
 
@@ -104,9 +110,9 @@ export async function changePassword(userId, { currentPassword, newPassword }, c
   await sessions.destroyUserSessions(userId, { exceptSessionId: currentSessionId });
 }
 
-export async function updateAccount(userId, { firstName, lastName, phone }) {
+export async function updateAccount(userId, { firstName, lastName, phone, email }) {
   try {
-    return await repository.updateAccount(userId, { firstName, lastName, phone });
+    return await repository.updateAccount(userId, { firstName, lastName, phone, email });
   } catch (err) {
     rethrowDuplicate(err);
   }

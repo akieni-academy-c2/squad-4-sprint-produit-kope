@@ -1132,10 +1132,34 @@ export function mockDeleteZone(id) {
 
 const SESSION_KEY = 'kop_demo_user';
 
+// Une URL `blob:` ne vit que dans l'onglet qui l'a créée. Conservée telle
+// quelle dans `localStorage`, elle survit au rechargement comme une promesse
+// morte : le blob est evaporé avec le tas mémoire, et la première `<img>`
+// qui la demande reçoit `ERR_FILE_NOT_FOUND`. On n'écrit donc jamais l'URL :
+// on écrit ce marqueur et on garde le fichier en mémoire pour la durée de
+// l'onglet.
+export const DEMO_AVATAR_MARKER = 'kop:demo-avatar';
+
+let demoAvatarFile = null;
+
+export function setDemoAvatarFile(file) {
+  demoAvatarFile = file ?? null;
+}
+
+/** URL d'aperçu du fichier en cours — valide pour cet onglet uniquement. */
+export function getDemoAvatarUrl() {
+  return demoAvatarFile ? URL.createObjectURL(demoAvatarFile) : null;
+}
+
 export function getDemoUser() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const user = JSON.parse(raw);
+    // Retranche l'URL à la lecture, jamais à l'écriture : c'est le seul moment
+    // où le blob existe encore.
+    if (user?.avatarUrl === DEMO_AVATAR_MARKER) user.avatarUrl = getDemoAvatarUrl();
+    return user;
   } catch {
     return null;
   }
