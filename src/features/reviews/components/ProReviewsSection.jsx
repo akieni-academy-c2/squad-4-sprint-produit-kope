@@ -21,7 +21,7 @@ import { ReviewForm } from './ReviewForm.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
-import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
 const RATING_OPTIONS = [
   { value: '', label: 'Toutes les notes' },
@@ -384,7 +384,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
                   total={merged.length}
                   onPageChange={setPage}
                   variant="summary"
-                  className={PAGINATION_BAR}
                 />
               }
             >
@@ -449,7 +448,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
                       total={filteredReceived.length}
                       onPageChange={setPage}
                       variant="summary"
-                      className={PAGINATION_BAR}
                     />
                   }
                 >
@@ -488,7 +486,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
                       total={givenTotal}
                       onPageChange={setPage}
                       variant="summary"
-                      className={PAGINATION_BAR}
                     />
                   }
                 >

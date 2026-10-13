@@ -4,16 +4,17 @@ import { cn } from '@/shared/utils';
 /**
  * Habillage de la barre de pagination.
  *
- * Exporté plutôt que recopié : la barre est posée sur le fond de la page, pas
- * sur une carte, et sans ce bandeau elle flotte sans contour au milieu du
- * contenu.
+ * Il fait partie du composant, et n'est pas une classe à passer à la main.
+ *
+ * Extrapolé, l'oubli est silencieux : la barre s'affiche sans rien autour et
+ * flotte au milieu du contenu, sur le fond de la page, à côté de cartes qui,
+ * elles, ont une bordure. Cinq listes sur onze étaient dans ce cas.
  *
  * `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes
- * voisines. Une pagination se lit comme un objet de la page, pas comme un
- * encadré d'attention - à `gray-300` elle dessinait une boîte plus sombre que
- * tout ce qu'elle controls.
+ * voisines. À `gray-300`, la pagination dessinait une boîte plus sombre que
+ * tout ce qu'elle contrôle.
  */
-export const PAGINATION_BAR = 'mt-4 rounded-md border border-gray-200 bg-white px-4 py-2';
+const BAR = 'mt-4 w-full rounded-md border border-gray-200 bg-white px-4 py-2';
 
 function getButtons(current, totalPages) {
   if (totalPages <= 7)
@@ -23,6 +24,9 @@ function getButtons(current, totalPages) {
     pages.add(i);
   return Array.from(pages).sort((a, b) => a - b);
 }
+
+const STEP =
+  'inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300';
 
 export function Pagination({ page, pageSize, total, onPageChange, className, variant = 'numbers' }) {
   const pageCount = Math.max(1, Math.ceil((total ?? 0) / pageSize));
@@ -36,7 +40,7 @@ export function Pagination({ page, pageSize, total, onPageChange, className, var
       <nav
         role="navigation"
         aria-label="Pagination"
-        className={cn('flex w-full items-center justify-between gap-3', className)}
+        className={cn(BAR, 'flex items-center justify-between gap-3', className)}
       >
         <p className="text-sm text-gray-500">
           {pageCount} page{pageCount > 1 ? 's' : ''}
@@ -47,9 +51,7 @@ export function Pagination({ page, pageSize, total, onPageChange, className, var
             disabled={prevDisabled}
             onClick={() => onPageChange?.(current - 1)}
             aria-label="Page précédente"
-            className={cn(
-              'inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300',
-            )}
+            className={STEP}
           >
             <ChevronLeft size={16} aria-hidden />
           </button>
@@ -61,9 +63,7 @@ export function Pagination({ page, pageSize, total, onPageChange, className, var
             disabled={nextDisabled}
             onClick={() => onPageChange?.(current + 1)}
             aria-label="Page suivante"
-            className={cn(
-              'inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300',
-            )}
+            className={STEP}
           >
             <ChevronRight size={16} aria-hidden />
           </button>
@@ -75,7 +75,7 @@ export function Pagination({ page, pageSize, total, onPageChange, className, var
     <nav
       role="navigation"
       aria-label="Pagination"
-      className={cn('flex w-full items-center justify-center gap-1 sm:gap-2', className)}
+      className={cn(BAR, 'flex items-center justify-center gap-1 sm:gap-2', className)}
     >
       <button
         type="button"

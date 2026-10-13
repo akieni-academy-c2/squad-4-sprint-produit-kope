@@ -18,7 +18,7 @@ import { reportContact } from '@/features/reports/services/reports.service.js';
 import { ReportDialog, ReportTrigger } from '@/features/reports/components/ReportDialog.jsx';
 import { logContact } from '../services/contacts.service.js';
 import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
-import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
 // Plafond de la liste chargée. Les filtres contacts sont tous côté client, il
 // faut donc la totalité pour qu'une recherche ne porte que sur la page affichée.
@@ -315,7 +315,6 @@ export function ContactsSection({ rightContainer = null }) {
                 total={visible.length}
                 onPageChange={setPage}
                 variant="summary"
-                className={PAGINATION_BAR}
               />
             </>
           )}

@@ -16,7 +16,7 @@ import { cn } from '@/shared/utils';
 import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
 import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
 import { deleteMyReport, getMyReports } from '../services/reports.service.js';
-import { PAGINATION_BAR, Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
 // Page assez courte pour que la liste reste lisible, assez longue pour ne pas
 // assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
@@ -218,7 +218,6 @@ export function MyReportsSection({ rightContainer = null }) {
               total={total}
               onPageChange={setPage}
               variant="summary"
-              className={PAGINATION_BAR}
             />
           </>
         )}
