@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Flag, LayoutDashboard, Phone, Star, User } from 'lucide-react';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { DASHBOARD_FRAME, ROUTES } from '@/shared/lib/constants.js';
+import { ROUTES } from '@/shared/lib/constants.js';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { ContactsSection } from '@/features/contacts/components/ContactsSection.jsx';
@@ -58,7 +58,7 @@ export function ClientDashboardPage() {
       >
         <ClientDashboardSidebar items={NAV_ITEMS} active={active} onChange={goTo} />
 
-        <section className={cn('min-w-0', DASHBOARD_FRAME)}>
+        <section className="min-w-0">
           {active === 'apercu' && <ClientOverviewSection onNavigate={goTo} />}
           {active === 'profil' && <ClientProfileSection user={user} />}
           {active === 'avis' && <MyReviewsSection rightContainer={rightEl} />}

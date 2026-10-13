@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { BarChart3, Flag, Hammer, MapPin, ShieldCheck, Star, Users } from 'lucide-react';
-import { DASHBOARD_FRAME, ROUTES } from '@/shared/lib/constants.js';
+import { ROUTES } from '@/shared/lib/constants.js';
 import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { cn } from '@/shared/utils';
 import { SidebarNav } from '@/shared/components/ui/SidebarNav.jsx';
@@ -44,17 +44,29 @@ export function AdminDashboardPage() {
   const { active: urlSection, goTo: goToSection } = useSectionNav(ROUTES.ADMIN, SECTION_IDS, ROOT_ID);
   const section = urlSection || ROOT_ID;
 
-  const [sectionFilters, setSectionFilters] = useState({});
+  // Filtres d'ouverture, attachés à la section qui les a demandés.
+  //
+  // Un simple `useState` survivrait au changement de section : ouvrir
+  // « Signalements » depuis un KPI, puis revenir par l'URL ou le bouton
+  // « retour » afficherait encore ce filtre-la. La portée suit donc la section
+  // qui l'a demandé — pas d'effet pour la purger, la valeur cesse simplement
+  // d'être lue dès que la section change.
+  const [pendingFilters, setPendingFilters] = useState(null);
   const [rightEl, setRightEl] = useState(null);
   const withFilters = FILTERED_SECTIONS.includes(section);
+
+  const sectionFilters = pendingFilters?.section === section ? pendingFilters.filters : {};
 
   // Une vue d'ensemble n'a de valeur que si elle mène au travail à faire :
   // chaque KPI ouvre sa section déjà filtrée. `key` force le remontage, sinon
   // les filtres d'initialisation ne s'appliqueraient jamais au second passage.
-  const openSection = useCallback((id, filters = {}) => {
-    setSectionFilters(filters);
-    goToSection(id);
-  }, [goToSection]);
+  const openSection = useCallback(
+    (id, filters = {}) => {
+      setPendingFilters(Object.keys(filters).length ? { section: id, filters } : null);
+      goToSection(id);
+    },
+    [goToSection],
+  );
 
   const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
 
@@ -73,7 +85,7 @@ export function AdminDashboardPage() {
           <SidebarNav items={SECTIONS} active={section} onChange={openSection} ariaLabel="Sections d'administration" />
         </aside>
 
-        <section className={cn('min-w-0', DASHBOARD_FRAME)}>
+        <section className="min-w-0">
           <h2 className="mb-4 text-lg font-bold text-gray-900">{TITLES[section]}</h2>
           {section === 'overview' && <AdminStats onNavigate={openSection} />}
           {section === 'professionals' && (

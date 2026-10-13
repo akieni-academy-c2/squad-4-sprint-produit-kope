@@ -6,22 +6,21 @@ import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 import { cn } from '@/shared/utils';
 
 /**
- * Cadre d'une section de tableau de bord — espace client, professionnel et
- * administration.
+ * Colonne de filtres d'une section de tableau de bord — espace client,
+ * professionnel et administration.
  *
- * Les trois espaces partagent la même colonne centrale, la même colonne de
- * filtres et la même feuille mobile. Ce composant existed en double
- * (`AccountSectionLayout` et `AdminSectionLayout`) : les deux copies avaient
- * déjà divergé sur le fond, la largeur de colonne et le repli sans portail. Un
- * onglet gagnait donc un fond différent d'un autre selon l'espace.
+ * Les trois espaces partagent la même colonne de filtres et la même feuille
+ * mobile. Ce composant existait en double (`AccountSectionLayout` et
+ * `AdminSectionLayout`) : les deux copies avaient déjà divergé sur la largeur
+ * de colonne et sur le repli sans portail.
  *
  * ## Le fond
  *
- * Il n'est **pas** ici. Il est posé une fois par la page, autour de la colonne
- * centrale : ici, seules les sections qui passent par ce composant auraient un
- * fond, et l'onglet « Vue d'ensemble » ou « Mon profil » — qui n'ont pas de
- * filtres — resterait sur le fond nu. On changerait de page en changeant
- * d'onglet. Voir `DASHBOARD_FRAME` dans `constants.js`.
+ * Il n'est **pas** ici, et c'est volontaire. Les tableaux de bord partagent le
+ * fond pointillé (`bg-dots`) posé une fois par `RootLayout` sur la colonne
+ * centrale. Encadrer chaque section d'une boîte grise donnait aux onglets un
+ * fond différent de celui de la page — et deux motifs superposés là où un seul
+ * était prévu.
  *
  * ## Les colonnes
  *
