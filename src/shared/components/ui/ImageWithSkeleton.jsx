@@ -15,6 +15,8 @@ export function ImageWithSkeleton({
   frameClassName,
   skeletonClassName,
   eager = false,
+  srcSet,
+  sizes,
   ...rest
 }) {
   const [status, setStatus] = useState(src ? LOADING : FAILED);
@@ -39,6 +41,8 @@ export function ImageWithSkeleton({
         <img
           ref={attachImage}
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
           loading={eager ? 'eager' : 'lazy'}
           decoding="async"

@@ -5,6 +5,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { listUsers, countUsers, listTrades, listZones, listCities, listTradeCategories, listProfessionals, countProfessionals } from '../server/modules/admin/admin.repository.js';
 import { getAccountState } from '../server/modules/auth/auth.repository.js';
 import { consumeRateLimitSlot, purgeRateLimits } from '../server/utils/rateLimitStore.js';
+import { HOME_ZONES } from '../src/shared/content/homeZones.js';
+import { HIGHLIGHTED_TRADES } from '../src/shared/content/highlightedTrades.js';
 
 
 
@@ -27,6 +29,7 @@ const url = readDotEnv().DATABASE_URL || process.env.KOPE_TEST_DATABASE_URL;
 const enabled = Boolean(url);
 let pool;
 let reachable = false;
+let unreachable = 'raison inconnue';
 
 
 const RATE_WINDOW_MS = 15 * 60_000;
@@ -34,7 +37,13 @@ const RATE_WINDOW_MS = 15 * 60_000;
 
 function itDb(name, fn) {
   it(name, async (ctx) => {
-    if (!reachable) return ctx.skip();
+    /**
+     * `describe.skipIf(!enabled)` couvre déjà l'absence d'URL. Ici l'URL est
+     * fournie : une connexion qui échoue est une erreur de configuration, pas
+     * une raison de passer. Sans cela, un pooler lent faisait passer 21 tests
+     * en `skipped` et la suite annonçait vert sans rien avoir vérifié.
+     */
+    if (!reachable) throw new Error(`Base configurée mais injoignable : ${unreachable}`);
     return fn(ctx);
   });
 }
@@ -46,8 +55,22 @@ describe.skipIf(!enabled)('SQL reel', () => {
       await pool.query('SELECT 1');
       reachable = true;
     } catch {
-      await pool.end().catch(() => {});
-      pool = null;
+      /**
+       * Un pooler managé se réveille lentement : 3 s suffisent rarement au
+       * premier essai et suffisent mal sous charge, d'où un passage en
+       * `skipped` silencieux. On retente avec une marge plus large avant de
+       * conclure que la base est injoignable.
+       */
+      pool.end().catch(() => {});
+      pool = new pg.Pool({ connectionString: url, connectionTimeoutMillis: 20_000 });
+      try {
+        await pool.query('SELECT 1');
+        reachable = true;
+      } catch (retryErr) {
+        unreachable = retryErr.code || retryErr.message;
+        await pool.end().catch(() => {});
+        pool = null;
+      }
     }
   });
 
@@ -92,6 +115,32 @@ describe.skipIf(!enabled)('SQL reel', () => {
 
     itDb('renvoie null pour un identifiant inexistant', async () => {
       await expect(getAccountState(999999999, pool)).resolves.toBeNull();
+    });
+  });
+
+  describe("l'accueil statique ne dérive pas du référentiel", () => {
+    itDb('chaque quartier de l\'accueil existe et porte le bon identifiant', async () => {
+      const { rows } = await pool.query('SELECT id, name FROM zones WHERE city_id IS NOT NULL');
+      const byId = new Map(rows.map((row) => [row.id, row.name]));
+
+      for (const zone of HOME_ZONES)
+        expect(byId.get(zone.id), `zone ${zone.id} (${zone.name})`).toBe(zone.name);
+    });
+
+    itDb('aucun quartier de l\'accueil ne renvoie vers un identifiant inconnu', async () => {
+      const { rows } = await pool.query('SELECT id FROM zones');
+      const known = new Set(rows.map((row) => row.id));
+
+      for (const zone of HOME_ZONES)
+        expect(known.has(zone.id), `zone ${zone.name} (#${zone.id})`).toBe(true);
+    });
+
+    itDb('chaque métier mis en avant existe et porte le bon identifiant', async () => {
+      const { rows } = await pool.query('SELECT id, name FROM trades');
+      const byId = new Map(rows.map((row) => [row.id, row.name]));
+
+      for (const trade of HIGHLIGHTED_TRADES)
+        expect(byId.get(trade.tradeId), `métier ${trade.tradeId} (${trade.name})`).toBeDefined();
     });
   });
 

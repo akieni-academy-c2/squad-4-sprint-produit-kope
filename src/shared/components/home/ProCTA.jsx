@@ -2,7 +2,7 @@ import { Button } from '@/shared/components/ui/Button.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
-import cta from '@/shared/assets/cta.png';
+import { HOME_IMAGES } from '@/shared/content/homeImages.js';
 
 export function ProCTA({ imageLeft = false } = {}) {
   const { open: openModal } = useAuthModal();
@@ -33,7 +33,9 @@ export function ProCTA({ imageLeft = false } = {}) {
             </div>
             <div className={`relative max-w-115 ${imageLeft ? 'lg:order-1 lg:mr-auto' : 'lg:ml-auto'}`}>
 <ImageWithSkeleton
-                src={cta}
+                src={HOME_IMAGES.cta.src}
+                srcSet={HOME_IMAGES.cta.srcSet}
+                sizes={HOME_IMAGES.cta.sizes}
                 alt="Devenir prestataire KOP"
                 ratio="aspect-4/3"
                 className="rounded-[16px]"

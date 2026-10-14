@@ -60,6 +60,8 @@ export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
         <Card className="border-[#BDC0C8]! flex h-full cursor-pointer flex-col overflow-hidden relative aspect-4/5.5 ">
           <ImageWithSkeleton
             src={coverSrc}
+            srcSet={item.srcSet}
+            sizes={item.sizes}
             alt={item.displayName}
             ratio="h-full"
             skeletonClassName="bg-gray-100"
