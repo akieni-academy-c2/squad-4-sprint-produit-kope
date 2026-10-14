@@ -3,11 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 
-
-
 const render = (props) =>
   renderToStaticMarkup(<Pagination page={1} pageSize={10} total={50} onPageChange={() => {}} {...props} />);
-
 
 const CARD_SURFACE = renderToStaticMarkup(<Card>x</Card>).match(/class="([^"]*)"/)[1];
 
@@ -15,8 +12,6 @@ describe('habillage', () => {
   it('a le fond et la bordure, comme une carte', () => {
     const html = render();
 
-    // Mêmes tokens que `Card` : la pagination doit se lire comme un objet de la
-    // page, pas comme une barre posée à côté des cartes.
     expect(html).toContain('bg-white');
     expect(html).toContain('border-gray-200');
     expect(html).toContain('rounded-md');
@@ -25,8 +20,6 @@ describe('habillage', () => {
   it('reprend exactement la surface de Card', () => {
     const html = render();
     expect(html).toContain('rounded-md border border-gray-200 bg-white');
-    // `Card` porte les mêmes trois propriétés- pas la même classe, mais les
-    // mêmes jetons, ce qui est ce que l'œil compare.
     for (const token of ['rounded-md', 'border-gray-200', 'bg-white'])
       expect(CARD_SURFACE, `Card ne porte pas ${token}`).toContain(token);
   });
@@ -38,8 +31,6 @@ describe('habillage', () => {
 
 describe('les deux variantes', () => {
   it('porte le bandeau, y compris en résumé', () => {
-    // La variante `summary` a son propre `<nav>` : le bandeau devait y être
-    // reporté aussi, sinon un des deux modes restait sans habillage.
     expect(render({ variant: 'summary' })).toContain('border-gray-200 bg-white');
   });
 

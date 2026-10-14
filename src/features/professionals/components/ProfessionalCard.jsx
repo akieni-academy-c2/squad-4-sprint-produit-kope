@@ -45,6 +45,10 @@ function ProfileMedia({ item, homePreview }) {
   );
 }
 
+function cardHref(item, homePreview) {
+  return homePreview ? ROUTES.SEARCH : ROUTES.PROFESSIONAL(item.id);
+}
+
 export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
   const avg = Number(item.rating?.average ?? 0);
   const cnt = Number(item.rating?.count ?? 0);
@@ -52,7 +56,7 @@ export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
 
   if (mode === 'grid')
     return (
-      <Link href={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+      <Link href={cardHref(item, homePreview)} className="group block h-full">
         <Card className="border-[#BDC0C8]! flex h-full cursor-pointer flex-col overflow-hidden relative aspect-4/5.5 ">
           <ImageWithSkeleton
             src={coverSrc}
@@ -99,7 +103,7 @@ export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
 
 
   return (
-    <Link href={homePreview ? '/search' : ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+    <Link href={cardHref(item, homePreview)} className="group block h-full">
       <Card className={cn(
         'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
       )}>

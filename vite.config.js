@@ -9,9 +9,6 @@ import { PRIMARY_AUTHOR, CONTRIBUTORS, PROJECT } from './src/shared/data/credits
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Domaine public du site. Tant qu'il n'est pas défini, canonical et og:url
-// sont omis : un `rel="canonical"` deviné vers un mauvais domaine indique à
-// Google que la vraie page est ailleurs, ce qui est pire que pas de canonical.
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '')
 
 const person = (author) => ({
@@ -21,7 +18,6 @@ const person = (author) => ({
   ...(author.knowsAbout ? { knowsAbout: author.knowsAbout } : {}),
   ...(author.sameAs?.length ? { sameAs: author.sameAs } : {}),
 })
-
 
 function creditsJsonLd() {
   return {
@@ -56,7 +52,6 @@ function creditsJsonLd() {
     ],
   }
 }
-
 
 const SITEMAP_PATHS = [
   { loc: '/', priority: '1.0', changefreq: 'weekly' },
@@ -101,7 +96,6 @@ function sitemap() {
   }
 }
 
-
 function headTags() {
   return {
     name: 'kop-head-tags',
@@ -136,7 +130,6 @@ function headTags() {
     },
   }
 }
-
 
 export default defineConfig({
   plugins: [

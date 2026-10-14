@@ -10,11 +10,23 @@ import { DESC_MAX, DESC_MIN } from './profileForm.js';
 import { ProfileSection } from './ProfileSection.jsx';
 
 
+/**
+ * Adapte le statut d'un champ du compte au format `{ status, missing, total }`
+ * attendu par les champs partagés : un seul champ, donc 0 manquant sur 1.
+ * @param {Record<string, string>|undefined} statuses
+ * @param {string} field
+ * @returns {{status: string, missing: number, total: number}|undefined}
+ */
 function statusOf(statuses, field) {
   const status = statuses?.[field];
   return status ? { status, missing: 0, total: 1 } : undefined;
 }
 
+/**
+ * Formulaire du compte professionnel : deux jeux de champs dans une seule
+ * balise - le profil (`values`, `setField`, `onSubmit`) et les identifiants du
+ * compte (`account`, `onAccountField`) - pour ne pas croiser deux API.
+ */
 export function ProfileEditForm({
   onSubmit,
   values,
