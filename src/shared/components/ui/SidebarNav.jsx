@@ -14,8 +14,7 @@ export function SidebarNav({ items, active, onChange, ariaLabel, orientation = '
         <button
           key={id}
           type="button"
-          role="tab"
-          aria-selected={active === id}
+          aria-current={active === id ? 'page' : undefined}
           onClick={() => onChange(id)}
           className={cn(
             'flex cursor-pointer items-center gap-3 rounded-sm border text-sm font-semibold transition',

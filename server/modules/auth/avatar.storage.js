@@ -1,23 +1,19 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import sharp from 'sharp';
 import { env } from '../../config/env.js';
 import { useCloud, uploadBuffer } from '../../config/cloudinary.js';
-import { ApiError } from '../../utils/ApiError.js';
+import { decodeImage } from '../../utils/images.js';
 
 const SIZE = 512;
 
-/* Redimensionne */
 export async function processAvatar(buffer) {
-  try {
-    return await sharp(buffer).rotate().resize(SIZE, SIZE, { fit: 'cover' }).jpeg({ quality: 80 }).toBuffer();
-  } catch {
-    throw ApiError.badRequest("Le fichier n'est pas une image JPG ou PNG valide");
-  }
+  const image = await decodeImage(buffer, { field: 'avatar' });
+
+  return image.rotate().resize(SIZE, SIZE, { fit: 'cover' }).jpeg({ quality: 80 }).toBuffer();
 }
 
-/* Enregistre l'avatar */
+
 export async function saveAvatar(buffer, userId) {
   const relativePath = `avatars/${userId}-${randomUUID()}.jpg`;
 

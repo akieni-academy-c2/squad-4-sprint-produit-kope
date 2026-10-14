@@ -16,14 +16,55 @@ const phoneSchema = z
     return n;
   });
 
+
+const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .nullish()
+  .transform((v) => v ?? '')
+  .refine((v) => v.length <= 254, 'L’adresse e-mail est trop longue')
+  .refine((v) => !v || z.email().safeParse(v).success, 'Adresse e-mail invalide')
+  .transform((v) => v || null);
+
+
 const passwordSchema = z
   .string({ error: 'Le mot de passe est obligatoire' })
   .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
-  .max(MAX_PASSWORD, `Le mot de passe ne doit pas dépasser ${MAX_PASSWORD} caractères`);
+  .max(MAX_PASSWORD, `Le mot de passe ne doit pas dépasser ${MAX_PASSWORD} caractères`)
+  .regex(/[a-zà-ÿ]/u, 'Le mot de passe doit contenir au moins une minuscule')
+  .regex(/[A-ZÀ-Ÿ]/u, 'Le mot de passe doit contenir au moins une majuscule')
+  .regex(
+    /[^A-Za-zÀ-ÿ\s]/,
+    'Le mot de passe doit contenir au moins un chiffre ou caractère spécial',
+  );
 
 const consentSchema = z
   .boolean({ error: CONSENT_REQUIRED })
   .refine((v) => v === true, CONSENT_REQUIRED);
+
+
+const personNameSchema = (label) =>
+  z
+    .string({ error: `Le ${label} est obligatoire` })
+    .trim()
+    .min(3, `Le ${label} doit contenir au moins 3 caractères`)
+    .max(50, `Le ${label} ne doit pas dépasser 50 caractères`)
+    .regex(
+      /^[\p{L}][\p{L}\p{Zs}'-]*$/u,
+      'Lettres, espaces, tirets et apostrophes uniquement',
+    );
+
+
+const displayNameSchema = z
+  .string({ error: 'Le nom affiché est obligatoire' })
+  .trim()
+  .min(3, 'Le nom affiché doit contenir au moins 3 caractères')
+  .max(100, 'Le nom affiché ne doit pas dépasser 100 caractères')
+  .regex(
+    /^[\p{L}\p{N}][\p{L}\p{N}\s.'&/+_-]*$/u,
+    "Lettres, chiffres et la ponctuation . ' & / + _ - uniquement",
+  );
 
 const requiredText = (max, message = 'Ce champ est obligatoire') =>
   z
@@ -56,24 +97,29 @@ export const loginSchema = z.object({
 });
 
 export const registerClientSchema = z.object({
-  firstName: requiredText(100, 'Le prénom est obligatoire'),
-  lastName: requiredText(100, 'Le nom est obligatoire'),
+  firstName: personNameSchema('prénom'),
+  lastName: personNameSchema('nom'),
   phone: phoneSchema,
   password: passwordSchema,
   consent: consentSchema,
 });
 
-export const registerProfessionalSchema = z.object({
-  displayName: requiredText(100, 'Le nom affiché est obligatoire'),
+export const createAdminSchema = z.object({
+  firstName: personNameSchema('prénom'),
+  lastName: personNameSchema('nom'),
   phone: phoneSchema,
   password: passwordSchema,
-  tradeId: idSchema('Choisissez un métier'),
-  zoneIds: zoneIdsSchema,
-  consent: consentSchema,
+});
+
+export const updateAccountSchema = z.object({
+  firstName: personNameSchema('prénom'),
+  lastName: personNameSchema('nom'),
+  phone: phoneSchema,
+  email: emailSchema,
 });
 
 export const updateProfileSchema = z.object({
-  displayName: requiredText(100, 'Le nom affiché est obligatoire'),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
   description: z
     .string({ error: 'La description est obligatoire' })
@@ -103,6 +149,10 @@ export const updateProfileSchema = z.object({
         return n;
       })
       .nullish(),
+  ),
+  cityId: z.preprocess(
+    (v) => (v === '' || v == null ? null : Number(v)),
+    z.number({ error: 'Choisissez une ville' }).int().positive().max(32767).nullish(),
   ),
   zoneIds: zoneIdsSchema,
 });
@@ -135,7 +185,7 @@ export const createContactSchema = z.object({
 });
 
 export const becomeProfessionalSchema = z.object({
-  displayName: requiredText(100, "Le nom affiché est obligatoire"),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
   zoneIds: zoneIdsSchema,
   yearsExperience: z.preprocess(

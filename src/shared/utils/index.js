@@ -1,5 +1,9 @@
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+
 export function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
+  return twMerge(clsx(inputs));
 }
 
 export function formatPhoneFR(value) {
@@ -20,23 +24,40 @@ export function toWhatsappUrl(phone) {
   return `https://wa.me/${digits}`;
 }
 
-export function formatDateFr(value) {
-  if (!value) return '';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return new Intl.DateTimeFormat('fr-FR', {
+
+let dateFormatter = null;
+
+function frDateTime() {
+  dateFormatter ??= new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(date);
+  });
+  return dateFormatter;
 }
 
-export function initials(firstName, lastName) {
-  const a = firstName?.trim()?.[0] || '';
-  const b = lastName?.trim()?.[0] || '';
-  return `${a}${b}`.toUpperCase();
+export function formatDateFr(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return frDateTime().format(date);
+}
+
+
+const DATE_PARTS = new Set(['day', 'month', 'year']);
+
+
+export function formatDateFrShort(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return frDateTime()
+    .formatToParts(date)
+    .filter((part) => DATE_PARTS.has(part.type))
+    .map((part) => part.value)
+    .join(' ');
 }
 
 export function fullNameInitials(firstName, lastName) {

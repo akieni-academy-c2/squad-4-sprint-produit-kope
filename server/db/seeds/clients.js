@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { pool } from '../pool.js';
+import { env } from '../../config/env.js';
 import { normalizePhone } from '../../utils/phone.js';
 
 const COUNT = Number(process.env.SEED_CLIENTS_COUNT) || 20;
@@ -21,10 +22,10 @@ function randomPhone() {
 }
 
 async function main() {
-  if (PASSWORD.length < 8) 
+  if (PASSWORD.length < 8)
     throw new Error('SEED_CLIENT_PASSWORD doit faire au moins 8 caractères');
-  
-  const passwordHash = await bcrypt.hash(PASSWORD, 10);
+
+  const passwordHash = await bcrypt.hash(PASSWORD, env.BCRYPT_ROUNDS);
   let created = 0;
 
   for (let i = 0; i < COUNT; i += 1) {

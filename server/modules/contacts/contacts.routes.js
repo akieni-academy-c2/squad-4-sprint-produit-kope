@@ -8,7 +8,6 @@ import * as controller from './contacts.controller.js';
 
 const router = Router();
 
-// Un client comme un professionnel peut contacter un autre utilisateur.
 router.post(
   '/contacts',
   requireRole('client', 'professional'),

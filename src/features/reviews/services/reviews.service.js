@@ -1,12 +1,12 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { mockReviewsFor } from '@/shared/mocks/appMock.js';
+import { mockReviewsFor, mockMyReviews, mockUpdateMyReview, mockSetMyReviewHidden, mockDeleteMyReview } from '@/shared/mocks/appMock.js';
 
 export function listReviews(professionalId, { page = 1, pageSize = 10 } = {}) {
   return callApi(
     () => api.get(`/professionals/${professionalId}/reviews`, { page, pageSize }),
     async () => {
-      const all = mockReviewsFor(professionalId);
+      const all = mockReviewsFor(professionalId).filter((r) => !r.isHidden);
       const items = all.slice((page - 1) * pageSize, page * pageSize);
       const average = all.length
         ? Math.round((all.reduce((s, r) => s + r.rating, 0) / all.length) * 10) / 10
@@ -29,10 +29,40 @@ export function createReview(professionalId, payload) {
   );
 }
 
-export function getMyReviews({ page = 1, pageSize = 20 } = {}) {
+export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalId, visibility, sort } = {}) {
   return callApi(
-    () => api.get('/reviews/mine', { page, pageSize }),
-    async () => ({ items: [], total: 0, page, pageSize, totalPages: 1 }),
+    () =>
+      api.get('/reviews/mine', {
+        page,
+        pageSize,
+        ...(q ? { q } : {}),
+        ...(rating ? { rating } : {}),
+        ...(professionalId ? { professionalId } : {}),
+        ...(visibility && visibility !== 'all' ? { visibility } : {}),
+        ...(sort ? { sort } : {}),
+      }),
+    async () => mockMyReviews({ page, pageSize, q, rating, visibility, sort }),
+  );
+}
+
+export function updateReview(reviewId, payload) {
+  return callApi(
+    () => api.patchJson(`/reviews/${reviewId}`, payload).then((r) => r.review),
+    async () => mockUpdateMyReview(reviewId, payload),
+  );
+}
+
+export function setReviewVisibility(reviewId, isHidden) {
+  return callApi(
+    () => api.patchJson(`/reviews/${reviewId}/visibility`, { isHidden }).then((r) => r.review),
+    async () => mockSetMyReviewHidden(reviewId, isHidden),
+  );
+}
+
+export function deleteReview(reviewId) {
+  return callApi(
+    () => api.del(`/reviews/${reviewId}`),
+    async () => mockDeleteMyReview(reviewId),
   );
 }
 
@@ -42,5 +72,3 @@ export function getClientReviews(clientId, { page = 1, pageSize = 20 } = {}) {
     async () => ({ items: [], total: 0, page, pageSize, totalPages: 1 }),
   );
 }
-
-export default { listReviews, createReview, getMyReviews, getClientReviews };

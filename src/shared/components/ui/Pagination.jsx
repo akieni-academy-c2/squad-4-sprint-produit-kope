@@ -1,6 +1,9 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
+
+const BAR = 'mt-4 w-full rounded-md border border-gray-200 bg-white px-4 py-2';
+
 function getButtons(current, totalPages) {
   if (totalPages <= 7)
     return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -10,21 +13,61 @@ function getButtons(current, totalPages) {
   return Array.from(pages).sort((a, b) => a - b);
 }
 
-export function Pagination({ page, pageSize, total, onPageChange, className }) {
+const STEP =
+  'inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300';
+
+export function Pagination({ page, pageSize, total, onPageChange, className, variant = 'numbers' }) {
   const pageCount = Math.max(1, Math.ceil((total ?? 0) / pageSize));
   const current = Math.max(1, Math.min(page || 1, pageCount));
   const prevDisabled = current <= 1;
   const nextDisabled = current >= pageCount;
   const pages = getButtons(current, pageCount);
 
+  if (variant === 'summary')
+    return (
+      <nav
+        role="navigation"
+        aria-label="Pagination"
+        className={cn(BAR, 'flex items-center justify-between gap-3', className)}
+      >
+        <p className="text-sm text-gray-500">
+          {pageCount} page{pageCount > 1 ? 's' : ''}
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={prevDisabled}
+            onClick={() => onPageChange?.(current - 1)}
+            aria-label="Page précédente"
+            className={STEP}
+          >
+            <ChevronLeft size={16} aria-hidden />
+          </button>
+          <span className="text-sm font-semibold text-gray-900">
+            {current} / {pageCount}
+          </span>
+          <button
+            type="button"
+            disabled={nextDisabled}
+            onClick={() => onPageChange?.(current + 1)}
+            aria-label="Page suivante"
+            className={STEP}
+          >
+            <ChevronRight size={16} aria-hidden />
+          </button>
+        </div>
+      </nav>
+    );
+
   return (
     <nav
       role="navigation"
       aria-label="Pagination"
-      className={cn('flex w-full items-center justify-center gap-1 sm:gap-2', className)}
+      className={cn(BAR, 'flex items-center justify-center gap-1 sm:gap-2', className)}
     >
       <button
         type="button"
+        aria-label="Page précédente"
         disabled={prevDisabled}
         onClick={() => onPageChange?.(current - 1)}
         className={cn(
@@ -64,6 +107,7 @@ export function Pagination({ page, pageSize, total, onPageChange, className }) {
 
       <button
         type="button"
+        aria-label="Page suivante"
         disabled={nextDisabled}
         onClick={() => onPageChange?.(current + 1)}
         className={cn(

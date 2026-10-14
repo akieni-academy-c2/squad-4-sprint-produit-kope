@@ -10,6 +10,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest",
+    "test:run": "vitest run",
+    "test:db": "vitest run tests/sql-live.test.js",
+    "check": "npm run lint && npm run test:run",
+    "icons": "node scripts/generate-icons.mjs",
     "prepare": "husky",
     "migrate": "node-pg-migrate -m server/db/migrations",
     "migrate:up": "node-pg-migrate up -m server/db/migrations",
@@ -21,16 +25,19 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.11.0",
+    "clsx": "^2.1.1",
     "connect-pg-simple": "^10.0.0",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "lucide-react": "^1.51.0",
+    "motion": "^14.1.0",
     "multer": "^2.4.0",
     "pg": "^8.23.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.4",
     "sharp": "^0.35.5",
+    "tailwind-merge": "^3.7.0",
     "vite-express": "^0.22.1",
     "zod": "^4.6.5"
   },
@@ -55,5 +62,8 @@
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": "eslint --fix"
   }
 }

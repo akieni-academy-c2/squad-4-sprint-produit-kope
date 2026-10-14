@@ -1,20 +1,14 @@
 import { ApiError } from '../utils/ApiError.js';
-import { env } from '../config/env.js';
-import { verifyToken } from '../utils/tokens.js';
+import { currentUser, loadActiveUser } from './identity.js';
 
-export function requireAuth(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith('Bearer ')) 
-    try {
-      const payload = verifyToken(authHeader.slice(7), env.ACCESS_TOKEN_SECRET);
-      req.user = { id: Number(payload.sub), role: payload.role };
-      return next();
-    } catch {
-      // header présent mais invalide/expiré
-      req.bearerExpired = true;
-    }
-  
-  if (!req.session?.user) throw ApiError.unauthorized();
-  req.user = req.session.user;
-  next();
+export async function requireAuth(req, res, next) {
+  try {
+    const identity = currentUser(req);
+    if (!identity) throw ApiError.unauthorized();
+
+    req.user = await loadActiveUser(identity.id);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }

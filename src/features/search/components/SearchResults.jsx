@@ -52,7 +52,6 @@ export function SearchResults({ data, listMode = true }) {
       </div>
     );
 
-
   const cards = listMode ? (
     <ul className="space-y-3 sm:space-y-4">
       {items.map((item) => (
@@ -69,7 +68,9 @@ export function SearchResults({ data, listMode = true }) {
   ) : (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
-        <ProfessionalCard key={item.id} item={item} mode="grid" />
+        <li key={item.id}>
+          <ProfessionalCard item={item} mode="grid" />
+        </li>
       ))}
     </ul>
   );
@@ -77,14 +78,13 @@ export function SearchResults({ data, listMode = true }) {
   return (
     <div className="space-y-5">
       {cards}
-      {total > PAGE_SIZE && (
-        <div className="flex flex-col items-center gap-2 pt-4">
-          <p className="text-center text-sm text-gray-500">
-            {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, total)} sur {total} professionnels · {PAGE_SIZE} par page
-          </p>
-          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={onPage} />
-        </div>
-      )}
+      <Pagination
+        page={page}
+        pageSize={PAGE_SIZE}
+        total={total}
+        onPageChange={onPage}
+        variant="summary"
+      />
     </div>
   );
 }

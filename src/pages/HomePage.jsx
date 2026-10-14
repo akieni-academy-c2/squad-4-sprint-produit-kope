@@ -7,17 +7,23 @@ import { ZoneSection } from '@/shared/components/home/ZoneSection.jsx';
 import { ProCTA } from '@/shared/components/home/ProCTA.jsx';
 import { FAQSection } from '@/shared/components/home/FAQSection.jsx';
 import { FinalCTA } from '@/shared/components/home/FinalCTA.jsx';
+import { useAuthContext } from '@/shared/context/AuthContext.jsx';
+import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 
 export function HomePage() {
+  const { isServiceProvider } = useAuthContext();
+
+  usePageTitle('KOP');
+
   return (
     <>
       <HeroSection />
       <CategorySection />
       <FeaturedProfessionalSection />
-      <HowItWorksSection />
+      {!isServiceProvider && <HowItWorksSection />}
       <TrustSection />
       <ZoneSection />
-      <ProCTA />
+      {!isServiceProvider && <ProCTA />}
       <FAQSection />
       <FinalCTA />
     </>

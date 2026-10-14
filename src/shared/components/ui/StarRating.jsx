@@ -14,7 +14,11 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
 
   if (readOnly || !onChange)
     return (
-      <div className="flex items-center gap-0.5" aria-label={`Note ${value} sur ${count}`}>
+      <div
+        className="flex items-center gap-0.5 transition-[color,transform] duration-300 hover:scale-110"
+        role="img"
+        aria-label={`Note ${value} sur ${count}`}
+      >
         {items.map((n) => {
           const filled = n <= Math.round(value || 0);
           return (
@@ -30,14 +34,14 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
       name={groupName}
       value={value}
       onChange={onChange}
-      className="flex items-center gap-1"
+      className="flex flex-row items-center gap-1"
     >
       {items.map((n) => (
         <Radio
           key={n}
           value={n}
           label={null}
-          className="!p-0 !bg-transparent !ring-0 gap-0!"
+          className="p-0! bg-transparent! ring-0! gap-0!"
           aria-label={`${n} étoile${n > 1 ? 's' : ''}`}
         >
           <Star filled={n <= value} className={cn(sizing, 'cursor-pointer')} />
@@ -48,6 +52,7 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
 }
 
 function Star({ filled, half, className }) {
+  const halfId = `kop-star-half-${useId().replace(/:/g, '')}`;
   return (
     <svg
       viewBox="0 0 24 24"
@@ -55,14 +60,14 @@ function Star({ filled, half, className }) {
       className={cn('shrink-0', className)}
     >
       <defs>
-        <linearGradient id="kop-star-half">
+        <linearGradient id={halfId}>
           <stop offset="50%" stopColor="#f59e0b" />
           <stop offset="50%" stopColor="#e5e7eb" />
         </linearGradient>
       </defs>
       <path
         d="M12 2.5l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8L12 17.6 5.9 21l1.5-6.8L2.2 9.5l6.9-.7L12 2.5z"
-        fill={filled ? '#f59e0b' : half ? 'url(#kop-star-half)' : '#e5e7eb'}
+        fill={filled ? '#f59e0b' : half ? `url(#${halfId})` : '#e5e7eb'}
         stroke={filled ? '#d97706' : '#d1d5db'}
         strokeWidth="1"
         strokeLinejoin="round"

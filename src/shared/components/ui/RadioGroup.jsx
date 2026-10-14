@@ -8,9 +8,9 @@ export function RadioGroup({ name, value, onChange, children, className }) {
   const groupName = name || `radio-${autoName}`;
   const ctx = { name: groupName, value, onChange };
   return (
-    <RadioGroupContext.Provider value={ctx} role="radiogroup" className={className}>
-      {children}
-    </RadioGroupContext.Provider>
+    <div role="radiogroup" className={className}>
+      <RadioGroupContext.Provider value={ctx}>{children}</RadioGroupContext.Provider>
+    </div>
   );
 }
 

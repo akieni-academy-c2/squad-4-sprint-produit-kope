@@ -1,3 +1,7 @@
+
+const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
+export const MOBILE_HINT = '9 chiffres commençant par 04, 05 ou 06 - ex. 06 889 88 88';
+
 export function normalizePhone(raw) {
   if (raw == null) return null;
   let digits = String(raw).replace(/[\s().-]/g, '');
@@ -7,10 +11,17 @@ export function normalizePhone(raw) {
 
   if (digits.startsWith('242') && digits.length === 12) digits = digits.slice(3);
 
-  if (!/^0\d{8}$/.test(digits)) return null;
+  if (!MOBILE_PATTERN.test(digits)) return null;
   return `+242${digits}`;
 }
 
-export function isPhoneValid(raw) {
-  return Boolean(normalizePhone(raw));
+
+export function isHopelessPhone(raw) {
+  const v = String(raw ?? '');
+  if (!/\d/.test(v)) return true;
+  if (/[^\d\s().+-]/.test(v)) return true;
+
+  const digits = v.replace(/\D/g, '');
+  const national = digits.length === 12 && digits.startsWith('242') ? digits.slice(3) : digits;
+  return !/^0[456]/.test(national);
 }

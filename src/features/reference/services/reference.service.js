@@ -1,7 +1,7 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { cached, cacheInvalidate } from '@/shared/lib/cache.js';
-import { MOCK_TRADES, MOCK_ZONES } from '@/shared/mocks/appMock.js';
+import { cached, cacheGet, cacheInvalidate } from '@/shared/lib/cache.js';
+import { MOCK_CITIES, MOCK_TRADES, MOCK_ZONES } from '@/shared/mocks/appMock.js';
 
 export function listTrades() {
   return cached('reference:trades', 5 * 60_000, () =>
@@ -21,8 +21,23 @@ export function listZones() {
   );
 }
 
+export function listCities() {
+  return cached('reference:cities', 5 * 60_000, () =>
+    callApi(
+      () => api.get('/cities').then((r) => r.cities || []),
+      async () => MOCK_CITIES,
+    ),
+  );
+}
+
 export function invalidateReferenceCache() {
   cacheInvalidate('reference:');
 }
 
-export default { listTrades, listZones };
+export function peekReferenceData() {
+  return {
+    trades: cacheGet('reference:trades'),
+    zones: cacheGet('reference:zones'),
+    cities: cacheGet('reference:cities'),
+  };
+}

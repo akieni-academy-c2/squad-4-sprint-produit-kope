@@ -1,0 +1,43 @@
+import { describe, expect, it } from 'vitest';
+import { IMAGES, reserveImage } from '@/shared/assets/placeholders.js';
+import { FEATURED_FACES, HOME_RESERVED } from '@/shared/content/homeImages.js';
+
+
+describe('Visuels de la page d\'accueil', () => {
+  it('expose six visuels locaux', () => {
+    expect(IMAGES).toHaveLength(6);
+  });
+
+  it('ne réutilise aucun visuel entre emplacements', () => {
+    const beforeTrust = HOME_RESERVED.upTo('trust');
+    const beforeCta = HOME_RESERVED.upTo('cta');
+
+    const trust = reserveImage('a-confiance', beforeTrust);
+    const cta = reserveImage('b-devenir-prestataire', beforeCta);
+
+    expect(beforeTrust).not.toContain(trust);
+    expect(beforeCta).not.toContain(cta);
+    expect(trust).not.toBe(cta);
+  });
+
+  it('réserve les visuels du héros et des catégories avant les sections suivantes', () => {
+    expect(HOME_RESERVED.upTo('trust')).toHaveLength(4);
+  });
+
+  it('redevient au tirage complet si tout est déjà pris', () => {
+    const all = IMAGES;
+    const image = reserveImage('trop-etroit', all);
+
+    expect(all).toContain(image);
+  });
+
+  it('reste déterministe pour un même libellé', () => {
+    expect(reserveImage('meme-libel')).toBe(reserveImage('meme-libel'));
+  });
+
+  it('donne trois visages distincts à la section des professionnels mis en avant', () => {
+    expect(FEATURED_FACES).toHaveLength(3);
+    expect(new Set(FEATURED_FACES).size).toBe(3);
+    for (const face of FEATURED_FACES) expect(IMAGES).toContain(face);
+  });
+});

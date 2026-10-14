@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { FormField } from '@/shared/components/ui/FormField.jsx';
 import { Input } from '@/shared/components/ui/Input.jsx';
+import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
 import { useForm } from '@/shared/hooks/useForm.js';
 import { loginSchema } from '@/shared/utils/validators.js';
 import { login } from '../services/auth.service.js';
@@ -61,7 +63,7 @@ export function LoginForm({ bare = false } = {}) {
       <p className=" text-sm mb-8 text-gray-500">
         Accédez à votre espace client, professionnel ou administrateur.
       </p>
-      <form className=" space-y-5" onSubmit={onSubmit} noValidate>
+      <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit} noValidate>
         {(globalError || errors._global) && (
           <div role="alert" className="rounded-[16px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {globalError || errors._global}
@@ -72,12 +74,16 @@ export function LoginForm({ bare = false } = {}) {
           label="Numéro de téléphone"
           required
           error={errors.phone}
-          placeholder="+242 06 000 00 00"
-          value={values.phone}
-          onChange={(e) => setField('phone', e.target.value)}
-          autoComplete="tel"
-          inputMode="tel"
-        />
+        >
+          <PhoneInput
+            id="login-phone"
+            value={values.phone}
+            onChange={(value) => setField('phone', value)}
+            autoComplete="tel"
+            error={errors.phone}
+          />
+        </FormField>
+
         <FormField
           id="login-password"
           label="Mot de passe"
@@ -107,51 +113,17 @@ export function LoginForm({ bare = false } = {}) {
             </button>
           </div>
         </FormField>
-          <p className="text-end -mt-3 mr-2">
-
-            <Link to={ROUTES.FORGOT_PASSWORD} className="text-xs text-gray-500 ">
-              Mot de passe oublié
-            </Link>
-          </p>
-
         <Button type="submit" loading={submitting} size="lg" className="w-full!">
           Se connecter
         </Button>
-
       </form>
       <p className="text-sm">
         Je n'ai pas de compte.
         <Link
-          to={ROUTES.REGISTER_CLIENT}
+          href={ROUTES.REGISTER_CLIENT}
           className="text-primary-500 link-underline  font-semibold hover:text-primary-600 ml-1"
         > S'inscrire</Link>
       </p>
-    </div>
-  );
-}
-
-export function LoginPage() {
-  return (
-    <div className="container-kop page-padding ">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16 min-h-[72vh]">
-        {/* Left illustration */}
-        <div className="hidden lg:block">
-          <div className="rounded-[32px] bg-kop-mint p-10 h-full max-w-[520px] relative overflow-hidden">
-            <p className="text-xs font-bold uppercase tracking-wider text-primary-800/70">KOP</p>
-            <h2 className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
-              Retrouvez votre
-              <br />
-              <span className="text-primary-700">espace</span>.
-            </h2>
-            <p className="mt-3 text-base leading-7 text-gray-700/90 max-w-md">
-              Un compte pour chercher, contacter et laisser des avis aux pros de votre quartier.
-            </p>
-
-          </div>
-        </div>
-        {/* Right form */}
-        <LoginForm />
-      </div>
     </div>
   );
 }

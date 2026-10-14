@@ -14,7 +14,7 @@ if (useCloud)
   });
 
 
-export const publicId = (relativePath) =>
+const publicId = (relativePath) =>
   `${env.CLOUDINARY_FOLDER}/${relativePath.replace(/\.jpg$/, '')}`;
 
 export function uploadBuffer(buffer, relativePath) {
@@ -24,7 +24,7 @@ export function uploadBuffer(buffer, relativePath) {
       .upload_stream(
         {
           public_id: id,
-          asset_folder: id.split('/').slice(0, -1).join('/'), 
+          asset_folder: id.split('/').slice(0, -1).join('/'),
           resource_type: 'image',
           overwrite: true,
         },

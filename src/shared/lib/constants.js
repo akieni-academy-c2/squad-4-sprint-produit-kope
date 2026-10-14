@@ -4,12 +4,14 @@ export const ROLES = {
   ADMIN: 'admin',
 };
 
+export const CITIES = ['Brazzaville'];
+export const DEFAULT_COUNTRY = 'Congo';
+export const DEFAULT_CITY = 'Brazzaville';
+
 export const PAGE_SIZE = 10;
 export const MAX_PHOTOS = 10;
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_MIME = ['image/jpeg', 'image/png'];
-export const PHOTO_MAX_WIDTH = 1280;
-export const PHOTO_THUMB_WIDTH = 400;
 
 export const RG04_CHECKLIST = [
   { code: 'displayName', label: 'Renseignez le nom affiché' },
@@ -42,6 +44,32 @@ export const ROUTES = {
   DASHBOARD_CLIENT: '/dashboard/client',
   DASHBOARD_PRO: '/dashboard/pro',
   ADMIN: '/admin',
+  TERMS: '/conditions-utilisation',
   NOT_FOUND: '/404',
   PROFESSIONAL: (id) => `/professionals/${id}`,
 };
+
+
+
+
+export const STICKY_TOP = 'lg:sticky lg:top-[calc(var(--header-height)+1rem)]';
+
+
+const STICKY_BOTTOM = 'lg:bottom-4';
+
+
+export const STICKY_BAND = `${STICKY_TOP} ${STICKY_BOTTOM}`;
+
+
+export const STICKY_COLUMN = `${STICKY_TOP} lg:self-start`;
+
+
+export function sectionFromPathname(pathname, sections) {
+  const segment = String(pathname || '').split('/').filter(Boolean).pop();
+  return sections.includes(segment) ? segment : '';
+}
+
+
+export function sectionHref(base, id, rootId) {
+  return id && id !== rootId ? `${base}/${id}` : base;
+}

@@ -1,6 +1,7 @@
 import { Skeleton } from './Skeleton.jsx';
+import { ErrorState } from './ErrorState.jsx';
 
-export function DataState({ loading, error, errorPrefix = 'Erreur de chargement', children }) {
+export function DataState({ loading, error, errorPrefix = 'Erreur de chargement', onRetry, children }) {
   if (loading)
     return (
       <div className="space-y-3 py-4" aria-busy="true">
@@ -12,9 +13,12 @@ export function DataState({ loading, error, errorPrefix = 'Erreur de chargement'
 
   if (error)
     return (
-      <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-        {errorPrefix} : {error.message || 'réessayez'}
-      </div>
+      <ErrorState
+        title={errorPrefix}
+        message={error.message || 'Impossible de charger ces données. Réessayez.'}
+        onAction={onRetry}
+        className="my-4"
+      />
     );
 
   return children;

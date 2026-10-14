@@ -5,5 +5,6 @@ const router = Router();
 
 router.get('/trades', controller.listTrades);
 router.get('/zones', controller.listZones);
+router.get('/cities', controller.listCities);
 
 export default router;

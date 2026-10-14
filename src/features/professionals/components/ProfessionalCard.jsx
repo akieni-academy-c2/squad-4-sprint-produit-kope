@@ -2,15 +2,13 @@ import { ChevronRight, Star } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { StarRating } from '@/shared/components/ui/StarRating.jsx';
+import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
+import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { cn } from '@/shared/utils';
-import { Link } from 'react-router-dom';
+import { Link } from '@/shared/components/ui/Link.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
-import { mockImage } from '@/shared/mocks/images.js';
 
-function fallbackPortrait(seed, prompt) {
-  if (prompt) 
-    return mockImage(prompt, 'portrait_4_3');
-  
+function fallbackPortrait(seed) {
   const hash = String(seed || 'kop').split('').reduce((a, c) => a + ((c.charCodeAt(0) * 13) % 7), 3);
   const palettes = [
     ['#eaf3ec', '#2d5c4a'], ['#f6efe0', '#8b6b2f'], ['#fbeae3', '#a45e3a'], ['#e6ecff', '#3e4c8a'],
@@ -21,8 +19,10 @@ function fallbackPortrait(seed, prompt) {
   )}`;
 }
 
-function coverImage(item) {
-  return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id, item.featuredPrompt);
+
+function coverImage(item, homePreview) {
+  if (homePreview) return item.previewImage || fallbackPortrait(item.id);
+  return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id);
 }
 
 function Availability({ isAvailable }) {
@@ -30,26 +30,47 @@ function Availability({ isAvailable }) {
   return <Badge variant="success">Disponible</Badge>;
 }
 
-export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
-  const imgSrc = coverImage({ ...item, featuredPrompt });
+function ProfileMedia({ item, homePreview }) {
+  return (
+    <div className="aspect-4/5 w-full shrink-0 self-start overflow-hidden bg-gray-100 sm:w-42.5">
+      <UserAvatar
+        src={homePreview ? fallbackPortrait(item.id) : item.avatarUrl || item.image || null}
+        name={item.displayName}
+        rounded="rounded-none"
+        iconSize={40}
+        className="size-full  group-hover:scale-120 transition-all duration-300"
+        fallbackClassName="size-full bg-primary-400/40 text-primary-600"
+      />
+    </div>
+  );
+}
+
+function cardHref(item, homePreview) {
+  return homePreview ? ROUTES.SEARCH : ROUTES.PROFESSIONAL(item.id);
+}
+
+export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
   const avg = Number(item.rating?.average ?? 0);
   const cnt = Number(item.rating?.count ?? 0);
+  const coverSrc = coverImage(item, homePreview);
 
-  if (mode === 'grid') 
+  if (mode === 'grid')
     return (
-      <Card className="group border-[#BDC0C8]! flex h-full flex-col overflow-hidden relative aspect-4/5.5 ">
-          <img
-            src={imgSrc}
+      <Link href={cardHref(item, homePreview)} className="group block h-full">
+        <Card className="border-[#BDC0C8]! flex h-full cursor-pointer flex-col overflow-hidden relative aspect-4/5.5 ">
+          <ImageWithSkeleton
+            src={coverSrc}
             alt={item.displayName}
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+            ratio="h-full"
+            skeletonClassName="bg-gray-100"
+            className="transition duration-500 group-hover:scale-[1.04]"
           />
 
           <div className="absolute right-2 left-2 bottom-2  rounded-sm bg-white/92 backdrop-blur-sm  p-4  space-y-2">
 
             <div className=" flex flex-wrap justify-between gap-1.5">
               <Badge variant="primary">{item.trade}</Badge>
-              <Availability isAvailable={item.isAvailable}  variant="outline" />
+              <Availability isAvailable={item.isAvailable} />
             </div>
             <p className="font-extrabold tracking-tight text-gray-900 text-lg leading-tight">{item.displayName}</p>
             <p className="text-[12px] text-gray-500">
@@ -58,8 +79,11 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-1.5 text-[12px] text-gray-700">
                 {cnt > 0 ? (
-                  <span className="font-semibold text-gray-900">
-                    <Star size={12} className="fill-amber-400 text-amber-400" aria-hidden /> {avg.toFixed(1)} · {cnt} avis
+                  <span className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-gray-900">
+                    <Star size={12} className="shrink-0 fill-amber-400 text-amber-400" aria-hidden />
+                    <span>
+                      {avg.toFixed(1)} · {cnt} avis
+                    </span>
                   </span>
                 ) : (
                   <>
@@ -68,73 +92,56 @@ export function ProfessionalCard({ item, mode = 'list', featuredPrompt }) {
                   </>
                 )}
               </div>
-              <Link
-                to={ROUTES.PROFESSIONAL(item.id)}
-                className="text-[12px] font-bold text-primary-500 rounded p-1 -mr-1"
-              >
+              <span className="text-[12px] font-bold text-primary-500 rounded p-1 -mr-1">
                 Voir le profil <ChevronRight size={14} className="inline" aria-hidden />
-              </Link>
+              </span>
             </div>
           </div>
-      </Card>
+        </Card>
+      </Link>
     );
-  
+
 
   return (
-    <li>
+    <Link href={cardHref(item, homePreview)} className="group block h-full">
       <Card className={cn(
-        'group flex h-full flex-col overflow-hidden gap-0 border border-gray-200 bg-white transition hover:border-primary-200 sm:flex-row',
+        'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
       )}>
-        <div className="relative block aspect-[3/3.5] w-full shrink-0 overflow-hidden bg-gray-100 sm:h-auto sm:w-[170px]">
-          <img
-            src={imgSrc}
-            alt={item.displayName}
-            loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-          />
-          {item.coverBadge && (
-            <div className="absolute left-3 bottom-3 rounded-[10px] bg-white/95 px-3 py-1 text-[10px] font-bold text-gray-700 ring-1 ring-black/5 backdrop-blur">
-              {item.coverBadge}
+      <ProfileMedia item={item} homePreview={homePreview} />
+      <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 space-y-1.5">
+            <div className="text-[20px] font-extrabold tracking-tight text-gray-900">
+              {item.displayName}
             </div>
-          )}
-        </div>
-        <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1.5">
-              <div className="text-[20px] font-extrabold tracking-tight text-gray-900">
-                {item.displayName}
-              </div>
-              <p className="text-sm text-gray-700">
-                <span className="font-semibold text-primary-700">{item.trade}</span>
-                {(item.zones || []).length > 0 && (
-                  <> · <span>{(item.zones || []).slice(0, 2).join(' · ')}</span></>
-                )}
-              </p>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-700">
-                {item.yearsExperience != null && (
-                  <span>{item.yearsExperience} an{item.yearsExperience > 1 ? 's' : ''} d'expérience</span>
-                )}
-                {cnt > 0 && (
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
-                    <StarRating value={avg} size="sm" />
-                    {avg.toFixed(1)} ({cnt} avis)
-                  </span>
-                )}
-              </div>
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold text-primary-700">{item.trade}</span>
+              {(item.zones || []).length > 0 && (
+                <> · <span>{(item.zones || []).slice(0, 2).join(' · ')}</span></>
+              )}
+            </p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-700">
+              {item.yearsExperience != null && (
+                <span>{item.yearsExperience} an{item.yearsExperience > 1 ? 's' : ''} d'expérience</span>
+              )}
+              {cnt > 0 && (
+                <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
+                  <StarRating value={avg} size="sm" />
+                  {avg.toFixed(1)} ({cnt} avis)
+                </span>
+              )}
             </div>
           </div>
+        </div>
 
-          <div className="mt-auto flex items-center justify-between pt-1">
-            <Availability isAvailable={item.isAvailable} />
-            <Link
-              to={ROUTES.PROFESSIONAL(item.id)}
-              className="inline-flex items-center justify-center rounded-[10px] border border-[#dfe5e2] bg-[#f5f7f6] px-4 py-2.5 text-sm font-bold text-gray-900 transition hover:bg-white"
-            >
-              Afficher le profil
-            </Link>
-          </div>
+        <div className="mt-auto flex items-center justify-between pt-1">
+          <Availability isAvailable={item.isAvailable} />
+          <span className="inline-flex items-center justify-center rounded-[10px] border border-[#dfe5e2] bg-[#f5f7f6] px-4 py-2.5 text-sm font-bold text-gray-900 transition group-hover:bg-white">
+            Afficher le profil
+          </span>
         </div>
+      </div>
       </Card>
-    </li>
+    </Link>
   );
 }

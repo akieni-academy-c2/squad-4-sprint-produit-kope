@@ -11,7 +11,6 @@ function dashboardForRole(role) {
   return ROUTES.HOME;
 }
 
-/** Old standalone auth pages are now modals: deep links redirect home and open the modal. */
 export function AuthModalRedirect({ mode }) {
   const { user, loading } = useAuthContext();
   const { open } = useAuthModal();

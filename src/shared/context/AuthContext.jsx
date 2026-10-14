@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import * as authService from '@/features/auth/services/auth.service.js';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { UNAUTHORIZED_EVENT } from '@/shared/lib/api.js';
+import { ROUTES, ROLES } from '@/shared/lib/constants.js';
 
 const AuthContext = createContext(null);
 
@@ -29,23 +30,34 @@ export function AuthProvider({ children }) {
     fetchMe();
   }, [fetchMe]);
 
+  useEffect(() => {
+    const onUnauthorized = () => setUser(null);
+    window.addEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
+  }, []);
+
   const login = useCallback((userData) => setUser(userData), []);
 
   const logout = useCallback(async () => {
     try {
       await authService.logout();
-    } catch { /* ignore */ } finally {
+    } catch {  } finally {
       setUser(null);
-      setTimeout(() => redirect(ROUTES.HOME), 0);
+      redirect(ROUTES.HOME);
     }
   }, []);
 
-  const hasRole = useCallback(
-    (role) => Boolean(user?.role && user.role === role),
-    [user],
+  const hasRole = useCallback((role) => Boolean(user?.role && user.role === role), [user]);
+
+
+  const isServiceProvider = Boolean(
+    user && (user.role === ROLES.PRO || user.role === ROLES.ADMIN),
   );
 
-  const value = { user, loading, login, logout, hasRole, refresh: fetchMe };
+  const value = useMemo(
+    () => ({ user, loading, login, logout, hasRole, isServiceProvider, refresh: fetchMe }),
+    [user, loading, login, logout, hasRole, isServiceProvider, fetchMe],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -56,5 +68,3 @@ export function useAuthContext() {
   if (!ctx) throw new Error('useAuthContext must be used inside <AuthProvider>');
   return ctx;
 }
-
-export default AuthContext;

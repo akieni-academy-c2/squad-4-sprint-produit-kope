@@ -4,16 +4,22 @@ import { AuthProvider } from '@/shared/context/AuthContext.jsx';
 import { NotificationProvider } from '@/shared/context/NotificationContext.jsx';
 import { AppRoutes } from '@/routes/AppRoutes.jsx';
 import { AuthModalProvider } from '@/shared/context/AuthModalContext.jsx';
+import { MotionRoot } from '@/shared/motion/MotionRoot.jsx';
+import { registerServiceWorker } from '@/shared/lib/serviceWorker.js';
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <NotificationProvider>
-        <AuthModalProvider>
-          <AppRoutes />
-        </AuthModalProvider>
-      </NotificationProvider>
-    </AuthProvider>
+    <MotionRoot>
+      <AuthProvider>
+        <NotificationProvider>
+          <AuthModalProvider>
+            <AppRoutes />
+          </AuthModalProvider>
+        </NotificationProvider>
+      </AuthProvider>
+    </MotionRoot>
   </StrictMode>,
 );
+
+registerServiceWorker();

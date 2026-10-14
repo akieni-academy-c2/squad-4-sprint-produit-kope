@@ -7,6 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
+      '@server': path.resolve(__dirname, 'server'),
+      '@test': path.resolve(__dirname, 'tests'),
       '@': path.resolve(__dirname, 'src'),
     },
   },
@@ -14,6 +16,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.js', 'tests/**/*.spec.js', 'tests/**/*.test.jsx'],
+    setupFiles: ['./tests/setup.js'],
     clearMocks: true,
     reporters: ['default'],
   },

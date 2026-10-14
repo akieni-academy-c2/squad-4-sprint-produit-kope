@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import { phoneSchema, zoneIdsSchema, requiredText, idSchema } from '../../utils/commonSchemas.js';
+import { displayNameSchema, phoneSchema, zoneIdsSchema, idSchema } from '../../utils/commonSchemas.js';
 
-/** US-04 */
 export const updateProfileSchema = z.object({
-  displayName: requiredText(100, 'Le nom affiché est obligatoire'),
+  displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
   description: z
     .string({ error: 'La description est obligatoire' })
@@ -16,10 +15,10 @@ export const updateProfileSchema = z.object({
     .min(0, "Les années d'expérience doivent être comprises entre 0 et 60")
     .max(60, "Les années d'expérience doivent être comprises entre 0 et 60"),
   whatsapp: z.preprocess((value) => (value === '' ? null : value), phoneSchema.nullish()),
+  cityId: z.preprocess((value) => (value === '' ? null : value), idSchema('Choisissez une ville').nullish()),
   zoneIds: zoneIdsSchema,
 });
 
-/** US-12 */
 export const availabilitySchema = z.object({
   isAvailable: z.boolean({ error: 'Valeur invalide' }),
 });

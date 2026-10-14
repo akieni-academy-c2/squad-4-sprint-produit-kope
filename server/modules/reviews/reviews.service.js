@@ -1,5 +1,5 @@
 import { ApiError } from '../../utils/ApiError.js';
-import { offsetOf, paginate } from '../../utils/pagination.js';
+import { offsetOf, paginate, paginateSafely } from '../../utils/pagination.js';
 import * as repository from './reviews.repository.js';
 import * as professionalsRepository from '../professionals/professionals.repository.js';
 
@@ -29,9 +29,39 @@ export async function createReview(clientId, professionalId, { rating, comment }
   }
 }
 
-export async function mine(clientId, pagination) {
-  const rows = await repository.listByClient(clientId, { limit: pagination.pageSize, offset: offsetOf(pagination) });
-  return paginate(rows, pagination);
+export async function mine(clientId, query) {
+  const rows = await repository.listByClient(clientId, {
+    limit: query.pageSize,
+    offset: offsetOf(query),
+    q: query.q,
+    rating: query.rating,
+    professionalId: query.professionalId,
+    visibility: query.visibility,
+    sort: query.sort,
+  });
+  return paginateSafely(rows, query, () => repository.countByClient(clientId));
+}
+
+
+async function ownedReview(reviewId, clientId) {
+  const review = await repository.findOwnedById(reviewId, clientId);
+  if (!review) throw ApiError.notFound('Avis introuvable');
+  return review;
+}
+
+export async function updateReview(reviewId, clientId, patch) {
+  await ownedReview(reviewId, clientId);
+  return repository.updateOwned(reviewId, clientId, patch);
+}
+
+export async function setReviewVisibility(reviewId, clientId, isHidden) {
+  await ownedReview(reviewId, clientId);
+  return repository.setHiddenOwned(reviewId, clientId, isHidden);
+}
+
+export async function deleteReview(reviewId, clientId) {
+  await ownedReview(reviewId, clientId);
+  await repository.deleteOwned(reviewId, clientId);
 }
 
 export async function byClient(clientId, pagination) {
@@ -50,5 +80,8 @@ export async function listReviews(viewer, professionalId, pagination) {
     repository.getSummary(professionalId),
   ]);
 
-  return { summary, ...paginate(rows, pagination) };
+  const result = await paginateSafely(rows, pagination, () =>
+    repository.countByProfessional(professionalId),
+  );
+  return { summary, ...result };
 }

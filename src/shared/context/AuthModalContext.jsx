@@ -5,7 +5,7 @@ const AuthModalContext = createContext(null);
 export function AuthModalProvider({ children }) {
   const [mode, setMode] = useState(null);
 
-  const open = useCallback((m) => setMode(m), []);
+  const open = useCallback((m) => setMode(m ?? null), []);
   const close = useCallback(() => setMode(null), []);
 
   const value = useMemo(() => ({ mode, open, close }), [mode, open, close]);

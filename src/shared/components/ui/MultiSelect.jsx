@@ -1,45 +1,21 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
-
-const cx = (...parts) => parts.filter(Boolean).join(" ");
+import { cn } from "@/shared/utils";
+import { FormField } from "./FormField.jsx";
+import { toOption, useListboxNavigation, useScrollActiveIntoView } from "./listbox.js";
 
 const controlClasses = (error) =>
-  cx(
+  cn(
     "min-h-11 w-full rounded-sm border bg-white px-3.5 py-2 text-base text-gray-900",
-    "focus-visible:outline-2 focus-visible:outline-green-700",
-    error ? "border-red-600" : "border-gray-300",
+    "focus-visible:outline-2 focus-visible:outline-primary-500",
+    error ? "is-invalid border-danger-500" : "border-gray-300",
   );
 
-const describedBy = (id, { hint, error }) =>
-  error ? `${id}-error` : hint ? `${id}-hint` : undefined;
 
-function FieldShell({ id, label, required, hint, error, className, children }) {
-  return (
-    <div className={cx("flex flex-col gap-1.5", className)}>
-      {label && (
-        <label htmlFor={id} className="text-sm font-semibold text-gray-900">
-          {label}
-          {required && <span aria-hidden="true"> *</span>}
-        </label>
-      )}
-      {children}
-      {hint && !error && (
-        <p id={`${id}-hint`} className="text-sm text-gray-500">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p
-          id={`${id}-error`}
-          role="alert"
-          className="text-sm font-medium text-red-700"
-        >
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
+const describedBy = (id, { hint, error }) => {
+  const ids = [error ? `${id}-error` : null, hint ? `${id}-help` : null].filter(Boolean);
+  return ids.length ? ids.join(' ') : undefined;
+};
 
 export function MultiSelect({
   label,
@@ -60,14 +36,14 @@ export function MultiSelect({
   const listId = `${id}-list`;
   const rootRef = useRef(null);
   const triggerRef = useRef(null);
-  const listRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [placeAbove, setPlaceAbove] = useState(false);
   const [maxH, setMaxH] = useState(256);
 
+  const normalizedOptions = options.map(toOption);
   const selected = new Set(value);
-  const selectedLabels = options
+  const selectedLabels = normalizedOptions
     .filter((o) => selected.has(o.value))
     .map((o) => o.label);
   const limitReached = max !== undefined && value.length >= max;
@@ -92,16 +68,11 @@ export function MultiSelect({
   }, [open, onBlur]);
 
 
-  useEffect(() => {
-    if (!open) return;
-    document
-      .getElementById(`${id}-opt-${activeIndex}`)
-      ?.scrollIntoView?.({ block: "nearest" });
-  }, [open, activeIndex, id]);
+  useScrollActiveIntoView({ open, activeIndex, optionId: `${id}-opt-${activeIndex}` });
 
   const emit = (nextValues) => {
     const next = new Set(nextValues);
-    onChange?.(options.filter((o) => next.has(o.value)).map((o) => o.value));
+    onChange?.(normalizedOptions.filter((o) => next.has(o.value)).map((o) => o.value));
   };
 
   const toggle = (optionValue) => {
@@ -110,7 +81,7 @@ export function MultiSelect({
   };
 
   const openList = () => {
-    const firstSelected = options.findIndex((o) => selected.has(o.value));
+    const firstSelected = normalizedOptions.findIndex((o) => selected.has(o.value));
     setActiveIndex(firstSelected >= 0 ? firstSelected : 0);
     const rect = triggerRef.current?.getBoundingClientRect();
     if (rect) {
@@ -128,57 +99,26 @@ export function MultiSelect({
     onBlur?.();
   };
 
-  const onKeyDown = (event) => {
-    if (disabled) return;
-    const last = options.length - 1;
-    switch (event.key) {
-      case "ArrowDown":
-        event.preventDefault();
-        if (!open) openList();
-        else setActiveIndex((i) => Math.min(i + 1, last));
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        if (!open) openList();
-        else setActiveIndex((i) => Math.max(i - 1, 0));
-        break;
-      case "Home":
-        if (open) {
-          event.preventDefault();
-          setActiveIndex(0);
-        }
-        break;
-      case "End":
-        if (open) {
-          event.preventDefault();
-          setActiveIndex(last);
-        }
-        break;
-      case "Enter":
-      case " ":
-        event.preventDefault();
-        if (!open) openList();
-        else if (options[activeIndex]) toggle(options[activeIndex].value);
-        break;
-      case "Escape":
-        if (open) {
-          event.preventDefault();
-          close();
-        }
-        break;
-      case "Tab":
-        if (open) close();
-        break;
-      default:
-    }
-  };
+  const onKeyDown = useListboxNavigation({
+    open,
+    itemCount: normalizedOptions.length,
+    activeIndex,
+    setActiveIndex,
+    onOpen: openList,
+    onClose: close,
+    onSelect: (index) => {
+      const option = normalizedOptions[index];
+      if (option) toggle(option.value);
+    },
+    disabled,
+  });
 
   return (
-    <FieldShell
+    <FormField
       id={id}
       label={label}
       required={required}
-      hint={hint}
+      help={hint}
       error={error}
       className={className}
     >
@@ -198,17 +138,17 @@ export function MultiSelect({
           disabled={disabled}
           onClick={() => (open ? close() : openList())}
           onKeyDown={onKeyDown}
-          className={cx(
+          className={cn(
             controlClasses(error),
             "flex items-center justify-between gap-3 text-left disabled:cursor-not-allowed disabled:opacity-50",
           )}
         >
-          <span className={cx("truncate", !summary && "text-gray-400")}>
+          <span className={cn("truncate", !summary && "text-gray-400")}>
             {summary ?? placeholder}
           </span>
           <ChevronDown
             aria-hidden="true"
-            className={cx(
+            className={cn(
               "size-4 shrink-0 text-gray-500 transition-transform",
               open && "rotate-180",
             )}
@@ -223,17 +163,18 @@ export function MultiSelect({
         {open && (
           <ul
             id={listId}
-            ref={listRef}
             role="listbox"
             aria-multiselectable="true"
-            aria-label={label}
+            aria-labelledby={id}
             style={{ maxHeight: maxH }}
-            className={cx(
+            className={cn(
               "absolute left-0 right-0 z-50 overflow-auto rounded-md border border-gray-200 bg-white p-1.5 shadow-lg",
               placeAbove ? "bottom-full mb-1" : "top-full mt-1",
+              "animate-scale-in origin-top motion-reduce:animate-none",
+              placeAbove ? "origin-bottom" : "origin-top",
             )}
           >
-            {options.map((option, index) => {
+            {normalizedOptions.map((option, index) => {
               const isSelected = selected.has(option.value);
               const isDisabled = !isSelected && limitReached;
               return (
@@ -246,7 +187,7 @@ export function MultiSelect({
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => !isDisabled && toggle(option.value)}
                   onMouseMove={() => setActiveIndex(index)}
-                  className={cx(
+                  className={cn(
                     "flex min-h-10 cursor-pointer items-center gap-3 rounded-sm px-2.5 py-2 text-base",
                     index === activeIndex && "bg-green-50",
                     isDisabled && "cursor-not-allowed opacity-45",
@@ -254,7 +195,7 @@ export function MultiSelect({
                 >
                   <span
                     aria-hidden="true"
-                    className={cx(
+                    className={cn(
                       "flex size-5 shrink-0 items-center justify-center rounded border",
                       isSelected
                         ? "border-green-700 bg-green-700 text-white"
@@ -281,6 +222,6 @@ export function MultiSelect({
           </ul>
         )}
       </div>
-    </FieldShell>
+    </FormField>
   );
 }

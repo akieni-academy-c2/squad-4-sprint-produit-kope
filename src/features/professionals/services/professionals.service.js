@@ -1,6 +1,6 @@
 import { api } from '@/shared/lib/api.js';
 import { callApi } from '@/shared/lib/dataSource.js';
-import { getProDetailMock, MOCK_PROS, MOCK_TRADES } from '@/shared/mocks/appMock.js';
+import { getProDetailMock, mockReportProfessional, MOCK_PROS, MOCK_TRADES } from '@/shared/mocks/appMock.js';
 
 function ownProfileFromMock() {
   const p = MOCK_PROS[0];
@@ -77,4 +77,9 @@ export function canReview(id) {
   );
 }
 
-export default { getMyProfile, updateMyProfile, setAvailability, getPublishedDetail, canReview };
+export function reportProfessional(id, payload) {
+  return callApi(
+    () => api.postJson(`/professionals/${id}/reports`, payload).then((r) => r.report),
+    async () => mockReportProfessional({ professionalId: id, ...payload }),
+  );
+}

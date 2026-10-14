@@ -5,19 +5,28 @@ import { normalizePhone } from '../../utils/phone.js';
 
 async function main() {
   const phone = normalizePhone(env.ADMIN_PHONE ?? '');
-  if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8) 
+  if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8)
     throw new Error('ADMIN_PHONE (numéro valide) et ADMIN_PASSWORD (8 caractères min.) sont requis dans .env');
-  
 
-  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 10);
-  const { rowCount } = await pool.query(
-    `INSERT INTO users (role, phone, password_hash)
-     VALUES ('admin', $1, $2)
-     ON CONFLICT (phone) DO NOTHING`,
-    [phone, passwordHash],
+  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, env.BCRYPT_ROUNDS);
+
+  const { rows } = await pool.query(
+    `INSERT INTO users (role, phone, password_hash, first_name, last_name)
+     VALUES ('admin', $1, $2, $3, $3)
+     ON CONFLICT (phone) DO UPDATE
+       SET role = 'admin',
+           password_hash = EXCLUDED.password_hash,
+           first_name = EXCLUDED.first_name
+     RETURNING id, (xmax = 0) AS created`,
+    [phone, passwordHash, env.ADMIN_NAME],
   );
 
-  console.log(rowCount ? `Compte admin créé : ${phone}` : `Un compte existe déjà pour ${phone}, rien à faire`);
+  const { id, created } = rows[0];
+  console.log(
+    created
+      ? `Compte admin « ${env.ADMIN_NAME} » créé : ${phone} (#${id})`
+      : `Compte ${phone} (#${id}) promu en administrateur « ${env.ADMIN_NAME} »`,
+  );
 }
 
 main()

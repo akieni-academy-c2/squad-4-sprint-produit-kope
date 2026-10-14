@@ -1,11 +1,4 @@
 import { ROUTES, ROLES } from '@/shared/lib/constants.js';
-import { initials } from '@/shared/utils';
-
-export function avatarFor(user) {
-  if (!user) return '?';
-  if (user.role === ROLES.PRO) return initials(user.displayName || '', '');
-  return initials(user.firstName, user.lastName);
-}
 
 export function displayNameFor(user) {
   if (!user) return null;
@@ -26,4 +19,11 @@ export function dashboardHref(role) {
   if (role === ROLES.PRO) return ROUTES.DASHBOARD_PRO;
   if (role === ROLES.ADMIN) return ROUTES.ADMIN;
   return ROUTES.HOME;
+}
+
+
+export function landingHrefFor(user) {
+  if (!user) return ROUTES.HOME;
+  if (user.role === ROLES.CLIENT) return ROUTES.SEARCH;
+  return dashboardHref(user.role);
 }
