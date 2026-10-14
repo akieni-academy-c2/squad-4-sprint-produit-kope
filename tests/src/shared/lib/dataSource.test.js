@@ -107,14 +107,42 @@ describe("dataSource - activation à l'exécution", () => {
   });
 
   it('laisse le build garder la main et ne mémorise rien', () => {
-    expect(decide({ requested: '0', allowedByBuild: true })).toEqual({
-      allowed: true,
-      active: true,
-      remember: false,
-    });
+    expect(
+      decideDemoMode({ requested: '1', allowedByBuild: true, activeByDefault: false }),
+    ).toEqual({ allowed: true, active: true, remember: false });
   });
 
   it('ne mémorise que lorsqu\'une URL a décidé', () => {
     expect(decide({ requested: null, remembered: true }).remember).toBe(false);
+  });
+});
+
+describe('dataSource - la production démarre sur la vraie API', () => {
+  it('autorise la démo sans l\'activer quand le build l\'autorise seulement', () => {
+    expect(decideDemoMode({ requested: null, allowedByBuild: true })).toEqual({
+      allowed: true,
+      active: false,
+      remember: false,
+    });
+  });
+
+  it('laisse le développement démarrer en démo', () => {
+    expect(
+      decideDemoMode({ requested: null, allowedByBuild: true, activeByDefault: true }),
+    ).toEqual({ allowed: true, active: true, remember: false });
+  });
+
+  it('permet à ?demo=0 de sortir d\'une démo autorisée par le build', () => {
+    expect(
+      decideDemoMode({ requested: '0', allowedByBuild: true, activeByDefault: true }),
+    ).toEqual({ allowed: true, active: false, remember: false });
+  });
+
+  it('laisse ?demo=1 entrer malgré un build qui ne l\'autorise pas', () => {
+    expect(decideDemoMode({ requested: '1', allowedByBuild: false })).toEqual({
+      allowed: true,
+      active: true,
+      remember: true,
+    });
   });
 });

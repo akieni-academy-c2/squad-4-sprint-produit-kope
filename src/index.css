@@ -99,6 +99,14 @@
   to { width: 40%; left: 30%; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-pulse {
+    animation: none;
+  }
+}
+
 :root {
   color-scheme: light;
 }

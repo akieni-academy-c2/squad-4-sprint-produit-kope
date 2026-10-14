@@ -10,13 +10,22 @@ const isTrue = (value) =>
 
 const isDemoOn = (value) => value === '1' || isTrue(value);
 
+const isDev = import.meta.env?.DEV === true;
+
 /**
  * `VITE_USE_MOCKS` est figé dans le bundle au moment du build : la poser sur
  * Vercel sans redéployer ne change rien au site déjà en ligne. `?demo=1` dans
  * l'URL permet d'activer la démo à l'exécution, sur un déploiement existant.
  */
-const allowedByBuild =
-  import.meta.env?.DEV === true || isTrue(import.meta.env?.VITE_USE_MOCKS);
+const allowedByBuild = isDev || isTrue(import.meta.env?.VITE_USE_MOCKS);
+
+/**
+ * Autoriser n'est pas activer. En production, `VITE_USE_MOCKS=true` rend le
+ * sélecteur de rôle visible mais laisse le site démarrer sur la vraie API :
+ * les visiteurs voient les données réelles, les testeurs basculent quand ils le
+ * veulent. Le mode démonstration n'est actif d'emblée qu'en développement.
+ */
+const activeByDefault = isDev;
 
 /**
  * Le repli automatique sur les mocks ne vaut qu'en développement, où l'on
@@ -24,10 +33,10 @@ const allowedByBuild =
  * migration non appliquée - derrière des données fictives. La démo y reste un
  * choix du visiteur, jamais une conséquence d'une erreur.
  */
-const autoFallbackAllowed = import.meta.env?.DEV === true;
+const autoFallbackAllowed = isDev;
 
 let demoAllowed = allowedByBuild;
-let mockMode = allowedByBuild;
+let mockMode = activeByDefault;
 const listeners = new Set();
 
 function notify() {
@@ -75,13 +84,21 @@ export function resetMockMode() {
 
 /**
  * Traduit le paramètre d'URL, le choix mémorisé et le build en une décision.
- * Le build garde la main : `VITE_USE_MOCKS=true` ou le mode développement
- * l'emportent, et dans ce cas rien n'est mémorisé.
+ * Un `?demo=` explicite l'emporte toujours, y compris pour sortir d'une démo
+ * autorisée par le build. Sinon le build décide : il autorise, et n'active que
+ * s'il l'a toujours fait. Rien n'est mémorisé quand le build a la main.
  */
-export function decideDemoMode({ requested, remembered = false, allowedByBuild = false }) {
-  if (allowedByBuild) return { allowed: true, active: true, remember: false };
-  if (requested != null)
-    return { allowed: isDemoOn(requested), active: isDemoOn(requested), remember: true };
+export function decideDemoMode({
+  requested,
+  remembered = false,
+  allowedByBuild = false,
+  activeByDefault = false,
+}) {
+  if (requested != null) {
+    const on = isDemoOn(requested);
+    return { allowed: allowedByBuild || on, active: on, remember: !allowedByBuild };
+  }
+  if (allowedByBuild) return { allowed: true, active: activeByDefault, remember: false };
   return { allowed: remembered, active: remembered, remember: false };
 }
 
@@ -98,6 +115,7 @@ export function initMockMode() {
     requested: new URLSearchParams(window.location.search).get(DEMO_PARAM),
     remembered: rememberedDemo(),
     allowedByBuild,
+    activeByDefault,
   });
 
   demoAllowed = decision.allowed;

@@ -1,13 +1,24 @@
-import hero, { srcSet as heroSrcSet } from '@/shared/assets/hero.png';
-import what1, { srcSet as what1SrcSet } from '@/shared/assets/what1.png';
-import what2, { srcSet as what2SrcSet } from '@/shared/assets/what2.png';
-import what3, { srcSet as what3SrcSet } from '@/shared/assets/what3.png';
-import confiance, { srcSet as confianceSrcSet } from '@/shared/assets/confiance.png';
-import cta, { srcSet as ctaSrcSet } from '@/shared/assets/cta.png';
-import user1, { srcSet as user1SrcSet } from '@/shared/assets/user1.png';
-import user2, { srcSet as user2SrcSet } from '@/shared/assets/user2.png';
+import * as heroModule from '@/shared/assets/hero.png';
+import * as what1Module from '@/shared/assets/what1.png';
+import * as what2Module from '@/shared/assets/what2.png';
+import * as what3Module from '@/shared/assets/what3.png';
+import * as confianceModule from '@/shared/assets/confiance.png';
+import * as ctaModule from '@/shared/assets/cta.png';
+import * as user1Module from '@/shared/assets/user1.png';
+import * as user2Module from '@/shared/assets/user2.png';
+import { variants } from '@/shared/assets/variants.js';
 
 const CATEGORY_SIZES = '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw';
+const FACE_SIZES = '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw';
+
+const hero = variants(heroModule);
+const what1 = variants(what1Module);
+const what2 = variants(what2Module);
+const what3 = variants(what3Module);
+const confiance = variants(confianceModule);
+const cta = variants(ctaModule);
+const user1 = variants(user1Module);
+const user2 = variants(user2Module);
 
 /**
  * Visuels de l'accueil, avec la largeur à laquelle le navigateur les rend
@@ -15,24 +26,24 @@ const CATEGORY_SIZES = '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw'
  * choisir la variante - un téléphone ne télécharge pas l'image d'un grand écran.
  */
 export const HOME_IMAGES = {
-  hero: { src: hero, srcSet: heroSrcSet, sizes: '(min-width: 1024px) 640px, 100vw' },
-  what1: { src: what1, srcSet: what1SrcSet, sizes: CATEGORY_SIZES },
-  what2: { src: what2, srcSet: what2SrcSet, sizes: CATEGORY_SIZES },
-  what3: { src: what3, srcSet: what3SrcSet, sizes: CATEGORY_SIZES },
-  trust: { src: confiance, srcSet: confianceSrcSet, sizes: '(min-width: 1024px) 45vw, 92vw' },
-  cta: { src: cta, srcSet: ctaSrcSet, sizes: '(min-width: 1024px) 40vw, 92vw' },
-  face1: { src: user1, srcSet: user1SrcSet, sizes: '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw' },
-  face2: { src: user2, srcSet: user2SrcSet, sizes: '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw' },
+  hero: { ...hero, sizes: '(min-width: 1024px) 640px, 100vw' },
+  what1: { ...what1, sizes: CATEGORY_SIZES },
+  what2: { ...what2, sizes: CATEGORY_SIZES },
+  what3: { ...what3, sizes: CATEGORY_SIZES },
+  trust: { ...confiance, sizes: '(min-width: 1024px) 45vw, 92vw' },
+  cta: { ...cta, sizes: '(min-width: 1024px) 40vw, 92vw' },
+  face1: { ...user1, sizes: FACE_SIZES },
+  face2: { ...user2, sizes: FACE_SIZES },
 };
 
 const ORDER = {
-  hero: hero,
-  categories: [what1, what2, what3],
-  trust: user1,
-  cta: user2,
+  hero: hero.src,
+  categories: [what1.src, what2.src, what3.src],
+  trust: user1.src,
+  cta: user2.src,
 };
 
-export const FEATURED_FACES = [hero, user1, user2];
+export const FEATURED_FACES = [hero.src, user1.src, user2.src];
 
 export const HOME_RESERVED = {
   upTo(section) {
