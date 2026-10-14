@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1156 474"
+  width="1156" height="474" role="img" aria-label="Cœur du modèle — comptes, profils, référentiels">
+  <rect width="1156" height="474" fill="#ffffff"/>
+  <g><path d="M368 171.75 H393.5 V353 H454" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M387 171.75 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M465 353 l-9 -5.5 M465 353 l-9 0 M465 353 l-9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="450" cy="353" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M368 287.75 H411 V353 H454" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M387 287.75 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/><circle cx="395" cy="287.75" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+          <path d="M465 353 l-9 -5.5 M465 353 l-9 0 M465 353 l-9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="450" cy="353" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M368 403.75 H428.5 V48.5 H454" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M387 403.75 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M465 48.5 l-9 -5.5 M465 48.5 l-9 0 M465 48.5 l-9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="450" cy="48.5" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M68 55.75 H31 V171.75 H68" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round" stroke-dasharray="4 3"/>
+          <path d="M87 55.75 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M79 171.75 l9 -5.5 M79 171.75 l9 0 M79 171.75 l9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="94" cy="171.75" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M68 128.25 H42 V353 H68" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round" stroke-dasharray="4 3"/>
+          <path d="M87 128.25 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M87 353 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/><circle cx="95" cy="353" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M68 287.75 H53 V403.75 H68" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round" stroke-dasharray="4 3"/>
+          <path d="M87 287.75 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M79 403.75 l9 -5.5 M79 403.75 l9 0 M79 403.75 l9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="94" cy="403.75" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M754 353 H785.3333333333334 V48.5 H840" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M773 353 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M851 48.5 l-9 -5.5 M851 48.5 l-9 0 M851 48.5 l-9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="836" cy="48.5" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+<g><path d="M754 353 H808.6666666666666 V179 H840" fill="none" stroke="#c4c7c5"
+            stroke-width="1.1" stroke-linejoin="round"/>
+          <path d="M773 353 l8 0" stroke="#5f6368" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M851 179 l-9 -5.5 M851 179 l-9 0 M851 179 l-9 5.5"
+     stroke="#5f6368" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="836" cy="179" r="3.2" fill="#fff" stroke="#5f6368" stroke-width="1.2"/>
+        </g>
+  <g opacity="1">
+    <rect x="68" y="16" width="300" height="79.5" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M68 23 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M68 44 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="80" y="35.5" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">TRADE_CATEGORIES</text>
+    <text x="80" y="54" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="80" y="68.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">name
+        <tspan fill="#80868b">text</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#a142f4" font-weight="700">UK</tspan></text><text x="80" y="83" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">sort_order
+        <tspan fill="#80868b">integer</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="68" y="117.5" width="300" height="108.5" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M68 124.5 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M68 145.5 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="80" y="137" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">TRADES</text>
+    <text x="80" y="155.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="80" y="170" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">name
+        <tspan fill="#80868b">text</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#a142f4" font-weight="700">UK</tspan></text><text x="80" y="184.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">sort_order
+        <tspan fill="#80868b">integer</tspan></text><text x="80" y="199" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">category_id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="80" y="213.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">created_at
+        <tspan fill="#80868b">timestamptz</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="68" y="248" width="300" height="79.5" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M68 255 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M68 276 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="80" y="267.5" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">CITIES</text>
+    <text x="80" y="286" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="80" y="300.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">name
+        <tspan fill="#80868b">text</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#a142f4" font-weight="700">UK</tspan></text><text x="80" y="315" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">sort_order
+        <tspan fill="#80868b">integer</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="68" y="349.5" width="300" height="108.5" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M68 356.5 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M68 377.5 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="80" y="369" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">ZONES</text>
+    <text x="80" y="387.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="80" y="402" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">name
+        <tspan fill="#80868b">text</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#a142f4" font-weight="700">UK</tspan></text><text x="80" y="416.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">sort_order
+        <tspan fill="#80868b">integer</tspan></text><text x="80" y="431" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">city_id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="80" y="445.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">created_at
+        <tspan fill="#80868b">timestamptz</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="454" y="16" width="300" height="224.5" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M454 23 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M454 44 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="466" y="35.5" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">USERS</text>
+    <text x="466" y="54" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">bigint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="466" y="68.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">role
+        <tspan fill="#80868b">user_role</tspan></text><text x="466" y="83" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">phone
+        <tspan fill="#80868b">text</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#a142f4" font-weight="700">UK</tspan></text><text x="466" y="97.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">password_hash
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="112" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">first_name
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="126.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">last_name
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="141" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">consented_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="466" y="155.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">created_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="466" y="170" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">avatar_url
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="184.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">blocked_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="466" y="199" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">suspended_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="466" y="213.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">email
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="228" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">terms_version
+        <tspan fill="#80868b">text</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="454" y="262.5" width="300" height="181" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M454 269.5 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M454 290.5 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="466" y="282" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">PROFESSIONALS</text>
+    <text x="466" y="300.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">user_id
+        <tspan fill="#80868b">bigint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan><tspan fill="#c4c7c5"> </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="466" y="315" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">display_name
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="329.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">trade_id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="466" y="344" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">description
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="358.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">years_experience
+        <tspan fill="#80868b">smallint</tspan></text><text x="466" y="373" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">whatsapp
+        <tspan fill="#80868b">text</tspan></text><text x="466" y="387.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">is_available
+        <tspan fill="#80868b">boolean</tspan></text><text x="466" y="402" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">is_hidden
+        <tspan fill="#80868b">boolean</tspan></text><text x="466" y="416.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">updated_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="466" y="431" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">city_id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="840" y="16" width="300" height="65" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M840 23 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M840 44 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="852" y="35.5" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">PROFESSIONAL_ZONES</text>
+    <text x="852" y="54" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">professional_id
+        <tspan fill="#80868b">bigint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan><tspan fill="#c4c7c5"> </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="852" y="68.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">zone_id
+        <tspan fill="#80868b">smallint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan><tspan fill="#c4c7c5"> </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text>
+  </g>
+<g opacity="1">
+    <rect x="840" y="103" width="300" height="152" rx="7"
+      fill="#ffffff" stroke="#dadce0" stroke-width="1"/>
+    <path d="M840 110 a7 7 0 0 1 7 -7
+      h286 a7 7 0 0 1 7 7
+      v21 h-300 z" fill="#f1f3f4"/>
+    <path d="M840 131 h300" stroke="#e8eaed" stroke-width="1"/>
+    <text x="852" y="122.5" font-size="11.5" font-weight="700"
+      fill="#202124" font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">PHOTOS</text>
+    <text x="852" y="141" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">id
+        <tspan fill="#80868b">bigint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#1967d2" font-weight="700">PK</tspan></text><text x="852" y="155.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">professional_id
+        <tspan fill="#80868b">bigint</tspan><tspan fill="#c4c7c5"> · </tspan><tspan fill="#188038" font-weight="700">FK</tspan></text><text x="852" y="170" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">file_path
+        <tspan fill="#80868b">text</tspan></text><text x="852" y="184.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">thumb_path
+        <tspan fill="#80868b">text</tspan></text><text x="852" y="199" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">caption
+        <tspan fill="#80868b">varchar(100)</tspan></text><text x="852" y="213.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">created_at
+        <tspan fill="#80868b">timestamptz</tspan></text><text x="852" y="228" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">title
+        <tspan fill="#80868b">varchar(100)</tspan></text><text x="852" y="242.5" font-size="10" fill="#3c4043"
+        font-family="Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" opacity="1">description
+        <tspan fill="#80868b">varchar(500)</tspan></text>
+  </g>
+</svg>
