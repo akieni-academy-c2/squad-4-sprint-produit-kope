@@ -2,16 +2,26 @@ import { Briefcase, Calendar, MapPin, MapPinned, Star } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { Separator } from '@/shared/components/ui/Separator.jsx';
-import { formatDateFr } from '@/shared/utils';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery.js';
+import { formatDateFrShort } from '@/shared/utils';
 import { ReportTrigger } from '../ReportDialog.jsx';
-import { CITY, initialsOf } from './profileView.js';
+import { ABOUT_FALLBACK, ABOUT_HEADING, CITY, initialsOf } from './profileView.js';
+import { TagList } from './TagList.jsx';
 import { STICKY_TOP } from '@/shared/lib/constants.js';
 
-function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName }) {
+
+function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName, priority = false }) {
   return (
     <div className={`shrink-0 overflow-hidden bg-gray-100 ${wrapperClassName}`}>
       {src ? (
-        <img src={src} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+        <img
+          src={src}
+          alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <span className={`flex h-full w-full items-center justify-center font-extrabold text-primary-700 ${fallbackClassName}`}>
           {initialsOf(name)}
@@ -22,10 +32,14 @@ function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName }) {
 }
 
 export function PublicProfileSidebar({ profile, view, isVisitorView, onReportClick }) {
-  const { tradeName, zones, tags, avg, count, avatarSrc } = view;
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const { tradeName, zones, tags, avg, count, avatarSrc, hasAbout } = view;
+
+
+  if (!isDesktop) return null;
 
   return (
-    <aside className="hidden min-w-0 space-y-6 lg:block lg:self-stretch">
+    <aside className="min-w-0 space-y-4 lg:self-stretch">
       <Card className="space-y-3.5 p-4">
         <div className="flex items-center gap-3">
           <Avatar
@@ -34,6 +48,7 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
             alt={profile.displayName}
             wrapperClassName="h-16 w-16 rounded-md"
             fallbackClassName="text-xl"
+            priority
           />
 
           <div className="min-w-0 flex-1 space-y-1.5">
@@ -59,7 +74,7 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
           {profile.yearsExperience != null && (
             <div className="flex items-center justify-between gap-3">
               <dt className="flex items-center gap-2 text-gray-500">
-                <Briefcase size={14} className="shrink-0 text-gray-400" aria-hidden />
+                <Briefcase size={14} className="shrink-0 text-gray-500" aria-hidden />
                 Expérience
               </dt>
               <dd className="font-semibold text-gray-900">
@@ -69,14 +84,14 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
           )}
           <div className="flex items-center justify-between gap-3">
             <dt className="flex items-center gap-2 text-gray-500">
-              <Star size={14} className="shrink-0 text-gray-400" aria-hidden />
+              <Star size={14} className="shrink-0 text-gray-500" aria-hidden />
               Note moyenne
             </dt>
             <dd className="font-semibold text-gray-900">
               {count > 0 ? (
                 <span className="inline-flex items-center gap-1">
                   {avg.toFixed(1)}
-                  <span className="font-normal text-gray-400">/ 5</span>
+                  <span className="font-normal text-gray-500">/ 5</span>
                   <span className="text-xs font-normal text-gray-500">({count})</span>
                 </span>
               ) : (
@@ -88,14 +103,14 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
             <>
               <div className="flex items-center justify-between gap-3">
                 <dt className="flex items-center gap-2 text-gray-500">
-                  <MapPin size={14} className="shrink-0 text-gray-400" aria-hidden />
+                  <MapPin size={14} className="shrink-0 text-gray-500" aria-hidden />
                   Ville
                 </dt>
                 <dd className="truncate font-semibold text-gray-900">{CITY}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="flex items-center gap-2 text-gray-500">
-                  <MapPinned size={14} className="shrink-0 text-gray-400" aria-hidden />
+                  <MapPinned size={14} className="shrink-0 text-gray-500" aria-hidden />
                   Zones
                 </dt>
                 <dd className="truncate font-semibold text-gray-900" title={zones.join(', ')}>
@@ -112,48 +127,46 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
 
       <section className="space-y-3">
         <div className="flex items-baseline justify-between gap-3 px-1">
-          <h2 className="text-sm font-bold text-gray-900">À propos</h2>
+          <h2 className="text-sm font-bold text-gray-900">{ABOUT_HEADING}</h2>
           {profile.createdAt && (
-            <span className="flex items-center gap-1.5 text-xs text-gray-400">
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
               <Calendar size={13} className="shrink-0" aria-hidden />
-              {formatDateFr(profile.createdAt)}
+              {formatDateFrShort(profile.createdAt)}
             </span>
           )}
         </div>
-        <Card className="space-y-4 p-4 bg-primary-100!">
-          {profile.description && (
-            <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
-          )}
-          {(zones.length > 0 || tags.length > 0) && <Separator />}
-          {zones.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Zones d'intervention</p>
-              <div className="flex flex-wrap gap-1.5">
-                {zones.map((zone) => (
-                  <Badge key={zone} variant="neutral" size="sm">
-                    <MapPin size={11} aria-hidden />
-                    {zone}
-                  </Badge>
-                ))}
+        {hasAbout ? (
+          <Card className="space-y-4 p-4 bg-primary-100!">
+            {profile.description && (
+              <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
+            )}
+            {(zones.length > 0 || tags.length > 0) && <Separator />}
+            {zones.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Zones d'intervention</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {zones.map((zone) => (
+                    <Badge key={zone} variant="neutral" size="sm">
+                      <MapPin size={11} aria-hidden />
+                      {zone}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-          {tags.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Spécialités</p>
-              <div className="flex flex-wrap gap-1.5">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="" size="sm">
-                    {tag}
-                  </Badge>
-                ))}
+            )}
+            {tags.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Spécialités</p>
+                <TagList tags={tags} />
               </div>
-            </div>
-          )}
-        </Card>
+            )}
+          </Card>
+        ) : (
+          <p className="px-1 text-sm text-gray-500">{ABOUT_FALLBACK}</p>
+        )}
       </section>
 
-      <Card className={`hidden items-center gap-3 p-3 ${STICKY_TOP} lg:flex`}>
+      <Card className={`flex items-center gap-3 p-3 ${STICKY_TOP}`}>
         <Avatar
           src={avatarSrc}
           name={profile.displayName}
@@ -171,17 +184,13 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
               {avg.toFixed(1)}
             </p>
           )}
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-gray-500">
             {count > 0 ? `${count} avis` : profile.isAvailable ? 'Disponible' : 'Indisponible'}
           </p>
         </div>
       </Card>
 
-      {isVisitorView && (
-        <div className="hidden lg:block">
-          <ReportTrigger onClick={onReportClick} />
-        </div>
-      )}
+      {isVisitorView && <ReportTrigger onClick={onReportClick} />}
     </aside>
   );
 }

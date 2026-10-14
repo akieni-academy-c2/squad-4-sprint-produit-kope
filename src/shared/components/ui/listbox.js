@@ -4,11 +4,7 @@ export function toOption(raw) {
   return typeof raw === 'string' ? { value: raw, label: raw } : raw;
 }
 
-/**
- * Navigation clavier commune aux listes déroulantes (listbox).
- * Garantit ArrowDown / ArrowUp / Home / End / Enter / Espace / Échap / Tab,
- * quel que soit le composant qui l'utilise.
- */
+
 export function useListboxNavigation({
   open,
   itemCount,

@@ -10,13 +10,7 @@ const LABELS = {
   consent: 'le consentement',
 };
 
-/**
- * Libellé du premier champ encore incomplet, dans l'ordre du formulaire.
- *
- * Sert d'instruction sur le bouton désactivé : un bouton grisé sans dire quoi
- * corriger est une impasse. Volontairement bref - un bouton n'accueille pas
- * une phrase. `null` signifie que tout est rempli.
- */
+
 export function firstMissingField(statuses, order = []) {
   for (const field of order)
     if (statuses[field] && statuses[field] !== FIELD_STATUS.OK)
@@ -27,6 +21,5 @@ export function firstMissingField(statuses, order = []) {
 
 export function submitLabel(statuses, order, readyLabel) {
   const missing = firstMissingField(statuses, order);
-  // Sans guillemets : « le mot de passe » ferait 29 caractères et déborde.
   return missing ? `Complétez ${missing}` : readyLabel;
 }

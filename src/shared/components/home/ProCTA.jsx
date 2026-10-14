@@ -35,8 +35,6 @@ export function ProCTA({ imageLeft = false } = {}) {
 <ImageWithSkeleton
                 src={cta}
                 alt="Devenir prestataire KOP"
-                // 4/3 plutôt que 16/9 : la section est haute et l'image doit
-                // occuper de la hauteur sur mobile comme sur grand écran.
                 ratio="aspect-4/3"
                 className="rounded-[16px]"
               />

@@ -5,7 +5,7 @@ const ORIENTATIONS = {
   vertical: 'h-full w-px',
 };
 
-/** Séparateur shadcn/ui : `<Separator />` horizontal, `<Separator orientation="vertical" />` vertical. */
+
 export function Separator({ orientation = 'horizontal', className, ...rest }) {
   return (
     <div

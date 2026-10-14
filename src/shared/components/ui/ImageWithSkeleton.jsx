@@ -6,15 +6,7 @@ const LOADING = 'loading';
 const LOADED = 'loaded';
 const FAILED = 'failed';
 
-/**
- * Image encadrée par un squelette de chargement.
- *
- * Le squelette porte la même classe de ratio que l'image : la hauteur est
- * réservée avant le téléchargement, donc aucun saut de mise en page.
- *
- * L'état est local à chaque instance. Un drapeau global ferait scintiller toute
- * la page dès que la première image se chargeait.
- */
+
 export function ImageWithSkeleton({
   src,
   alt,
@@ -33,9 +25,6 @@ export function ImageWithSkeleton({
     setStatus(src ? LOADING : FAILED);
   }
 
-  // Une image déjà en cache peut être décodée avant que React n'abonne
-  // `onLoad` : l'événement ne se déclencherait jamais, le squelette resterait
-  // épinglé sur une image déjà visible.
   const attachImage = useCallback((node) => {
     if (node?.complete && node.naturalWidth > 0) setStatus(LOADED);
   }, []);

@@ -24,7 +24,6 @@ export function ChangePasswordForm({ bare = false } = {}) {
     return { status: matches ? FIELD_STATUS.OK : FIELD_STATUS.NEAR, missing: matches ? 0 : 1, total: 1 };
   }, [confirmPassword, newPassword]);
 
-  // Bouton actif seulement quand les trois champs sont conformes.
   const ready =
     currentPassword.length > 0 &&
     newStatus.status === FIELD_STATUS.OK &&

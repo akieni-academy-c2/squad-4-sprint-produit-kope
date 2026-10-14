@@ -11,18 +11,7 @@ const controlClasses = (error) =>
     error ? "is-invalid border-danger-500" : "border-gray-300",
   );
 
-/**
- * Identifiants annoncés par le déclencheur.
- *
- * `-help` et non `-hint` : `FormField` rend le texte d'aide avec cet
- * suffixe. Un suffixe différent produisait un `aria-describedby` pointant
- * dans le vide - l'indication n'était donc jamais annoncée, sans erreur et
- * sans avertissement.
- *
- * Les deux identifiants sont posés par le parent, pas déduits : c'est
- * `FormField` qui décide des suffixes, dupliquer la convention ici la ferait
- * diverger à nouveau.
- */
+
 const describedBy = (id, { hint, error }) => {
   const ids = [error ? `${id}-error` : null, hint ? `${id}-help` : null].filter(Boolean);
   return ids.length ? ids.join(' ') : undefined;
@@ -176,15 +165,11 @@ export function MultiSelect({
             id={listId}
             role="listbox"
             aria-multiselectable="true"
-            // Le patron ARIA combobox nomme la liste par le déclencheur, qui
-            // porte déjà le libellé du champ. Le recopier en texte ici
-            // produisait un nom en double dans l'arbre d'accessibilité.
             aria-labelledby={id}
             style={{ maxHeight: maxH }}
             className={cn(
               "absolute left-0 right-0 z-50 overflow-auto rounded-md border border-gray-200 bg-white p-1.5 shadow-lg",
               placeAbove ? "bottom-full mb-1" : "top-full mt-1",
-              // Même animation d'apparition que le menu du header (animate-scale-in).
               "animate-scale-in origin-top motion-reduce:animate-none",
               placeAbove ? "origin-bottom" : "origin-top",
             )}

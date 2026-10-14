@@ -8,9 +8,6 @@ import {
 } from '../services/reference.service.js';
 
 export function useReferenceData() {
-  // Le cache est lu de façon synchrone pour que le premier rendu affiche les
-  // données disponibles. Sans cela, le hook démarre à vide et l'interface
-  // affiche des squelettes même quand la réponse est déjà en mémoire.
   const cached = peekReferenceData();
   const hasCache = Boolean(cached.trades && cached.zones && cached.cities);
 

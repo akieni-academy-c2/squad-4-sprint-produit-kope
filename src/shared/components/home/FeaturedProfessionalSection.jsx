@@ -6,7 +6,6 @@ import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { ProfessionalCard } from '@/features/professionals/components/ProfessionalCard.jsx';
 import { searchProfessionals } from '@/features/search/services/search.service.js';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { ROUTES } from '@/shared/lib/constants.js';
 import { FEATURED_FACES } from '@/shared/content/homeImages.js';
 
 const HIGHLIGHT_COUNT = 3;
@@ -27,7 +26,7 @@ export function FeaturedProfessionalSection() {
           title="Des visages derrière chaque métier."
           intro="Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les professionnels de votre quartier et échangez directement avec eux."
         >
-          <Button as={Link} href={ROUTES.SEARCH} variant="outline" size="md" className="bg-transparent! border-gray-400!">
+          <Button as={Link} href="#" variant="outline" size="md" className="bg-transparent! border-gray-400!">
             Explorer les professionnels <ArrowRight size={16} aria-hidden className="inline" />
           </Button>
         </SectionHeader>

@@ -2,17 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { IMAGES } from '@/shared/assets/placeholders.js';
 import { MOCK_PROS } from '@/shared/mocks/appMock.js';
 
-/**
- * Visuels des professionnels de démonstration.
- *
- * Deux contraintes se contredisent si on n'y fait pas attention :
- *   - la démonstration doit rester utilisable hors ligne, donc ne pas
- *     appeler un service externe pour chaque carte ;
- *   - deux professionnels différents ne doivent jamais partager la même image.
- *
- * Le piège : alterner sur un pas de 2 puis indexer un stock de 6 sur le même
- * pas redonne trois images en double. Ces tests verrouillent les deux règles.
- */
+
 const isRemote = (url) => /^https?:\/\//.test(url);
 
 describe('Visuels des professionnels de démonstration', () => {
@@ -23,8 +13,6 @@ describe('Visuels des professionnels de démonstration', () => {
   });
 
   it('mélange service distant et visuels du projet', () => {
-    // Un catalogue entièrement distant casserait la démonstration hors ligne ;
-    // un catalogue entièrement local ne montrerait pas les personas.
     const remote = MOCK_PROS.filter((pro) => isRemote(pro.avatarUrl)).length;
 
     expect(remote).toBeGreaterThan(0);
@@ -39,8 +27,6 @@ describe('Visuels des professionnels de démonstration', () => {
   });
 
   it('n\'emploie que des visuels du stock du projet', () => {
-    // Ces visuels sont déjà servis sur la home : les réemployer dans les
-    // résultats de recherche ferait croire à des profils identiques.
     const local = MOCK_PROS.filter((pro) => !isRemote(pro.avatarUrl)).map((pro) => pro.avatarUrl);
 
     expect(local.every((url) => IMAGES.includes(url))).toBe(true);

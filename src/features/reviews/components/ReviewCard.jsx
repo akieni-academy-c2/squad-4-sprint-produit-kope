@@ -8,37 +8,6 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { formatDateFr } from '@/shared/utils';
 
-/**
- * Carte d'un avis, partagée par le compte client et l'espace professionnel.
- *
- * Un professionnel est aussi un client : il dépose des avis sur d'autres
- * professionnels et doit les retrouver dans le même espace, avec les mêmes
- * gestes. Deux implémentations auraient divergé au premier ajustement - et
- * c'est ce qui s'était produit avant que ce composant existe.
- *
- * Les actions sont adaptatives :
- *   - un avis masqué se démasque ou se supprime, il ne se modifie plus. Un
- *     avis absent de la fiche publique n'a plus d'affichage à corriger, et
- *     garder « Modifier » laisserait croire qu'on peut encore travailler un
- *     texte que personne ne voit ;
- *   - « Signaler » n'a de sens que sur un avis reçu, jamais sur le sien.
- *
- * ## Pourquoi la confirmation vit ici, et pas chez l'appelant
- *
- * Masquer et supprimer sont les deux seules actions de cette carte qu'on ne
- * peut pas reprendre : le texte d'un avis supprimé n'existe plus, celui d'un
- * avis masqué disparaît de toutes les fiches publiques.
- *
- * Tant que la demande de confirmation était laissée aux sections qui rendent la
- * carte, chacune pouvait l'oublier - et il suffisait d'en oublier une pour que
- * la règle ne vaille plus nulle part. Elle est donc appliquée **dans** la carte :
- * un nouvel appelant reçoit la garantie sans avoir à la réécrire, et le test qui
- * vérifie la règle porte sur le composant qui l'applique.
- *
- * « Réafficher » reste immédiat : l'avis est déjà dans l'espace du lecteur, on
- * ne fait que le remettre en ligne, et une confirmation là serait un obstacle
- * à corriger une erreur de clic.
- */
 export function ReviewCard({
   name,
   avatarUrl,
@@ -54,7 +23,6 @@ export function ReviewCard({
   onDelete,
   onReport,
 }) {
-  // null | 'hide' | 'reveal' | 'delete' - ce qui attend une confirmation.
   const [asking, setAsking] = useState(null);
 
   const confirm = () => {
@@ -71,8 +39,6 @@ export function ReviewCard({
           <UserAvatar className="h-10 w-10 shrink-0" src={avatarUrl} name={name} />
           <div className="min-w-0">
             <p className="truncate font-semibold text-gray-900">{name}</p>
-            {/* Le métier dit de qui on parle : deux professionnels peuvent
-                porter le même prénom. */}
             {tradeName && <p className="truncate text-xs text-gray-500">{tradeName}</p>}
           </div>
         </div>
@@ -134,12 +100,6 @@ export function ReviewCard({
         </ActionGroup>
       </div>
 
-      {/*
-        Le titre porte l'objet et non le verbe : « Supprimer » seul ne dit pas
-        ce qui disparaît. La description dit ce que la perte est concrète, pour
-        qu'on puisse décider - « définitivement » pour une suppression, ce qui
-        n'est pas vrai d'un masquage.
-      */}
       <ConfirmDialog
         open={asking === 'delete'}
         danger

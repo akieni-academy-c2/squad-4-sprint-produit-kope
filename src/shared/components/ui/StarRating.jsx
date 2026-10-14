@@ -41,8 +41,6 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
           key={n}
           value={n}
           label={null}
-          // Tailwind v4 a déplacé le modificateur important en suffixe :
-          // `!p-0` ne correspond à aucune utilitaire et ne produit aucun CSS.
           className="p-0! bg-transparent! ring-0! gap-0!"
           aria-label={`${n} étoile${n > 1 ? 's' : ''}`}
         >
@@ -54,9 +52,6 @@ function Stars({ count = 5, value = 0, onChange, size = 'md', readOnly = false }
 }
 
 function Star({ filled, half, className }) {
-  // `kop-star-half` en dur produisait autant d'ids DOM identiques qu'il y a
-  // d'étoiles rendues : le navigateur servait le dégradé de la première pour
-  // toutes. useId garantit l'unicité par instance.
   const halfId = `kop-star-half-${useId().replace(/:/g, '')}`;
   return (
     <svg

@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 
-// Le middleware compte désormais en base. On force le store mémoire pour tester
-// la logique du limiteur sans dépendre de PostgreSQL (le comportement commun
-// est couvert par tests/sql-live.test.js).
 beforeAll(() => {
   process.env.RATE_LIMIT_STORE = 'memory';
 });
@@ -17,11 +14,7 @@ function mockRes() {
   return res;
 }
 
-/**
- * Le middleware lève `ApiError` plutôt que d'écrire la réponse lui-même :
- * `errorHandler` est le seul point qui décide du corps d'erreur et du statut.
- * La promesse résout donc avec le refus, pas avec un appel à `res.json`.
- */
+
 async function call(mw, req) {
   const res = mockRes();
   let nextCalled = false;

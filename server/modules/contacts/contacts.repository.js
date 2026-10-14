@@ -29,22 +29,7 @@ export async function create({ senderId, recipientId, message, channel = 'messag
   return rows[0];
 }
 
-export async function existsPair(senderId, recipientId, db = pool) {
-  const { rowCount } = await db.query(
-    'SELECT 1 FROM contacts WHERE sender_id = $1 AND recipient_id = $2',
-    [senderId, recipientId],
-  );
-  return rowCount > 0;
-}
 
-/**
- * Les deux comptes ont-ils déjà eu un contact, quel que soit le sens ?
- *
- * `existsPair` ne teste qu'un sens : un client qui a écrit à un professionnel
- * ne l'a pas dans l'autre sens. C'est ici qu'on prouve qu'une conversation
- * existe vraiment avant d'autoriser un signalement depuis la liste des
- * contacts.
- */
 export async function hasContactBetween(userA, userB, db = pool) {
   const { rowCount } = await db.query(
     `SELECT 1 FROM contacts

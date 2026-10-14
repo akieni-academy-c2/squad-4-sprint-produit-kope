@@ -52,11 +52,8 @@ describe('utilitaires du catalogue admin', () => {
     });
 
     it('insère un clone « preview » à la position d’arrivée', () => {
-      // Dans le groupe source, la carte d'origine sert elle-même d'indicateur :
-      // c'est le clone `preview` qui marque la position d'arrivée.
       const entries = displayEntries(cards([1, 2, 3]), { id: 3 }, { key: 1, index: 0 }, 1);
       expect(states(entries)).toEqual(['3:preview', '1:normal', '2:normal', '3:dragging']);
-      // Le clone et la source portent des clés distinctes, sinon React les confond.
       expect(keys(entries)).toEqual(['preview-3', 1, 2, 3]);
     });
 
@@ -78,7 +75,6 @@ describe('utilitaires du catalogue admin', () => {
     });
 
     it('décale les index situés après le trou', () => {
-      // Le trou laissé par la source décale d'un cran tout ce qui suit.
       expect(destinationIndex(cards([1, 2, 3]), 2, { id: 1 })).toBe(1);
       expect(destinationIndex(cards([1, 2, 3]), 1, { id: 1 })).toBe(0);
     });

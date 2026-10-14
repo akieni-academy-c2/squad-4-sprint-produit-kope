@@ -13,8 +13,6 @@ import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/
 import { deleteReview, getMyReviews, setReviewVisibility } from '../services/reviews.service.js';
 import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
-// Page assez courte pour que la liste reste lisible sans défilement interminable,
-// assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
 const PAGE_SIZE = 10;
 
 const VISIBILITY_OPTIONS = [
@@ -65,8 +63,6 @@ export function MyReviewsSection({ rightContainer = null }) {
   );
   const total = data?.total ?? 0;
 
-  // Changer un filtre ramène en première page : rester sur la page 3 d'un
-  // résultat filtré affiche un vide alors que des avis existent.
   const changeFilter = (setter) => (value) => {
     setter(value);
     setPage(1);
@@ -76,8 +72,6 @@ export function MyReviewsSection({ rightContainer = null }) {
 
   const refresh = () => setReload((n) => n + 1);
 
-  // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
-  // conditionne l'affichage du bouton « Réinitialiser » du panneau.
   const dirty = Boolean(q || rating || visibility !== 'all' || sort !== 'recent');
 
   const resetFilters = () => {

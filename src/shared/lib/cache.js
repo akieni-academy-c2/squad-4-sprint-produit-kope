@@ -1,4 +1,3 @@
-// Cache mémoire minimal avec TTL (évite les refetchs inutiles entre rendus).
 const store = new Map();
 
 export function cacheGet(key) {

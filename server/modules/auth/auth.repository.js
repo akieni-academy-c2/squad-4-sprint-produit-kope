@@ -14,9 +14,6 @@ export async function updateAccount(userId, { firstName, lastName, phone, email 
       WHERE id = $1
   RETURNING id, role, phone, email,
             first_name AS "firstName", last_name AS "lastName"`,
-    // L'e-mail est le seul champ effaçable : `COALESCE` interdirait de le
-    // retirer, `email` prend donc la valeur telle quelle - `null` pour vider,
-    // une chaîne pour la poser. Les autres restent inchangés si absents.
     [userId, firstName ?? null, lastName ?? null, phone ?? null, email ?? null],
   );
   return rows[0] ?? null;
@@ -43,11 +40,7 @@ export async function findByPhone(phone, db = pool) {
   return rows[0] ?? null;
 }
 
-/**
- * Relit l'état du compte en base : rôle courant, blocage et suspension.
- * Une seule requête remplace les contrôles séparés, et évite de faire
- * confiance au rôle figé dans le access token.
- */
+
 export async function getAccountState(id, db = pool) {
   const { rows } = await db.query(
     'SELECT role, blocked_at AS "blockedAt", suspended_at AS "suspendedAt" FROM users WHERE id = $1',

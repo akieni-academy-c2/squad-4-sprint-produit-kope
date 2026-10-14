@@ -1,16 +1,11 @@
 -- Cibles de signalement : un compte, pas un professionnel.
 --
--- La clé étrangère liait `professional_id` à la table `professionals`. Un
--- client n'y a pas de ligne : il était structurellement impossible à signaler.
--- On garde le nom de colonne - il désigne bien le compte visé, et le renommer
--- toucherait le repository d'administration, l'espace client et la file de
--- modération pour rien - mais la cible devient un `users`.
+-- La cible devient un `users` : un client n'a pas de ligne dans `professionals` et
+-- était donc structurellement impossible à signaler. Le nom de colonne est gardé,
+-- il désigne bien le compte visé.
 --
--- `target_role` dit au lecteur à quel type de compte la ligne s'applique. Il
--- n'est pas déductible du compte visé : un client peut devenir professionnel
--- (`users.role` change), et un signalement déposé hier contre un client reste
--- un signalement contre un client. C'est le rôle **au moment du signalement**
--- qui compte, figé ici.
+-- `target_role` fige le rôle au moment du signalement : il n'est pas déductible du
+-- compte visé, dont `users.role` peut changer ensuite.
 ALTER TABLE account_reports
   ADD COLUMN target_role text NOT NULL DEFAULT 'professional'
     CHECK (target_role IN ('client', 'professional'));
@@ -34,13 +29,10 @@ CREATE INDEX account_reports_professional_idx ON account_reports (professional_i
 
 -- Signalements d'avis.
 --
--- Table distincte de `account_reports` : la cible est un contenu, pas un
--- compte. Les deux flux de modération n'ont ni les mêmes effets ni les mêmes
--- acteurs - un avis se retire, un compte se suspend - et les confondre ferait
--- porter à l'un les compteurs de l'autre.
---
--- Pas de seuil de blocage automatique ici, contrairement aux signalements de
--- compte : voir la note sur les seuils dans le service.
+-- Table distincte de `account_reports` : la cible est un contenu, pas un compte.
+-- Les deux flux n'ont ni les mêmes effets ni les mêmes acteurs - un avis se
+-- retire, un compte se suspend - et les confondre ferait porter à l'un les
+-- compteurs de l'autre. Pas de seuil de blocage automatique ici.
 CREATE TABLE review_reports (
   id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   review_id   bigint NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,

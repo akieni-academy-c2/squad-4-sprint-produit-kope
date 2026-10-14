@@ -6,8 +6,6 @@ export function listReviews(professionalId, { page = 1, pageSize = 10 } = {}) {
   return callApi(
     () => api.get(`/professionals/${professionalId}/reviews`, { page, pageSize }),
     async () => {
-      // Un avis masqué par un administrateur n'est ni affiché ni compté, comme
-      // côté serveur.
       const all = mockReviewsFor(professionalId).filter((r) => !r.isHidden);
       const items = all.slice((page - 1) * pageSize, page * pageSize);
       const average = all.length
@@ -47,7 +45,6 @@ export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalI
   );
 }
 
-/** Correction d'un avis. La note est renvoyée en entier par le sélecteur. */
 export function updateReview(reviewId, payload) {
   return callApi(
     () => api.patchJson(`/reviews/${reviewId}`, payload).then((r) => r.review),
@@ -55,7 +52,6 @@ export function updateReview(reviewId, payload) {
   );
 }
 
-/** Masque ou réaffiche un avis sans toucher à son texte. */
 export function setReviewVisibility(reviewId, isHidden) {
   return callApi(
     () => api.patchJson(`/reviews/${reviewId}/visibility`, { isHidden }).then((r) => r.review),

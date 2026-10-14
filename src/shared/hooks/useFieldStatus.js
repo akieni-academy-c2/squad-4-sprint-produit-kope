@@ -1,11 +1,7 @@
 import { useMemo } from 'react';
 import { validateFrontend } from '@/shared/utils/validators.js';
 
-/**
- * Règles de mot de passe, dupliquées côté client pour un retour immédiat.
- * Le serveur les réapplique : cette copie n'est qu'un confort d'ergonomie,
- * et toute divergence afficherait un état vert sur une valeur refusée.
- */
+
 export const PASSWORD_RULES = [
   { key: 'length', label: '8 caractères minimum', test: (v) => v.length >= 8 },
   {
@@ -20,34 +16,22 @@ export const PASSWORD_RULES = [
   },
 ];
 
-export const PASSWORD_MAX = 72;
-
 export function checkPassword(value) {
   const v = String(value ?? '');
   const rules = PASSWORD_RULES.map((rule) => ({ ...rule, passed: rule.test(v) }));
   return { rules, missing: rules.filter((r) => !r.passed).length, total: rules.length };
 }
 
-/** État d'un champ pendant la saisie : inactif, presque, ou bon. */
+
 export const FIELD_STATUS = {
   IDLE: 'idle',
   NEAR: 'near',
   OK: 'ok',
-  /** Saisie manifestement fausse : bordure rouge, pas d'invitation à continuer. */
+
   WRONG: 'wrong',
 };
 
-/**
- * Évalue un champ en direct et renvoie un état lisible.
- *
- * `validate` reçoit la valeur et renvoie soit `null` (correct), soit un
- * message. `rules` distingue « il manque une exigence » d'une saisie fausse :
- * des lettres dans un numéro de téléphone ne sont pas un presque, c'est une
- * erreur - l''utilisateur ne pourra jamais valider en ajoutant un chiffre.
- *
- * Rien n'est affiché tant que le champ est vide : reprocher une erreur avant
- * même la première frappe est le meilleur moyen d'agacer.
- */
+
 export function useFieldStatus(validate, value, { rules = null } = {}) {
   return useMemo(() => {
     if (!value || String(value).trim() === '') return { status: FIELD_STATUS.IDLE, missing: 0, total: 0 };
@@ -74,10 +58,7 @@ export function useFieldStatus(validate, value, { rules = null } = {}) {
   }, [validate, value, rules]);
 }
 
-/**
- * Valide un champ isolé avec un schéma Zod complet.
- * `wrongOn` indique les saisies qu'aucune correction ne rendra valides.
- */
+
 export function fieldValidator(schema, field, wrongOn = null) {
   const validate = (value) => {
     const { success, errors } = validateFrontend(schema, { [field]: value });

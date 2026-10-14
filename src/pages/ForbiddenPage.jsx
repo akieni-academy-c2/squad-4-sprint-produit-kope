@@ -7,8 +7,6 @@ import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
 export function ForbiddenPage() {
   const navigate = useNavigate();
 
-  // Page d'erreur : absente du sitemap et interdite aux robots. Le titre sert
-  // surtout au visiteur qui atterrit par un lien périmé.
   usePageTitle('Accès refusé');
   return (
     <div className="mx-auto flex min-h-[55vh] max-w-xl flex-col items-center justify-center text-center">

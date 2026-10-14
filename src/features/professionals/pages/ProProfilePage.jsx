@@ -17,8 +17,6 @@ import { ProfileErrorState, ProfileLoadingState } from '../components/ProfileSta
 import { ProSidebar } from '../components/ProSidebar.jsx';
 import { PublicationStatus } from '../components/PublicationStatus.jsx';
 
-// Le profil ferme la liste, comme dans l'espace client : le compte se parcourt
-// du plus utile au plus administratif.
 const NAV_ITEMS = [
   { id: 'overview', label: 'Vue d’ensemble', shortLabel: 'Aperçu', icon: LayoutDashboard },
   { id: 'photos', label: 'Mes réalisations', shortLabel: 'Réalis.', icon: ImageIcon },
@@ -28,10 +26,6 @@ const NAV_ITEMS = [
   { id: 'profil', label: 'Mon profil', shortLabel: 'Profil', icon: User },
 ];
 
-// Sections qui portent des filtres : seules celles-là occupent la colonne de
-// droite, comme dans l'espace client et l'espace admin. Aperçu et profil n'en
-// ont pas, la grille retombe alors à deux colonnes. Les photos n'ont pas de
-// panneau : elles se parcourent d'un regard, un filtre n'y apporterait rien.
 const WITH_FILTERS = new Set(['contacts', 'avis', 'signalements']);
 
 export function ProProfilePage() {
@@ -46,8 +40,6 @@ export function ProProfilePage() {
     setSavingAvailability(true);
     try {
       const isAvailable = await setAvailability(Boolean(next));
-      // Mise à jour locale plutôt qu'un rechargement complet : basculer un
-      // interrupteur ne doit pas faire clignoter toute la page.
       mutate((p) => ({ ...(p ?? {}), isAvailable }));
       toast({ message: `Disponibilité : ${isAvailable ? 'Disponible' : 'Indisponible'}`, type: 'info' });
     } catch (err) {

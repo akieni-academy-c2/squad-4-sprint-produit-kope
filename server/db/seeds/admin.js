@@ -8,26 +8,24 @@ async function main() {
   if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8)
     throw new Error('ADMIN_PHONE (numéro valide) et ADMIN_PASSWORD (8 caractères min.) sont requis dans .env');
 
+  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, env.BCRYPT_ROUNDS);
 
-  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 10);
-  // DO NOTHING silencieusement : si le numéro appartient déjà à un compte
-  // client ou professionnel, la connexion aboutit mais /admin répond 403 sans
-  // explication. On promeut donc explicitement le compte existant.
   const { rows } = await pool.query(
-    `INSERT INTO users (role, phone, password_hash)
-     VALUES ('admin', $1, $2)
+    `INSERT INTO users (role, phone, password_hash, first_name, last_name)
+     VALUES ('admin', $1, $2, $3, $3)
      ON CONFLICT (phone) DO UPDATE
        SET role = 'admin',
-           password_hash = EXCLUDED.password_hash
+           password_hash = EXCLUDED.password_hash,
+           first_name = EXCLUDED.first_name
      RETURNING id, (xmax = 0) AS created`,
-    [phone, passwordHash],
+    [phone, passwordHash, env.ADMIN_NAME],
   );
 
   const { id, created } = rows[0];
   console.log(
     created
-      ? `Compte admin créé : ${phone} (#${id})`
-      : `Compte ${phone} (#${id}) promu en administrateur`,
+      ? `Compte admin « ${env.ADMIN_NAME} » créé : ${phone} (#${id})`
+      : `Compte ${phone} (#${id}) promu en administrateur « ${env.ADMIN_NAME} »`,
   );
 }
 

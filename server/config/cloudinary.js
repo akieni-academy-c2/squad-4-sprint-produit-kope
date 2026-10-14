@@ -14,7 +14,7 @@ if (useCloud)
   });
 
 
-export const publicId = (relativePath) =>
+const publicId = (relativePath) =>
   `${env.CLOUDINARY_FOLDER}/${relativePath.replace(/\.jpg$/, '')}`;
 
 export function uploadBuffer(buffer, relativePath) {

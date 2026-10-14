@@ -33,14 +33,10 @@ export function UserMenu({ onNavigate }) {
     onNavigate?.();
   }, [onNavigate]);
 
-  // Même comportement que CustomSelect : le menu se ferme au clic sur
-  // n'importe quel élément extérieur, y compris ceux placés au-dessus
-  // de la superposition (modales, toast…).
   useDismissOnOutside(menuRef, close, { active: open });
 
   if (loading)
     return <div className="h-9 w-24 rounded-lg bg-gray-100 animate-pulse" />;
-
 
   if (!user)
     return (
@@ -53,7 +49,6 @@ export function UserMenu({ onNavigate }) {
         </Button>
       </div>
     );
-
 
   return (
     <div className="relative">
@@ -100,8 +95,6 @@ export function UserMenu({ onNavigate }) {
                 </Link>
               )}
               {isPro && proStatus === PROFILE_STATUS.PUBLISHED && (
-                // Prévisualisation, même règle que le bouton du tableau de bord :
-                // on veut comparer et revenir, pas perdre la page d'origine.
                 <Link
                   href={ROUTES.PROFESSIONAL(user.id)}
                   target="_blank"

@@ -4,12 +4,10 @@
 -- ------------------------------------------------------------------
 -- 1. Unicité de l'e-mail réellement insensible à la casse
 -- ------------------------------------------------------------------
--- 1759500000023_user_email.sql justifie son index par « la comparaison se
--- fait sur la version lower stockée » et son CHECK par « le CHECK refuse la
--- casse mélangée ». Aucune des deux affirmations n'était tenue : l'index porte
--- sur `email` tel quel, et le CHECK ne vérifie que le btrim et la longueur.
--- `Jean@x.com` et `jean@x.com` coexistent donc, et un même humain peut
--- ouvrir deux comptes sur la même adresse.
+-- 1759500000023_user_email.sql le justifie par « la comparaison se fait sur la
+-- version lower stockée », or l'index porte sur `email` tel quel et son CHECK ne
+-- vérifie que le btrim et la longueur : `Jean@x.com` et `jean@x.com` coexistent,
+-- et un même humain peut ouvrir deux comptes sur la même adresse.
 CREATE UNIQUE INDEX IF NOT EXISTS users_email_lower_unique
   ON users (lower(btrim(email)))
   WHERE email IS NOT NULL;
@@ -36,11 +34,9 @@ ALTER TABLE contacts
 -- ------------------------------------------------------------------
 -- 3. Index de session aligné sur la prédiction qui le parcourt
 -- ------------------------------------------------------------------
--- Le prédicat de 1759500000021 porte sur `sess->'user' IS NOT NULL`, qui
--- garantit la présence de la clé mais pas celle d'un `id` numérique.
--- sessions.repository.js fait `(sess->'user'->>'id')::bigint` : une session
--- sérialisée sans identifiant exploitable fait échouer le DELETE, et avec lui
--- la transaction de changement de mot de passe.
+-- Le prédicat de 1759500000021 garantit la présence de la clé `user`, pas celle
+-- d'un `id` numérique, alors que sessions.repository.js fait un cast en bigint :
+-- une session sans identifiant fait échouer le DELETE et la transaction entière.
 CREATE INDEX IF NOT EXISTS session_user_numeric_idx
   ON session (((sess->'user'->>'id')::bigint))
   WHERE (sess->'user'->>'id') ~ '^\d+$';
@@ -50,10 +46,8 @@ DROP INDEX IF EXISTS session_user_id_idx;
 -- ------------------------------------------------------------------
 -- 4. Index orientés « comptes actifs »
 -- ------------------------------------------------------------------
--- Les deux index partiels existants portent sur `IS NOT NULL`, donc ils ne
--- servent ni published_professionals (`blocked_at IS NULL AND suspended_at
--- IS NULL`), ni countActiveAdmins. Les prédicats les plus chauds sont les
--- positifs, en particulier pour la vue de publication.
+-- Les index partiels existants portent sur `IS NOT NULL`, donc ils ne servent ni
+-- published_professionals ni countActiveAdmins, qui prédiquent l'inverse.
 CREATE INDEX IF NOT EXISTS users_active_idx
   ON users (role)
   WHERE blocked_at IS NULL AND suspended_at IS NULL;

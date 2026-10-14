@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { Lock, LockOpen } from 'lucide-react';
 import { Input } from './Input.jsx';
 
-/**
- * Champ de mot de passe avec bascule de visibilité. Factorise le bouton
- * « œil », qui était recopié dans chaque formulaire.
- */
+
 export function PasswordInput({ id, value, onChange, error, success, ...rest }) {
   const [visible, setVisible] = useState(false);
 

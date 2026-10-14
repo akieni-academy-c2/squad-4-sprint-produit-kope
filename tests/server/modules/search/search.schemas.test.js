@@ -9,8 +9,6 @@ const repositoryMock = vi.hoisted(() => ({
   countPublished: vi.fn().mockResolvedValue(0),
 }));
 
-// Le service est testé contre un repository simulé, mais les requêtes SQL sont
-// vérifiées sur l'implémentation réelle : `importActual` contourne le mock.
 vi.mock('@server/modules/search/search.repository.js', async (importOriginal) => ({
   ...(await importOriginal()),
   searchPublished: repositoryMock.searchPublished,
@@ -22,14 +20,7 @@ const { searchPublished, countPublished } = await vi.importActual(
 );
 const { search } = await import('@server/modules/search/search.service.js');
 
-/**
- * Filtre ville de la recherche.
- *
- * La ville est un critère de premier niveau, avant la zone : une zone
- * appartient à une ville, et l'inverse n'est pas vrai. Le filtre doit donc
- * exister dans les deux requêtes - liste et compteur - sans quoi le total
- * affiché ne correspond plus aux résultats.
- */
+
 describe('Filtre ville', () => {
   const db = () => ({ query: vi.fn().mockResolvedValue({ rows: [] }) });
 
@@ -63,7 +54,6 @@ describe('Filtre ville', () => {
     await countPublished({ cityId: 2 }, conn);
 
     const [sql, values] = conn.query.mock.calls[0];
-    // Même prédicat que la liste : sinon `total` et `items` divergent.
     expect(sql).toContain('z.city_id = $7');
     expect(values.at(-1)).toBe(2);
   });
@@ -77,8 +67,6 @@ describe('Filtre ville', () => {
   });
 
   it('transmet la ville du service au repository', async () => {
-    // Le schéma de requête a déjà converti la chaîne en nombre avant
-    // d'atteindre le service : le repository doit recevoir ce nombre.
     await search({ city: 2, page: 1 });
 
     expect(repositoryMock.searchPublished).toHaveBeenCalledWith(
@@ -109,8 +97,6 @@ describe('Page de recherche', () => {
   );
 
   it('ne rend pas le titre visible', () => {
-    // Le `h1` reste présent pour les lecteurs d'écran et le SEO, mais il ne
-    // doit plus occuper d'espace à l'écran.
     expect(source).toContain('<h1 className="sr-only">');
     expect(source).not.toContain('text-2xl font-extrabold tracking-tight text-gray-900">\n              {trade');
   });
@@ -125,7 +111,6 @@ describe('Page de recherche', () => {
   });
 
   it('restreint les zones a la ville choisie', () => {
-    // Sans cela, proposer une zone d'une autre ville mènerait à zéro résultat.
     expect(filters).toContain('zones.filter((z) => String(z.cityId) === String(cityValue))');
   });
 
@@ -134,7 +119,6 @@ describe('Page de recherche', () => {
   });
 
   it('desactive Rechercher tant qu\'aucun critere n\'est renseigne', () => {
-    // Même retour que « Appliquer » du panneau d'affinage.
     expect(filters).toContain('disabled={!hasCriteria}');
   });
 });

@@ -5,13 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 
-/**
- * Isolation de la page d'accueil vis-à-vis du service de portraits.
- *
- * Les personas ne doivent servir que la recherche en démonstration. Sur
- * l'accueil, une carte qui affiche `avatarUrl` laissait fuiter un portrait
- * distant alors que la consigne est l'inverse.
- */
+
 
 const { PORTRAIT, HIGHLIGHT_ITEMS } = vi.hoisted(() => {
   const portrait = 'https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_0001.webp';
@@ -25,8 +19,6 @@ const { PORTRAIT, HIGHLIGHT_ITEMS } = vi.hoisted(() => {
       yearsExperience: 4,
       isAvailable: true,
       rating: { average: 4.5, count: 6 },
-      // Le service de personas fournit un portrait distant : l'accueil ne doit
-      // pas le reprendre.
       avatarUrl: portrait,
       image: portrait,
     })),
@@ -84,7 +76,6 @@ describe('Cartes de la page d\'accueil', () => {
   });
 
   it('utilise le portrait du professionnel ailleurs', () => {
-    // La recherche, elle, doit montrer la vraie photo.
     const html = render(<ProfessionalCard mode="list" item={PRO} />);
 
     expect(html).toContain(PORTRAIT);
@@ -117,8 +108,6 @@ describe('Aucune image distante sur l\'accueil', () => {
   ];
 
   it.each(homeFiles)('%s ne référence aucun service de portraits', (path) => {
-    // `homeFiles` liste des chemins d'alias `@/…`, forme lisible dans la liste ;
-  // `repoPath` attend un chemin relatif à la racine du dépôt, d'où le `src/`.
   const source = readFileSync(repoPath('src', path.slice(2)), 'utf8');
 
     expect(source).not.toContain('persona-portraits');
@@ -140,8 +129,6 @@ describe('Aucune image distante sur l\'accueil', () => {
       'utf8',
     );
 
-    // Les cartes mises en avant affichent les visuels de `src/shared/assets`,
-    // pas un portrait distant ni un aplat généré.
     expect(source).toContain('FEATURED_FACES');
     expect(source).toContain('@/shared/content/homeImages.js');
     expect(source).toContain('previewImage');

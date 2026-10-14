@@ -60,9 +60,6 @@ export function SearchPage() {
     setParams(next);
   };
 
-  // Propriétés communes aux deux rendus : le panneau est affiché deux fois,
-  // en colonne fixe sur desktop et dans le Sheet sur mobile. Seul le second
-  // reçoit la fermeture, l'autre n'a rien à fermer.
   const refineProps = {
     available: available ?? '',
     minRating: minRating ?? '',
@@ -76,28 +73,17 @@ export function SearchPage() {
 
   return (
     <div>
-      {/* pb-20 : la barre fixe mesure 64px (48px de bouton + 8px de marge
-          interne), plus l'espace sûr de l'iPhone. pb-24 laissait 32px
-          d'inutile sous la pagination sur mobile ; 80px suffisent à ce que
-          la dernière page reste atteignable sans coller à la barre.
-          lg:pb-8 la désactive sur desktop, où la barre est masquée. */}
-      <div className="container-kop page-padding pb-20 lg:pb-8">
+       <div className="container-kop page-padding pb-20 lg:pb-8">
         <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
           <aside className={`hidden lg:block ${STICKY_COLUMN} space-y-4`}>
             <SearchFilters variant="sidebar" initial={{ trade, zone, city, keyword: q }} searching={loading} />
           </aside>
 
           <section className="min-w-0 space-y-5">
-            {/* Titre conservé mais invisible : la page a besoin d'un `h1` pour
-                les lecteurs d'écran et le référencement, sans ajouter de
-                bandeau qui répète ce que dit déjà la barre de recherche. */}
             <h1 className="sr-only">
               {trade || zone || city ? 'Professionnels' : 'Trouver un professionnel'}
             </h1>
 
-            {/* Compteur seul : l'accès aux filtres est porté par la barre fixe
-                du bas, sur toute la hauteur de la page. Un bouton ici le
-                doublait et disparaissait dès le premier défilement. */}
             {results?.total > 0 && (
               <div>
                 <p className="text-md font-semibold uppercase tracking-[0.12em]">
@@ -109,19 +95,6 @@ export function SearchPage() {
               </div>
             )}
 
-            {/*
-              Le squelette couvre `loading` **et** l'absence de données.
-
-              `useSearch` démarre avec `results = null` et `loading = false` :
-              React peint une fois avant d'exécuter l'effet qui déclenchera la
-              requête. Pendant cette image, `SearchResults` recevait `null`,
-              `items` valait `[]`, et la page affichait « aucun professionnel »
-              - l'écran vide d'abord, les résultats ensuite.
-
-              C'est le pire ordre : un message d'absence alors que la recherche
-              n'a pas encore commencé. Il ne disparait pas, il se corrige tout
-              seul après 200 ms, ce qui se lit comme une erreur puis un rattrapage.
-            */}
             {(loading || !results) && !error && (
               <div className="space-y-4" aria-busy="true">
                 {[0, 1, 2].map((i) => (
@@ -152,10 +125,6 @@ export function SearchPage() {
           </aside>
         </div>
 
-        {/* Sur mobile, les deux surfaces de la page sont atteintes par la barre
-            fixe du bas : le champ de recherche (colonne de gauche sur desktop)
-            et l'icône de filtres (colonne de droite). Le bouton flottant
-            « Rechercher » qui les ouvrait toutes les deux est retiré. */}
         <SearchActionBar
           onSearchClick={() => setSearchOpen(true)}
           onFiltersClick={() => setFiltersOpen(true)}
@@ -164,10 +133,7 @@ export function SearchPage() {
           total={results?.total ?? 0}
         />
 
-        {/* Les deux feuilles se referment sur validation : les résultats sont à
-            jour derrière, le panneau n'a plus rien à apporter et il masque
-            la liste qu'on vient de mettre à jour. */}
-        <Sheet open={searchOpen} onOpenChange={setSearchOpen} side="bottom">
+         <Sheet open={searchOpen} onOpenChange={setSearchOpen} side="bottom">
           <div className="space-y-4 overflow-y-auto">
             <h2 className="text-lg font-bold text-gray-900">Recherche</h2>
             <SearchFilters

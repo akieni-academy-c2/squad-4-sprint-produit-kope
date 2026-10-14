@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MessageCircle, MessageSquarePlus, Phone, Star, User } from 'lucide-react';
 import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
@@ -8,8 +8,9 @@ import { listReviews } from '@/features/reviews/services/reviews.service.js';
 import { ReportProfessionalDialog, ReportTrigger } from '../components/ReportDialog.jsx';
 import { DataState } from '@/shared/components/ui/DataState.jsx';
 import { Button } from '@/shared/components/ui/Button.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
+import { PromoCard } from '@/shared/components/ui/PromoCard.jsx';
 import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
+import { ResponsiveSection } from '@/shared/components/ui/ResponsiveSection.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 import { useAuthContext } from '@/shared/context/AuthContext.jsx';
 import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
@@ -22,14 +23,14 @@ import { RealizationsSection } from '../components/public/RealizationsSection.js
 import { ReviewsBlock } from '../components/public/ReviewsBlock.jsx';
 import { CITY, getProfileView } from '../components/public/profileView.js';
 
-/** `isAction` : ces entrées ouvrent une fenêtre, elles ne naviguent pas.
- *  La barre ne doit donc jamais les marquer comme actives - ni visuellement,
- *  ni via `aria-current`, qui signifie « vous êtes ici ». */
 const NAV_SECTIONS = [
   { id: 'profile', label: 'Profil', icon: User },
   { id: 'avis', label: 'Avis', icon: Star, isAction: true },
   { id: 'contact', label: 'Contact', icon: MessageCircle, isAction: true },
 ];
+
+
+const TRADE_FALLBACK = 'Artisan';
 
 export function ProfessionalPublicPage() {
   const { id } = useParams();
@@ -37,21 +38,26 @@ export function ProfessionalPublicPage() {
   const { open: openAuthModal } = useAuthModal();
   const [reviewSubmittedFor, setReviewSubmittedFor] = useState(null);
   const [openIndex, setOpenIndex] = useState(null);
-  const [activeSection, setActiveSection] = useState('profile');
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
   const [tabContactOpen, setTabContactOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
   const detail = useAsyncData(() => getPublishedDetail(id), [id]);
-  const canReviewState = useAsyncData(() => canReview(id), [id, user?.id]);
-  // Une seule requête pour les deux emplacements (desktop et mobile).
+  const canReviewState = useAsyncData(() => (user ? canReview(id) : false), [id, user?.id]);
   const compactReviews = useAsyncData(() => listReviews(id, { page: 1, pageSize: 3 }), [id]);
 
-  // Appelé avant le retour anticipé (un hook ne peut pas être conditionnel),
-  // mais après detail : la vue dérivée n'existe qu'ensuite.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpenIndex(null);
+    setReviewsOpen(false);
+    setReviewFormOpen(false);
+    setTabContactOpen(false);
+    setReportOpen(false);
+  }, [id]);
+
   usePageTitle(
-    detail.data ? `${detail.data.profile?.trade?.name ?? 'Professionnel'} à Brazzaville` : 'Professionnel',
+    detail.data ? `${detail.data.profile?.trade?.name || TRADE_FALLBACK} à ${CITY}` : 'Professionnel',
   );
 
   if (detail.loading || detail.error)
@@ -65,7 +71,9 @@ export function ProfessionalPublicPage() {
 
   const { profile, photos, rating } = detail.data;
   const view = getProfileView(profile, rating);
-  const { tradeName, count, firstName, localisation, breadcrumbTrade, whatsappUrl } = view;
+  const { tradeName, firstName, localisation, breadcrumbTrade, whatsappUrl } = view;
+  const reviewTotal = Number(compactReviews?.data?.total ?? 0);
+  const phoneNumber = String(profile.phone ?? '').replace(/\D/g, '');
 
   const isSelf = user?.id != null && String(user.id) === String(profile.id);
   const isVisitorView = !isSelf && user?.role !== ROLES.ADMIN;
@@ -73,7 +81,6 @@ export function ProfessionalPublicPage() {
   const canLeaveReview =
     reviewSubmittedFor !== id && Boolean(user) && user.role !== ROLES.ADMIN && canReviewState.data === true;
 
-  /** Toute action réservée aux connectés ouvre d'abord la connexion. */
   const requireAuth = (action) => () => {
     if (!user) {
       openAuthModal('login');
@@ -88,41 +95,32 @@ export function ProfessionalPublicPage() {
 
   const refreshAfterReview = () => {
     setReviewSubmittedFor(id);
-    detail.reload().catch(() => {});
-    compactReviews.reload().catch(() => {});
+    detail.reload({ silent: true }).catch(() => { });
+    compactReviews.reload({ silent: true }).catch(() => { });
   };
 
-  const goPrev = () => setOpenIndex((cur) => (cur == null ? 0 : (cur - 1 + photos.length) % photos.length));
-  const goNext = () => setOpenIndex((cur) => (cur == null ? 0 : (cur + 1) % photos.length));
+  const step = (offset) =>
+    setOpenIndex((cur) => (cur == null || photos.length === 0 ? null : (cur + offset + photos.length) % photos.length));
+  const goPrev = () => step(-1);
+  const goNext = () => step(1);
 
-  const scrollToSection = (sectionId) => {
-    // `avis` et `contact` ouvrent une fenêtre : la page n'a pas changé de
-    // section, marquer l'une d'elles comme active laisserait la barre sur une
-    // destination quittée dès la fermeture du dialogue.
+  const onNavClick = (sectionId) => {
     if (sectionId === 'avis') {
       setReviewsOpen(true);
       return;
     }
-    if (sectionId === 'contact') {
-      if (user) setTabContactOpen(true);
-      else openAuthModal('login');
-      return;
-    }
-    setActiveSection(sectionId);
-    if (sectionId === 'profile') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (user) setTabContactOpen(true);
+    else openAuthModal('login');
   };
 
   return (
-    <div className="container-kop page-padding space-y-6 pb-safe-nav lg:pb-0">
+    <div className="container-kop page-padding pb-safe-nav lg:pb-8">
       <h1 className="sr-only">
         {profile.displayName} - {tradeName} à {CITY}
       </h1>
 
-      <div className="grid min-w-0 gap-6 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
+      {}
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
         <PublicProfileSidebar
           profile={profile}
           view={view}
@@ -130,8 +128,10 @@ export function ProfessionalPublicPage() {
           onReportClick={onReportClick}
         />
 
-        <div className="min-w-0 space-y-12">
-          <PublicProfileMobileIntro profile={profile} view={view} breadcrumbTrade={breadcrumbTrade} />
+        <section className="min-w-0 space-y-5">
+          <ResponsiveSection variant="mobile">
+            <PublicProfileMobileIntro profile={profile} view={view} breadcrumbTrade={breadcrumbTrade} />
+          </ResponsiveSection>
 
           <RealizationsSection
             photos={photos}
@@ -142,85 +142,47 @@ export function ProfessionalPublicPage() {
             onOpenPhoto={setOpenIndex}
           />
 
-          {/* Sur mobile, la colonne de droite s'empile sous celle-ci : les avis y
-              sont déjà rendus, leur version ici évite un second affichage. */}
-          <section className="space-y-4 lg:hidden">
-            <ReviewsBlock
-              rating={rating}
-              canReview={canLeaveReview || !user}
-              onLeaveReview={onLeaveReviewClick}
-              state={compactReviews}
-              onViewAll={() => setReviewsOpen(true)}
-              headingClassName="text-xl"
-            />
-          </section>
-        </div>
+          <ResponsiveSection variant="mobile">
+            <section className="space-y-4">
+              <ReviewsBlock
+                rating={rating}
+                canReview={canLeaveReview || !user}
+                onLeaveReview={onLeaveReviewClick}
+                state={compactReviews}
+                onViewAll={() => setReviewsOpen(true)}
+                headingClassName="text-xl"
+              />
+            </section>
+          </ResponsiveSection>
+        </section>
 
-        <aside className="min-w-0 space-y-5 lg:self-stretch">
-          {/* Les avis apparaissent deux fois sur mobile : une fois ici, et une
-              fois dans la colonne de droite. Le bloc de droite n'était masqué
-              que sur ses liens internes, pas sur la colonne elle-même, qui
-              s'empile sous la colonne centrale en une seule colonne. */}
-          <section id="avis" className="hidden space-y-4 lg:block">
-            <ReviewsBlock
-              rating={rating}
-              canReview={canLeaveReview || !user}
-              onLeaveReview={onLeaveReviewClick}
-              state={compactReviews}
-              onViewAll={() => setReviewsOpen(true)}
-            />
-          </section>
+        <aside className="min-w-0 space-y-4 lg:self-stretch">
+          <ResponsiveSection variant="desktop">
+            <section id="avis" className="space-y-4">
+              <ReviewsBlock
+                rating={rating}
+                canReview={canLeaveReview || !user}
+                onLeaveReview={onLeaveReviewClick}
+                state={compactReviews}
+                onViewAll={() => setReviewsOpen(true)}
+              />
+            </section>
+          </ResponsiveSection>
 
-          {/*
-            Épinglée en haut **et** en bas - voir `STICKY_BAND`.
-
-            Une carte qui ne se colle qu'en haut quitte l'écran dès qu'on arrive
-            en bas de la fiche. Or « Contacter » est précisément l'action qu'on
-            cherche une fois avoir lu : elle doit rester atteignable depuis le
-            haut et depuis le bas, sans jamais flotter au milieu.
-          */}
-          <Card
+          <PromoCard
             id="contact"
-            className={`overflow-hidden border-0 p-0 text-white shadow-lg ${STICKY_BAND}`}
-          >
-            {/* Deux teintes en diagonale, pas un aplat. Un aplat vert qui couvre
-                40 % de la page attire plus que la photo du professionnel, qui
-                est le sujet de la fiche ; le dégradé le ramène au rang de fond. */}
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-br from-primary-500 to-primary-700"
-            />
+            seed={profile.id || 1}
+            className={STICKY_BAND}
+            title="Parlons de votre besoin."
+            text="Décrivez votre projet, ses coordonnées apparaîtront ensuite."
+            action={`Contacter ${firstName}`}
+            onAction={onContactClick}
+          />
 
-            <div className="relative flex flex-col gap-4 p-5">
-              <div className="space-y-1.5">
-                <h2 className="text-lg font-bold text-white">Parlons de votre besoin.</h2>
-                <p className="text-sm leading-6 text-white/80">
-                  Décrivez votre projet, ses coordonnées apparaîtront ensuite.
-                </p>
-              </div>
-
-              {/* Le bouton se retourne sur la carte : blanc sur le vert. Le même
-                  bouton vert, posé sur le vert, ne laisserait qu'un rectangle
-                  plus clair, sans bord ni texte lisible. */}
-              <Button
-                className="w-full bg-white text-primary-700 hover:bg-white/90"
-                size="lg"
-                onClick={onContactClick}
-              >
-                Contacter {firstName}
-              </Button>
-            </div>
-          </Card>
-
-
-          {/* Dernier élément de la fiche sur mobile : signaler un profil est
-              une action de recours, elle ne doit pas passer avant le bouton
-              de contact. Sur desktop, `PublicProfileSidebar` porte déjà le
-              sien, d'où le `lg:hidden`. */}
           {isVisitorView && (
-            <div className="lg:hidden">
+            <ResponsiveSection variant="mobile">
               <ReportTrigger onClick={onReportClick} />
-            </div>
+            </ResponsiveSection>
           )}
         </aside>
       </div>
@@ -254,7 +216,7 @@ export function ProfessionalPublicPage() {
           }
         >
           <DialogHeader>
-            <DialogTitle>Avis ({count})</DialogTitle>
+            <DialogTitle>Avis ({reviewTotal})</DialogTitle>
             <DialogDescription>les avis laissés sur la fiche</DialogDescription>
           </DialogHeader>
           <ReviewList professionalId={profile.id} />
@@ -286,9 +248,11 @@ export function ProfessionalPublicPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <Button as="a" href={`tel:${String(profile.phone).replace(/\D/g, '')}`} variant="secondary">
-              <Phone size={16} aria-hidden /> Appeler
-            </Button>
+            {phoneNumber && (
+              <Button as="a" href={`tel:${phoneNumber}`} variant="secondary">
+                <Phone size={16} aria-hidden /> Appeler
+              </Button>
+            )}
             {whatsappUrl && (
               <Button as="a" href={whatsappUrl} target="_blank" rel="noopener noreferrer" variant="secondary">
                 <MessageCircle size={16} aria-hidden /> WhatsApp
@@ -304,8 +268,8 @@ export function ProfessionalPublicPage() {
 
       <BottomNav
         items={NAV_SECTIONS}
-        active={activeSection}
-        onChange={scrollToSection}
+        active="profile"
+        onChange={onNavClick}
         ariaLabel="Sections de la fiche"
       />
     </div>

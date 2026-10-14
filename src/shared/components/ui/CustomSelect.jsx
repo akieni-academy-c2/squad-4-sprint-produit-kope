@@ -20,9 +20,6 @@ export function CustomSelect({
   options = [],
   placeholder = 'Sélectionner...',
   className,
-  // `className` habille le conteneur (largeur, position) ; le bouton porte
-  // son propre cadre. Sans cette prop, seule façon de retirer fond et bordure
-  // du champ, et les surcharges finissaient sur le conteneur sans effet.
   triggerClassName,
   menuClassName,
   disabled,
@@ -35,8 +32,6 @@ export function CustomSelect({
   const [open, setOpen] = useState(false);
   const [coords, setCoords] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  // `mounted` garde le menu dans le DOM pendant la fermeture pour pouvoir
-  // jouer l'animation de sortie ; `shown` pilote opacité et translation.
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);
   const rootRef = useRef(null);
@@ -82,8 +77,6 @@ export function CustomSelect({
     const below = window.innerHeight - rect.bottom - margin;
     const above = rect.top - margin;
 
-    // On ouvre toujours du côté qui offre le plus de place : le menu ne peut
-    // ainsi jamais déborder du viewport, quel que soit le défilement.
     const openUp = above > below;
     const available = Math.max(0, openUp ? above : below);
     const maxHeight = Math.max(0, Math.min(MENU_MAX_HEIGHT, available));
@@ -95,9 +88,6 @@ export function CustomSelect({
       width,
       maxHeight,
       openUp,
-      // Vers le haut : on ancre le BAS du menu sur le bouton (4 px d'écart), afin
-      // qu'il reste collé au champ même s'il contient peu d'options. La hauteur
-      // suit alors le contenu, au lieu d'un cadre vide de 320 px.
       ...(openUp
         ? { bottom: Math.min(window.innerHeight - rect.top + 4, window.innerHeight - margin) }
         : { top: rect.bottom + 4 }),
@@ -110,8 +100,6 @@ export function CustomSelect({
     const onViewportChange = () => measure();
     window.addEventListener('scroll', onViewportChange, true);
     window.addEventListener('resize', onViewportChange);
-    // La sidebar est sticky et la mise en page bouge au chargement des résultats :
-    // on recalcule si la position ou la taille du champ change.
     const observer = new ResizeObserver(() => measure());
     if (rootRef.current) observer.observe(rootRef.current);
     return () => {
@@ -166,8 +154,6 @@ export function CustomSelect({
             }}
             className={cn(
               'fixed z-popover overflow-y-auto overscroll-contain rounded-md border border-gray-200 bg-white p-1 shadow-pop',
-              // Même animation d'apparition que le menu du header (animate-scale-in),
-              // avec l'origine alignée sur le sens d'ouverture.
               coords.openUp ? 'origin-bottom' : 'origin-top',
               'transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none',
               shown ? 'animate-scale-in motion-reduce:animate-none' : 'scale-[.97] opacity-0 pointer-events-none',
@@ -234,8 +220,6 @@ export function CustomSelect({
           </span>
           <ChevronDown className={cn('h-4 w-4 shrink-0 text-gray-500 transition-transform', open && 'rotate-180')} />
         </button>
-        {/* Permet de remplacer un <select name> natif : le composant reste
-            lisible par un FormData à la soumission du formulaire. */}
         {name && <input type="hidden" name={name} value={value ?? ''} />}
       </div>
       {menu}

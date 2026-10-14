@@ -43,9 +43,6 @@ describe('contacts.service', () => {
     expect(authRepository.findById).toHaveBeenCalledWith(9);
   });
 
-  // Un doublon n'est plus refusé : la paire n'est plus unique en base, un
-  // professionnel peut être rappelé autant de fois que nécessaire. Le test
-  // vérifie que le canal transite bien jusqu'à l'écriture.
   it('crée le contact quand tout est valide', async () => {
     vi.spyOn(authRepository, 'findById').mockResolvedValue({ id: 9, role: 'client' });
     const created = { id: 1, message: MESSAGE, channel: 'message', status: 'new' };
@@ -110,7 +107,6 @@ describe('contacts.service (frontend)', () => {
     const data = await getMyContacts();
     expect(data.items.length).toBeGreaterThan(0);
     expect(data).toHaveProperty('total');
-    // Un contact client et un contact professionnel dans la démo
     expect(data.items.map((c) => c.role)).toEqual(expect.arrayContaining(['client', 'professional']));
   });
 });

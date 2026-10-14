@@ -3,16 +3,7 @@ import { updateAccountSchema } from '@/shared/utils/validators.js';
 import { evaluateForm } from '@/shared/hooks/useFormReadiness.js';
 import { FIELD_STATUS } from '@/shared/hooks/useFieldStatus.js';
 
-/**
- * État du bouton « Enregistrer » d'un formulaire de modification : il ne doit
- * s'activer que si les valeurs sont valides ET réellement différentes de l'état
- * initial.
- *
- * Ces tests appellent `evaluateForm`, le calcul réellement utilisé par
- * `useFormReadiness`. Une version précédente rejouait la logique à sa main -
- * elle continuait à passer quand un champ optionnel avait été ajouté au schéma
- * et que le vrai calcul éteignait le bouton en permanence.
- */
+
 const evaluate = (initial, current) => {
   const { ready, dirty } = evaluateForm(updateAccountSchema, current, initial);
   return { ready, dirty, canSubmit: ready && dirty };
@@ -36,7 +27,6 @@ describe('formulaire de modification', () => {
   });
 
   it('reste inactif si la nouvelle valeur est invalide', () => {
-    // Numéro trop court : modifié mais non conforme.
     expect(evaluate(PROFIL, { ...PROFIL, phone: '061' })).toEqual({
       ready: false,
       dirty: true,
@@ -54,11 +44,8 @@ describe('formulaire de modification', () => {
   });
 
   it('n\'exige pas les champs facultatifs', () => {
-    // L'e-mail est `nullish` : absent, vide et `null` sont acceptés. Exiger
-    // qu'il soit renseigné éteindrait « Enregistrer » pour tout compte sans
-    // adresse, alors que ne pas en avoir n'est pas une saisie invalide.
     expect(evaluate(PROFIL, { ...PROFIL, firstName: 'Awa' }).canSubmit).toBe(true);
-    expect(evaluate(PROFIL, { ...PROFIL, email: '' }).canSubmit).toBe(false); // rien de changé
+    expect(evaluate(PROFIL, { ...PROFIL, email: '' }).canSubmit).toBe(false);
     expect(evaluate(PROFIL, { ...PROFIL, firstName: 'Awa', email: null }).canSubmit).toBe(true);
   });
 
@@ -74,8 +61,6 @@ describe('formulaire de modification', () => {
   });
 
   it('valide le format sans exiger de vérification d\'adresse', () => {
-    // Rien ne prouve que la boîte existe : c'est le métier du serveur, pas du
-    // formulaire. Le champ passe donc au vert dès que la syntaxe est bonne.
     const { statuses } = evaluateForm(updateAccountSchema, { ...PROFIL, email: 'a@b.tld' }, PROFIL);
 
     expect(statuses.email).toBe(FIELD_STATUS.OK);

@@ -1,13 +1,6 @@
 import { pool } from '../../db/pool.js';
 
-/**
- * Génère les opérations CRUD d'un catalogue ordonné (catégories, métiers,
- * villes, zones). Les quatre entités ne diffèrent que par leur clé étrangère
- * optionnelle et la requête qui détecte l'usage.
- *
- * Les identifiants SQL (`table`, `fk.column`) sont des constantes définies ici,
- * jamais des données de requête : aucune interpolation n'est paramétrable.
- */
+
 function makeCatalog({ table, alias, fk = null, inUseSql }) {
   const insertColumns = fk ? `name, ${fk.column}, sort_order` : 'name, sort_order';
   const insertValues = fk

@@ -6,29 +6,7 @@ import { useIsDesktop } from '@/shared/hooks/useMediaQuery.js';
 import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
 import { useOverlay } from './useOverlay.js';
 
-/**
- * Modale : une feuille ancrée en bas sur mobile, une boîte centrée sur desktop.
- *
- * ## Deux mouvements, pas un
- *
- * La feuille et la boîte ne partagent pas la même géométrie, donc pas la même
- * entrée. Une boîte centrée qui glisse depuis le bas **tombe** ; une feuille de
- * pleine largeur qui se met à l'échelle **se rétrécit sur elle-même**. Choisir
- * une seule variante pour les deux paliers, c'est rater la moitié des usages.
- *
- * D'où `useIsDesktop()` : la variante suit la forme réelle de la boîte.
- *
- * Sur mobile, le fond est décalé de 40 px et non de 100 %. La modale occupe
- * 90 dvh ; partir du bas exact la ferait cheminer devant toute la page, et le
- * retour n'était plus un retour. Le reste de la course - jusqu'au bord - est un
- * glissement que l'on ne voit pas, pas une distance d'animation.
- *
- * ## Le fond est flouté, comme les deux autres surfaces
- *
- * `Sheet` et `Dialog` l'étaient ; seule la modale ne l'était pas. Trois surfaces
- * qui se recouvrent de la même façon ne peuvent pas lectures différemment -
- * celle qui n'est pas floutée paraît posée sur la page au lieu de devant.
- */
+
 const WIDTHS = {
   sm: 'max-w-sm',
   md: 'max-w-md',
@@ -37,7 +15,7 @@ const WIDTHS = {
   full: 'max-w-5xl',
 };
 
-/** Variante mobile : glissement depuis le bas, partagé par les deux paliers. */
+
 const SHEET_PANEL = {
   initial: { y: '40%', scale: 1 },
   animate: { y: '0%', scale: 1, transition: dialogPanel.animate.transition },
@@ -61,14 +39,10 @@ export function Modal({
   if (typeof document === 'undefined') return null;
   const widths = WIDTHS[size] || WIDTHS.md;
 
-  // Moins de 4 sections (titre, description, contenu, actions) : réduire le rayon des coins.
   const sections = [title, description, children, actions].filter(Boolean).length;
   const radiusTop = sections < 4 ? 'rounded-t-xl' : 'rounded-t-2xl';
   const radiusMain = sections < 4 ? 'sm:rounded-xl' : 'sm:rounded-2xl';
 
-  // Constante de module et non littéral dans le corps : `motion` compare
-  // l'identité de `variants` à chaque rendu, et un objet reconstruit ici
-  // invalidait la comparaison à chaque ouverture.
   const panelVariants = isDesktop ? dialogPanel : SHEET_PANEL;
 
   return createPortal(
@@ -89,20 +63,12 @@ export function Modal({
             aria-labelledby={title ? titleId : undefined}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              // Sur mobile la modale est une feuille ancrée en bas, comme les sheets Apple :
-              // elle grandit avec le contenu jusqu'à 90dvh et laisse toujours une bande de
-              // page visible au-dessus - le repère visuel qui dit « c'est une surcouche ».
-              // Le breakpoint `sm` reste inchangé : sur desktop la modale est centrée et
-              // sa hauteur suit son contenu, sans plafond.
               'w-full max-h-[90dvh] overflow-y-auto overscroll-contain bg-white shadow-[var(--shadow-pop)] sm:max-h-none',
               radiusTop,
               radiusMain,
               widths,
             )}
             variants={panelVariants}
-            // États nommés explicites : voir `Sheet`. La propagation implicite
-            // depuis le fond fonctionne, mais disparait sans erreur si le fond
-            // change - et la fermeture de la modale devient instantanée.
             initial="initial"
             animate="animate"
             exit="exit"

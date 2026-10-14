@@ -2,13 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 
-/**
- * Vue d'ensemble de l'administration.
- *
- * L'aperçu ne sert à rien s'il ne mène pas au travail en attente : ces tests
- * verrouillent l'ordre (le bloc « À traiter » d'abord), les groupes par thème,
- * et le fait que chaque KPI est un vrai bouton.
- */
+
 
 vi.mock('@/shared/context/NotificationContext.jsx', () => ({
   useNotification: () => ({ toast: vi.fn() }),
@@ -100,7 +94,6 @@ describe('Vue d’ensemble - mise en page', () => {
   });
 
   it('affiche les nouveaux compteurs de modération', () => {
-    // Comptes bloqués (4) et comptes suspendus (1) étaient invisibles avant.
     expect(html).toContain('4');
     expect(html).toContain('Comptes bloqués');
     expect(html).toContain('suspendu');
@@ -109,7 +102,6 @@ describe('Vue d’ensemble - mise en page', () => {
   it('rend chaque indicateur sous forme de bouton', () => {
     const buttons = html.split('<button type="button"').length - 1;
 
-    // 3 cartes « à traiter » + les KPI cliquables des groupes.
     expect(buttons).toBeGreaterThanOrEqual(10);
   });
 
@@ -121,7 +113,6 @@ describe('Vue d’ensemble - mise en page', () => {
   it('affiche les quatre derniers professionnels inscrits, en cartes utilisateur', () => {
     const list = html.slice(html.indexOf('Derniers professionnels inscrits'));
 
-    // Quatre items, pas cinq.
     expect(list).toContain('Atelier Kengo');
     expect(list).toContain('Plomberie Kope');
     expect(list).toContain('Briques du Sud');
@@ -129,11 +120,8 @@ describe('Vue d’ensemble - mise en page', () => {
     expect(list).not.toContain('Atelier Lumière');
     expect((list.match(/<article /g) || []).length).toBe(4);
 
-    // Carte utilisateur : avatar, métier + téléphone, badge de rôle et date.
     expect(list).toContain('h-10 w-10');
     expect(list).toContain('Menuiserie');
-    // Le téléphone passe par `formatPhoneFR` : `+242061234567` devient
-    // `+242 06 123 45 67`. La valeur brute n'a plus à être affichée nulle part.
     expect(list).toContain('+242 06 123 45 67');
     expect(list).not.toContain('+242061234567');
     expect(list).toContain('Professionnel');
@@ -145,17 +133,13 @@ describe('Vue d’ensemble - mise en page', () => {
   it('ordonne les cartes des derniers inscrits en colonne sur mobile puis en ligne à partir de sm', () => {
     const list = html.slice(html.indexOf('Derniers professionnels inscrits'));
 
-    // Par défaut (mobile) : pile verticale ; à partir de sm : ligne comme avant.
     expect(list).toContain('flex flex-col gap-3');
     expect(list).toContain('sm:flex-row sm:items-center');
-    // L'avatar et le bloc badge/date restent alignés à gauche en mobile.
     expect(list).toContain('self-start');
     expect(list).toContain('items-start gap-1 sm:items-end');
   });
 
   it('laisse les panneaux sans teinte et les cartes de valeur blanches', () => {
-    // Les teintes ont été retirées des panneaux : tous les groupes partagent
-    // le même style neutre, les cartes de valeur restent blanches.
     expect(html).toContain('border-[#e2e8e5] bg-white');
     expect(html).not.toContain('text-white');
     expect((html.match(/bg-white/g) || []).length).toBeGreaterThan(5);

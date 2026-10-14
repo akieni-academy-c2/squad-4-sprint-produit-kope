@@ -17,18 +17,16 @@ describe('checkPassword', () => {
   });
 
   it('compte les exigences manquantes une par une', () => {
-    // 'a' échoue à la longueur, à la casse (il manque la majuscule) et au spécial.
     expect(checkPassword('a').missing).toBe(3);
-    expect(checkPassword('motdepasse1').missing).toBe(1); // majuscule
-    expect(checkPassword('MOTDEPASSE1').missing).toBe(1); // minuscule
-    expect(checkPassword('Motdepasse').missing).toBe(1); // chiffre ou spécial
-    expect(checkPassword('Motdepa').missing).toBe(2); // longueur + spécial
+    expect(checkPassword('motdepasse1').missing).toBe(1);
+    expect(checkPassword('MOTDEPASSE1').missing).toBe(1);
+    expect(checkPassword('Motdepasse').missing).toBe(1);
+    expect(checkPassword('Motdepa').missing).toBe(2);
   });
 
   it('coche les règles au fur et à mesure', () => {
     const etapes = ['', 'M', 'Mo', 'Mot', 'Motd', 'Motde', 'Motdep', 'Motdepa', 'Motdepasse'];
     const compte = etapes.map((v) => checkPassword(v).missing);
-    // Le nombre d'exigences manquantes ne doit jamais remonter.
     for (let i = 1; i < compte.length; i += 1) expect(compte[i]).toBeLessThanOrEqual(compte[i - 1]);
   });
 
@@ -44,7 +42,6 @@ describe('fieldValidator', () => {
 
   it('renvoie null quand le champ est valide', () => {
     expect(validateFirstName('Awa')).toBeNull();
-    // Format national du projet : 0 + 8 chiffres, soit « 06 » + 7 chiffres.
     expect(validatePhone('06 12 34 56 7')).toBeNull();
   });
 
@@ -59,11 +56,9 @@ describe('fieldValidator', () => {
   });
 
   it('distingue une saisie rattrapable d\'une saisie impossible', () => {
-    // Des lettres ne deviendront jamais un numéro : c'est une erreur franche.
     expect(isHopelessPhone('abc')).toBe(true);
     expect(isHopelessPhone('06abc')).toBe(true);
-    expect(isHopelessPhone('071234567')).toBe(true); // préfixe interdit
-    // Manque juste des chiffres ou la longueur : rattrapable.
+    expect(isHopelessPhone('071234567')).toBe(true);
     expect(isHopelessPhone('06')).toBe(false);
     expect(isHopelessPhone('0612345')).toBe(false);
     expect(isHopelessPhone('061234567')).toBe(false);
@@ -72,7 +67,6 @@ describe('fieldValidator', () => {
 
 describe('états de saisie', () => {
   it('ne dit rien tant que le champ est vide', () => {
-    // Un reproche avant la première frappe est le meilleur moyen d'agacer.
     expect(FIELD_STATUS.IDLE).toBe('idle');
   });
 });

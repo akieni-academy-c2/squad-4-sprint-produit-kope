@@ -13,13 +13,7 @@ const ORDER = {
   cta: user2,
 };
 
-/**
- * Visages de la section « Faites connaissance ».
- *
- * Les trois visuels de personnes du dossier : cette section annonce des
- * visages, elle ne peut donc pas reprendre les images de chantier (what1..3)
- * déjà servies par les cartes catégories juste au-dessus.
- */
+
 export const FEATURED_FACES = [hero, user1, user2];
 
 export const HOME_RESERVED = {

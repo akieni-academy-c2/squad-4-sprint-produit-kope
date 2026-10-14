@@ -1,31 +1,8 @@
-/**
- * Conditions d'utilisation - version courante.
- *
- * ## Pourquoi le texte est une donnée et pas du JSX
- *
- * Trois raisons, toutes pratiques.
- *
- * **Le lien doit être affichable sans la page.** La case à cocher de
- * l'inscription renvoie vers une section précise ; avoir à charger la page
- * entière pour connaître la date de la version affichée serait absurde.
- *
- * **Un consentement sans version est un consentement nul.** Le serveur
- * enregistre la version acceptée, pas seulement `consent: true`. Dans deux ans,
- * « il avait accepté » ne veut rien dire si on ne sait pas ce qu'il avait lu.
- *
- * **Le contenu se relit sans toucher à l'interface.** Modifier une condition ne
- * doit pas ressembler à une modification de page.
- */
+
 
 export const TERMS_VERSION = '2026-01-15';
 
-/**
- * Sections, dans l'ordre d'affichage.
- *
- * Chaque entrée porte un `slug` stable : c'est la cible des liens profonds
- * depuis les formulaires et les e-mails. Le `slug` ne change pas quand on
- * reformule un paragraphe.
- */
+
 export const TERMS_SECTIONS = [
   {
     slug: 'objet',
@@ -112,9 +89,3 @@ export const TERMS_SECTIONS = [
     ],
   },
 ];
-
-/** Adresse d'une section, pour un lien profond depuis un formulaire. */
-export const termsHref = (slug) => `/conditions-utilisation${slug ? `#${slug}` : ''}`;
-
-/** Sections indexées par `slug`, pour retrouver un point d'ancrage. */
-export const TERMS_BY_SLUG = new Map(TERMS_SECTIONS.map((s) => [s.slug, s]));

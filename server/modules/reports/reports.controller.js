@@ -7,14 +7,12 @@ export async function create(req, res) {
   res.status(201).json({ report, autoBlocked, autoSuspended, reportCount });
 }
 
-/** Signalement d'un correspondant, depuis la liste des contacts. */
 export async function createForContact(req, res) {
   const result = await service.reportContact(requiredUserId(req), req.validated.params.id, req.validated.body);
   const { autoBlocked, autoSuspended, reportCount, ...report } = result;
   res.status(201).json({ report, autoBlocked, autoSuspended, reportCount });
 }
 
-/** Signalement d'un avis laissé sur la fiche du professionnel. */
 export async function createForReview(req, res) {
   const report = await service.reportReview(requiredUserId(req), req.validated.params.id, req.validated.body);
   res.status(201).json({ report });

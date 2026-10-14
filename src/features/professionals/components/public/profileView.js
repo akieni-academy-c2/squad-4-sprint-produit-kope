@@ -2,6 +2,10 @@ import { toWhatsappUrl } from '@/shared/utils';
 
 export const CITY = 'Brazzaville';
 
+
+export const ABOUT_HEADING = 'À propos';
+export const ABOUT_FALLBACK = 'Aucune présentation n’a encore été renseignée.';
+
 export function initialsOf(displayName) {
   return (
     (displayName || '')
@@ -13,19 +17,17 @@ export function initialsOf(displayName) {
   );
 }
 
-/**
- * Dérive une seule fois les libellés réutilisés par les colonnes, le fil
- * d'Ariane et les modales de la fiche publique.
- */
 export function getProfileView(profile, rating) {
   const tradeName = profile.trade?.name || 'Artisan';
   const zones = (profile.zones ?? []).map((z) => z?.name).filter(Boolean);
+  const tags = Array.isArray(profile.tags) ? profile.tags : [];
   const mainZone = zones.find((z) => z !== CITY) ?? zones[0];
 
   return {
     tradeName,
     zones,
-    tags: Array.isArray(profile.tags) ? profile.tags : [],
+    tags,
+    hasAbout: Boolean(profile.description) || zones.length > 0 || tags.length > 0,
     avg: Number(rating?.average ?? 0),
     count: Number(rating?.count ?? 0),
     avatarSrc: profile.avatarUrl,

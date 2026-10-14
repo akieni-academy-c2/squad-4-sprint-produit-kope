@@ -11,7 +11,6 @@ import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
 
-/** Au-delà de ce délai, l'attente est réelle et mérite un squelette. */
 const SKELETON_DELAY_MS = 200;
 
 export function SearchFilters({ initial = {}, variant = "search", className, searching = false, onApply }) {
@@ -28,8 +27,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
   const [zoneValue, setZoneValue] = useState(zone);
   const [cityValue, setCityValue] = useState(city);
 
-  // La ville restreint les zones proposées : proposer un quartier d'une autre
-  // ville mènerait à une liste vide.
   const zoneOptions = (cityValue
     ? zones.filter((z) => String(z.cityId) === String(cityValue))
     : zones
@@ -45,22 +42,15 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
     if (k) next.set("q", k);
     next.set("page", "1");
     navigate(`${ROUTES.SEARCH}?${next.toString()}`);
-    // La navigation relance le rendu : fermer ici plutôt que sur le `submit`
-    // bubblé évite de dépendre de la propagation de l'événement.
     onApply?.();
   };
 
-  // Rien à lancer tant qu'aucun critère n'est renseigné : le bouton se grise,
-  // comme « Appliquer » du panneau d'affinage.
   const hasCriteria = Boolean(tradeValue || cityValue || zoneValue || keyword.trim());
 
   const dense = variant === "sidebar";
   const home = variant === "home";
   const sheet = variant === "sheet";
 
-  // Le référentiel arrive en quelques dizaines de millisecondes et revient
-  // ensuite du cache : afficher un squelette pour si peu produirait un
-  // clignotement. Il n'apparaît qu'au-delà de SKELETON_DELAY_MS.
   const showSkeleton = useDelayedFlag(loading, SKELETON_DELAY_MS);
 
   if (showSkeleton && !dense)
@@ -85,10 +75,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
           <h2 className="text-sm font-bold text-gray-900">Recherche</h2>
         </div>
 
-        {/* La carte reste en place pendant le chargement : seuls les champs
-            se remplissent. Un retour anticipé affichait un bloc de squelettes
-            sans bordure, donc la colonne disparaissait puis réapparaissait -
-            l'inverse du panneau d'affinage, qui reste visible en permanence. */}
         <div className="space-y-4 p-2" aria-busy={showSkeleton || undefined}>
           {showSkeleton ? (
             <>
@@ -134,7 +120,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
                   value={cityValue}
                   onChange={(value) => {
                     setCityValue(value);
-                    // Changer de ville invalide la zone retenue.
                     setZoneValue('');
                   }}
                   options={[
@@ -166,7 +151,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
 
         <div className="border-t border-gray-100 p-2">
           <Button type="submit" size="sm" loading={searching} disabled={!hasCriteria} className="w-full">
-            Rechercher <Search size={16} aria-hidden /> 
+            Rechercher <Search size={16} aria-hidden />
           </Button>
         </div>
       </form>
@@ -174,14 +159,7 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
 
 
   if (sheet)
-    // Reprise à l'identique des quatre champs de la sidebar desktop, dans le
-    // Sheet qui la remplace sur mobile : mot-clé, métier, ville, zone. La
-    // variante `home` ne portait ni la ville ni les libellés, elle servait à la
-    // barre compacte du héros.
     return (
-      // Même cadre que la sidebar : sans lui, les champs flottent sur le Sheet
-      // blanc et la sheet de filtres - qui, elle, garde sa card - paraîtrait
-      // revue. Pas de titre ici, le Sheet en porte déjà un.
       <form onSubmit={onSubmit} className={cn('rounded-md border border-gray-200 bg-white p-2', className)} noValidate>
         <div className="space-y-4 p-2">
         <SearchInput
@@ -219,7 +197,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
             value={cityValue}
             onChange={(value) => {
               setCityValue(value);
-              // Changer de ville invalide la zone retenue.
               setZoneValue('');
             }}
             options={[

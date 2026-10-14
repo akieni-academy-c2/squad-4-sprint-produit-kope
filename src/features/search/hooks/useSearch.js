@@ -5,7 +5,6 @@ import { searchMock } from '@/shared/mocks/appMock.js';
 import { cached } from '@/shared/lib/cache.js';
 import { PAGE_SIZE } from '@/shared/lib/constants.js';
 
-/** Nonce généré une seule fois par session (hors rendu React). */
 const SESSION_NONCE = Math.floor(Math.random() * 1e9);
 
 function seededRandom(seed) {
@@ -19,9 +18,6 @@ function seededRandom(seed) {
   };
 }
 
-/** Mélange les résultats pour rotator l'affichage entre deux recherches.
- *  La graine combine la requête et un nonce de session : l'ordre reste stable
- *  pendant la navigation, mais varie d'une recherche à l'autre. */
 function shuffle(items, seed) {
   const random = seededRandom(seed);
   const copy = [...items];
@@ -108,7 +104,6 @@ export function useSearch({ trade, zone, city, q, available, minRating, minExper
         page: page || 1,
       });
       const items = data?.items ?? [];
-      // Un tri explicite est prioritaire : on ne mélange que l'ordre « recommandé ».
       if (sort === 'rating')
         setResults({ ...data, items: [...items].sort((a, b) => ratingOf(b) - ratingOf(a)) });
       else if (sort === 'experience')

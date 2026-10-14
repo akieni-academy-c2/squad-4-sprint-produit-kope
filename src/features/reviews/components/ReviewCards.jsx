@@ -7,30 +7,7 @@ import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
 import { ReviewCardHeader } from './ReviewCardHeader.jsx';
 import { SPRING } from '@/shared/motion/timing.js';
 
-/**
- * Liste compacte d'avis, sans chargement : la requête est partagée par l'appelant
- * (la fiche publique affiche ce bloc en desktop et en mobile).
- *
- * ## La surface n'est pas blanche
- *
- * Sur la fiche publique, ces avis sont posés sur le **fond pointillé**. Une
- * carte blanche y est un rectangle qui masque le motif - et, surtout, elle se
- * confond avec le bloc « note moyenne » qui la précède : deux surfaces
- * identiques pour deux contenus de nature différente, dont un résumé chiffré et
- * l'autre des témoignages.
- *
- * Le gris très clair sépare les deux sans ajouter de bordure : la bordure est
- * déjà là pour dire « c'est encadré », la couleur pour dire « c'est une autre
- * catégorie ». C'est le même code couleur que les zones neutres du reste de
- * l'application - on n'invente pas une couleur propre aux avis.
- *
- * ## Le survol
- *
- * La carte se soulève de 2 px. Une carte qui bouge sous un pointeur se lit
- * comme cliquable - et l'utilisateur finit par cliquer le vide. C'est pourquoi
- * le mouvement s'arrête là : ni échelle, ni changement de couleur d'action.
- * Le texte reste du texte, et rien n'y est cliquable.
- */
+
 export function ReviewCards({ state, onViewAll }) {
   if (state?.loading || state?.error)
     return <DataState loading={state?.loading} error={state?.error} errorPrefix="Impossible de charger les avis" />;

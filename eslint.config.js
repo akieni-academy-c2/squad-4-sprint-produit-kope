@@ -20,6 +20,7 @@ export default defineConfig([
     rules: {
       'no-unused-vars': ['error', { ignoreRestSiblings: true, argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'curly': ['error', 'multi'],
+      'no-empty': ['error', { allowEmptyCatch: true }],
     },
   },
   {

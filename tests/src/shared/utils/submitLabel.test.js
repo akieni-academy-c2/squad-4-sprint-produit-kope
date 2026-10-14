@@ -40,7 +40,6 @@ describe('libellé du bouton', () => {
   });
 
   it('reste assez court pour tenir sur un bouton', () => {
-    // Le libellé le plus long est celui du mot de passe.
     for (const field of ['firstName', 'lastName', 'phone', 'password', 'confirm', 'consent']) {
       const label = submitLabel({ [field]: IDLE }, [field], 'Créer mon compte');
       expect(label.length, field).toBeLessThanOrEqual(28);

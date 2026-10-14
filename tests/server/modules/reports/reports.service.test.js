@@ -55,9 +55,6 @@ describe('signalements de profils', () => {
       const result = await repository.create({ professionalId: 7, reporterId: 2, reason: 'spam', message: null, targetRole: 'professional' }, db);
 
       const [query, params] = db.query.mock.calls[0];
-      // `target_role` fige le rôle de la cible au moment du signalement : un
-      // client qui devient professionnel plus tard ne doit pas requalifier
-      // rétroactivement les signalements reçus avant.
       expect(query).toContain('INSERT INTO account_reports (professional_id, reporter_id, reason, message, target_role)');
       expect(query).toContain('created_at AS "createdAt"');
       expect(params).toEqual([7, 2, 'spam', null, 'professional']);
@@ -98,9 +95,6 @@ describe('signalements de profils', () => {
   });
 
   describe('service', () => {
-    // Rôle des comptes par défaut : l'auteur est un client, la cible un
-    // professionnel. C'est le cas canonique - seul un client fait basculer le
-    // seuil de sanction automatique, ce que couvrent les tests ci-dessous.
     beforeEach(() => {
       vi.spyOn(repository, 'targetRoleOf').mockImplementation(async (id) =>
         String(id) === '2' ? 'client' : 'professional',
@@ -201,11 +195,6 @@ describe('signalements de profils', () => {
       spy.mockRestore();
     });
 
-    // Un professionnel est une partie prenante : il a un intérêt direct à ce
-    // qu'un concurrent soit bloqué. Compter ses signalements au seuil lui
-    // donnerait, avec quelques comptes coordonnés, le moyen de faire
-    // suspendre une fiche en ligne. Ses signalements restent recevables et
-    // visibles - ils ne font pas basculer de compteur.
     it('ne compte pas les signalements d’un professionnel au seuil de blocage', async () => {
       repository.targetRoleOf.mockImplementation(async (id) => (String(id) === '2' ? 'professional' : 'client'));
 
@@ -237,8 +226,6 @@ describe('signalements de profils', () => {
 
       const result = await service.createReport(2, 7, { reason: 'spam' });
 
-      // Le signalement existe et est rattaché à la cible : c'est
-      // l'administrateur qui décide, pas le compteur.
       expect(result.id).toBe(401);
       expect(result.targetRole).toBe('client');
     });
@@ -249,8 +236,6 @@ describe('signalements de profils', () => {
       vi.spyOn(contactsRepository, 'hasContactBetween').mockResolvedValue(false);
       vi.spyOn(repository, 'exists').mockResolvedValue(false);
 
-      // Sans contact, signaler reviendrait à ouvrir un canal aveugle :
-      // n'importe quel identifiant serait acceptable.
       await expect(service.reportContact(2, 5, { reason: 'spam' })).rejects.toMatchObject({ status: 404 });
     });
 
@@ -276,11 +261,8 @@ describe('signalements de profils', () => {
 
   describe('signalement d’un avis', () => {
     it('refuse un avis qui n’est pas sur la fiche du demandeur', async () => {
-      // La jointure du repository porte le contrôle : un avis reçu par un autre
-      // professionnel n’est simplement pas trouvé.
       vi.spyOn(repository, 'findReceivedReview').mockResolvedValue(null);
 
-      // 404 et non 403 : ne pas révéler qu'un avis existe ailleurs.
       await expect(service.reportReview(7, 42, { reason: 'false' })).rejects.toMatchObject({ status: 404 });
     });
 
@@ -300,8 +282,6 @@ describe('signalements de profils', () => {
 
       const result = await service.reportReview(7, 42, { reason: 'false' });
 
-      // Retirer un avis engage la réputation de son auteur autant que celle du
-      // professionnel : c'est une décision humaine, pas un compteur.
       expect(result.id).toBe(600);
       expect(block).not.toHaveBeenCalled();
       expect(suspend).not.toHaveBeenCalled();

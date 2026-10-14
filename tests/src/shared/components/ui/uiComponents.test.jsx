@@ -56,7 +56,6 @@ describe('BottomNav', () => {
     const html = renderToStaticMarkup(
       <BottomNav items={items} active="avis" onChange={() => {}} />,
     );
-    // `role="tab"` était invalide : pas de tablist ni de tabpanel.
     expect(html).not.toContain('role="tab"');
     expect(html).not.toContain('aria-selected');
     expect(html.split('aria-current="page"').length - 1).toBe(1);
@@ -76,21 +75,16 @@ describe('BottomNav', () => {
       <BottomNav items={manyItems} active="a" onChange={() => {}} ariaLabel="Navigation" />,
     );
 
-    // La barre compte au maximum cinq cellules : quatre destinations et le
-    // bouton Menu. Compter le Menu à part donnerait six icônes sur 360 px, soit
-    // ~60 px chacune - sous la cible tactile confortable.
     expect(html.split('<button').length - 1).toBe(5);
     expect(html).toContain('S-A');
     expect(html).toContain('S-D');
     expect(html).not.toContain('S-E');
     expect(html).not.toContain('S-F');
-    // Le menu est un dialogue (Sheet), pas un simple lien.
     expect(html).toContain('aria-haspopup="dialog"');
     expect(html).toContain('aria-expanded="false"');
   });
 
   it('affiche les 5 onglets du compte client sans Menu', () => {
-    // Cas réel du compte client : 5 sections, aucune derrière un « Menu ».
     const html = renderToStaticMarkup(
       <BottomNav items={manyItems.slice(0, 5)} active="a" onChange={() => {}} />,
     );
@@ -114,7 +108,6 @@ describe('BottomNav', () => {
       <BottomNav items={manyItems} active="f" onChange={() => {}} />,
     );
 
-    // Aucune destination visible n'est active, seule la poignée Menu l'est.
     expect(html.split('bg-primary-50 text-primary-500').length - 1).toBe(1);
     expect(html).not.toContain('aria-current="page"');
   });

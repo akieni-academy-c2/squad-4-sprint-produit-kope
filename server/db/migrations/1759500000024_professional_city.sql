@@ -1,13 +1,9 @@
--- Ville d'exercice du professionnel.
+-- Ville d'exercice, issue du catalogue `cities` configuré par l'administrateur :
+-- aucune ville n'est saisie en dur.
 --
--- Elle vient du catalogue `cities`, que l'administrateur configure depuis
--- l'espace admin - aucune ville n'est saisie en dur. Nullable : les profils
--- créés avant cette colonne n'ont pas de ville, et les rendre obligatoires
--- les mettrait hors conformité au premier enregistrement.
---
--- Le lien n'est pas déductible des zones : une zone appartient à une ville,
--- mais un professionnel peut exercer sur des zones de plusieurs villes. La
--- colonne porte donc sa propre valeur.
+-- Nullable : les profils antérieurs n'ont pas de ville. Non déductible des zones,
+-- une zone appartient à une ville mais un professionnel peut exercer sur des
+-- zones de plusieurs villes.
 ALTER TABLE professionals
   ADD COLUMN city_id smallint REFERENCES cities(id) ON DELETE SET NULL;
 

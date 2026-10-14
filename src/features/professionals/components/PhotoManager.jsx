@@ -12,9 +12,6 @@ import { cn } from '@/shared/utils';
 
 const MIN_SLOTS = 3;
 
-// Pas de panneau de filtres ici, contrairement aux autres sections : le
-// portfolio est plafonné (MAX_PHOTOS) et se parcourt d'un regard. Une recherche
-// sur dix éléments n'apporte rien et coûterait une colonne sur desktop.
 export function PhotoManager({ photos = [], onChange }) {
   const { toast } = useNotification();
   const [submitting, setSubmitting] = useState(false);
@@ -48,8 +45,7 @@ export function PhotoManager({ photos = [], onChange }) {
     setEditing(null);
   };
 
-  /** Contrôles côté client avant d'envoyer le fichier : le serveur les revalide. */
-  const checkFile = (file) => {
+   const checkFile = (file) => {
     if (!ALLOWED_MIME.includes(file.type)) return 'Format non autorisé : seulement JPG ou PNG.';
     if (file.size > MAX_FILE_SIZE_BYTES) return 'Fichier trop volumineux (max 5 Mo).';
     return null;

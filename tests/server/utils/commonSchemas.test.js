@@ -105,8 +105,6 @@ describe('intégration des règles dans les formulaires', () => {
       phone: '061234567',
       password: 'Motdepasse1',
       consent: true,
-      // Le serveur exige la version lue. Une inscription sans elle est une
-      // inscription dont on ne saura pas, plus tard, ce que le compte a accepté.
       termsVersion: TERMS_VERSION,
     };
     expect(registerClientSchema.safeParse(base).success).toBe(true);

@@ -33,13 +33,6 @@ const TITLES = {
 const FILTERED_SECTIONS = new Set(['professionals', 'reviews', 'reports', 'trades', 'zones', 'users']);
 
 export function AdminDashboardPage() {
-  // Filtres d'ouverture, attachés à la section qui les a demandés.
-  //
-  // Un simple `useState` survivrait au changement de section : ouvrir
-  // « Signalements » depuis un KPI, puis revenir par l'URL ou le bouton
-  // « retour » afficherait encore ce filtre-là. La portée suit donc la section
-  // qui l'a demandé - pas d'effet pour la purger, la valeur cesse simplement
-  // d'être lue dès que la section change.
   const [pendingFilters, setPendingFilters] = useState(null);
 
   const openSection = useCallback((id, filters = {}) => {
@@ -55,8 +48,6 @@ export function AdminDashboardPage() {
       filteredSections={FILTERED_SECTIONS}
       navAriaLabel="Sections d’administration"
       className="container-kop page-padding pb-24 lg:pb-8"
-      // `onNavigate` ne renvoie rien : `DashboardShell` appelle ensuite `goTo`,
-      // qui est la seule chose qui écrit dans l'URL.
       onNavigate={(id, filters) => {
         openSection(id, filters);
         return id;
@@ -64,8 +55,6 @@ export function AdminDashboardPage() {
       renderSection={(active, rightContainer) => {
         const section = active || 'overview';
         const sectionFilters = pendingFilters?.section === section ? pendingFilters.filters : {};
-        // `key` force le remontage, sinon les filtres d'initialisation ne
-        // s'appliqueraient jamais au second passage dans la même section.
         const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
 
         return (

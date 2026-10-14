@@ -34,13 +34,6 @@ export function invalidateReferenceCache() {
   cacheInvalidate('reference:');
 }
 
-/**
- * Lecture synchrone du cache, sans requête ni promesse.
- *
- * Permet au hook de démarrer avec des données déjà en mémoire : sans cela, un
- * simple aller-retour sur la page réaffiche les squelettes pendant une frame,
- * alors que la réponse est disponible immédiatement.
- */
 export function peekReferenceData() {
   return {
     trades: cacheGet('reference:trades'),

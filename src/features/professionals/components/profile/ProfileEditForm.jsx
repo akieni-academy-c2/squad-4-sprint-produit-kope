@@ -9,14 +9,7 @@ import { Textarea } from '@/shared/components/ui/Textarea.jsx';
 import { DESC_MAX, DESC_MIN } from './profileForm.js';
 import { ProfileSection } from './ProfileSection.jsx';
 
-/**
- * `{ status, total }` attendu par `FormField`.
- *
- * Un champ absent de `statuses` - le cas tant qu'aucune saisie n'a eu lieu -
- * rend `undefined` et non un objet vide : `FormField` teste
- * `liveStatus?.status === OK`, un objet `{ status: undefined }` passerait le
- * `&&` et poserait une ligne d'état vide sous le champ.
- */
+
 function statusOf(statuses, field) {
   const status = statuses?.[field];
   return status ? { status, missing: 0, total: 1 } : undefined;
@@ -41,12 +34,6 @@ export function ProfileEditForm({
 }) {
   const descLen = String(values.description ?? '').length;
 
-  // Brazzaville par défaut : c'est la ville de la quasi-totalité des
-  // professionnels de la démo, et laisser le champ vide les forcerait à
-  // descendre le voir avant de choisir quoi que ce soit. Le défaut est
-  // appliqué à la ville *affichée*, pas enregistré : tant que le formulaire
-  // n'est pas soumis, `cityId` reste vide et le professionnel peut changer
-  // d'avis sans avoir modifié quoi que ce soit.
   const defaultCity = cities.find((c) => /brazzaville/i.test(c.name)) ?? null;
   const effectiveCityId = values.cityId ?? defaultCity?.id ?? null;
   const cityZones = zones.filter((z) => String(z.cityId) === String(effectiveCityId));
@@ -100,12 +87,6 @@ export function ProfileEditForm({
             liveStatus={statusOf(accountStatuses, 'phone')}
             hint={MOBILE_HINT}
           >
-            {/*
-              Même composant que l'inscription et la connexion : un numéro se
-              saisit partout de la même façon, indicatif compris. Trois
-              implémentations du même champ auraient divergé au premier ajustement
-              - et c'est ce qui s'était produit.
-            */}
             <PhoneInput
               id="pe-phone"
               value={account.phone}
@@ -121,19 +102,14 @@ export function ProfileEditForm({
             error={errors.whatsapp}
             help="Laissez vide pour utiliser votre numéro de compte."
           >
-            {/* Même champ, même indicatif : un lien WhatsApp doit partir du même
-                numéro que celui affiché sur la fiche. */}
-            <PhoneInput
+             <PhoneInput
               id="pe-whatsapp"
               value={values.whatsapp}
               onChange={(value) => setField('whatsapp', value)}
               error={errors.whatsapp}
             />
           </FormField>
-          {/* En dernier : c'est le canal de repli, celui que le professionnel
-              renseigne le moins souvent. Laisser le téléphone et WhatsApp côte à
-              côte, puis l'e-mail, suit l'ordre de préférence du contact. */}
-          <FormField
+           <FormField
             id="pe-email"
             type="email"
             label="E-mail"
@@ -191,8 +167,6 @@ export function ProfileEditForm({
             />
           </FormField>
 
-          {/* Le catalogue vient de l'espace admin : aucune ville n'est saisie en
-              dur, un administrateur peut en ajouter sans intervention du code. */}
           <FormField id="pe-city" label="Ville" error={errors.cityId}>
             <CustomSelect
               id="pe-city"
@@ -227,17 +201,7 @@ export function ProfileEditForm({
           />
         </div>
 
-        {/* La ville passe avant les zones, et pas seulement dans l'ordre du
-            formulaire : elle les restreint. Une zone appartient à une ville
-            (`zones.city_id`), et proposer celles de Pointe-Noire pendant qu'on
-            a choisi Brazzaville conduit à un profil incohérent - on ne peut pas
-            être à la fois dans les deux.
-
-            Changer de ville ne vide pas la sélection : elle reste visible pour
-            que l'utilisateur voie pourquoi elle ne convient plus, et le serveur
-            la refusera à l'enregistrement. */}
-        <div className="mt-4">
-          {/* Les zones affichées sont celles de la ville choisie - rien d'autre. */}
+         <div className="mt-4">
           <MultiSelect
             label="Zones"
             required
@@ -256,8 +220,6 @@ export function ProfileEditForm({
       </ProfileSection>
 
       <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
-        {/* Le libellé ne dit pas « Enregistrer » tant qu'un champ est incomplet :
-            un bouton grisé sans dire quoi corriger est une impasse. */}
         {submitHint && (
           <span aria-live="polite" className="text-xs text-gray-500">
             {submitHint}

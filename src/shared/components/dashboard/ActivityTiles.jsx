@@ -2,24 +2,8 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { formatDateFr } from '@/shared/utils';
 
-/**
- * Tuiles d'aperçu, partagées par les deux tableaux de bord.
- *
- * Un aperçu n'a pas à avoir deux rendus : le client et le professionnel
- * regardent les mêmes choses - un contact, un avis - et une différence de
- * dessin entre les deux espaces ferait croire à une différence de données.
- *
- * Colonne et non rangée : les items sont posés sur deux colonnes jusqu'à `lg`,
- * donc chacun ne dispose que de la moitié de la largeur du groupe. Une ligne
- * avatar / texte / meta y garderait le texte à une quarantaine de pixels, la
- * moitié de ce qu'il avait déjà en pleine largeur. Empilé, le même contenu tient
- * sur cinq lignes courtes.
- *
- * `mt-auto` sur la meta la colle au bas de la tuile : sans elle, deux items
- * voisins d'une hauteur différente aligneraient leurs dates sur des lignes
- * différentes et la grille apparaîtrait bancale.
- */
-export function ActivityTile({ onClick, label, children }) {
+
+function ActivityTile({ onClick, label, children }) {
   return (
     <li className="min-w-0">
       <button
@@ -34,13 +18,7 @@ export function ActivityTile({ onClick, label, children }) {
   );
 }
 
-/**
- * Un avis dans un aperçu.
- *
- * `subtitle` porte la ligne sous le nom - métier pour un avis donné, extrait
- * pour un avis reçu. Le composant ne suppose pas lequel : les deux espaces ont
- * des informations différentes à montrer sous le même nom.
- */
+
 export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onClick, actionLabel }) {
   return (
     <ActivityTile onClick={onClick} label={actionLabel}>
@@ -65,13 +43,7 @@ export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onCli
   );
 }
 
-/**
- * Un contact dans un aperçu.
- *
- * La ligne basse dit qui a pris l'initiative : c'est elle qui change la lecture
- * d'un contact, un professionnel qui m'a écrit et moi qui l'ai joint ne se
- * relisent pas de la même façon.
- */
+
 export function ContactTile({ contact, onClick, actionLabel }) {
   const name = contact.displayName || 'Utilisateur';
 
@@ -103,7 +75,7 @@ export function ContactTile({ contact, onClick, actionLabel }) {
   );
 }
 
-/** État vide des listes : bordure pointillée, comme dans l'espace admin. */
+
 export function OverviewEmpty({ children }) {
   return (
     <p className="w-full min-w-0 rounded-[14px] border border-dashed border-gray-200 bg-[#f7faf8] p-6 text-center text-sm text-gray-500">
@@ -113,7 +85,7 @@ export function OverviewEmpty({ children }) {
 }
 
 
-/** Squelette de tuile : la hauteur réelle d'une tuile, pas celle d'une ligne. */
+
 export function TileSkeleton() {
   return (
     <div className="h-[152px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />

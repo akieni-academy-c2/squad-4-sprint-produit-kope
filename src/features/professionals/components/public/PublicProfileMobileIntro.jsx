@@ -2,18 +2,19 @@ import { MapPin, Star } from 'lucide-react';
 import { Link } from '@/shared/components/ui/Link.jsx';
 import { Badge } from '@/shared/components/ui/Badge.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery.js';
 import { ROUTES } from '@/shared/lib/constants.js';
-import { CITY, initialsOf } from './profileView.js';
+import { ABOUT_FALLBACK, ABOUT_HEADING, CITY, initialsOf } from './profileView.js';
+import { TagList } from './TagList.jsx';
 
-/** En-tête et présentation « À propos » visibles uniquement sur mobile. */
 export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
-  const { tradeName, zones, tags, avg, count, avatarSrc, localisation } = view;
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const { tradeName, zones, tags, avg, count, avatarSrc, localisation, hasAbout } = view;
+
+  if (isDesktop) return null;
 
   return (
-    <div className="lg:hidden">
-      {/* Au-dessus de la card, pas dedans : le fil est une hiérarchie de
-          navigation, elle précède ce qu'elle désigne. Le desktop le garde
-          dans RealizationsSection, où la card n'existe pas. */}
+    <div>
       <nav aria-label="Fil d'Ariane" className="mb-3 px-2 text-sm text-gray-500">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
@@ -38,7 +39,8 @@ export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
                 <img
                   src={avatarSrc}
                   alt={profile.displayName}
-                  loading="lazy"
+                  loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   className="h-full w-full object-cover"
                 />
@@ -82,32 +84,31 @@ export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
       </Card>
 
       <section className="mt-6 space-y-4">
-        <h2 className="text-xl font-bold text-gray-900">À propos de moi</h2>
-        {/* Sans fond ni bordure : sur mobile la page est déjà blanche. La Card
-            par-dessus posait un second niveau de surface sous un titre qui
-            était, lui, posé directement sur le fond de la page. */}
-        <Card className="space-y-4 border-none! bg-transparent!">
-          {profile.description && (
-            <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
-          )}
-          {zones.length > 0 && (
-            <>
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold text-gray-900">Zone d'intervention : </span>
-              </p>
-              <p className="space-x-2">{zones.map((zone) => <Badge key={zone}>{zone}</Badge>)}</p>
-            </>
-          )}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </Card>
+        <h2 className="text-xl font-bold text-gray-900">{ABOUT_HEADING}</h2>
+        {hasAbout ? (
+          <Card className="space-y-4 border-none! bg-transparent!">
+            {profile.description && (
+              <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
+            )}
+            {zones.length > 0 && (
+              <>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold text-gray-900">Zone d'intervention : </span>
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {zones.map((zone) => (
+                    <Badge key={zone} variant="neutral" size="sm">
+                      {zone}
+                    </Badge>
+                  ))}
+                </div>
+              </>
+            )}
+            {tags.length > 0 && <TagList tags={tags} />}
+          </Card>
+        ) : (
+          <p className="text-sm text-gray-500">{ABOUT_FALLBACK}</p>
+        )}
       </section>
     </div>
   );

@@ -3,27 +3,13 @@ import { Menu } from 'lucide-react';
 import { cn } from '@/shared/utils';
 import { Sheet } from './Sheet.jsx';
 
-/**
- * La barre ne dépasse jamais cinq cellules, bouton « Menu » compris.
- *
- * Cinq destinations quand la liste tient exactement dedans - c'est le compte
- * client, le plus large ensemble de sections. Au-delà, une cellule est prise par
- * le « Menu » et les destinations visibles passent à quatre : compter le Menu
- * à part donnerait six cellules, une de trop, et sur un mobile de 360 px chaque
- * icône seFIND à ~60 px au lieu de ~72.
- *
- * Cinq, et non quatre dans le cas courant : à quatre, le profil du client
- * disparaissait derrière un « Menu », un onglet accessible en un geste de plus
- * que tous les autres.
- */
+
 const MAX_CELLS = 5;
 
 export function BottomNav({ items, active, onChange, ariaLabel }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const hasOverflow = items.length > MAX_CELLS;
-  // Le « Menu » occupe une cellule : on le compte avant de choisir combien de
-  // destinations laisser visibles.
   const visibleCount = hasOverflow ? MAX_CELLS - 1 : items.length;
   const visibleItems = items.slice(0, visibleCount);
   const overflowItems = items.slice(visibleCount);
@@ -45,16 +31,9 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
             <li key={id} className="min-w-0 flex-1">
               <button
                 type="button"
-                // Ce sont des boutons de navigation, pas des onglets ARIA :
-                // `aria-current` est le signal correct (pas de tabpanel ici).
-                // Une entrée `isAction` ouvre une fenêtre : la page n'a pas
-                // changé de section, l'annoncer comme active serait faux.
                 aria-current={!isAction && active === id ? 'page' : undefined}
                 onClick={() => onChange(id)}
                 className={cn(
-                  // `text-[10px]` : cinq cellules sur un mobile de 360 px donnent ~72 px par
-                  // icône, « Professionnels » dans l'espace admin ne tient pas
-                  // au-dessus.
                   'flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition',
                   !isAction && active === id
                     ? 'bg-primary-50 text-primary-500'

@@ -2,17 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-/**
- * Règle de visibilité selon le rôle connecté.
- *
- *   non connecté  → tout visible, logo vers la home
- *   client         → « Comment ça marche » visible, logo vers son espace
- *   professionnel → ni « Comment ça marche » ni « Devenir prestataire », logo vers son espace
- *   administrateur → idem professionnel, logo vers l'administration
- *
- * Ces tests verrouillent la règle : la condition vit dans AuthContext, mais
- * chaque surface doit rester cohérente avec elle.
- */
+
 
 const { authState } = vi.hoisted(() => ({ authState: { current: null, loading: false } }));
 
@@ -32,8 +22,6 @@ vi.mock('@/shared/context/AuthModalContext.jsx', () => ({
   useAuthModal: () => ({ open: vi.fn() }),
 }));
 
-// La home déclenche plusieurs appels réseau : on les neutralise pour n'observer
-// que la structure rendue.
 vi.mock('@/shared/hooks/useAsyncData.js', () => ({
   useAsyncData: () => ({ data: { items: [] }, loading: false, error: null, reload: vi.fn() }),
 }));
@@ -73,7 +61,6 @@ describe('Navbar', () => {
   });
 
   it('envoie le logo vers la recherche pour un client', () => {
-    // Un client n'a pas de page à gérer : la recherche est son point d'entrée.
     connectAs('client');
     expect(render(<Navbar />)).toContain('href="/search"');
   });
@@ -110,7 +97,6 @@ describe('Recherche dans la navigation', () => {
   it('reste un lien simple si non connecté', () => {
     const html = render(<Navbar />);
 
-    // Pas d'apparence de bouton : le visiteur n'a pas d'action principale.
     expect(html).toContain('Trouver un professionnel');
     expect(html).toContain('href="/search"');
     expect(html).not.toContain('border-gray-300 bg-white/25');
@@ -135,7 +121,6 @@ describe('Recherche dans la navigation', () => {
   });
 
   it('continue de mener vers /search', () => {
-    // Le style change, la destination non : c'est la même action.
     connectAs('professional');
 
     const html = render(<Navbar />);
@@ -145,9 +130,6 @@ describe('Recherche dans la navigation', () => {
   });
 
   it('n\'affiche qu\'un seul lien de recherche par surface', () => {
-    // Trois surfaces portent la recherche : la nav desktop, l'icône du header
-    // mobile et la ligne du Sheet. Chacune n'en propose qu'une, mais le total
-    // monte à trois - d'où le plafond, et non « au plus deux ».
     for (const role of [null, 'client', 'professional', 'admin']) {
       connectAs(role);
       const desktop = render(<Navbar />);
@@ -191,18 +173,13 @@ describe('HomePage', () => {
   it('garde le reste de la page intact', () => {
     const html = render(<HomePage />);
 
-    // Le hero et la FAQ ne dépendent pas du rôle : ils doivent survivre.
     expect(html).toContain('Le bon artisan');
     expect(html).toContain('Faut-il un compte pour chercher');
   });
 });
 
 describe('Redirection de /', () => {
-  /**
-   * `<Navigate>` ne se déclenche qu'au montage, donc le rendu statique ne peut
-   * pas l'observer. C'est la décision - fonction pure - qui est testée ici, et
-   * le composant ne fait plus qu'appliquer son résultat.
-   */
+
   it('renvoie le client vers la recherche et les autres vers leur gestion', () => {
     expect(landingHrefFor({ role: 'client' })).toBe('/search');
     expect(landingHrefFor({ role: 'professional' })).toBe('/dashboard/pro');
@@ -222,8 +199,6 @@ describe('Redirection de /', () => {
   });
 
   it('laisse l\'espace client accessible depuis le menu', () => {
-    // Le logo mène à la recherche, mais le tableau de bord ne disparaît pas :
-    // il reste atteignable par « Mon espace ».
     expect(dashboardHref('client')).toBe('/dashboard/client');
   });
 
@@ -232,8 +207,6 @@ describe('Redirection de /', () => {
   });
 
   it('n\'affiche rien avant la fin du chargement de session', () => {
-    // `user` est encore inconnu : décider maintenant afficherait la home avant
-    // de la quitter, visible à chaque rechargement.
     connectAs('client');
     authState.loading = true;
 

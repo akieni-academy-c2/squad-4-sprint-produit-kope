@@ -55,7 +55,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
               <span className="truncate">{formatPhoneFR(user.phone)}</span>
             </p>
           )}
-          
+
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-1">

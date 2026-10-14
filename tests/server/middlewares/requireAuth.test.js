@@ -2,19 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { requireAuth } from '@server/middlewares/requireAuth.js';
 import { requireRole } from '@server/middlewares/requireRole.js';
 
-// requireAuth relit l'état du compte en base : on isole cette dépendance.
 vi.mock('@server/modules/auth/auth.repository.js', () => ({
   getAccountState: vi.fn(),
 }));
 
 const { getAccountState } = await import('@server/modules/auth/auth.repository.js');
 
-/** Compte actif par défaut ; chaque test surcharge ce qu'il lui faut. */
+
 function account(overrides = {}) {
   return { role: 'client', blockedAt: null, suspendedAt: null, ...overrides };
 }
 
-/** Requête portant une session ouverte. */
+
 function withSession(user, extra = {}) {
   return { headers: {}, session: { user }, ...extra };
 }
@@ -111,7 +110,6 @@ describe('requireRole', () => {
   });
 
   it('ignore un rôle périmé : le rôle en base fait foi', async () => {
-    // Rétrogradé depuis l'ouverture de la session.
     getAccountState.mockResolvedValue(account({ role: 'client' }));
     const mw = requireRole('admin');
     await expect(runRole(mw, withSession({ id: 1, role: 'admin' }))).rejects.toThrow(/Accès refusé/);

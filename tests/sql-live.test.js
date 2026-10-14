@@ -6,16 +6,7 @@ import { listUsers, countUsers, listTrades, listZones, listCities, listTradeCate
 import { getAccountState } from '../server/modules/auth/auth.repository.js';
 import { consumeRateLimitSlot, purgeRateLimits } from '../server/utils/rateLimitStore.js';
 
-/**
- * Tests du SQL RÉELLEMENT exécuté par PostgreSQL.
- *
- * Tous les autres tests mockent `db.query` : une requête acceptant n'importe
- * quelle chaîne y passe. C'est ainsi qu'un `u.role = $1` avec un enum a pu
- * rendre /admin/users inexploitable (500) sans qu'aucun test ne le voie.
- *
- * La suite est ignorée si DATABASE_URL est absente ou injoignable :
- * `npm test` reste vert sans base, `npm run test:db` exécute ces tests.
- */
+
 
 function readDotEnv() {
   const file = path.resolve('.env');
@@ -32,20 +23,15 @@ function readDotEnv() {
   );
 }
 
-// Un pool dédié : celui de l'application est figé sur la variable factice du setup.
 const url = readDotEnv().DATABASE_URL || process.env.KOPE_TEST_DATABASE_URL;
 const enabled = Boolean(url);
 let pool;
 let reachable = false;
 
-/** Fenêtre du limiteur : 15 minutes, comme le défaut de `consumeRateLimitSlot`. */
+
 const RATE_WINDOW_MS = 15 * 60_000;
 
-/**
- * Test nécessitant la base. Si celle-ci est injoignable (réseau coupé, machine
- * éteinte), le test est ignoré et non mis en échec : une coupure réseau ne doit
- * pas faire échouer la suite locale.
- */
+
 function itDb(name, fn) {
   it(name, async (ctx) => {
     if (!reachable) return ctx.skip();
@@ -60,14 +46,12 @@ describe.skipIf(!enabled)('SQL reel', () => {
       await pool.query('SELECT 1');
       reachable = true;
     } catch {
-      // Base injoignable : on ferme le pool et tous les tests seront ignorés.
       await pool.end().catch(() => {});
       pool = null;
     }
   });
 
   afterAll(async () => {
-    // Ces tests visent la vraie base : on ne laisse pas de données derrière.
     if (pool && reachable)
       await pool.query("DELETE FROM rate_limits WHERE key LIKE 'test:%'").catch(() => {});
     await pool?.end().catch(() => {});
@@ -112,9 +96,6 @@ describe.skipIf(!enabled)('SQL reel', () => {
   });
 
   describe('répertoires du catalogue', () => {
-    // Ces requêtes agrègent avec ORDER BY sur une colonne de la table jointe :
-    // PostgreSQL exige qu'elle figure dans le GROUP BY. Une omission rendait
-    // /admin/trades et /admin/zones inexploitables (500).
     itDb('liste les métiers', async () => {
       const rows = await listTrades(pool);
       expect(Array.isArray(rows)).toBe(true);
@@ -137,8 +118,6 @@ describe.skipIf(!enabled)('SQL reel', () => {
   });
 
   describe('filtre par ville', () => {
-    // Le sélecteur « Ville » était exposé dans l'interface mais la requête SQL
-    // n'utilisait pas le paramètre : le filtre ne faisait rien.
     itDb('filtre réellement sur la ville', async () => {
       const all = await listProfessionals({ limit: 100, offset: 0, q: null, status: null, sort: null, city: null }, pool);
       const rows = await listProfessionals(
@@ -176,7 +155,6 @@ describe.skipIf(!enabled)('SQL reel', () => {
       );
       const ids = rows.map((r) => r.id);
       const { rows: check } = await pool.query(
-        // DISTINCT : un professionnel peut couvrir plusieurs zones de la ville.
         `SELECT DISTINCT p.user_id FROM professionals p
            JOIN professional_zones pz ON pz.professional_id = p.user_id
            JOIN zones z ON z.id = pz.zone_id
@@ -189,13 +167,10 @@ describe.skipIf(!enabled)('SQL reel', () => {
   });
 
   describe('rate limiter partagé', () => {
-    // En mémoire, chaque instance a son propre compteur : en serverless la
-    // limite n'est jamais atteinte. Le store PostgreSQL la rend commune.
     itDb('compte de façon partagée entre deux instances', async () => {
       const key = `test:rl:${Date.now()}`;
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(1);
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(2);
-      // « Deuxième instance » : nouveau processus, même base.
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(3);
     });
 

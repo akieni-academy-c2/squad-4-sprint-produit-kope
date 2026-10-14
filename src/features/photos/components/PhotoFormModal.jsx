@@ -34,8 +34,6 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
     reset();
   };
 
-  // Bouton actif seulement si les champs sont valides et, en création,
-  // si une image a été choisie : inutile d'envoyer un formulaire incomplet.
   const { ready } = useFormReadiness(addPhotoSchema, { title, description });
   const canSubmit = ready && Boolean(photo || file);
 

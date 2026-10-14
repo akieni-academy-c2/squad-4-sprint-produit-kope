@@ -16,15 +16,7 @@ const phoneSchema = z
     return n;
   });
 
-/**
- * Adresse e-mail de contact - aligné sur `emailSchema` de
- * server/utils/commonSchemas.js, qui fait foi.
- *
- * `nullish` couvre absent, chaîne vide et `null` : le champ est facultatif et
- * effaçable, vider doit rester possible. Les trois finissent en `null`. Sans
- * lui, un formulaire jamais touché - aucun `email` dans l'objet - serait
- * refusé et « Enregistrer » resterait éteint en permanence.
- */
+
 const emailSchema = z
   .string()
   .trim()
@@ -35,11 +27,7 @@ const emailSchema = z
   .refine((v) => !v || z.email().safeParse(v).success, 'Adresse e-mail invalide')
   .transform((v) => v || null);
 
-/**
- * Doit rester aligné sur `passwordSchema` de server/utils/commonSchemas.js :
- * c'est lui qui fait foi. Un écart afficherait un état vert sur une valeur
- * que le serveur refusera.
- */
+
 const passwordSchema = z
   .string({ error: 'Le mot de passe est obligatoire' })
   .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
@@ -55,10 +43,7 @@ const consentSchema = z
   .boolean({ error: CONSENT_REQUIRED })
   .refine((v) => v === true, CONSENT_REQUIRED);
 
-/**
- * Nom de personne réel : lettres, espaces, tirets et apostrophes.
- * Aligné sur `personNameSchema` (serveur).
- */
+
 const personNameSchema = (label) =>
   z
     .string({ error: `Le ${label} est obligatoire` })
@@ -70,7 +55,7 @@ const personNameSchema = (label) =>
       'Lettres, espaces, tirets et apostrophes uniquement',
     );
 
-/** Nom affiché / pseudonyme, aligné sur `displayNameSchema` (serveur). */
+
 const displayNameSchema = z
   .string({ error: 'Le nom affiché est obligatoire' })
   .trim()
@@ -133,20 +118,6 @@ export const updateAccountSchema = z.object({
   email: emailSchema,
 });
 
-export const changePasswordSchema = z.object({
-  currentPassword: z.string({ error: 'Champ obligatoire' }).trim().min(1, 'Champ obligatoire'),
-  newPassword: passwordSchema,
-});
-
-export const registerProfessionalSchema = z.object({
-  displayName: displayNameSchema,
-  phone: phoneSchema,
-  password: passwordSchema,
-  tradeId: idSchema('Choisissez un métier'),
-  zoneIds: zoneIdsSchema,
-  consent: consentSchema,
-});
-
 export const updateProfileSchema = z.object({
   displayName: displayNameSchema,
   tradeId: idSchema('Choisissez un métier'),
@@ -179,8 +150,6 @@ export const updateProfileSchema = z.object({
       })
       .nullish(),
   ),
-  // Aligné sur `updateProfileSchema` serveur : la ville est facultative,
-  // `null` et `''` signifient tous deux « non renseignée ».
   cityId: z.preprocess(
     (v) => (v === '' || v == null ? null : Number(v)),
     z.number({ error: 'Choisissez une ville' }).int().positive().max(32767).nullish(),

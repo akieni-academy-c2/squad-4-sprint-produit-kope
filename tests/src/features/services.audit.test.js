@@ -8,14 +8,7 @@ import * as contactsApi from '@/features/contacts/services/contacts.service.js';
 import * as referenceApi from '@/features/reference/services/reference.service.js';
 import { searchProfessionals } from '@/features/search/hooks/useSearch.js';
 
-/**
- * Audit des actions utilisateur et administrateur, exécutées dans le mode par
- * défaut de l'application (démo, sans backend).
- *
- * Chaque action est vérifiée sur son effet OBSERVABLE, et pas seulement sur
- * « la promesse ne lève pas » : un mock qui accepte l'appel sans rien changer
- * produit un bouton mort, ce que ce fichier doit détecter.
- */
+
 
 const unique = (prefix) => `${prefix} ${Date.now()}${Math.floor(Math.random() * 1000)}`;
 const blockable = (user) => user.role === 'client' || user.role === 'professional';
@@ -248,8 +241,6 @@ describe('audit - actions administration', () => {
       const { items, total } = await adminApi.listUsers({ pageSize: 200 });
       expect(total).toBeGreaterThan(0);
       expect(items.length).toBe(total);
-      // Un identifiant dupliqué casse la clé React ET rend le blocage ambigu :
-      // deux lignes désignent alors le même compte.
       expect(new Set(items.map((u) => u.id)).size).toBe(items.length);
     });
 
@@ -305,9 +296,6 @@ describe('audit - actions administration', () => {
     });
 
     it('crée un administrateur qui apparaît dans la liste', async () => {
-      // Préfixe « 99 » : les numéros de démonstration existants commencent par
-      // « 1 », « 5 » ou « 06 », aucune collision possible avec la règle
-      // d'unicité du numéro.
       const phone = `+2420699${String(Math.floor(Math.random() * 100000)).padStart(5, '0')}`;
       const created = await adminApi.createAdmin({
         firstName: 'Ada',

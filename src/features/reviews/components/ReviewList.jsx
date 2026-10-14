@@ -13,8 +13,6 @@ import { ReviewAuthor } from './ReviewAuthor.jsx';
 export function ReviewList({ professionalId }) {
   const [page, setPage] = useState(1);
 
-  // Le fetch était une quatrième recopie du même effet, sans garde de course :
-  // changer de page vite pouvait voir l'ancienne réponse écraser la nouvelle.
   const load = useCallback(
     () => listReviews(professionalId, { page, pageSize: PAGE_SIZE }),
     [professionalId, page],

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { idSchema, paginationSchema } from '../../utils/commonSchemas.js';
 
-/** US-14 CA2 */
 export const createReviewSchema = z.object({
   rating: z
     .number({ error: 'La note est obligatoire' })
@@ -16,13 +15,7 @@ export const createReviewSchema = z.object({
     .transform((value) => value || null),
 });
 
-/**
- * Correction d'un avis déjà déposé.
- *
- * `rating` est obligatoire : un PATCH ne doit pas pouvoir vider un avis en
- * n'envoyant que `comment`. Le service rejette un corps sans note, donc
- * l'obligation est vérifiée des deux côtés.
- */
+
 export const updateReviewSchema = z.object({
   rating: z
     .number({ error: 'La note est obligatoire' })
@@ -37,19 +30,11 @@ export const updateReviewSchema = z.object({
     .transform((value) => value || null),
 });
 
-/** Masquage : l'avis reste attaché au professionnel, seul le client le retire
- *  de sa fiche. `false` le réaffiche. */
 export const reviewVisibilitySchema = z.object({
   isHidden: z.boolean({ error: 'La visibilité est obligatoire' }),
 });
 
-/**
- * Filtres de « Mes avis ».
- *
- * `visibility` remplace un booléen simple : trois états sont nécessaires -
- * tous, masqués seuls, visibles seuls - et `hidden=true` seul ne peut pas
- * exprimer le troisième.
- */
+
 export const myReviewsQuerySchema = paginationSchema.extend({
   q: z
     .string()

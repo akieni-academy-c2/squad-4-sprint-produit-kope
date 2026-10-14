@@ -6,10 +6,7 @@ import { SUSPENDED_EVENT } from '@/shared/lib/api.js';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO, SUPPORT_PHONE, SUPPORT_TEL } from '@/shared/constants/support.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 
-/**
- * Écran affiché quand l'API refuse une requête pour un compte suspendu.
- * L'utilisateur comprend ce qui lui arrive et peut contacter le service client.
- */
+
 export function SuspensionNotice() {
   const [open, setOpen] = useState(false);
 

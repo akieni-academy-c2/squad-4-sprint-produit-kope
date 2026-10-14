@@ -1,5 +1,9 @@
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+
 export function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
+  return twMerge(clsx(inputs));
 }
 
 export function formatPhoneFR(value) {
@@ -20,16 +24,7 @@ export function toWhatsappUrl(phone) {
   return `https://wa.me/${digits}`;
 }
 
-/**
- * Formateur partagé.
- *
- * `new Intl.DateTimeFormat(...)` n'est pas une opération anodine : la première
- * construction force le chargement synchrone des données de locale ICU, et
- * chaque construction suivante reparse les options et réalloue. Dans une liste
- * de 100 lignes - ActivityTiles, CatalogItemCard, ReviewList, AdminStats - la
- * fonction était appelée autant de fois qu'il y avait d'éléments, à chaque
- * rendu. Le formateur est donc construit une fois et réutilisé.
- */
+
 let dateFormatter = null;
 
 function frDateTime() {
@@ -48,6 +43,21 @@ export function formatDateFr(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value);
   return frDateTime().format(date);
+}
+
+
+const DATE_PARTS = new Set(['day', 'month', 'year']);
+
+
+export function formatDateFrShort(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return frDateTime()
+    .formatToParts(date)
+    .filter((part) => DATE_PARTS.has(part.type))
+    .map((part) => part.value)
+    .join(' ');
 }
 
 export function fullNameInitials(firstName, lastName) {

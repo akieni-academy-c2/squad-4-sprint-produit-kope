@@ -14,20 +14,7 @@ const ROLE_ICON = {
   [ROLES.CLIENT]: User,
 };
 
-/**
- * Sélecteur de rôle pour les données de démonstration.
- *
- * Sans lui, tester l'application demande de s'inscrire trois fois et de remplir
- * les formulaires à chaque fois : il n'existe qu'une seule session, et changer de
- * rôle passe par une inscription complète. Ici un choix suffit.
- *
- * Le retour est aussi explicite : « Quitter la démo » efface la session locale et
- * rend la main à la vraie API.
- *
- * Le composant lui-même rend `null` là où la démo est interdite : même garde que
- * `dataSource`, pour qu'un build de production n'expose ni le sélecteur ni le
- * code qui fabrique une identité d'administrateur.
- */
+
 export function DemoRoleSwitcher() {
   if (!areMocksAllowed()) return null;
   return <DemoRoleMenu />;
@@ -46,11 +33,6 @@ function DemoRoleMenu() {
 
   const roles = demoRoles();
 
-  // `refresh()` est asynchrone : sans `await`, la navigation part avant que
-  // `AuthContext` n'ait reçu le nouveau profil. `ProtectedRoute` lisait encore
-  // l'ancien `user` - un administrateur démo sans cookie de session atteignait
-  // `/admin` et son `GET /api/admin/stats` partait réellement, donc en 401.
-  // Attendre garantit que la garde de route observe la session à jour.
   const enterAs = async (entry) => {
     enableMockMode();
     loginAsDemo(entry.user);
@@ -96,10 +78,6 @@ function DemoRoleMenu() {
           <div
             ref={menuRef}
             role="menu"
-            // Sur mobile le bouton est collé au logo, donc à gauche : un menu
-            // ancré à droite s'ouvrirait par-delà le bord gauche de l'écran.
-            // Il s'ouvre donc vers la droite, et `max-w-[calc(100vw-7rem)]` le
-            // borne à la place disponible entre le bouton et le bord droit.
             className="absolute left-0 z-40 mt-2 w-60 max-w-[calc(100vw-7rem)] origin-top-left overflow-hidden rounded-sm border border-gray-200 bg-white shadow-[var(--shadow-pop)] animate-scale-in sm:right-0 sm:left-auto sm:max-w-none sm:origin-top-right"
           >
             <div className="border-b border-gray-100 px-4 py-3">
