@@ -1,10 +1,11 @@
 import { Link } from '@/shared/components/ui/Link.jsx';
 import { ArrowUpRight } from 'lucide-react';
-import { useReferenceData } from '@/features/reference/hooks/useReferenceData.js';
+import { HOME_ZONES } from '@/shared/content/homeZones.js';
 import { ROUTES } from '@/shared/lib/constants.js';
 
+const VISIBLE_ZONES = 6;
+
 export function ZoneSection() {
-  const { zones, loading: loadingZones } = useReferenceData();
   return (
     <section className="container-kop py-8 lg:py-16">
       <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
@@ -18,23 +19,17 @@ export function ZoneSection() {
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 w-full">
-          {loadingZones ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-16 rounded-2xl bg-gray-100 animate-pulse" />
-            ))
-          ) : (
-            zones.map((z, index) => (
-              <Link
-                key={z.id}
-                href={`${ROUTES.SEARCH}?zone=${encodeURIComponent(z.id)}`}
-                hidden={index >= 6}
-                className="flex items-center justify-between rounded-sm border border-gray-200 bg-white p-3  font-semibold text-gray-800  hover:bg-primary-50 hover:text-primary-700 transition group"
-              >
-                <span>{z.name}</span>
-                <ArrowUpRight size={16} aria-hidden className="text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-primary-500" />
-              </Link>
-            ))
-          )}
+          {HOME_ZONES.map((zone, index) => (
+            <Link
+              key={zone.id}
+              href={`${ROUTES.SEARCH}?zone=${zone.id}`}
+              hidden={index >= VISIBLE_ZONES}
+              className="flex items-center justify-between rounded-sm border border-gray-200 bg-white p-3  font-semibold text-gray-800  hover:bg-primary-50 hover:text-primary-700 transition group"
+            >
+              <span>{zone.name}</span>
+              <ArrowUpRight size={16} aria-hidden className="text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-primary-500" />
+            </Link>
+          ))}
         </div>
       </div>
     </section>

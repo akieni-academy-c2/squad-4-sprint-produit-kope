@@ -180,6 +180,84 @@ Le serveur démarre sur `http://localhost:3000`, avec le serveur de développeme
 | `npm run migrate:up` | Applique les migrations de base de données |
 | `npm run seed:admin` | Crée le compte administrateur initial |
 
+## Déploiement sur Vercel
+
+Le front est compilé par `npm run build` et servi par la fonction `api/index.js`,
+qui exporte l'application Express. Deux points restent hors du build :
+
+**1. Les migrations ne se jouent pas toutes seules.** Vercel ne lance aucun
+script de base de données. Après chaque nouveau déploiement, appliquer les
+migrations sur la base pointed par `DATABASE_URL` :
+
+```bash
+DATABASE_URL="<url de production>" npm run migrate:up
+```
+
+Une base en retard ne casse pas le build : elle casse les pages publiques au
+moment de la visite, en `500 « Erreur interne du serveur »`. Le point de santé
+expose ce qui manque, sans avoir à ouvrir les journaux :
+
+```bash
+curl https://<domaine>/api/health
+# {"status":"outdated-schema","missing":["cities","zones.city_id"]}
+```
+
+**2. `VITE_USE_MOCKS` est figé au build.** La poser dans les variables
+d'environnement du projet Vercel n'a d'effet qu'**après un redéploiement**.
+
+En production, la démonstration est **toujours manuelle** : aucune erreur réseau
+ou aucun 5xx ne déclenche de repli automatique sur les mocks. Une panne, ou une
+migration non appliquée, reste visible au lieu de se déguiser en données
+fictives. Le visiteur entre en démo de lui-même, par le sélecteur de rôle de la
+barre de navigation, ou par l'URL - le plus simple à partager aux testeurs :
+
+```
+https://<domaine>/?demo=1     entre en démo
+https://<domaine>/?demo=0     revient à la vraie API
+```
+
+Le choix est mémorisé dans le navigateur et survit au rechargement. C'est aussi
+le seul moyen d'activer la démo sur un déploiement déjà en ligne, sans rebuild.
+
+Variables attendues côté Vercel :
+
+| Variable | Rôle |
+| :--- | :--- |
+| `DATABASE_URL` | Connexion PostgreSQL de production |
+| `SESSION_SECRET` | 32 caractères minimum, sinon le serveur refuse de démarrer |
+| `VITE_USE_MOCKS` | `true` pour proposer le mode démonstration à tous les visiteurs |
+| `CLOUDINARY_*` | Obligatoire : le système de fichiers de Vercel est en lecture seule |
+| `SITE_URL` | Domaine public, pour les balises `canonical` et `og:url` |
+
+## La page d'accueil ne lit rien en base
+
+L'accueil est intégralement statique : métiers, quartiers et visages mis en avant
+vivent dans `src/shared/content/`. La page s'affiche donc même API éteinte, base
+en retard oumigration manquante, et ne fait apparaître ni squelette de chargement
+ni bouton « Réessayer ». Seul le suivi de session (`/api/auth/me`) joint la barre
+de navigation, car il conditionne l'affichage « Se connecter ».
+
+C'est le même choix que `HIGHLIGHTED_TRADES`, qui fige déjà des identifiants de
+métier. Le référentiel `zones` reste la source de vérité côté API ; la liste
+statique doit être mise à jour en même temps que lui.
+
+## Images
+
+Les photos du dépôt font 4 000 à 7 000 px de large pour être affichées dans des
+cadres de 400 à 700 px : la seule page d'accueil demandait 28 Mo en PNG. Le
+plugin `kop-image-optimizer` (`vite.config.js`) réencode chaque image importée en
+WebP, en deux largeurs, et exporte à côté de l'URL un `srcSet` que les
+composants passent à `ImageWithSkeleton`. Un téléphone télécharge la variante
+640 px, un grand écran la 1280 px.
+
+Résultat : **28,5 Mo → 941 Ko** de fichiers image, dont ~270 Ko réellement
+demandés sur l'accueil (le reste est en `loading="lazy"`).
+
+Les portraits de démonstration sont eux aussi rapatriés dans
+`public/portraits/` : ils étaient servis par un domaine tiers, que la CSP
+(`img-src 'self' data: blob: https://res.cloudinary.com`) bloquait. Le mode démo
+affichait donc des images cassées.
+
 ## US-15 : Note moyenne et avis
 
 La fiche publique expose la moyenne des avis visibles, arrondie à une décimale, et leur nombre. `GET /api/professionals/:id/reviews?page=<n>&pageSize=<n>` renvoie également les avis paginés du plus récent au plus ancien, avec le prénom et l'initiale du nom du client. Les avis masqués sont exclus. La moyenne est calculée directement depuis `reviews` à chaque lecture : un avis ajouté est donc pris en compte sans cache ni mise à jour manuelle d'un agrégat. Les cartes de recherche reçoivent cette même moyenne et ce nombre.

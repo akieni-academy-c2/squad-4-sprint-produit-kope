@@ -33,6 +33,7 @@ const { ProfessionalCard } = await import('@/features/professionals/components/P
 const { FeaturedProfessionalSection } = await import(
   '@/shared/components/home/FeaturedProfessionalSection.jsx'
 );
+const { ZoneSection } = await import('@/shared/components/home/ZoneSection.jsx');
 const { FEATURED_FACES, HOME_RESERVED } = await import('@/shared/content/homeImages.js');
 const { reserveImage } = await import('@/shared/assets/placeholders.js');
 
@@ -49,6 +50,53 @@ const PRO = {
   avatarUrl: PORTRAIT,
   image: PORTRAIT,
 };
+
+describe('L\'accueil ne lit rien en base', () => {
+  /**
+   * Ces deux sections étaient alimentées par l'API. En rendu serveur elles
+   * retombaient donc sur leur état de chargement : l'utilisateur ne voyait que
+   * des squelettes. Elles doivent donc livrer leurs données dès le premier
+   * rendu, sans passer par un état vide. Un spy sur `fetch` ne prouverait rien
+   * ici : `renderToStaticMarkup` n'exécute aucun effet, donc aucun appel.
+   */
+  it('livre les visages au premier rendu, sans état de chargement', () => {
+    const html = render(<FeaturedProfessionalSection />);
+
+    for (const name of ['Grace Mpassi', 'David Malonga', 'Patrick Kengue'])
+      expect(html, name).toContain(name);
+  });
+
+  it('livre les quartiers au premier rendu, sans état de chargement', () => {
+    const html = render(<ZoneSection />);
+
+    expect(html).toContain('Makélékélé');
+    expect(html).toContain('Poto-Poto');
+  });
+
+  it('n\'affiche que six quartiers, les suivants restent masqués', () => {
+    const html = render(<ZoneSection />);
+    const rendered = html.match(/Makélékélé|Bacongo|Poto-Poto|Moungali|Ouenzé|Talangaï|Mfilou|Madibou|Djiri/g) ?? [];
+
+    expect(rendered).toHaveLength(9);
+    expect((html.match(/hidden=""/g) ?? []).length).toBe(3);
+  });
+
+  it('approvisionne les deux sections sans passer par un état vide', () => {
+    const zoneSource = readFileSync(
+      repoPath('src/shared/components/home/ZoneSection.jsx'),
+      'utf8',
+    );
+    const proSource = readFileSync(
+      repoPath('src/shared/components/home/FeaturedProfessionalSection.jsx'),
+      'utf8',
+    );
+
+    for (const source of [zoneSource, proSource]) {
+      expect(source).not.toMatch(/useReferenceData|useAsyncData|searchProfessionals/);
+      expect(source).not.toContain('loading');
+    }
+  });
+});
 
 describe('Cartes de la page d\'accueil', () => {
   it('ignore le portrait du service quand la carte est en avant-première', () => {
@@ -104,6 +152,8 @@ describe('Aucune image distante sur l\'accueil', () => {
     '@/shared/components/home/FinalCTA.jsx',
     '@/shared/components/home/HeroSection.jsx',
     '@/shared/content/homeImages.js',
+    '@/shared/content/featuredPros.js',
+    '@/shared/content/homeZones.js',
     '@/shared/content/highlightedTrades.js',
   ];
 
@@ -125,13 +175,33 @@ describe('Aucune image distante sur l\'accueil', () => {
 
   it('puise les visages de la section dans les images locales', () => {
     const source = readFileSync(
-      repoPath('src/shared/components/home/FeaturedProfessionalSection.jsx'),
+      repoPath('src/shared/content/featuredPros.js'),
       'utf8',
     );
 
     expect(source).toContain('FEATURED_FACES');
     expect(source).toContain('@/shared/content/homeImages.js');
     expect(source).toContain('previewImage');
+  });
+
+  it('approvisionne la section sans aucun appel API', () => {
+    const source = readFileSync(
+      repoPath('src/shared/components/home/FeaturedProfessionalSection.jsx'),
+      'utf8',
+    );
+
+    expect(source).not.toContain('searchProfessionals');
+    expect(source).not.toContain('useAsyncData');
+  });
+
+  it('approvisionne les quartiers sans aucun appel API', () => {
+    const source = readFileSync(
+      repoPath('src/shared/components/home/ZoneSection.jsx'),
+      'utf8',
+    );
+
+    expect(source).not.toContain('useReferenceData');
+    expect(source).toContain('HOME_ZONES');
   });
 
   it('n\'attribue jamais deux fois le même visuel', () => {

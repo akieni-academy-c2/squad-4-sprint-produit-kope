@@ -6,7 +6,10 @@ import { AppRoutes } from '@/routes/AppRoutes.jsx';
 import { AuthModalProvider } from '@/shared/context/AuthModalContext.jsx';
 import { MotionRoot } from '@/shared/motion/MotionRoot.jsx';
 import { registerServiceWorker } from '@/shared/lib/serviceWorker.js';
+import { initMockMode } from '@/shared/lib/dataSource.js';
 import './index.css';
+
+initMockMode();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

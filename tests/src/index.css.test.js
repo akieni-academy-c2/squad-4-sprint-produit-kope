@@ -99,6 +99,29 @@ describe('cascades Tailwind', () => {
   });
 });
 
+describe('mouvement réduit', () => {
+  it('neutralise les apparitions décoratives', () => {
+    expect(css).toContain('prefers-reduced-motion: reduce');
+  });
+
+  it.each(['.animate-fade-in', '.animate-scale-in', '.animate-pulse'])(
+    'coupe %s',
+    (selector) => {
+      const media = css.slice(css.indexOf('prefers-reduced-motion: reduce'));
+
+      expect(media).toContain(selector);
+      expect(media).toMatch(/animation:\s*none/);
+    },
+  );
+
+  it('garde le contenu visible, il ne s annule pas', () => {
+    const media = css.slice(css.indexOf('prefers-reduced-motion: reduce'));
+
+    expect(media).not.toMatch(/display:\s*none/);
+    expect(media).not.toMatch(/visibility:\s*hidden/);
+  });
+});
+
 describe('jetons de conception', () => {
   it.each([
     '--z-index-overlay',

@@ -2,11 +2,13 @@ import { cn } from '@/shared/utils';
 import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
 
-export function SplitShowcase({ eyebrow, title, intro, imageSrc, imageAlt, caption, captionAlign = 'left', items, reverse = false, bg = 'bg-kop-mint', sectionClassName }) {
+export function SplitShowcase({ eyebrow, title, intro, imageSrc, imageSrcSet, imageSizes, imageAlt, caption, captionAlign = 'left', items, reverse = false, bg = 'bg-kop-mint', sectionClassName }) {
   const visual = (
     <div className="relative">
       <ImageWithSkeleton
         src={imageSrc}
+        srcSet={imageSrcSet}
+        sizes={imageSizes}
         alt={imageAlt || ''}
         ratio="h-85 sm:h-100"
         className="bg-accent-500/30"

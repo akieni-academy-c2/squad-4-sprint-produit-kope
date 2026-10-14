@@ -6,7 +6,7 @@ import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx'
 import { EASE } from '@/shared/motion/timing.js';
 import { staggerChild, staggerParent } from '@/shared/motion/stagger.js';
 import { ScrollDepth } from '@/shared/motion/ScrollDepth.jsx';
-import hero from '@/shared/assets/hero.png';
+import { HOME_IMAGES } from '@/shared/content/homeImages.js';
 
 
 
@@ -72,7 +72,9 @@ export function HeroSection() {
           >
             <div className="rounded-[16px] overflow-hidden  ">
               <ImageWithSkeleton
-                src={hero}
+                src={HOME_IMAGES.hero.src}
+                srcSet={HOME_IMAGES.hero.srcSet}
+                sizes={HOME_IMAGES.hero.sizes}
                 alt="Artisanne KOP"
                 eager
                 ratio="h-85 sm:h-100"
