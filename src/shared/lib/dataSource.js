@@ -13,19 +13,23 @@ const isDemoOn = (value) => value === '1' || isTrue(value);
 const isDev = import.meta.env?.DEV === true;
 
 /**
- * `VITE_USE_MOCKS` est figé dans le bundle au moment du build : la poser sur
- * Vercel sans redéployer ne change rien au site déjà en ligne. `?demo=1` dans
- * l'URL permet d'activer la démo à l'exécution, sur un déploiement existant.
+ * Ce que vaut la démo selon la variable de build : absente, elle est active
+ * d'emblée ; posée, elle fait autorité et rien ne la contredit. Variable figée
+ * dans le bundle, `?demo=` reste le seul levier à l'exécution.
+ * @param {string|undefined} raw valeur brute de `VITE_USE_MOCKS`
+ * @returns {{allowed: boolean, active: boolean}}
  */
-const allowedByBuild = isDev || isTrue(import.meta.env?.VITE_USE_MOCKS);
+export function mocksFromBuild(raw) {
+  const isSet = raw != null && String(raw).trim() !== '';
+  const on = isSet ? isTrue(raw) : true;
+  return { allowed: on, active: on };
+}
 
-/**
- * Autoriser n'est pas activer. En production, `VITE_USE_MOCKS=true` rend le
- * sélecteur de rôle visible mais laisse le site démarrer sur la vraie API :
- * les visiteurs voient les données réelles, les testeurs basculent quand ils le
- * veulent. Le mode démonstration n'est actif d'emblée qu'en développement.
- */
-const activeByDefault = isDev;
+const buildMocks = mocksFromBuild(import.meta.env?.VITE_USE_MOCKS);
+
+const allowedByBuild = buildMocks.allowed;
+
+const activeByDefault = buildMocks.active;
 
 /**
  * Le repli automatique sur les mocks ne vaut qu'en développement, où l'on
