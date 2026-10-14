@@ -117,7 +117,7 @@ describe("dataSource - activation à l'exécution", () => {
   });
 });
 
-describe('dataSource - la production démarre sur la vraie API', () => {
+describe('dataSource - arbitrage entre le build et l\'URL', () => {
   it('autorise la démo sans l\'activer quand le build l\'autorise seulement', () => {
     expect(decideDemoMode({ requested: null, allowedByBuild: true })).toEqual({
       allowed: true,
