@@ -18,7 +18,7 @@ export function HowItWorksSection() {
             <Card className={`${s.tone} flex-1 aspect-4/4.5 bg-primary-600! p-2 border-0! shadow-none! flex flex-col justify-between`}>
               <div className='px-4'>
                 <h3 className="mt-5 text-xl font-medium text-gray-200!">{s.title}</h3>
-                <p className="mt-2 text-sm leading-12 text-gray-300">{s.body}</p>
+                <p className="mt-2 text-sm  text-gray-300">{s.body}</p>
               </div>
               <div className={cn('h-45.5 rounded-sm text-8xl font-bold flex items-center  justify-center', s.tone)}>
                 {s.n}
