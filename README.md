@@ -4,7 +4,7 @@ Dépôt de travail de la Squad 4 dans le cadre du Sprint Produit Akieni Academy 
 
 **KOP** est une plateforme de mise en relation entre particuliers et artisans du bâtiment (plombier, électricien, maçon, menuisier) à Brazzaville. L'application est fullstack : une architecture monolithique moderne qui intègre Express 5 et React 19 dans un même runtime grâce à `vite-express`.
 
-🔗 **Démo en ligne :** [LIEN VERCEL]
+🔗 **Démo en ligne :** [https://kop-nu.vercel.app/]
 
 > La version stable du projet se trouve sur la branche `main`. La branche `develop` est la branche de travail.
 
