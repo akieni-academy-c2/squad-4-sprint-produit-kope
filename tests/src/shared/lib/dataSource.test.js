@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
-import { callApi, isMockMode, enableMockMode, resetMockMode } from '@/shared/lib/dataSource.js';
+import {
+  callApi,
+  decideDemoMode,
+  isMockMode,
+  enableMockMode,
+  resetMockMode,
+} from '@/shared/lib/dataSource.js';
 
 
 beforeEach(() => {
@@ -71,5 +77,44 @@ describe('dataSource.callApi en démo', () => {
 
     expect(await callApi(apiFn, mockFn)).toBe('mock-ok');
     expect(isMockMode()).toBe(true);
+  });
+});
+
+describe("dataSource - activation à l'exécution", () => {
+  const decide = (options) => decideDemoMode(options);
+
+  it('allume la démo avec ?demo=1, sans redéploiement', () => {
+    expect(decide({ requested: '1' })).toEqual({ allowed: true, active: true, remember: true });
+  });
+
+  it('éteint la démo avec ?demo=0', () => {
+    expect(decide({ requested: '0' })).toEqual({ allowed: false, active: false, remember: true });
+  });
+
+  it('tolère les espaces, la casse et true dans le paramètre', () => {
+    for (const requested of ['true', 'TRUE', ' true '])
+      expect(decide({ requested }).active, requested).toBe(true);
+  });
+
+  it("ne prend pas une valeur arbitraire pour une activation", () => {
+    for (const requested of ['', 'oui', 'non', 'on'])
+      expect(decide({ requested }).active, requested).toBe(false);
+  });
+
+  it('retombe sur le choix mémorisé en l\'absence de paramètre', () => {
+    expect(decide({ requested: null, remembered: true }).active).toBe(true);
+    expect(decide({ requested: null, remembered: false }).active).toBe(false);
+  });
+
+  it('laisse le build garder la main et ne mémorise rien', () => {
+    expect(decide({ requested: '0', allowedByBuild: true })).toEqual({
+      allowed: true,
+      active: true,
+      remember: false,
+    });
+  });
+
+  it('ne mémorise que lorsqu\'une URL a décidé', () => {
+    expect(decide({ requested: null, remembered: true }).remember).toBe(false);
   });
 });

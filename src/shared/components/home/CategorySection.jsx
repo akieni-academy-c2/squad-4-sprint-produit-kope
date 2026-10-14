@@ -21,6 +21,8 @@ export function CategorySection() {
               <div className="relative">
                 <ImageWithSkeleton
                   src={c.image}
+                  srcSet={c.srcSet}
+                  sizes={c.sizes}
                   alt={c.name}
                   ratio="aspect-4/5.5"
                   className="transition duration-500 group-hover:scale-[1.04]"

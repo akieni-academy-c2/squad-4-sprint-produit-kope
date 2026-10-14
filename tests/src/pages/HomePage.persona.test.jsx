@@ -33,6 +33,7 @@ const { ProfessionalCard } = await import('@/features/professionals/components/P
 const { FeaturedProfessionalSection } = await import(
   '@/shared/components/home/FeaturedProfessionalSection.jsx'
 );
+const { ZoneSection } = await import('@/shared/components/home/ZoneSection.jsx');
 const { FEATURED_FACES, HOME_RESERVED } = await import('@/shared/content/homeImages.js');
 const { reserveImage } = await import('@/shared/assets/placeholders.js');
 
@@ -49,6 +50,25 @@ const PRO = {
   avatarUrl: PORTRAIT,
   image: PORTRAIT,
 };
+
+describe('L\'accueil ne lit rien en base', () => {
+  it('affiche ses deux sections dynamiques sans appel réseau', () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+    const html = render(
+      <>
+        <FeaturedProfessionalSection />
+        <ZoneSection />
+      </>,
+    );
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(html).toContain('Grace Mpassi');
+    expect(html).toContain('Makélékélé');
+
+    fetchSpy.mockRestore();
+  });
+});
 
 describe('Cartes de la page d\'accueil', () => {
   it('ignore le portrait du service quand la carte est en avant-première', () => {
@@ -104,6 +124,8 @@ describe('Aucune image distante sur l\'accueil', () => {
     '@/shared/components/home/FinalCTA.jsx',
     '@/shared/components/home/HeroSection.jsx',
     '@/shared/content/homeImages.js',
+    '@/shared/content/featuredPros.js',
+    '@/shared/content/homeZones.js',
     '@/shared/content/highlightedTrades.js',
   ];
 
@@ -125,13 +147,33 @@ describe('Aucune image distante sur l\'accueil', () => {
 
   it('puise les visages de la section dans les images locales', () => {
     const source = readFileSync(
-      repoPath('src/shared/components/home/FeaturedProfessionalSection.jsx'),
+      repoPath('src/shared/content/featuredPros.js'),
       'utf8',
     );
 
     expect(source).toContain('FEATURED_FACES');
     expect(source).toContain('@/shared/content/homeImages.js');
     expect(source).toContain('previewImage');
+  });
+
+  it('approvisionne la section sans aucun appel API', () => {
+    const source = readFileSync(
+      repoPath('src/shared/components/home/FeaturedProfessionalSection.jsx'),
+      'utf8',
+    );
+
+    expect(source).not.toContain('searchProfessionals');
+    expect(source).not.toContain('useAsyncData');
+  });
+
+  it('approvisionne les quartiers sans aucun appel API', () => {
+    const source = readFileSync(
+      repoPath('src/shared/components/home/ZoneSection.jsx'),
+      'utf8',
+    );
+
+    expect(source).not.toContain('useReferenceData');
+    expect(source).toContain('HOME_ZONES');
   });
 
   it('n\'attribue jamais deux fois le même visuel', () => {

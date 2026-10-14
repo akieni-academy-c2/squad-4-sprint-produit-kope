@@ -11,7 +11,7 @@
       "age": 19,
       "city": "Bouansa",
       "phone": "+242061231923",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2613.webp"
+      "portrait": "/portraits/p_2613.webp"
     },
     {
       "id": "per_e4266fee334149edda20b5fb",
@@ -22,7 +22,7 @@
       "age": 24,
       "city": "Brazzaville",
       "phone": "+242061290138",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2617.webp"
+      "portrait": "/portraits/p_2617.webp"
     },
     {
       "id": "per_56cc0ff6cc096200ca3f2056",
@@ -33,7 +33,7 @@
       "age": 25,
       "city": "Impfondo",
       "phone": "+242061204574",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2619.webp"
+      "portrait": "/portraits/p_2619.webp"
     },
     {
       "id": "per_5a59f58b8cae86548b632d08",
@@ -44,7 +44,7 @@
       "age": 27,
       "city": "Bouansa",
       "phone": "+242061247910",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2618.webp"
+      "portrait": "/portraits/p_2618.webp"
     },
     {
       "id": "per_c3702903c232e6a036c0ba9a",
@@ -55,7 +55,7 @@
       "age": 28,
       "city": "Impfondo",
       "phone": "+242061286098",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2620.webp"
+      "portrait": "/portraits/p_2620.webp"
     },
     {
       "id": "per_477898dce68b1d5fa848558a",
@@ -66,7 +66,7 @@
       "age": 30,
       "city": "Owando",
       "phone": "+242061271180",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2621.webp"
+      "portrait": "/portraits/p_2621.webp"
     },
     {
       "id": "per_2cb62c8e281a0b9b7811c852",
@@ -77,7 +77,7 @@
       "age": 33,
       "city": "Dolisie",
       "phone": "+242061298202",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2626.webp"
+      "portrait": "/portraits/p_2626.webp"
     },
     {
       "id": "per_2f627a6beab8c4d8a3d73e5e",
@@ -88,7 +88,7 @@
       "age": 34,
       "city": "Dolisie",
       "phone": "+242061289688",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2624.webp"
+      "portrait": "/portraits/p_2624.webp"
     },
     {
       "id": "per_01c18696de5cacc590cabc8d",
@@ -99,7 +99,7 @@
       "age": 37,
       "city": "Ouesso",
       "phone": "+242061246457",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2625.webp"
+      "portrait": "/portraits/p_2625.webp"
     },
     {
       "id": "per_cc11c98e56c5f8692f62489e",
@@ -110,7 +110,7 @@
       "age": 38,
       "city": "Brazzaville",
       "phone": "+242061241061",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2630.webp"
+      "portrait": "/portraits/p_2630.webp"
     },
     {
       "id": "per_fc40b8df232cd1027fa3ec8c",
@@ -121,7 +121,7 @@
       "age": 39,
       "city": "Ouesso",
       "phone": "+242061249712",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2631.webp"
+      "portrait": "/portraits/p_2631.webp"
     },
     {
       "id": "per_db1940a87e804e8b151561a1",
@@ -132,7 +132,7 @@
       "age": 39,
       "city": "Kayes",
       "phone": "+242061286352",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2628.webp"
+      "portrait": "/portraits/p_2628.webp"
     },
     {
       "id": "per_0e4f0eda351c40440704e71e",
@@ -143,7 +143,7 @@
       "age": 42,
       "city": "Nkayi",
       "phone": "+242061227259",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2629.webp"
+      "portrait": "/portraits/p_2629.webp"
     },
     {
       "id": "per_ce7bd83f575cdf1d684724c4",
@@ -154,7 +154,7 @@
       "age": 43,
       "city": "Pointe-Noire",
       "phone": "+242061297609",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2632.webp"
+      "portrait": "/portraits/p_2632.webp"
     },
     {
       "id": "per_46144e9807eab212dfde2e89",
@@ -165,7 +165,7 @@
       "age": 44,
       "city": "Brazzaville",
       "phone": "+242061235686",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2635.webp"
+      "portrait": "/portraits/p_2635.webp"
     },
     {
       "id": "per_5f7c6297b01b20bf50625b48",
@@ -176,7 +176,7 @@
       "age": 44,
       "city": "Dolisie",
       "phone": "+242061239121",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2634.webp"
+      "portrait": "/portraits/p_2634.webp"
     },
     {
       "id": "per_f380163bee33261d936b5ca2",
@@ -187,7 +187,7 @@
       "age": 45,
       "city": "Impfondo",
       "phone": "+242061270848",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2633.webp"
+      "portrait": "/portraits/p_2633.webp"
     },
     {
       "id": "per_3aff5d0ed1c4ca58761f61bd",
@@ -198,7 +198,7 @@
       "age": 48,
       "city": "Ouesso",
       "phone": "+242061225483",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2637.webp"
+      "portrait": "/portraits/p_2637.webp"
     },
     {
       "id": "per_a82127cd882d3a44df0bf6f6",
@@ -209,7 +209,7 @@
       "age": 49,
       "city": "Nkayi",
       "phone": "+242061232367",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2636.webp"
+      "portrait": "/portraits/p_2636.webp"
     },
     {
       "id": "per_fbac1afd6adea0de63f530b0",
@@ -220,7 +220,7 @@
       "age": 50,
       "city": "Brazzaville",
       "phone": "+242061262452",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2638.webp"
+      "portrait": "/portraits/p_2638.webp"
     },
     {
       "id": "per_1e8333043770b740b07ff9a6",
@@ -231,7 +231,7 @@
       "age": 51,
       "city": "Gamboma",
       "phone": "+242061229349",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2639.webp"
+      "portrait": "/portraits/p_2639.webp"
     },
     {
       "id": "per_5a7df817947be88dc0261ee3",
@@ -242,7 +242,7 @@
       "age": 53,
       "city": "Pointe-Noire",
       "phone": "+242061277786",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2640.webp"
+      "portrait": "/portraits/p_2640.webp"
     },
     {
       "id": "per_d8d811b6a1745177e554100e",
@@ -253,7 +253,7 @@
       "age": 53,
       "city": "Pointe-Noire",
       "phone": "+242061226163",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2643.webp"
+      "portrait": "/portraits/p_2643.webp"
     },
     {
       "id": "per_be024a039463ee68f83f1308",
@@ -264,7 +264,7 @@
       "age": 56,
       "city": "Impfondo",
       "phone": "+242061245151",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2642.webp"
+      "portrait": "/portraits/p_2642.webp"
     },
     {
       "id": "per_68b67d99ea300b90d6ac26eb",
@@ -275,7 +275,7 @@
       "age": 58,
       "city": "Brazzaville",
       "phone": "+242061287276",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2645.webp"
+      "portrait": "/portraits/p_2645.webp"
     },
     {
       "id": "per_70a1077808cde31616157185",
@@ -286,7 +286,7 @@
       "age": 59,
       "city": "Brazzaville",
       "phone": "+242061205397",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2647.webp"
+      "portrait": "/portraits/p_2647.webp"
     },
     {
       "id": "per_bf0d54830335ab7af4d3c6dc",
@@ -297,7 +297,7 @@
       "age": 60,
       "city": "Kayes",
       "phone": "+242061228757",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2646.webp"
+      "portrait": "/portraits/p_2646.webp"
     },
     {
       "id": "per_5529b480b3995f7cedacc568",
@@ -308,7 +308,7 @@
       "age": 61,
       "city": "Dolisie",
       "phone": "+242061235006",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2644.webp"
+      "portrait": "/portraits/p_2644.webp"
     },
     {
       "id": "per_f3d519c25f2db69cdec7cbcd",
@@ -319,7 +319,7 @@
       "age": 64,
       "city": "Dolisie",
       "phone": "+242061281283",
-      "portrait": "https://persona-portraits.osirisbalonga.workers.dev/portraits/v1/medium/p_2648.webp"
+      "portrait": "/portraits/p_2648.webp"
     }
   ]
 }

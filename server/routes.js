@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { isDatabaseReachable } from './db/pool.js';
+import { findMissingSchema } from './db/schema.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import referenceRoutes from './modules/reference/reference.routes.js';
@@ -15,7 +16,8 @@ const router = Router();
 
 router.get('/health', async (req, res) => {
   await isDatabaseReachable();
-  res.json({ status: 'ok' });
+  const missing = await findMissingSchema();
+  res.json(missing?.length ? { status: 'outdated-schema', missing } : { status: 'ok' });
 });
 
 router.use(authRoutes);

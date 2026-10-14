@@ -2,12 +2,69 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+import sharp from 'sharp'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { PRIMARY_AUTHOR, CONTRIBUTORS, PROJECT } from './src/shared/data/credits.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const RASTER = /\.(?:png|jpe?g)$/i
+
+/**
+ * Les photos du dépôt pèsent 4 000 à 7 000 px de large pour être affichées
+ * dans des cadres de 400 à 700 px : servies telles quelles, la seule page
+ * d'accueil demandait 28 Mo. Deux largeurs suffisent à couvrir un mobile et
+ * un grand écran, en WebP.
+ */
+const VARIANTS = [640, 1280]
+const QUALITY = { 640: 72, 1280: 78 }
+
+/**
+ * Réencode les images matricielles importées en WebP, en exportant l'URL
+ * (la plus grande variante) et un `srcSet` pour le navigateur. Le contrat
+ * d'import reste une chaîne : aucun appelant n'a à changer.
+ */
+function imageOptimizer() {
+  return {
+    name: 'kop-image-optimizer',
+    /**
+     * Doit précéder `vite:asset`, qui transformerait le PNG en simple URL.
+     */
+    enforce: 'pre',
+    apply: 'build',
+    async load(id) {
+      const [file] = id.split('?')
+      if (!RASTER.test(file)) return null
+
+      const metadata = await sharp(file).metadata()
+      const base = path.basename(file, path.extname(file))
+      const widths = VARIANTS.filter((width) => width < metadata.width)
+      if (widths.length === 0) widths.push(metadata.width)
+
+      const urls = []
+      for (const width of widths) {
+        const source = await sharp(file)
+          .resize({ width, withoutEnlargement: true })
+          .webp({ quality: QUALITY[width] ?? 78, effort: 5 })
+          .toBuffer()
+
+        urls.push({
+          width,
+          url: this.emitFile({ type: 'asset', name: `${base}-${width}.webp`, source }),
+        })
+      }
+
+      const largest = urls[urls.length - 1]
+
+      return [
+        `export default ${JSON.stringify(largest.url)};`,
+        `export const srcSet = ${JSON.stringify(urls.map(({ url, width }) => `${url} ${width}w`).join(', '))};`,
+      ].join('\n')
+    },
+  }
+}
 
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '')
 
@@ -136,6 +193,7 @@ export default defineConfig({
     tailwindcss(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
+    imageOptimizer(),
     headTags(),
     sitemap(),
   ],
