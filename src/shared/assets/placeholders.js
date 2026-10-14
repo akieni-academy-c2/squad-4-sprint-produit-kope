@@ -1,7 +1,4 @@
-/**
- * Visuels de substitution, servis depuis /public : pas de requête vers un tiers,
- * donc pas d'adresse IP communiquée à un hébergeur d'images.
- */
+
 import hero from './hero.png';
 import what1 from './what1.png';
 import what2 from './what2.png';
@@ -19,25 +16,10 @@ function fingerprint(value) {
   return Math.abs(hash);
 }
 
-/** Choix déterministe : même libellé, même image à chaque rendu. */
-export function placeholderImage(label = '') {
-  return IMAGES[fingerprint(label) % IMAGES.length];
-}
 
-/**
- * `usedBy` retire du tirage les images déjà prises : deux sections ne doivent
- * pas retomber sur la même et donner l'impression de répéter un visage.
- */
 export function reserveImage(label, usedBy = []) {
   const available = IMAGES.filter((image) => !usedBy.includes(image));
   const pool = available.length ? available : IMAGES;
 
   return pool[fingerprint(label) % pool.length];
 }
-
-export const HERO_IMAGE_LABEL =
-  'professional african female carpenter artisan working at her workshop workbench, smiling, natural daylight, waist up photo, portrait 4:3 realistic';
-export const PRO_CTA_IMAGE_LABEL =
-  'confident african female tailor entrepreneur smiling at her workshop counter holding tablet, natural daylight, realistic portrait 4:3';
-export const LOGIN_IMAGE_LABEL =
-  'friendly young african woman using smartphone smiling, home interior, bright candid realistic portrait 4:3';

@@ -62,7 +62,6 @@ export async function setUserSuspended(actorId, id, suspended) {
 
   const updated = await repository.setUserSuspended(id, suspended);
   if (!updated) throw ApiError.notFound('Utilisateur introuvable');
-  // Une suspension imply le blocage ; lever la suspension redonne aussi l'accès.
   await repository.setUserBlocked(id, suspended);
   return updated;
 }

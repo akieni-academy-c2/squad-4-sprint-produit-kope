@@ -1,10 +1,7 @@
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-/**
- * `clsx` accepte les formes conditionnelles, `twMerge` résout les conflits.
- * Sans lui, le gagnant se décide par l'ordre interne du CSS généré.
- */
+
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -27,10 +24,7 @@ export function toWhatsappUrl(phone) {
   return `https://wa.me/${digits}`;
 }
 
-/**
- * La première construction charge les données de locale, les suivantes
- * reparsent les options : appelé par élément, le formateur est construit une fois.
- */
+
 let dateFormatter = null;
 
 function frDateTime() {
@@ -51,10 +45,10 @@ export function formatDateFr(value) {
   return frDateTime().format(date);
 }
 
-/** Sur une publication l'heure n'apporte rien : seules ces parties sont gardées. */
+
 const DATE_PARTS = new Set(['day', 'month', 'year']);
 
-/** Même formateur mis en cache, filtré sur les parties de date. */
+
 export function formatDateFrShort(value) {
   if (!value) return '';
   const date = new Date(value);

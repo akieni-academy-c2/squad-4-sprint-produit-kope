@@ -11,7 +11,7 @@ import {
 } from '../../utils/commonSchemas.js';
 
 
-export const termsVersionSchema = z
+const termsVersionSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Version des conditions invalide');
 export const registerClientSchema = z.object({

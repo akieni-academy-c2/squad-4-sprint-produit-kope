@@ -9,7 +9,6 @@ const MAIN_WIDTH = 1280;
 const THUMB_WIDTH = 400;
 
 export async function processImage(buffer) {
-  // Format contrôlé sur les octets, pas sur le mimetype déclaré par le client.
   const image = await decodeImage(buffer);
 
   const base = image.rotate().flatten({ background: '#ffffff' });

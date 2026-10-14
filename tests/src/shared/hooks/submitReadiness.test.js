@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PASSWORD_RULES, FIELD_STATUS, checkPassword } from '@/shared/hooks/useFieldStatus.js';
 
-/**
- * Reproduit le calcul du bouton de soumission : un champ n'est « prêt » que si
- * toutes les conditions sont réunies. Sans ce test, une régression sur
- * `useFieldStatus` réactive le bouton avec un formulaire incomplet.
- */
+
 const isReady = (statuses, consent = true) =>
   statuses.every((s) => s === FIELD_STATUS.OK) && consent;
 
@@ -34,7 +30,6 @@ describe('activation du bouton de soumission', () => {
 
 describe('règles de mot de passe comme source unique', () => {
   it('PASSWORD_RULES et checkPassword racontent la même chose', () => {
-    // Une divergence entre les deux ferait un bouton actif à tort.
     for (const value of ['', 'a', 'Motdepasse', 'Motdepasse1', 'Motdepasse@', 'MOTDEPASSE1', 'abc123AB']) {
       const manquant = checkPassword(value).rules.filter((r) => !r.passed).length;
       const direct = PASSWORD_RULES.filter((r) => !r.test(value)).length;

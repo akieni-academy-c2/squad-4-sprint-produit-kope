@@ -78,7 +78,6 @@ export function NotificationProvider({ children }) {
   );
 }
 
-// Le Provider et son hook vivent ensemble : pattern React advocated.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useNotification() {
   const ctx = useContext(NotificationContext);

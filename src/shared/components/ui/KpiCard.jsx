@@ -1,6 +1,6 @@
 import { cn } from '@/shared/utils';
 
-/** Partagée par l'espace administrateur et le compte client. */
+
 export function KpiCard({ label, value, hint, onClick, tone = 'default', icon = null, footer = null }) {
   const clickable = typeof onClick === 'function';
   const Wrapper = clickable ? 'button' : 'div';
@@ -39,15 +39,12 @@ const GROUP_TONES = {
   danger: 'border-danger-500 bg-danger-500',
   teal: 'border-teal-600 bg-teal-500',
   neutral: 'border-gray-600 bg-gray-500',
-  // Bandeau d'en-tête : teinté et non plein. Un aplat de marque
-  // transformerait les tuiles blanches posées dedans en texte sur fond coloré.
   mint: 'border-mint-200 bg-mint-50',
 };
 
-// Fond clair : le titre ne peut pas être blanc, il disparaîtrait.
 const SOFT_TONES = new Set(['mint']);
 
-/** Conteneur de tuiles, avec son titre en capitales. */
+
 export function StatGroup({ title, tone = 'default', children, className }) {
   const toned = tone !== 'default';
   const soft = SOFT_TONES.has(tone);

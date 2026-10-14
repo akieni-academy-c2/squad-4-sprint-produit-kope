@@ -1,15 +1,10 @@
 import { useMemo } from 'react';
 
-/**
- * Motif décoratif de fond, tiré au sort mais stable. Un `Math.random()` dans le
- * rendu redessine tout le motif à chaque rendu ; la graine le rend reproductible.
- * SVG : des formes CSS demanderaient autant d'éléments que de motifs, et ne
- * donnent ni cercles partiels, ni anneaux, ni losanges.
- */
+
 
 const SHAPES = ['circle', 'ring', 'diamond', 'dot'];
 
-/** Générateur congruentiel linéaire : même graine, même suite. */
+
 function seeded(seed) {
   let state = (seed % 2147483647) + 1;
   return () => {
@@ -46,12 +41,7 @@ function Shape({ kind, random, tone }) {
   );
 }
 
-/**
- * @param {number} [props.count=14]    nombre de formes
- * @param {string} [props.seed=1]      graine : même graine, même motif
- * @param {string} [props.tone='#fff'] couleur des formes
- * @param {string} [props.className]   classes du `<svg>`
- */
+
 export function MotifBackdrop({ count = 14, seed = 1, tone = '#fff', className }) {
   const shapes = useMemo(() => {
     const random = seeded(seed);

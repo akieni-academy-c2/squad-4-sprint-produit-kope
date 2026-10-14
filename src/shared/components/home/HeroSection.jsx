@@ -8,11 +8,7 @@ import { staggerChild, staggerParent } from '@/shared/motion/stagger.js';
 import { ScrollDepth } from '@/shared/motion/ScrollDepth.jsx';
 import hero from '@/shared/assets/hero.png';
 
-/**
- * Seul endroit où une chorégraphie se justifie : premier écran, au-dessus de
- * la ligne de flottaison, lu en même temps que le reste. Plus bas, le contenu
- * est déjà voulu et n'a pas besoin d'être annoncé.
- */
+
 
 export function HeroSection() {
   return (

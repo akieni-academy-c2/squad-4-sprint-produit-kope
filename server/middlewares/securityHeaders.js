@@ -25,17 +25,15 @@ export function csrfGuard({ allowedOrigins = [] } = {}) {
 
     const fetchSite = req.get('sec-fetch-site');
     if (fetchSite) {
-      // 'same-origin' : même origine, autorisé. 'cross-site' et 'same-site'
-      // sont refusés sans regarder Origin, qui pourrait être absent.
       if (fetchSite !== 'same-origin') return forbidden(res, 'cross-site');
       return next();
     }
 
     const origin = req.get('origin');
     if (!origin) return forbidden(res, 'origin-absente');
-    if (!allowed.has(origin) && !isSameHost(origin, req.get('host'))) 
+    if (!allowed.has(origin) && !isSameHost(origin, req.get('host')))
       return forbidden(res, 'origine-inconnue');
-    
+
     return next();
   };
 }

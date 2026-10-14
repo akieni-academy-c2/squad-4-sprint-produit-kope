@@ -14,7 +14,7 @@ const ROLE_ICON = {
   [ROLES.CLIENT]: User,
 };
 
-/** Même garde que `dataSource` : aucun code de fabrique en production. */
+
 export function DemoRoleSwitcher() {
   if (!areMocksAllowed()) return null;
   return <DemoRoleMenu />;
@@ -33,9 +33,6 @@ function DemoRoleMenu() {
 
   const roles = demoRoles();
 
-  // `refresh()` est asynchrone : sans `await`, la navigation part avant
-  // que `AuthContext` n'ait reçu le nouveau profil, et `ProtectedRoute` lisait
-  // l'ancien `user` - un administrateur démo sans cookie partait en 401.
   const enterAs = async (entry) => {
     enableMockMode();
     loginAsDemo(entry.user);
@@ -81,9 +78,6 @@ function DemoRoleMenu() {
           <div
             ref={menuRef}
             role="menu"
-            // Sur mobile le bouton est collé au logo, donc à gauche : le menu
-            // s'ouvre vers la droite, `max-w-[calc(100vw-7rem)]` le bornant
-            // à la place disponible.
             className="absolute left-0 z-40 mt-2 w-60 max-w-[calc(100vw-7rem)] origin-top-left overflow-hidden rounded-sm border border-gray-200 bg-white shadow-[var(--shadow-pop)] animate-scale-in sm:right-0 sm:left-auto sm:max-w-none sm:origin-top-right"
           >
             <div className="border-b border-gray-100 px-4 py-3">

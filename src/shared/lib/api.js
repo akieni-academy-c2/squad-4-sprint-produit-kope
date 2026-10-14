@@ -1,12 +1,12 @@
 const DEFAULT_HEADERS = { Accept: 'application/json' };
 const JSON_HEADERS = { ...DEFAULT_HEADERS, 'Content-Type': 'application/json' };
 
-/** Declenche quand l'API refuse la requete pour un compte suspendu. */
+
 export const SUSPENDED_EVENT = 'kop:account-suspended';
 
 const SUSPENDED_PATTERN = /compete? (a été|est) suspendu/i;
 
-export class ApiError extends Error {
+class ApiError extends Error {
   constructor(status, message, errors = undefined) {
     super(message);
     this.name = 'ApiError';
@@ -15,14 +15,10 @@ export class ApiError extends Error {
   }
 }
 
-/** Levé quand le serveur répond 401 : la session n'est plus valide. */
+
 export const UNAUTHORIZED_EVENT = 'kop:unauthorized';
 
-/**
- * L'authentification repose uniquement sur le cookie de session httpOnly posé par
- * le serveur. Aucun jeton n'est stocké côté JS : un script injecté ne peut donc
- * pas exfiltrer d'identifiant long-durée.
- */
+
 function resolveUrl(url) {
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   const normalized = url.startsWith('/') ? url : `/${url}`;
@@ -50,15 +46,13 @@ async function parseResponse(res) {
   return payload;
 }
 
-/** Sans lui, une connexion ouverte laisse le chargement en suspens indéfiniment. */
+
 const REQUEST_TIMEOUT_MS = 15_000;
 
-export async function fetchApi(url, options = {}) {
+async function fetchApi(url, options = {}) {
   const { headers, signal, timeoutMs = REQUEST_TIMEOUT_MS, ...rest } = options;
 
   const controller = new AbortController();
-  // Un `signal` externe (démontage de composant, changement de filtre) annule
-  // la requête ; le minuteur couvre le cas où rien ne l'annule à notre place.
   const onAbort = () => controller.abort(signal.reason);
   if (signal) {
     if (signal.aborted) throw new ApiError(0, 'Requête annulée');
@@ -75,9 +69,6 @@ export async function fetchApi(url, options = {}) {
     });
     return await parseResponse(res);
   } catch (err) {
-    // Une annulation n'est pas une panne réseau : la remonter telle quelle
-    // ferait afficher une erreur à l'utilisateur alors que c'est son action qui
-    // l'a provoquée.
     if (controller.signal.aborted && !controller.signal.reason?.name?.includes('Timeout'))
       throw new ApiError(0, 'Requête annulée');
     if (controller.signal.reason?.name === 'TimeoutError')

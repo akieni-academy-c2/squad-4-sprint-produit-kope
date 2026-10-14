@@ -17,7 +17,6 @@ export function ReviewForm({ professionalId, review = null, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Une note est obligatoire, le commentaire est facultatif mais borné.
   const commentTooLong = comment.length > MAX;
   const canSubmit = rating >= 1 && rating <= 5 && !commentTooLong;
 

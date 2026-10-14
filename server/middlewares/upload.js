@@ -2,8 +2,6 @@ import multer from 'multer';
 import { ApiError } from '../utils/ApiError.js';
 import { env } from '../config/env.js';
 
-// Garde-fou sur le mimetype uniquement. Un client peut le déclarer falsifié :
-// le format réel est revérifié au décodage par `decodeImage`.
 const ALLOWED_TYPES = ['image/jpeg', 'image/png'];
 
 export const upload = multer({

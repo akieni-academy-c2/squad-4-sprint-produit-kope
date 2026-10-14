@@ -7,7 +7,7 @@ import * as contactsRepository from '../contacts/contacts.repository.js';
 import * as adminRepository from '../admin/admin.repository.js';
 
 export const autoBlockThreshold = () => env.AUTO_BLOCK_REPORTS_THRESHOLD;
-export const autoSuspendThreshold = () => env.AUTO_SUSPEND_REPORTS_THRESHOLD;
+const autoSuspendThreshold = () => env.AUTO_SUSPEND_REPORTS_THRESHOLD;
 
 
 const SANCTIONABLE_REPORTER_ROLES = new Set(['client']);

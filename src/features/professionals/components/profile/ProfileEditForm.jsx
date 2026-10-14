@@ -34,12 +34,6 @@ export function ProfileEditForm({
 }) {
   const descLen = String(values.description ?? '').length;
 
-  // Brazzaville par défaut : c'est la ville de la quasi-totalité des
-  // professionnels de la démo, et laisser le champ vide les forcerait à
-  // descendre le voir avant de choisir quoi que ce soit. Le défaut est
-  // appliqué à la ville *affichée*, pas enregistré : tant que le formulaire
-  // n'est pas soumis, `cityId` reste vide et le professionnel peut changer
-  // d'avis sans avoir modifié quoi que ce soit.
   const defaultCity = cities.find((c) => /brazzaville/i.test(c.name)) ?? null;
   const effectiveCityId = values.cityId ?? defaultCity?.id ?? null;
   const cityZones = zones.filter((z) => String(z.cityId) === String(effectiveCityId));

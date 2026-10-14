@@ -29,7 +29,7 @@ const NAV_SECTIONS = [
   { id: 'contact', label: 'Contact', icon: MessageCircle, isAction: true },
 ];
 
-/** Libellé unique du métier absent : le titre de page et les cartes doivent l'accorder. */
+
 const TRADE_FALLBACK = 'Artisan';
 
 export function ProfessionalPublicPage() {
@@ -44,14 +44,9 @@ export function ProfessionalPublicPage() {
   const [reportOpen, setReportOpen] = useState(false);
 
   const detail = useAsyncData(() => getPublishedDetail(id), [id]);
-  // Le droit de laisser un avis n'a de sens que pour un visiteur connecté :
-  // sans utilisateur, l'appel est court-circuité plutôt que raté pour rien.
   const canReviewState = useAsyncData(() => (user ? canReview(id) : false), [id, user?.id]);
   const compactReviews = useAsyncData(() => listReviews(id, { page: 1, pageSize: 3 }), [id]);
 
-  // Changer de fiche ne doit rien hériter de la précédente : sans cette remise à
-  // zéro, les dialogues se rouvrent sur le nouveau professionnel et `openIndex`
-  // peut pointer hors de son jeu de photos.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpenIndex(null);
@@ -77,9 +72,6 @@ export function ProfessionalPublicPage() {
   const { profile, photos, rating } = detail.data;
   const view = getProfileView(profile, rating);
   const { tradeName, firstName, localisation, breadcrumbTrade, whatsappUrl } = view;
-  // Même source que le compteur interne de ReviewList : `rating.count` s'en
-  // écarte en démonstration et les deux titres affichaient des nombres
-  // différents.
   const reviewTotal = Number(compactReviews?.data?.total ?? 0);
   const phoneNumber = String(profile.phone ?? '').replace(/\D/g, '');
 
@@ -127,13 +119,7 @@ export function ProfessionalPublicPage() {
         {profile.displayName} - {tradeName} à {CITY}
       </h1>
 
-      {/* Même grille que `/search` : trois colonnes dès `lg`, navigation à
-          gauche, contenu au centre, contact à droite.
-
-          `lg:self-stretch` sur les colonnes est indispensable : la grille
-          porte `lg:items-start`, qui les ramène à la hauteur de leur contenu.
-          Sans hauteur, la carte de contact n'a aucune distance à parcourir
-          et son `sticky` ne se déclenche jamais. */}
+      {}
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_minmax(0,280px)] lg:items-start">
         <PublicProfileSidebar
           profile={profile}

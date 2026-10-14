@@ -1,4 +1,3 @@
-// Données mock Utilisées quand le backend/DB est indisponible
 import what1 from '@/shared/assets/what1.png';
 import what2 from '@/shared/assets/what2.png';
 import what3 from '@/shared/assets/what3.png';
@@ -9,15 +8,9 @@ import { personas as PERSONA_DATA } from './personas.json';
 
 const IMAGES = [what1, what2, what3, user1, user2, hero];
 
-/**
- * Généré par `npm run mock:personas` et figé dans le dépôt : l'application reste
- * déterministe et ne contacte aucun service tiers. Repli sur `FALLBACK_NAMES`
- * si le fichier n'a pas encore été généré.
- */
+
 const PERSONAS = PERSONA_DATA ?? [];
 
-// Palettes des visuels de réalisation : une par quadruple, pour que deux
-// professionnels différents n'affichent jamais les mêmes photos.
 const WORK_PALETTES = [
   ['#eef4f1', '#2d5c4a'], ['#f7f1e4', '#8b6b2f'], ['#fbeae3', '#a45e3a'],
   ['#e8ecfa', '#3e4c8a'], ['#f1ecf6', '#5b3f7a'], ['#e9f3f6', '#276b7d'],
@@ -25,9 +18,8 @@ const WORK_PALETTES = [
   ['#eaf6f0', '#1f6b57'], ['#f5eef4', '#7a3566'], ['#eef1f7', '#334a72'],
 ];
 
-/** Visuel de réalisation généré, unique par professionnel et par photo. */
+
 function workImage(proIndex, photoIndex, label) {
-  // Pas de 5 (premier avec 12) : les 3 photos d'un même pro jamais la même teinte.
   const [bg, fg] = WORK_PALETTES[(proIndex + photoIndex * 5) % WORK_PALETTES.length];
   const a = 30 + ((proIndex * 17 + photoIndex * 29) % 40);
   const b = 90 + ((proIndex * 11 + photoIndex * 23) % 70);
@@ -80,7 +72,7 @@ export const MOCK_ZONES = [
   { id: 11, name: 'Maya-Maya', cityId: 2, createdAt: '2026-01-12T10:10:00.000Z' },
 ];
 
-/** Repli si le catalogue de personas n'a pas été généré. */
+
 const FALLBACK_NAMES = [
   ['Julien', 'Morel'], ['Thomas', 'Rivière'], ['Sarah', 'Le Goff'],
   ['Moussa', 'Okamba'], ['Amina', 'Itoua'], ['David', 'Malonga'],
@@ -88,7 +80,7 @@ const FALLBACK_NAMES = [
   ['Jean', 'Makaya'], ['Rod', 'Ngoma'], ['Ruth', 'Okou'],
 ];
 
-/** Source unique d'identités : personas si disponibles, sinon le repli. */
+
 const NAMES = PERSONAS.length
   ? PERSONAS.map((p) => [p.firstName, p.lastName])
   : FALLBACK_NAMES;
@@ -100,10 +92,7 @@ function nameAt(offset) {
   return NAMES[((offset % NAMES.length) + NAMES.length) % NAMES.length];
 }
 
-/**
- * Les femmes restent minoritaires dans ces métiers, sauf en maçonnerie où elles
- * sont nombreuses et plutôt jeunes : le catalogue fournit deux réserves distinctes.
- */
+
 const ROSTER = [
   { tradeId: 1, gender: 'male' },
   { tradeId: 2, gender: 'male' },
@@ -120,17 +109,12 @@ const ROSTER = [
 ];
 
 const MALE_POOL = PERSONAS.filter((p) => p.gender !== 'female');
-// Tri par âge : la maçonnerie prend les plus jeunes, les autres métiers
-// prennent les premières disponibles.
 const FEMALE_POOL = PERSONAS.filter((p) => p.gender === 'female').sort((a, b) => a.age - b.age);
 
-/** Âge d'entrée dans la profession pour un apprenti du bâtiment. */
+
 const CAREER_START = 18;
 
-/**
- * 45 à 70 % de la carrière possible depuis 18 ans, pour que deux
- * professionnels du même âge n'aient pas la même ancienneté.
- */
+
 function careerYears(age, seed) {
   const elapsed = Math.max(0, age - CAREER_START);
   const share = 0.45 + ((seed * 13) % 26) / 100;
@@ -138,16 +122,11 @@ function careerYears(age, seed) {
   return Math.min(elapsed, Math.round(elapsed * share));
 }
 
-/**
- * L'index décale de 2 par professionnel, sinon le pas de 2 et le pas de 6 se
- * synchronisent.
- */
+
 const PORTRAIT_SHARE = 2;
 
 function portraitFor(persona, index) {
   if (persona && index % PORTRAIT_SHARE !== 1) return persona.portrait;
-  // Index entier du compteur asset (0, 1, 2…) : les positions asset sont
-  // 1, 3, 5… et un index flotté donnerait un accès hors tableau.
   const assetIndex = Math.floor(index / PORTRAIT_SHARE);
   return IMAGES[assetIndex % IMAGES.length];
 }
@@ -214,10 +193,7 @@ const REVIEWS_POOL = [
   { rating: 5, comment: 'Devis détaillé, respect des délais, résultat impeccable.' },
 ];
 
-/**
- * `mockReviewsFor` régénère la liste à chaque lecture : sans ce registre, un
- * avis masqué réapparaîtrait aussitôt.
- */
+
 const MOCK_HIDDEN_REVIEWS = new Set();
 
 export function mockReviewsFor(proId) {
@@ -246,7 +222,7 @@ export function mockSetReviewHidden(id, hidden) {
   return { id: numeric, hidden: Boolean(hidden) };
 }
 
-export function toSearchItem(p) {
+function toSearchItem(p) {
   return {
     id: p.id,
     displayName: p.displayName,
@@ -310,13 +286,8 @@ export function getProDetailMock(id) {
   };
 }
 
-// ---------- Contacts mock ----------
 
-/**
- * Le même professionnel apparaît deux fois (9003 et 9004), un appel puis un
- * WhatsApp : c'est le cas normal, la contrainte d'unicité sur la paire ayant été
- * levée en migration.
- */
+
 let MOCK_MY_CONTACTS = [
   {
     id: 9001,
@@ -404,7 +375,7 @@ export function mockMyContacts({ page = 1, pageSize = 20 } = {}) {
   return paginateMock(MOCK_MY_CONTACTS, page, pageSize);
 }
 
-/** Un clic sur Appeler ou WhatsApp ajoute une ligne, comme le serveur. */
+
 export function mockLogContact(toUserId, channel) {
   const counterpart = MOCK_MY_CONTACTS.find((c) => String(c.userId) === String(toUserId));
   MOCK_MY_CONTACTS = [
@@ -422,7 +393,6 @@ export function mockLogContact(toUserId, channel) {
   return null;
 }
 
-// ---------- Admin mock ----------
 
 const MOCK_CLIENTS = Array.from({ length: 6 }, (_, i) => ({
   id: 100 + i,
@@ -525,22 +495,14 @@ const withProName = (r) => {
     ...r,
     professionalName: pro?.displayName ?? `Pro #${r.professionalId}`,
     professionalAvatarUrl: pro?.avatarUrl ?? null,
-    // Le métier accompagne le nom sur chaque fiche client : « Pro #12 » ne dit
-    // rien, « Pro #12 · Plombier » se reconnaît.
     professionalTrade: pro?.trade ?? null,
     professionalBlockedAt: pro?.blockedAt ?? null,
     professionalSuspendedAt: pro?.suspendedAt ?? null,
   };
 };
 
-// ---------- Compte client mock ----------
-//
-// Ce que voit le client connecté en démo. Les listes sont mutables : corriger,
-// masquer ou retirer un avis doit tenir jusqu'au rechargement, sinon la
-// démonstration d'une action ne montre rien. Placé après `MOCK_REPORTS`,
-// `withProName` et `paginateMock`, tous deux déclarés plus haut.
 
-/** Avis déposés par le client. */
+
 let MOCK_MY_REVIEWS = [
   {
     id: 8001,
@@ -572,7 +534,6 @@ let MOCK_MY_REVIEWS = [
     professionalTrade: MOCK_PROS[2].trade ?? null,
     rating: 3,
     comment: 'Le travail est correct mais le rendez-vous a été repoussé deux fois.',
-    // Présent dès l'ouverture : le filtre « Masqués seulement » a du contenu.
     isHidden: true,
     createdAt: new Date(Date.now() - 40 * 86400000).toISOString(),
   },
@@ -584,8 +545,6 @@ const MY_REVIEWS_VISIBILITY = {
   all: () => true,
 };
 
-// Même tableau que le serveur : le tri est choisi par correspondance sur des
-// comparateurs, jamais par une chaîne concaténée dans le tri.
 const MY_REVIEWS_SORT = {
   recent: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
@@ -636,7 +595,7 @@ const MY_REPORTS_SORT = {
   oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
 };
 
-/** Signalements du client : les mêmes lignes que l'administration reçoit. */
+
 export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'recent' } = {}) {
   const needle = String(q || '').trim().toLowerCase();
   let rows = MOCK_REPORTS.map(withProName);
@@ -655,14 +614,13 @@ export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'rece
 
 export function mockDeleteMyReport(id) {
   const target = MOCK_REPORTS.find((r) => String(r.id) === String(id));
-  // Même refus que le serveur : un signalement traité n'est pas retirable.
   if (!target || target.status !== 'pending') throw new Error('Signalement introuvable');
   MOCK_REPORTS = MOCK_REPORTS.filter((r) => String(r.id) !== String(id));
   return null;
 }
 
-export const MOCK_AUTO_BLOCK_THRESHOLD = 3;
-export const MOCK_AUTO_SUSPEND_THRESHOLD = 5;
+const MOCK_AUTO_BLOCK_THRESHOLD = 3;
+const MOCK_AUTO_SUSPEND_THRESHOLD = 5;
 
 export function mockReportProfessional({ professionalId, reporterId = 901, reason, message = null }) {
   const pro = MOCK_PROS.find((p) => String(p.id) === String(professionalId));
@@ -689,7 +647,6 @@ export function mockReportProfessional({ professionalId, reporterId = 901, reaso
   };
   MOCK_REPORTS = [created, ...MOCK_REPORTS];
 
-  // Traitement automatique au seuil, comme le service serveur.
   const reportCount = MOCK_REPORTS.filter((r) => String(r.professionalId) === String(pro.id)).length;
   const autoBlocked = MOCK_AUTO_BLOCK_THRESHOLD > 0 && reportCount >= MOCK_AUTO_BLOCK_THRESHOLD;
   const autoSuspended = MOCK_AUTO_SUSPEND_THRESHOLD > 0 && reportCount >= MOCK_AUTO_SUSPEND_THRESHOLD;
@@ -699,14 +656,10 @@ export function mockReportProfessional({ professionalId, reporterId = 901, reaso
   return { ...withProName(created), reportCount, autoBlocked, autoSuspended };
 }
 
-// ---------- Signalements d'avis et de correspondants ----------
 
-// File distincte de `MOCK_REPORTS`, comme la table : la cible est un contenu,
-// les effets sont « retirer l'avis » et non « suspendre le compte ». Les
-// confondre ferait porter à l'un les compteurs de l'autre.
 let MOCK_REVIEW_REPORTS = [];
 
-/** Même refus que le serveur : sans conversation, on ne signale rien. */
+
 export function mockReportContact(userId, { reason, message = null }, reporterId = 901) {
   const linked = MOCK_MY_CONTACTS.some(
     (c) =>
@@ -732,7 +685,7 @@ export function mockReportContact(userId, { reason, message = null }, reporterId
   return withProName(created);
 }
 
-/** Signalement d'un avis reçu par le professionnel. */
+
 export function mockReportReview(reviewId, { reason, message = null }, reporterId = 901) {
   if (MOCK_REVIEW_REPORTS.some((r) => String(r.reviewId) === String(reviewId)))
     throw new Error('Vous avez déjà signalé cet avis');
@@ -765,7 +718,6 @@ export function mockAdminReports({ page = 1, pageSize = 20, status, query = '' }
       );
     });
 
-  // Regroupement par professionnel : un seul item par profil signalé.
   const groups = [...rows.reduce((acc, r) => acc.set(String(r.professionalId), [...(acc.get(String(r.professionalId)) || []), r]), new Map()).entries()]
     .map(([professionalId, reports]) => {
       const sorted = [...reports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -828,9 +780,6 @@ export function mockAdminReviews({ page = 1, pageSize = 20, hidden, query = '' }
 
 const MOCK_ADMINS = [
   {
-    // 901 et non 1 : les professionnels occupent déjà les identifiants 1..N et
-    // deux comptes de même identifiant rendaient le blocage ambigu (l'action
-    // visait l'administrateur au lieu du professionnel).
     id: 901,
     role: 'admin',
     firstName: 'Admin',
@@ -853,8 +802,6 @@ export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '', bloc
     avatarUrl: p.avatarUrl,
     phone: p.phone,
     createdAt: new Date(Date.now() - (p.id + 1) * 86400000 * 3).toISOString(),
-    // Lu sur le professionnel : un compte bloqué (à la main ou par le seuil de
-    // signalements) doit apparaître bloqué dans la liste des utilisateurs.
     blockedAt: p.blockedAt ?? null,
   }));
   let rows = [...pros, ...MOCK_CLIENTS, ...MOCK_ADMINS].sort(
@@ -884,8 +831,6 @@ export function mockSetUserBlocked(actorId, id, blocked) {
   const user = findMockUser(id);
   if (!user) throw new Error('Utilisateur introuvable');
 
-  // `findMockUser` renvoie une copie pour un professionnel : l'écriture doit
-  // viser la collection d'origine, sinon le blocage est perdu au rechargement.
   const store = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : MOCK_PROS;
   const target = store.find((u) => u.id === Number(id));
   if (!target) throw new Error('Utilisateur introuvable');
@@ -907,8 +852,6 @@ export function mockSetUserSuspended(actorId, id, suspended) {
   const target = store.find((u) => u.id === Number(id));
   if (!target) throw new Error('Utilisateur introuvable');
 
-  // Le serveur suspend ET bloque : une suspension implique la perte d'accès,
-  // et la lever redonne l'accès.
   target.suspendedAt = suspended ? new Date().toISOString() : null;
   target.blockedAt = suspended ? new Date().toISOString() : null;
   return { id: Number(id), role: user.role, blockedAt: target.blockedAt, suspendedAt: target.suspendedAt };
@@ -1160,16 +1103,9 @@ export function mockDeleteZone(id) {
   return { id: numeric };
 }
 
-// ---------- Session mock  ----------
 
 const SESSION_KEY = 'kop_demo_user';
 
-// Une URL `blob:` ne vit que dans l'onglet qui l'a créée. Conservée telle
-// quelle dans `localStorage`, elle survit au rechargement comme une promesse
-// morte : le blob est évaporé avec le tas mémoire, et la première `<img>`
-// qui la demande reçoit `ERR_FILE_NOT_FOUND`. On n'écrit donc jamais l'URL :
-// on écrit ce marqueur et on garde le fichier en mémoire pour la durée de
-// l'onglet.
 export const DEMO_AVATAR_MARKER = 'kop:demo-avatar';
 
 let demoAvatarFile = null;
@@ -1178,7 +1114,7 @@ export function setDemoAvatarFile(file) {
   demoAvatarFile = file ?? null;
 }
 
-/** URL d'aperçu du fichier en cours - valide pour cet onglet uniquement. */
+
 export function getDemoAvatarUrl() {
   return demoAvatarFile ? URL.createObjectURL(demoAvatarFile) : null;
 }
@@ -1189,16 +1125,8 @@ export function getDemoUser() {
     if (!raw) return null;
     const user = JSON.parse(raw);
 
-    // Retranche l'URL à la lecture, jamais à l'écriture : c'est le seul moment
-    // où le blob existe encore.
     if (user?.avatarUrl === DEMO_AVATAR_MARKER) user.avatarUrl = getDemoAvatarUrl();
 
-    // Des sessions écrites avant le marqueur portent encore une vraie URL
-    // `blob:`, elle est déjà morte. Le marqueur seul ne les rattrape pas :
-    // sans ce filet, l'erreur `ERR_FILE_NOT_FOUND` continuerait d'apparaître
-    // sur ces sessions jusqu'à ce que l'utilisateur se déconnecte. Toute
-    // `blob:` sortie du stockage est morte par définition - un blob n'a jamais
-    // survécu à un rechargement.
     if (typeof user?.avatarUrl === 'string' && user.avatarUrl.startsWith('blob:'))
       user.avatarUrl = null;
 
@@ -1213,6 +1141,6 @@ export function setDemoUser(user) {
     if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
     else localStorage.removeItem(SESSION_KEY);
   } catch {
-    /* ignore */
+
   }
 }

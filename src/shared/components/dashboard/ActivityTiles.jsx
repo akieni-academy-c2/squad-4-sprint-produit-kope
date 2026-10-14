@@ -2,12 +2,8 @@ import { StarRating } from '@/shared/components/ui/StarRating.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 import { formatDateFr } from '@/shared/utils';
 
-/**
- * Tuiles d'aperçu, partagées par les deux tableaux de bord : un même rendu
- * pour les deux espaces, sinon la différence de dessin ferait croire à une
- * différence de données.
- */
-export function ActivityTile({ onClick, label, children }) {
+
+function ActivityTile({ onClick, label, children }) {
   return (
     <li className="min-w-0">
       <button
@@ -22,7 +18,7 @@ export function ActivityTile({ onClick, label, children }) {
   );
 }
 
-/** `subtitle` : métier pour un avis donné, extrait pour un avis reçu. */
+
 export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onClick, actionLabel }) {
   return (
     <ActivityTile onClick={onClick} label={actionLabel}>
@@ -47,7 +43,7 @@ export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onCli
   );
 }
 
-/** La ligne basse dit qui a pris l'initiative au contact. */
+
 export function ContactTile({ contact, onClick, actionLabel }) {
   const name = contact.displayName || 'Utilisateur';
 
@@ -79,7 +75,7 @@ export function ContactTile({ contact, onClick, actionLabel }) {
   );
 }
 
-/** État vide des listes : bordure pointillée, comme dans l'espace admin. */
+
 export function OverviewEmpty({ children }) {
   return (
     <p className="w-full min-w-0 rounded-[14px] border border-dashed border-gray-200 bg-[#f7faf8] p-6 text-center text-sm text-gray-500">
@@ -89,7 +85,7 @@ export function OverviewEmpty({ children }) {
 }
 
 
-/** Squelette de tuile : la hauteur réelle d'une tuile, pas celle d'une ligne. */
+
 export function TileSkeleton() {
   return (
     <div className="h-[152px] animate-pulse rounded-[14px] border border-[#e2e8e5] bg-white" />

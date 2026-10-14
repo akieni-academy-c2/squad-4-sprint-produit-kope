@@ -44,10 +44,6 @@ export function ProfileEditor({ profile, user, onUpdated }) {
     async (data) => updateMyProfile(data),
   );
 
-  // Le formulaire couvre deux ensembles distincts : l'identité du compte
-  // (prénom, nom, téléphone, e-mail) et la fiche professionnelle (métier,
-  // description…). Les deux sont envoyés par la même action, donc le bouton doit
-  // considérer une modification de l'un comme de l'autre.
   const identity = useMemo(
     () => ({ firstName, lastName, phone, email }),
     [firstName, lastName, phone, email],
@@ -56,8 +52,6 @@ export function ProfileEditor({ profile, user, onUpdated }) {
   const profileForm = useFormReadiness(updateProfileSchema, values);
   const canSubmit = identityForm.ready && profileForm.ready && (identityForm.dirty || profileForm.dirty);
 
-  // Un bouton grisé sans dire quoi corriger est une impasse. L'ordre suit la
-  // lecture du formulaire : identité d'abord, puis fiche professionnelle.
   const buttonLabel =
     submitLabel(
       identityForm.statuses,
@@ -67,9 +61,6 @@ export function ProfileEditor({ profile, user, onUpdated }) {
   const hint = buttonLabel !== 'Enregistrer' ? buttonLabel : null;
 
   const onSubmit = async (e) => {
-    // `handleSubmit` ne valide que le schéma du profil. Sans ce contrôle
-    // préalable, un prénom vide part quand même vers l'API et l'utilisateur
-    // découvre l'erreur après l'envoi, sous forme de message serveur.
     const accountCheck = validateFrontend(updateAccountSchema, identity);
     if (!accountCheck.success) {
       setErrors((prev) => ({ ...prev, ...accountCheck.errors }));
@@ -91,8 +82,6 @@ export function ProfileEditor({ profile, user, onUpdated }) {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim(),
-        // Vide = retrait de l'adresse. Le serveur distingue `null` (effacer)
-        // de l'absence de clé (ne pas toucher), d'où la clé toujours présente.
         email: email.trim() || null,
       });
       await refresh();
@@ -116,11 +105,6 @@ export function ProfileEditor({ profile, user, onUpdated }) {
       setUploadProgress(100);
       toast({ message: 'Photo de profil mise à jour.', type: 'success' });
 
-      // L'avatar est enregistré à l'instant même, indépendamment du
-      // formulaire. Si aucun champ n'est modifié, il ne reste rien à
-      // enregistrer : sans cette sortie, l'utilisateur reste devant un
-      // formulaire dont « Enregistrer » est désactivé alors que sa photo vient
-      // d'être prise en compte.
       if (!identityForm.dirty && !profileForm.dirty) setEditing(false);
     } catch (err) {
       toast({ message: err?.message || 'Erreur lors du téléversement.', type: 'error' });

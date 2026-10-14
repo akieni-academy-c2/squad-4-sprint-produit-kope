@@ -1,15 +1,6 @@
 import { beforeAll, beforeEach, afterAll, describe, expect, it, vi } from 'vitest';
 
-/**
- * Tests d'intégration HTTP : le vrai serveur Express est démarré sur un port
- * éphémère et interrogé en HTTP. Couvre la chaîne complète
- * route → middleware → session → service → repository.
- *
- * Seul le pool PostgreSQL est simulé : le SQL lui-même est déjà couvert
- * unitairement et par tests/sql-live.test.js.
- *
- * L'authentification passe par la session (cookie `sid`), comme en production.
- */
+
 
 const STATS = {
   users: 42,
@@ -27,7 +18,7 @@ const STATS = {
   usersSuspended: 1,
 };
 
-/** Sessions ouvertes dans la base de test, par identifiant de cookie. */
+
 const openSessions = {
   'session-admin': { id: 1, role: 'admin' },
   'session-client': { id: 5, role: 'client' },
@@ -35,7 +26,7 @@ const openSessions = {
   'session-suspended-admin': { id: 4, role: 'admin' },
 };
 
-/** État des comptes en base, indexé par id : chaque test décrit le compte qu'il utilise. */
+
 const accountStates = new Map();
 const activeAdmin = { role: 'admin', blockedAt: null, suspendedAt: null };
 
@@ -46,7 +37,6 @@ function fakePool() {
       return { query: fakePool().query, release() {} };
     },
     async query(sql, params = []) {
-      // Store de session (connect-pg-simple) : lecture d'une session ouverte.
       if (/FROM\s+"?session"?/i.test(sql) && /\bsid\b/i.test(sql)) {
         const user = openSessions[params[0]];
         if (!user) return { rows: [], rowCount: 0 };
@@ -100,19 +90,10 @@ beforeEach(() => {
   accountStates.clear();
 });
 
-/**
- * express-session ignore un cookie qui ne commence pas par « s: » ou dont la
- * signature ne correspond pas : le store n'est même pas interrogé. On
- * reproduit donc exactement le format produit par le serveur.
- */
+
 const asSession = (sid) => ({ Cookie: `sid=s:${sign(sid, env.SESSION_SECRET)}` });
 
-/**
- * Un navigateur envoie toujours ces deux en-têtes sur une requête vers l'API,
- * et `csrfGuard` refuse une requête mutante qui n'en porte aucun : c'est
- * précisément le profil d'un script qui tente d'utiliser le cookie de session
- * d'un visiteur. Les tests doivent donc se comporter comme un navigateur.
- */
+
 const asBrowser = (extra = {}) => ({ 'Sec-Fetch-Site': 'same-origin', Origin: baseUrl, ...extra });
 
 const get = (path, headers = {}) => fetch(`${baseUrl}${path}`, { headers });
@@ -134,8 +115,6 @@ describe('intégration HTTP', () => {
     });
 
     it('/auth/me répond 200 sans session, plutôt que 401', async () => {
-      // « Qui suis-je ? » sans session est une réponse normale, pas une erreur :
-      // un 401 affichait une alerte rouge dans la console pour tout visiteur.
       const res = await get('/api/auth/me');
       expect(res.status).toBe(200);
       await expect(res.json()).resolves.toEqual({ user: null });
@@ -145,12 +124,10 @@ describe('intégration HTTP', () => {
       const res = await get('/api/admin/stats', asSession('session-admin'));
       expect(res.status).toBe(200);
       const stats = await res.json();
-      // countStats ne renvoie pas de clé `incomplete` : le calcul doit rester un nombre.
       expect(typeof stats.incomplete).toBe('number');
       expect(stats.incomplete).toBe(4);
       expect(stats.published).toBe(9);
       expect(stats.hidden).toBe(2);
-      // File de modération : les nouveaux compteurs transitent aussi.
       expect(stats.reportsPending).toBe(3);
       expect(stats.usersBlocked).toBe(4);
       expect(stats.usersSuspended).toBe(1);
@@ -178,7 +155,6 @@ describe('intégration HTTP', () => {
     });
 
     it('applique le rôle en base et non celui mémorisé en session', async () => {
-      // Rétrogradé depuis l'ouverture de la session.
       accountStates.set(1, { role: 'client', blockedAt: null, suspendedAt: null });
       const res = await get('/api/admin/stats', asSession('session-admin'));
       expect(res.status).toBe(403);
@@ -199,7 +175,6 @@ describe('intégration HTTP', () => {
     });
 
     it('un en-tête Authorization ne donne aucun accès', async () => {
-      // Aucun jeton n'est émis : un Bearer fabriqué ne doit rien ouvrir.
       const res = await get('/api/admin/stats', { Authorization: 'Bearer a.b.c' });
       expect(res.status).toBe(401);
     });

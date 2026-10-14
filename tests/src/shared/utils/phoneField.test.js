@@ -22,8 +22,6 @@ describe('retrait du code pays', () => {
     expect(stripCountryCode('068898888')).toBe('068898888');
   });
 
-  // 24x n'existe pas : un national commençant par 24 est forcément
-  // un indicatif mal collé.
   it('ne mange pas un préfixe national valide', () => {
     expect(stripCountryCode('0401234567')).toBe('0401234567');
     expect(stripCountryCode('0601234567')).toBe('0601234567');

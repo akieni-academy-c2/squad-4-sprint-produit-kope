@@ -3,21 +3,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 
-/**
- * La barre de pagination.
- *
- * ## Ce que ces tests verrouillent
- *
- * Le bandeau — fond et bordure — est porté par le composant, pas passé par
- * l'appelant. Extrapolé, l'oubli est silencieux : la barre s'affiche sans rien
- * autour et flotte sur le fond de la page, à côté de cartes qui ont une
- * bordure. Cinq listes sur onze étaient dans ce cas, et rien ne le signalait.
- */
+
 
 const render = (props) =>
   renderToStaticMarkup(<Pagination page={1} pageSize={10} total={50} onPageChange={() => {}} {...props} />);
 
-/** Les classes de la carte, pour comparer. */
+
 const CARD_SURFACE = renderToStaticMarkup(<Card>x</Card>).match(/class="([^"]*)"/)[1];
 
 describe('habillage', () => {
@@ -34,7 +25,7 @@ describe('habillage', () => {
   it('reprend exactement la surface de Card', () => {
     const html = render();
     expect(html).toContain('rounded-md border border-gray-200 bg-white');
-    // `Card` porte les mêmes trois propriétés — pas la même classe, mais les
+    // `Card` porte les mêmes trois propriétés- pas la même classe, mais les
     // mêmes jetons, ce qui est ce que l'œil compare.
     for (const token of ['rounded-md', 'border-gray-200', 'bg-white'])
       expect(CARD_SURFACE, `Card ne porte pas ${token}`).toContain(token);

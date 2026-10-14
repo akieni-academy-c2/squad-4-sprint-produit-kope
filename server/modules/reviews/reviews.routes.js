@@ -8,7 +8,6 @@ import * as controller from './reviews.controller.js';
 
 const router = Router();
 
-// US-15
 router.get(
   '/professionals/:id/reviews',
   validate(idParamSchema, 'params'),
@@ -16,7 +15,6 @@ router.get(
   controller.list,
 );
 
-// Avis
 router.get(
   '/reviews/mine',
   requireAuth,
@@ -24,10 +22,6 @@ router.get(
   controller.mine,
 );
 
-// Gestion de son propre avis. Le client_id n'est jamais lu dans le corps : il
-// vient de la session, donc ces trois routes ne peuvent agir que sur ses
-// propres avis. Le masquage est séparé de la mise à jour - corriger un texte
-// ne doit pas réafficher un avis que le client avait retiré.
 router.patch(
   '/reviews/:id',
   requireAuth,
@@ -46,7 +40,6 @@ router.patch(
 
 router.delete('/reviews/:id', requireAuth, validate(idParamSchema, 'params'), controller.remove);
 
-// avis client
 router.get(
   '/clients/:id/reviews',
   requireAuth,
@@ -55,7 +48,6 @@ router.get(
   controller.byClient,
 );
 
-// US-14
 router.post(
   '/professionals/:id/reviews',
   requireRole('client', 'professional'),

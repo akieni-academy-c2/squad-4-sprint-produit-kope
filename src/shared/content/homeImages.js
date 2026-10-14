@@ -13,10 +13,7 @@ const ORDER = {
   cta: user2,
 };
 
-/**
- * Cette section annonce des visages : elle ne peut pas reprendre les images de chantier
- * (`what1..3`) déjà servies par les cartes catégories juste au-dessus.
- */
+
 export const FEATURED_FACES = [hero, user1, user2];
 
 export const HOME_RESERVED = {

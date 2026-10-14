@@ -18,15 +18,10 @@ import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/
 import { deleteMyReport, getMyReports } from '../services/reports.service.js';
 import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
-// Page assez courte pour que la liste reste lisible, assez longue pour ne pas
-// assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
 const PAGE_SIZE = 10;
 
 const STATUS_VARIANT = { pending: 'warning', resolved: 'success', dismissed: 'neutral' };
 
-// Un signalement traité a déjà fait son office - le professionnel a été bloqué
-// ou le motif rejeté. Le retirer effacerait une décision prise par un
-// administrateur : le retrait n'est proposé que sur un signalement en attente.
 const WITHDRAWABLE = new Set(['pending']);
 
 const SORT_OPTIONS = [
@@ -58,16 +53,12 @@ export function MyReportsSection({ rightContainer = null }) {
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
 
-  // Changer un filtre ramène en première page : rester sur la page 3 d'un
-  // résultat filtré affiche un vide alors que des signalements existent.
   const changeFilter = (setter) => (value) => {
     setter(value);
     setPage(1);
   };
   const [pendingId, setPendingId] = useState(null);
 
-  // Un filtre est « sale » dès qu'il restreint la liste : c'est ce qui
-  // conditionne l'affichage du bouton « Réinitialiser » du panneau.
   const dirty = Boolean(q || status || sort !== 'recent');
 
   const resetFilters = () => {
@@ -192,9 +183,6 @@ export function MyReportsSection({ rightContainer = null }) {
                       size="sm"
                       loading={pendingId === report.id}
                       onClick={() => remove(report.id)}
-                      // Rétractation d'une décision déjà prise : le bouton
-                      // disparaît plutôt que d'être désactivé, un gris
-                      // inexplicable sur un traitement terminé.
                       className={cn(
                         'text-gray-500 hover:bg-rose-50 hover:text-danger-500',
                         !canWithdraw(report) && 'invisible',

@@ -29,14 +29,6 @@ export async function create({ senderId, recipientId, message, channel = 'messag
   return rows[0];
 }
 
-export async function existsPair(senderId, recipientId, db = pool) {
-  const { rowCount } = await db.query(
-    'SELECT 1 FROM contacts WHERE sender_id = $1 AND recipient_id = $2',
-    [senderId, recipientId],
-  );
-  return rowCount > 0;
-}
-
 
 export async function hasContactBetween(userA, userB, db = pool) {
   const { rowCount } = await db.query(

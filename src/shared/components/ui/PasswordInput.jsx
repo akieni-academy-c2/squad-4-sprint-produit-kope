@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Lock, LockOpen } from 'lucide-react';
 import { Input } from './Input.jsx';
 
-/** Champ de mot de passe avec bascule de visibilité. */
+
 export function PasswordInput({ id, value, onChange, error, success, ...rest }) {
   const [visible, setVisible] = useState(false);
 

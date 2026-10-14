@@ -163,8 +163,6 @@ describe('US-06 - statut de publication du profil', () => {
     );
     expect(db.query.mock.calls[1][0]).toContain('FROM published_professionals p');
 
-    // La vue est redéfinie par plusieurs migrations : il faut lire la DERNIÈRE
-    // définition, sinon le test passe alors que la vue réelle a changé.
     const dir = pathToFileURL(`${repoPath('server/db/migrations')}/`);
     const files = (await readdir(dir)).filter((f) => f.endsWith('.sql')).sort();
     const definitions = [];
@@ -186,7 +184,6 @@ describe('US-06 - statut de publication du profil', () => {
     expect(publicationView).toContain('char_length(btrim(p.description)) >= 30');
     expect(publicationView).toContain('EXISTS (SELECT 1 FROM photos');
     expect(publicationView).toContain('WHERE NOT p.is_hidden');
-    // Un compte suspendu ne doit jamais rester dans l'annuaire public.
     expect(publicationView).toContain('u.suspended_at IS NULL');
   });
 });

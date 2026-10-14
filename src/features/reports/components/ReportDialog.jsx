@@ -111,7 +111,6 @@ export function ReportTrigger({ onClick, label = 'Signaler', className = '' }) {
     <button
       type="button"
       onClick={onClick}
-      // `gray-400` sur fond clair plafonne a 2,5:1, sous le seuil AA.
       className={`inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-gray-500 underline-offset-4 transition hover:text-danger-500 hover:underline ${className}`}
     >
       <Flag size={12} aria-hidden />

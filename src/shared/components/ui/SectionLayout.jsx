@@ -6,11 +6,7 @@ import { Sheet } from '@/shared/components/ui/Sheet.jsx';
 import { cn } from '@/shared/utils';
 import { STICKY_TOP } from '@/shared/lib/constants.js';
 
-/**
- * Ni colonne de filtres : la section la projette par portail, sinon chaque
- * section impose sa grille et désaligne les barres collantes. Fond posé par
- * `RootLayout` sur la colonne centrale.
- */
+
 export function SectionLayout({
   ariaLabel,
   rightContainer = null,
@@ -20,7 +16,7 @@ export function SectionLayout({
   noun,
   nounPlural,
   dirty = false,
-  /** Bouton pleine largeur plutôt qu'un simple libellé de compte. */
+
   fullWidthFilterButton = true,
   className,
   children,
@@ -41,9 +37,6 @@ export function SectionLayout({
       <SlidersHorizontal className="h-4 w-4" aria-hidden />
       Filtres
       {dirty && (
-        // `sr-only` et non `aria-label` : un `aria-label` sur un `<span>` sans
-        // rôle est ignoré par les lecteurs d'écran. La pastille est
-        // décorative, c'est « filtres actifs » qu'il faut annoncer.
         <>
           <span className="sr-only">- filtres actifs</span>
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-primary-500" />

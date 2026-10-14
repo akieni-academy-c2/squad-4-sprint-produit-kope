@@ -6,9 +6,6 @@ export function requireRole(...roles) {
     try {
       const identity = currentUser(req);
       if (!identity) throw ApiError.unauthorized();
-      // Sans ce contrôle, un administrateur bloqué garde ses droits jusqu'à
-      // l'expiration de sa session. Le rôle est lui aussi relu en base :
-      // un compte rétrogradé perd ses droits immédiatement.
       const user = await loadActiveUser(identity.id);
       if (!roles.includes(user.role)) throw ApiError.forbidden();
 

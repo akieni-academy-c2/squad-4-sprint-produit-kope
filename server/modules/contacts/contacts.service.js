@@ -14,9 +14,6 @@ export async function createContact(senderId, { toUserId, message, channel = 'me
   if (!recipient) throw ApiError.notFound('Utilisateur introuvable');
 
   try {
-    // `message ?? null` : un appel n'a pas de texte, et la colonne est
-    // nullable. Sans cette normalisation, un appel sans `message` insertait
-    // `undefined`, que le pilote PostgreSQL refuse.
     return await repository.create({
       senderId,
       recipientId: toUserId,

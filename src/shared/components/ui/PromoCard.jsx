@@ -2,12 +2,7 @@ import { Button } from './Button.jsx';
 import { MotifBackdrop } from './MotifBackdrop.jsx';
 import { cn } from '@/shared/utils';
 
-/**
- * Carte d'appel à l'action, sur le dégradé de marque.
- *
- * `bg-linear-to-br` et non `bg-gradient-to-br` : la syntaxe v3 ne génère
- * aucun CSS en v4, la carte restait sans fond, titre blanc sur du blanc.
- */
+
 export function PromoCard({ title, text, action, onAction, seed = 1, id, className }) {
   return (
     <div

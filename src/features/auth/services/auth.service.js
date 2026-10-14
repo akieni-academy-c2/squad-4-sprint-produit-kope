@@ -64,7 +64,6 @@ export function login(payload) {
 export function logout() {
   return callApi(
     async () => {
-      // Le serveur détruit la session côté serveur et efface le cookie httpOnly.
       try {
         await api.postJson('/auth/logout', {});
       } finally {
@@ -201,9 +200,6 @@ export function uploadAvatar(file, onProgress) {
     async () => {
       if (file) {
         if (onProgress) onProgress(100);
-        // Le fichier est gardé en mémoire et l'URL reconstruite à la lecture :
-        // une URL `blob:` écrite dans `localStorage` redevient morte au
-        // rechargement et l'avatar tombe en `ERR_FILE_NOT_FOUND`.
         setDemoAvatarFile(file);
         const demo = getDemoUser();
         if (demo) setDemoUser({ ...demo, avatarUrl: DEMO_AVATAR_MARKER });

@@ -20,8 +20,6 @@ import { logContact } from '../services/contacts.service.js';
 import { formatDateFr, toWhatsappUrl } from '@/shared/utils';
 import { Pagination } from '@/shared/components/ui/Pagination.jsx';
 
-// Plafond de la liste chargée. Les filtres contacts sont tous côté client, il
-// faut donc la totalité pour qu'une recherche ne porte que sur la page affichée.
 const FETCH_LIMIT = 100;
 
 const PAGE_SIZE = 10;
@@ -31,23 +29,12 @@ const SORT_OPTIONS = [
   { value: 'name', label: 'Nom (A → Z)' },
 ];
 
-// « Qui a pris l'initiative » est la seule distinction qui change la lecture
-// d'un contact : un professionnel qui m'a écrit et moi qui l'ai Joint ne se
-// relisent pas de la même façon.
 const ORIGIN_OPTIONS = [
   { value: 'all', label: 'Tous les contacts' },
   { value: 'outgoing', label: 'Contactés par moi' },
   { value: 'incoming', label: 'Qui m’ont contacté' },
 ];
 
-// Le canal dit *comment* on a été joint. Il répond à une question que
-// l'origine ne couvre pas : « qui ai-je déjà réussi à appeler ? » n'a rien à
-// voir avec « qui m'a écrit en premier ? ».
-//
-// Ni « Messages » ni « Aucun » ne sont proposés. Un contact issu d'une demande
-// de message est une ligne sans échange - ni appel, ni WhatsApp - et la
-// filtrer n'isolerait que des conversations vides. Elle reste consultable,
-// elle ne mérite pas une option.
 const CHANNEL_OPTIONS = [
   { value: 'all', label: 'Tous les canaux' },
   { value: 'call', label: 'Appels' },
@@ -94,7 +81,7 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             <Badge variant={contact.outgoing ? 'info' : 'primary'} size="sm">
               {contact.outgoing ? 'Contacté' : 'Vous a contacté'}
             </Badge>
-            
+
             {reported && (
               <Badge variant="danger" size="sm">
                 Signalé
@@ -107,7 +94,7 @@ function ContactRow({ contact, onReach, onReport, reported }) {
           </div>
         </div>
 
-        
+
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
           <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
             <span aria-hidden>·</span>
@@ -159,8 +146,6 @@ export function ContactsSection({ rightContainer = null }) {
 
   const dirty = Boolean(q || sort !== 'recent' || origin !== 'all' || channel !== 'all');
 
-  // Changer un filtre ramène en première page : rester sur la page 3 d'un
-  // résultat filtré affiche un vide alors que des contacts existent.
   const changeFilter = (setter) => (value) => {
     setter(value);
     setPage(1);
@@ -196,10 +181,6 @@ export function ContactsSection({ rightContainer = null }) {
     );
   }, [items, q, sort, origin, channel]);
 
-  // Pagination sur la liste filtrée, pas sur la page serveur. Les filtres
-  // vivent tous dans le navigateur : paginer côté serveur afficherait un
-  // « aucun contact » sur la page 3 alors que la page 1 en contenait trois qui
-  // correspondaient. Filtres et pagination portent donc sur le même ensemble.
   const paged = useMemo(
     () => visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     [visible, page],

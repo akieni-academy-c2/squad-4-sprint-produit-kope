@@ -11,8 +11,6 @@ export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const { tradeName, zones, tags, avg, count, avatarSrc, localisation, hasAbout } = view;
 
-  // Version jumeelle de PublicProfileSidebar : un seul des deux est monté, voir
-  // le commentaire de garde posé là-bas.
   if (isDesktop) return null;
 
   return (

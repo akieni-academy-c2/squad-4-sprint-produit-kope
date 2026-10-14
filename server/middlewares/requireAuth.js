@@ -6,7 +6,6 @@ export async function requireAuth(req, res, next) {
     const identity = currentUser(req);
     if (!identity) throw ApiError.unauthorized();
 
-    // Un compte bloqué ou suspendu remonte une 403 : on ne la transforme pas en 401.
     req.user = await loadActiveUser(identity.id);
     return next();
   } catch (err) {

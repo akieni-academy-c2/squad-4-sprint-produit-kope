@@ -1,23 +1,7 @@
 import { sign } from 'cookie-signature';
 import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
 
-/**
- * En-têtes de sécurité et protection CSRF.
- *
- * Deux zones que la suite ne couvrait pas, alors que ce sont les contrôles qui
- * protègent l'application quand tout le reste a déjà cédé :
- *
- * - le document et ses assets sont servis par le CDN Cloudflare, pas par
- *   Express : seul `public/_headers` peut poser des en-têtes dessus, et le
- *   middleware ne les voit jamais. Une régression y serait invisible d'ici ;
- * - le contrôle d'origine protège les routes mutantes contre une requête
- *   forgée depuis un site tiers. Un client HTTP ordinaire n'envoie ni
- *   `Sec-Fetch-Site` ni `Origin`, ce qui est exactement le profil d'un script
- *   qui essaie de réutiliser le cookie de session d'un visiteur.
- *
- * La partie « document servi par le CDN » vit dans
- * `tests/server/cloudflare-config.test.js`.
- */
+
 
 const openSessions = {
   'session-admin': { id: 1, role: 'admin' },
@@ -46,8 +30,6 @@ vi.mock('@server/db/pool.js', () => {
   return {
     pool,
     withTransaction: async (fn) => fn({ query: pool.query }),
-    // `/api/health` l'interroge : sans cet export, la route journalise une
-    // erreur de mock à chaque appel et bruite la sortie du test.
     isDatabaseReachable: async () => true,
   };
 });
@@ -69,8 +51,6 @@ afterAll(async () => {
   await new Promise((resolve) => server.close(resolve));
 });
 
-// Un navigateur envoie toujours ces en-têtes sur une requête vers l'API, et
-// `csrfGuard` refuse une requête mutante qui n'en porte aucun.
 const asBrowser = (extra = {}) => ({ 'Sec-Fetch-Site': 'same-origin', Origin: baseUrl, ...extra });
 const sessionCookie = (sid) => `sid=s:${sign(sid, env.SESSION_SECRET)}`;
 
@@ -113,8 +93,6 @@ describe('protection CSRF par origine', () => {
   });
 
   it('refuse une requête qui ne déclare ni origine ni contexte de récupération', async () => {
-    // Le profil d'un script : `fetch` ne peut pas ajouter `Sec-Fetch-Site`,
-    // et un client HTTP ordinaire n'a pas d'`Origin` à envoyer.
     const res = await post('/api/auth/login', { 'Content-Type': 'application/json' });
     expect(res.status).toBe(403);
   });

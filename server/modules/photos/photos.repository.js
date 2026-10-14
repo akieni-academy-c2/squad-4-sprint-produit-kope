@@ -33,7 +33,7 @@ export async function create({ professionalId, filePath, thumbPath, title, descr
   return rows[0];
 }
 
-export async function touchProfile(professionalId, db = pool) {
+async function touchProfile(professionalId, db = pool) {
   await db.query('UPDATE professionals SET updated_at = now() WHERE user_id = $1', [professionalId]);
 }
 

@@ -3,8 +3,8 @@ import { ApiError } from './ApiError.js';
 
 const ALLOWED_FORMATS = ['jpeg', 'png'];
 
-export const INVALID_IMAGE = "Le fichier n'est pas une image JPG ou PNG valide";
-export const IMAGE_TOO_LARGE = "L'image est trop grande pour être traitée";
+const INVALID_IMAGE = "Le fichier n'est pas une image JPG ou PNG valide";
+const IMAGE_TOO_LARGE = "L'image est trop grande pour être traitée";
 
 
 const MAX_INPUT_PIXELS = 40_000_000;

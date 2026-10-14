@@ -14,7 +14,7 @@ export const searchQuerySchema = z.object({
       if (value === 'true') return true;
       if (value === 'false') return false;
       if (value === '' || value == null) return undefined;
-      return value; // valeur invalide : laissée à z.boolean() pour être rejetée
+      return value;
     },
     z.boolean().optional(),
   ),

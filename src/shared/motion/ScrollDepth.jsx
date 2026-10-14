@@ -1,10 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
 
-/**
- * `useReducedMotion` coupe le parallaxe : `MotionConfig` ne neutralise que les
- * animations d'entrée. `offset` mesure la course sur la section.
- */
+
 export function ScrollDepth({ text, visual, className }) {
   const target = useRef(null);
   const reduced = useReducedMotion();

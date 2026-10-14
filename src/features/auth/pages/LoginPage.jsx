@@ -127,27 +127,3 @@ export function LoginForm({ bare = false } = {}) {
     </div>
   );
 }
-
-export function LoginPage() {
-  return (
-    <div className="container-kop page-padding ">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16 min-h-[72vh]">
-        <div className="hidden lg:block">
-          <div className="rounded-4xl bg-kop-mint p-10 h-full max-w-130 relative overflow-hidden">
-            <p className="text-xs font-bold uppercase tracking-wider text-primary-800/70">KOP</p>
-            <h2 className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
-              Retrouvez votre
-              <br />
-              <span className="text-primary-700">espace</span>.
-            </h2>
-            <p className="mt-3 text-base leading-7 text-gray-700/90 max-w-md">
-              Un compte pour chercher, contacter et laisser des avis aux pros de votre quartier.
-            </p>
-
-          </div>
-        </div>
-        <LoginForm />
-      </div>
-    </div>
-  );
-}

@@ -32,8 +32,6 @@ describe('pagination', () => {
     });
 
     it('recompte quand la page demandée est au-delà de la dernière', async () => {
-      // COUNT(*) OVER() ne renvoie rien sur une page vide : sans ce recomptage,
-      // l'API répondait « page 5 sur 0 » alors que 45 lignes existent.
       const count = vi.fn().mockResolvedValue(45);
       const result = await paginateSafely([], { page: 5, pageSize: 20 }, count);
 

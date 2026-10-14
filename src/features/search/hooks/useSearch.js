@@ -104,7 +104,6 @@ export function useSearch({ trade, zone, city, q, available, minRating, minExper
         page: page || 1,
       });
       const items = data?.items ?? [];
-      // Un tri explicite est prioritaire : on ne mélange que l'ordre « recommandé ».
       if (sort === 'rating')
         setResults({ ...data, items: [...items].sort((a, b) => ratingOf(b) - ratingOf(a)) });
       else if (sort === 'experience')

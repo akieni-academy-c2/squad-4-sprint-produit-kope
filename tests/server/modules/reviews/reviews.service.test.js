@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-// requireRole interroge la base (rôle, blocage, suspension) : on isole cette dépendance.
 vi.mock('@server/modules/auth/auth.repository.js', () => ({
   getAccountState: vi.fn().mockResolvedValue({ role: 'client', blockedAt: null, suspendedAt: null }),
 }));
@@ -79,7 +78,6 @@ describe('Un professionnel peut aussi laisser un avis', () => {
 
     const mw = requireRole('client', 'professional');
     const req = { session: { user: { id: 25, role: 'professional' } } };
-    // Le rôle relu en base fait foi.
     getAccountState.mockResolvedValue({ role: 'professional', blockedAt: null, suspendedAt: null });
     await expect(
       new Promise((resolve, reject) => mw(req, {}, (err) => (err ? reject(err) : resolve()))),

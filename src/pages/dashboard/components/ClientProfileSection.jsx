@@ -16,11 +16,7 @@ import { formatDateFr } from '@/shared/utils';
 import { BecomeProCard } from './BecomeProCard.jsx';
 import { formatPhoneFR } from '@/shared/utils';
 
-/**
- * `{ status, total }` suffit : `FormField` n'a besoin que du statut pour colorer
- * la bordure et sortir la ligne d'état. `error` reste prioritaire, c'est le
- * message du schéma Zod, plus précis que « presque correct ».
- */
+
 function Field({ label, value, onChange, type = 'text', placeholder, hint, status, error, id }) {
   return (
     <FormField
@@ -54,10 +50,6 @@ export function ClientProfileSection({ user }) {
 
   const name = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || '-';
 
-  // Formulaire de modification : le bouton n'est actif que si les valeurs
-  // sont valides ET différentes de celles enregistrées. `statuses` et `errors`
-  // portent la même information champ par champ - ils alimentent les bordures
-  // et les messages, pour qu'un bouton grisé dise quoi corriger.
   const { ready, dirty, statuses, errors } = useFormReadiness(updateAccountSchema, {
     firstName,
     lastName,
@@ -66,8 +58,6 @@ export function ClientProfileSection({ user }) {
   });
   const canSubmit = ready && dirty;
 
-  // Ordre du formulaire, pas ordre alphabétique : le premier défaut affiché
-  // doit être le premier champ à corriger.
   const label = submitLabel(statuses, ['firstName', 'lastName', 'phone', 'email'], 'Enregistrer');
 
   const save = async (e) => {
@@ -79,8 +69,6 @@ export function ClientProfileSection({ user }) {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim(),
-        // Vide = retrait de l'adresse. Le serveur distingue `null` (effacer)
-        // de l'absence de clé (ne pas toucher), d'où les deux Spread.
         ...(email.trim() ? { email: email.trim() } : { email: null }),
       });
       await refresh();
@@ -105,11 +93,6 @@ export function ClientProfileSection({ user }) {
       setUploadProgress(100);
       toast({ message: 'Photo de profil mise à jour.', type: 'success' });
 
-      // L'avatar est enregistré à l'instant même, indépendamment du formulaire.
-      // Si aucun champ texte n'est modifié, il ne reste donc rien à
-      // enregistrer : sans cette sortie, l'utilisateur reste devant un
-      // formulaire dont « Enregistrer » est désactivé alors que sa photo vient
-      // d'être prise en compte.
       if (!dirty) setEditing(false);
     } catch (err) {
       toast({ message: err?.message || 'Erreur lors du téléversement.', type: 'error' });

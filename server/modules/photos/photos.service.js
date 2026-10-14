@@ -15,8 +15,6 @@ function toDto(photo) {
     title: photo.title ?? photo.caption ?? null,
     description: photo.description ?? null,
     caption: photo.caption,
-    // Lu par le repository, absent du DTO : « Publié le … » ne s'affichait
-    // qu'en mode démonstration, où le mock fournissait la date.
     createdAt: photo.createdAt ?? null,
   };
 }
@@ -67,12 +65,9 @@ export async function updatePhoto(professionalId, photoId, { title, description 
   return toDto(updated);
 }
 export async function removePhoto(professionalId, photoId) {
-  const removed = await withTransaction((tx) => repository.remove(photoId, professionalId, tx)); // filtre par propriétaire
+  const removed = await withTransaction((tx) => repository.remove(photoId, professionalId, tx));
   if (!removed) throw ApiError.notFound('Photo introuvable');
 
-  // La ligne est déjà supprimée : la réponse doit dire ce qui s'est réellement
-  // passé. Renvoyer 500 pour un fichier resté sur le disque ferait croire à
-  // l'appelant que la suppression a échoué, donc qu'il doit réessayer.
   try {
     await storage.remove(removed);
   } catch (err) {

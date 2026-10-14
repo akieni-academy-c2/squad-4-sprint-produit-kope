@@ -51,7 +51,7 @@ export async function me(req, res, next) {
   if (!identity) return res.json({ user: null });
 
   const user = await service.getCurrentUser(identity.id);
-  
+
   if (!user) return logout(req, res, next);
 
   res.json({ user });

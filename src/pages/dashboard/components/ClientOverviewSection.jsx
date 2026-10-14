@@ -30,7 +30,7 @@ export function ClientOverviewSection({ onNavigate }) {
     };
   }, []);
 
-  
+
   const recentReviews = data?.reviews ?? [];
   const recentContacts = data?.contacts ?? [];
 

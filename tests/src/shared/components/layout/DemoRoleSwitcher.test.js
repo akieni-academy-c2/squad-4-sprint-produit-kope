@@ -2,13 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { demoRoles } from '@/features/auth/services/auth.service.js';
 import { ROLES, ROUTES } from '@/shared/lib/constants.js';
 
-/**
- * Sélecteur de rôle de démonstration.
- *
- * Il doit couvrir les trois rôles réellement traités par l'application et mener
- * chacun à sa page. Un profil sans page valide obligerait l'utilisateur à
- * revenir à la home après chaque changement.
- */
+
 const EXPECTED = [
   [ROLES.ADMIN, 'Administrateur', ROUTES.ADMIN],
   [ROLES.PRO, 'Professionnel', ROUTES.DASHBOARD_PRO],
@@ -64,8 +58,6 @@ describe('Profils de démonstration', () => {
   });
 
   it('aligne le professionnel de démo sur un profil public existant', () => {
-    // Sans cela, le dashboard et la fiche publique consulted afficheraient
-    // deux professionnels différents.
     const pro = demoRoles().find((r) => r.role === ROLES.PRO);
 
     expect(pro?.user.displayName).toBeTruthy();

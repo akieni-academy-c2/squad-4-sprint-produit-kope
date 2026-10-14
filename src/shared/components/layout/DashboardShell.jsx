@@ -6,12 +6,7 @@ import { useSectionNav } from '@/shared/hooks/useSectionNav.js';
 import { STICKY_COLUMN } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
 
-/**
- * Ossature des trois tableaux de bord ; la colonne de filtres vient de la grille de page.
- * @param {Array} props.items  entrées de navigation
- * @param {Function} props.renderSection  `(active, rightContainer, navigate)`
- * @param {Function} [props.onNavigate]  ouvre une section déjà filtrée
- */
+
 export function DashboardShell({
   items,
   basePath,
@@ -27,16 +22,11 @@ export function DashboardShell({
   const sectionIds = items.map((item) => item.id);
   const { active, goTo } = useSectionNav(basePath, sectionIds, rootId);
 
-  // `onNavigate` sert à l'administration à ouvrir une section déjà filtrée. L'identifiant
-  // de section reste la seule source de vérité sur ce qui est affiché.
   const navigate = useCallback(
     (id, ...rest) => (onNavigate ? onNavigate(id, ...rest) : goTo(id, ...rest)),
     [goTo, onNavigate],
   );
 
-  // Le portail attend l'élément cible comme valeur, pas comme ref. La ref
-  // callback est stabilisée, donc React ne la réinvoque qu'au montage et au
-  // démontage.
   const [rightContainer, setRightContainer] = useState(null);
   const rightEl = useCallback((node) => setRightContainer((prev) => (node === prev ? prev : node)), []);
 

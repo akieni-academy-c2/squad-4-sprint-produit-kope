@@ -30,8 +30,6 @@ export function AuthProvider({ children }) {
     fetchMe();
   }, [fetchMe]);
 
-  // Une réponse 401 en cours de session (cookie expiré, compte supprimé) doit
-  // déconnecter l'utilisateur : plus de jeton à rafraîchir, le cookie fait foi.
   useEffect(() => {
     const onUnauthorized = () => setUser(null);
     window.addEventListener(UNAUTHORIZED_EVENT, onUnauthorized);
@@ -43,7 +41,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(async () => {
     try {
       await authService.logout();
-    } catch { /* ignore */ } finally {
+    } catch {  } finally {
       setUser(null);
       redirect(ROUTES.HOME);
     }
@@ -51,10 +49,7 @@ export function AuthProvider({ children }) {
 
   const hasRole = useCallback((role) => Boolean(user?.role && user.role === role), [user]);
 
-  /**
-   * Ces deux rôles ne peuvent plus devenir prestataires. Un client garde
-   * les deux options.
-   */
+
   const isServiceProvider = Boolean(
     user && (user.role === ROLES.PRO || user.role === ROLES.ADMIN),
   );
@@ -67,7 +62,6 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Le Provider et son hook vivent ensemble : pattern React advocated.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuthContext() {
   const ctx = useContext(AuthContext);

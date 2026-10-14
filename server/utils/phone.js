@@ -1,8 +1,7 @@
 const COUNTRY_CODE = '242';
 
 
-export const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
-export const MOBILE_HINT = '9 chiffres commençant par 04, 05 ou 06 - ex. 06 889 88 88';
+const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
 
 export function normalizePhone(input) {
   if (typeof input !== 'string') return null;

@@ -57,8 +57,6 @@ describe('admin schemas', () => {
   });
 
   it('listProfessionalsQuerySchema ignore le filtre pays, retiré', () => {
-    // Zod retire les clés inconnues plutôt que de rejeter : `country` ne peut
-    // donc plus atteindre le repository.
     const parsed = listProfessionalsQuerySchema.safeParse({ country: 'Congo' });
     expect(parsed.success).toBe(true);
     expect(parsed.data.country).toBeUndefined();
@@ -132,11 +130,9 @@ describe('admin schemas', () => {
 
   it('createAdminSchema exige un nom de personne réel', () => {
     const base = { firstName: 'Ada', lastName: 'Kopé', phone: '+242061234567', password: 'Motdepasse1' };
-    // Chiffres et symboles refusés dans un nom de personne.
     expect(createAdminSchema.safeParse({ ...base, firstName: 'Ada123' }).success).toBe(false);
     expect(createAdminSchema.safeParse({ ...base, firstName: '<script>' }).success).toBe(false);
     expect(createAdminSchema.safeParse({ ...base, lastName: '@@@' }).success).toBe(false);
-    // Tirets et apostrophes acceptés, accents tolérés.
     expect(createAdminSchema.safeParse({ ...base, firstName: 'Jean-Pierre' }).success).toBe(true);
     expect(createAdminSchema.safeParse({ ...base, lastName: "O'Brien" }).success).toBe(true);
     expect(createAdminSchema.safeParse({ ...base, lastName: 'Kopé' }).success).toBe(true);
@@ -202,9 +198,6 @@ describe('admin mock - filtres professionnels', () => {
     const all = mockAdminProfessionals({ pageSize: 50 });
     expect(all.total).toBeGreaterThan(0);
 
-    // Les profils viennent du catalogue de personas, dont les villes varient.
-    // Le filtre doit discriminer sans que le test dépende d'une ville précise :
-    // le catalogue est régénérable et sa répartition change.
     const cities = [...new Set(all.items.map((p) => p.city))];
     expect(cities.length).toBeGreaterThan(1);
 
@@ -215,7 +208,6 @@ describe('admin mock - filtres professionnels', () => {
       expect(filtered.items.every((p) => p.city === city)).toBe(true);
     }
 
-    // Une ville absente du catalogue ne renvoie rien.
     expect(mockAdminProfessionals({ pageSize: 50, city: 'Ville-Inexistante' }).total).toBe(0);
   });
 

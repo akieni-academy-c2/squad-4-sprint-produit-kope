@@ -21,11 +21,7 @@ export function dashboardHref(role) {
   return ROUTES.HOME;
 }
 
-/**
- * Un professionnel gère un profil et un administrateur le site ; un client n'a rien à
- * gérer, d'où la recherche comme point d'entrée plutôt que son tableau de bord.
- * `dashboardHref` reste inchangée : le lien « Mon espace » l'utilise.
- */
+
 export function landingHrefFor(user) {
   if (!user) return ROUTES.HOME;
   if (user.role === ROLES.CLIENT) return ROUTES.SEARCH;

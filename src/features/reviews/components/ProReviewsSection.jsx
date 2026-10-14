@@ -46,12 +46,6 @@ const SORTERS = {
   rating_asc: (a, b) => a.rating - b.rating || new Date(b.createdAt) - new Date(a.createdAt),
 };
 
-// Plafond de la liste reçue. Ces avis viennent de l'endpoint **public** de la
-// fiche, qui n'a pas de filtres : tout est donc filtré et trié côté client sur
-// la page téléchargée. Au-delà de ce nombre, les résultats seraient filtrés
-// sur un sous-ensemble en silence - un professionnel qui filtre ses avis
-// croirait voir « aucun avis 1 étoile » alors que les plus anciens n'ont pas
-// été chargés. La limite est donc affichée quand elle est atteinte.
 const FETCH_LIMIT = 100;
 
 const clientName = (review) =>

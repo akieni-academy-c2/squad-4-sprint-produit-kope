@@ -9,10 +9,7 @@ import { ABOUT_FALLBACK, ABOUT_HEADING, CITY, initialsOf } from './profileView.j
 import { TagList } from './TagList.jsx';
 import { STICKY_TOP } from '@/shared/lib/constants.js';
 
-/**
- * `priority` est réservé au portrait de tête : premier élément visible de la
- * page, donc candidat LCP. Les portraits secondaires restent en `lazy`.
- */
+
 function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName, priority = false }) {
   return (
     <div className={`shrink-0 overflow-hidden bg-gray-100 ${wrapperClassName}`}>
@@ -38,17 +35,10 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const { tradeName, zones, tags, avg, count, avatarSrc, hasAbout } = view;
 
-  /**
-   * Un media query CSS masque l'autre version sans empêcher son montage : le
-   * portrait LCP était deux fois dans l'arbre à chaque chargement. Ici un seul
-   * exemplaire est monté ; le rendu étant côté client, rien n'est hydraté.
-   */
+
   if (!isDesktop) return null;
 
   return (
-    // `lg:self-stretch` : la grille porte `lg:items-start`, qui ramène la
-    // colonne à la hauteur de son contenu. Sans hauteur, la carte mini profil
-    // n'a aucune distance à parcourir et son `sticky` ne se déclenche pas.
     <aside className="min-w-0 space-y-4 lg:self-stretch">
       <Card className="space-y-3.5 p-4">
         <div className="flex items-center gap-3">

@@ -49,44 +49,27 @@ export const ROUTES = {
   PROFESSIONAL: (id) => `/professionals/${id}`,
 };
 
-/**
- * Section courante d'un tableau de bord, déduite du dernier segment : le chemin peut
- * être préfixé (`/admin`). `''` est la valeur de repli, la racine comme toute route
- * inconnue retombant sur l'accueil plutôt que sur un écran vide.
- */
 
-/**
- * Jour de respiration sous le header : collé au bord de la barre, l'empilement
- * se lit comme raté. Déclaré une seule fois, la valeur avait divergi en eleven
- * recopiages.
- */
+
+
 export const STICKY_TOP = 'lg:sticky lg:top-[calc(var(--header-height)+1rem)]';
 
-/** Bas collant, même respiration que `STICKY_TOP` en haut. */
-export const STICKY_BOTTOM = 'lg:bottom-4';
 
-/**
- * Bornée en haut et en bas, la carte se met à défiler dans la bande au lieu de
- * sortir de l'écran : l'action reste atteignable des deux extrémités.
- */
+const STICKY_BOTTOM = 'lg:bottom-4';
+
+
 export const STICKY_BAND = `${STICKY_TOP} ${STICKY_BOTTOM}`;
 
-/**
- * C'est `self-start` qui compte : un élément de grille s'étire sur la hauteur
- * de sa ligne, sans quoi il n'a nulle part où se coller.
- */
+
 export const STICKY_COLUMN = `${STICKY_TOP} lg:self-start`;
 
-/**
- * Section d'un tableau de bord déduite du chemin. La racine (`/admin`) comme une route
- * inconnue rendent `''` : le repli sur l'onglet d'accueil est laissé à `useSectionNav`.
- */
+
 export function sectionFromPathname(pathname, sections) {
   const segment = String(pathname || '').split('/').filter(Boolean).pop();
   return sections.includes(segment) ? segment : '';
 }
 
-/** Chemin d'une section d'un tableau de bord, la racine si l'onglet est celui d'accueil. */
+
 export function sectionHref(base, id, rootId) {
   return id && id !== rootId ? `${base}/${id}` : base;
 }

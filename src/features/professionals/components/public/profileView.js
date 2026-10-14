@@ -2,7 +2,7 @@ import { toWhatsappUrl } from '@/shared/utils';
 
 export const CITY = 'Brazzaville';
 
-/** Titre et repli de la section présentation, identiques sur mobile et desktop. */
+
 export const ABOUT_HEADING = 'À propos';
 export const ABOUT_FALLBACK = 'Aucune présentation n’a encore été renseignée.';
 

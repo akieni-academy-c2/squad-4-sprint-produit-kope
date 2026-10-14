@@ -36,7 +36,6 @@ export function BecomeProForm({ bare = false } = {}) {
     async (data) => becomeProfessional(data),
   );
 
-  // Étape 1 : nom affiché, métier et zones doivent être valides pour continuer.
   const step1Schema = useMemo(() => becomeProfessionalSchema.pick(STEP1_FIELDS), []);
   const { ready: step1Ready } = useFormReadiness(step1Schema, values);
   const { ready: allReady } = useFormReadiness(becomeProfessionalSchema, values);

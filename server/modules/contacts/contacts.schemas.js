@@ -2,12 +2,6 @@ import { z } from 'zod';
 import { idSchema } from '../../utils/commonSchemas.js';
 
 
-export const contactChannels = {
-  message: { label: 'Message' },
-  call: { label: 'Appel' },
-  whatsapp: { label: 'WhatsApp' },
-};
-
 const emptyToUndefined = (value) => (value === '' || value == null ? undefined : value);
 
 export const createContactSchema = z

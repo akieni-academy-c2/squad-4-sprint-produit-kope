@@ -12,9 +12,6 @@ import { cn } from '@/shared/utils';
 
 const MIN_SLOTS = 3;
 
-// Pas de panneau de filtres ici, contrairement aux autres sections : le
-// portfolio est plafonné (MAX_PHOTOS) et se parcourt d'un regard. Une recherche
-// sur dix éléments n'apporte rien et coûterait une colonne sur desktop.
 export function PhotoManager({ photos = [], onChange }) {
   const { toast } = useNotification();
   const [submitting, setSubmitting] = useState(false);

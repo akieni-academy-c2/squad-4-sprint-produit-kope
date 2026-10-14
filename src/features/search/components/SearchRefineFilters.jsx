@@ -35,9 +35,6 @@ export function SearchRefineFilters({
   onChange,
   onSortChange,
   onReset,
-  // Fermeture du Sheet mobile, une fois les filtres posés. Les filtres
-  // s'appliquent déjà au choix, il n'y a rien à valider : ce bouton sert
-  // à en sortir. Sur desktop le panneau reste affiché, `onApply` est absent.
   onApply,
   dirty = false,
 }) {

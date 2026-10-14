@@ -6,16 +6,10 @@ import { cn } from '@/shared/utils';
 import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
 import { useOverlay } from './useOverlay.js';
 
-/**
- * `role="dialog"` sans `aria-labelledby` est annoncé comme « dialogue » tout
- * court. Le contexte fournit l'id sans le propager à la main.
- */
+
 const DialogLabelContext = createContext(null);
 
-/**
- * Une surface qui apparaît à sa taille exacte n'a pas de direction : ici elle
- * arrive par le bas et se pose.
- */
+
 export function Dialog({ open, onOpenChange, children }) {
   const { panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
 
@@ -25,9 +19,6 @@ export function Dialog({ open, onOpenChange, children }) {
   if (isValidElement(children))
     body = cloneElement(children, {
       ref: panelRef,
-      // La variante se propage depuis le fond : le panneau n'a pas à répéter
-      // `initial`/`animate`, et l'état de sortie reste cohérent si le dialogue
-      // est fermé au milieu de son ouverture.
       variants: dialogPanel,
     });
 
@@ -50,10 +41,7 @@ export function Dialog({ open, onOpenChange, children }) {
   );
 }
 
-/**
- * `variants` est énuméré et non passé par `...rest` : `Dialog` l'injecte par
- * `cloneElement`, l'oubli se voyait à la lecture.
- */
+
 export function DialogContent({
   className,
   children,
@@ -64,9 +52,6 @@ export function DialogContent({
 }) {
   const labelId = useId();
 
-  // Le panneau est une colonne flex : le header sort de la zone de défilement,
-  // donc Fermer et titre ne bougent plus. `sticky` se calculait sur une largeur
-  // mal déduite et laissait le contenu passer sur les côtés. Seul le corps défile.
   const childArray = Children.toArray(children);
   const headerIndex = childArray.findIndex((child) => child.type === DialogHeader);
   const header = headerIndex >= 0 ? childArray.splice(headerIndex, 1)[0] : null;
@@ -74,12 +59,7 @@ export function DialogContent({
   return (
     <motion.div
       ref={forwardedRef}
-      // La variante est réinjectée : c'est elle qui fait monter la boîte. Sans
-      // cette ligne, seul le fond est animé.
       variants={variants}
-      // États nommés explicites : voir `Sheet`. La propagation implicite
-      // fonctionne, mais une réorganisation du JSX suffit à la faire
-      // disparaître, et le dialogue se referme alors d'un coup, sans erreur.
       initial="initial"
       animate="animate"
       exit="exit"
@@ -125,8 +105,6 @@ export function DialogContent({
         >
           {childArray}
 
-          // Footer `sticky` dans le parent qui défile, conteneur transparent : un fond
-          // ici poserait une bande opaque sur la liste.
           {footer && (
             <div className="sticky bottom-0 border-t border-gray-100 pt-3 pb-1">
               {footer}

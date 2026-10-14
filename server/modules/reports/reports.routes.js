@@ -10,13 +10,10 @@ import * as controller from './reports.controller.js';
 
 const router = Router();
 
-// Suivi et retrait de ses propres signalements. Même chemin que la lecture
-// publique des avis : l'auteur est déduit de la session, jamais du corps.
 router.get('/reports/mine', requireAuth, validate(listReportsQuerySchema, 'query'), controller.mine);
 
 router.delete('/reports/:id', requireAuth, validate(idParamSchema, 'params'), controller.remove);
 
-// Traitement côté administrateur
 router.get('/admin/reports', requireRole('admin'), validate(listReportsQuerySchema, 'query'), controller.list);
 router.patch(
   '/admin/reports/:id',
@@ -26,11 +23,6 @@ router.patch(
   controller.setStatus,
 );
 
-// Signalement d'un profil depuis la fiche publique.
-//
-// Limité par utilisateur, pas seulement par IP : un signalement déclenche un
-// auto-blocage à partir du seuil (3 par défaut). Sans ce plafond, quelques
-// comptes suffisaient à faire bloquer un professionnel en ligne.
 router.post(
   '/professionals/:id/reports',
   requireAuth,
@@ -40,9 +32,6 @@ router.post(
   controller.create,
 );
 
-// Signalement d'un correspondant depuis la liste des contacts. Cible un compte,
-// pas une fiche publiée : un client n'a pas de fiche, et c'est le contact qui
-// fait foi. Le service refuse toute cible sans conversation réelle.
 router.post(
   '/contacts/:id/reports',
   requireAuth,
@@ -52,9 +41,6 @@ router.post(
   controller.createForContact,
 );
 
-// Signalement d'un avis reçu. Réservé au professionnel dont c'est la fiche -
-// l'autorisation est portée par la requête du service, pas par un rôle :
-// n'importe quel professionnel est « professionnel ».
 router.post(
   '/reviews/:id/reports',
   requireAuth,
@@ -64,7 +50,6 @@ router.post(
   controller.createForReview,
 );
 
-// File de modération des signalements d'avis.
 router.get(
   '/admin/review-reports',
   requireRole('admin'),

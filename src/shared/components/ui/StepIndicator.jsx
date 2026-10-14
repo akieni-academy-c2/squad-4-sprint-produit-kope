@@ -1,10 +1,7 @@
 import { Check } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
-/**
- * Indicateur d'avancement d'un formulaire en plusieurs étapes.
- * `aria-current="step"` indique aux lecteurs d'écran quelle étape est active.
- */
+
 export function StepIndicator({ steps, current }) {
   return (
     <ol className="mt-4 flex items-center gap-2" aria-label="Progression">

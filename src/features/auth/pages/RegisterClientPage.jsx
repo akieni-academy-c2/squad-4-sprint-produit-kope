@@ -35,7 +35,6 @@ export function RegisterClientForm({ bare = false } = {}) {
   const navigate = useNavigate();
   const { toast } = useNotification();
   const [step, setStep] = useState(1);
-  // Confirmation purement locale : elle n'est jamais envoyée au serveur.
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const { values, errors, submitting, setField, handleSubmit, setErrors } = useForm(
@@ -48,7 +47,6 @@ export function RegisterClientForm({ bare = false } = {}) {
     if (user) navigate(ROUTES.DASHBOARD_CLIENT, { replace: true });
   }, [user, navigate]);
 
-  // Retour immédiat : l'utilisateur voit où il en est avant de soumettre.
   const validateFirstName = useMemo(() => fieldValidator(registerClientSchema, 'firstName'), []);
   const validateLastName = useMemo(() => fieldValidator(registerClientSchema, 'lastName'), []);
   const validatePhone = useMemo(
@@ -60,12 +58,8 @@ export function RegisterClientForm({ bare = false } = {}) {
   const lastNameStatus = useFieldStatus(validateLastName, values.lastName);
   const phoneStatus = useFieldStatus(validatePhone, values.phone);
   const passwordCheck = useMemo(() => checkPassword(values.password), [values.password]);
-  // Les règles sont passées en argument : sans elles, useFieldStatus juge
-  // toute saisie non vide comme valide.
   const passwordStatus = useFieldStatus(null, values.password, { rules: PASSWORD_RULES });
 
-  // La confirmation devient rouge dès la première frappe qui diverge, plutôt
-  // qu'à la soumission : sinon l'utilisateur découvre l'erreur trop tard.
   const confirmStatus = useMemo(() => {
     if (!confirmPassword) return { status: FIELD_STATUS.IDLE, missing: 0, total: 1 };
     const matches = confirmPassword === values.password;
@@ -79,7 +73,6 @@ export function RegisterClientForm({ bare = false } = {}) {
 
   const setPassword = (value) => {
     setField('password', value);
-    // Changer le mot de passe invalide une confirmation devenue fausse.
     setConfirmPassword('');
   };
 
@@ -95,8 +88,6 @@ export function RegisterClientForm({ bare = false } = {}) {
 
   const formReady = identityReady && securityReady;
 
-  // Le bouton désactivé porte lui-même l'instruction : un bouton grisé muet
-  // laisse l'utilisateur sans savoir quoi corriger.
   const identityButton = submitLabel(
     {
       firstName: firstNameStatus.status,
@@ -118,8 +109,6 @@ export function RegisterClientForm({ bare = false } = {}) {
   );
 
   const onSubmit = async (e) => {
-    // Filet : la touche Entrée peut soumettre un formulaire même quand le
-    // bouton est désactivé, selon le navigateur.
     if (!formReady) return;
     const res = await handleSubmit(e);
     if (res.ok) {
@@ -128,7 +117,6 @@ export function RegisterClientForm({ bare = false } = {}) {
       closeModal();
       navigate(ROUTES.DASHBOARD_CLIENT, { replace: true });
     } else if (res.error?.errors) {
-      // Un champ refusé par le serveur peut être à l'étape précédente.
       const field = Object.keys(res.error.errors)[0];
       if (field && !['password', 'consent'].includes(field)) setStep(1);
       setErrors((prev) => ({ ...prev, ...res.error.errors }));
@@ -139,7 +127,7 @@ export function RegisterClientForm({ bare = false } = {}) {
   return (
     <aside className={bare ? 'p-4 sm:p-5' : 'p-5 sm:p-8'}>
       <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">Créer un compte</h1>
-      
+
       <p className="mt-1 min-h-10 text-sm text-gray-500">
         {step === 1
           ? 'En 1 minute, créez votre compte pour contacter des artisans qualifiés.'
@@ -257,7 +245,7 @@ export function RegisterClientForm({ bare = false } = {}) {
                 label={
                   <span className="text-sm leading-5 text-gray-700">
                     J’accepte les{' '}
-                    
+
                     <a
                       href={ROUTES.TERMS}
                       target="_blank"
@@ -310,13 +298,5 @@ export function RegisterClientForm({ bare = false } = {}) {
         </Link>
       </div>
     </aside>
-  );
-}
-
-export function RegisterClientPage() {
-  return (
-    <div className="mx-auto max-w-md">
-      <RegisterClientForm />
-    </div>
   );
 }

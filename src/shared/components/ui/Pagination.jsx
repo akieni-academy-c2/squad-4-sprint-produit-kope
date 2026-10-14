@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
-/** `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes voisines. */
+
 const BAR = 'mt-4 w-full rounded-md border border-gray-200 bg-white px-4 py-2';
 
 function getButtons(current, totalPages) {

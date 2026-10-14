@@ -2,10 +2,7 @@ import { TriangleAlert } from 'lucide-react';
 import { Button } from './Button.jsx';
 import { cn } from '@/shared/utils';
 
-/**
- * L'erreur est un état, pas une alerte : le rouge partout transformait chaque
- * écran en tableau d'alerte. Rôle `alert` conservé, l'erreur doit être annoncée.
- */
+
 export function ErrorState({
   title = 'Erreur de chargement',
   message,

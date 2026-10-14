@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-export function scrollToTop() {
+function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

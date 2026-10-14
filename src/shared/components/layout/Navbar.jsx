@@ -33,8 +33,6 @@ export function Navbar() {
 
   const logoHref = landingHrefFor(user);
 
-  // `displayNameFor` peut ne rien renvoyer (un pro sans displayName) : le nom
-  // affiché ne doit jamais être « undefined ».
   const name = displayNameFor(user) ?? '';
 
   return (
@@ -65,7 +63,7 @@ export function Navbar() {
                     {item.label}
                   </button>
                 );
-                
+
               if (item.to === ROUTES.SEARCH && user)
                 return (
                   <NavLink
@@ -135,7 +133,7 @@ export function Navbar() {
 
       <Sheet id="navbar-mobile-menu" open={open} onOpenChange={setOpen}>
         <div className="flex h-full flex-col">
-          
+
           <div className="border-b border-gray-100 px-5 pb-4 pt-6">
             <Link href={logoHref} onClick={() => setOpen(false)} className="flex items-center gap-2 text-primary-500">
               <Drill size={20} aria-hidden />
@@ -183,8 +181,6 @@ export function Navbar() {
                       className={({ isActive }) =>
                         cn(
                           'flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition focus-ring',
-                          // La recherche garde le rayon des cartes (12px) même
-                          // déconnecté, où elle n'est plus distinguée par un cadre.
                           item.to === ROUTES.SEARCH ? 'rounded-md' : 'rounded',
                           isActive
                             ? 'bg-primary-50 text-primary-700'

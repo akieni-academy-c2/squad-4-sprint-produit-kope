@@ -1,15 +1,7 @@
 import sharp from 'sharp';
 import fs from 'node:fs';
 
-/**
- * Genere les icones PNG du manifeste PWA depuis public/favicon.svg.
- *
- * Lance a la main quand le logo change, puis le PNG est versionne :
- *   npm run icons
- *
- * Android masque la version normale sur un cercle et rogne ce qui deborde,
- * d'ou la variante maskable avec 20 % de marge.
- */
+
 
 const targets = [
   { file: 'icon-192.png', size: 192, padding: 0 },

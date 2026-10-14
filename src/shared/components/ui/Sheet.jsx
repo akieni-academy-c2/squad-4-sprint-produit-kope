@@ -6,16 +6,11 @@ import { cn } from '@/shared/utils';
 import { overlayBackdrop, sheetPanel, sidePanel } from '@/shared/motion/variants.js';
 import { useOverlay } from './useOverlay.js';
 
-/**
- * Ressort et non courbe : il conserve sa vitesse s'il est interrompu, la feuille
- * repart d'où elle en était. Elle arrive en dessous de sa taille, pour que le
- * geste se lise comme un tirage vers soi.
- */
+
 export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
   const innerRef = useRef(null);
   const { panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
 
-  // Le hook expose une ref unique : on la relaie vers le panneau rendu.
   const setRefs = (node) => {
     panelRef.current = node;
     innerRef.current = node;
@@ -40,21 +35,11 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
             role="dialog"
             aria-modal="true"
             className={cn(
-              // Même contrat que Modal : hauteur bornée et défilement interne.
-              // Sans cela, un formulaire long est tronqué sur iOS, qui ne réduit
-              // pas la page sous le clavier.
               side === 'bottom'
                 ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-safe-sheet shadow-2xl'
                 : 'absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col overflow-y-auto overscroll-contain bg-white shadow-2xl',
             )}
-            // La variante n'est pas propagée depuis le fond : elle dépend du
-            // bord d'entrée, que le parent ignore.
             variants={side === 'bottom' ? sheetPanel : sidePanel}
-            // États nommés plutôt qu'hérités du fond. La propagation implicite
-            // fonctionne, mais elle disparaît sans erreur ni avertissement
-            // dès qu'une refonte du fond ou du JSX la coupe : la feuille se
-            // referme alors d'un coup. Nommer les trois états rend la sortie
-            // visible à la lecture.
             initial="initial"
             animate="animate"
             exit="exit"

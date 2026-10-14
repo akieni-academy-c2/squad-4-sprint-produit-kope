@@ -9,13 +9,7 @@ import { api } from '@/shared/lib/api.js';
 import { searchProfessionals } from '@/features/search/hooks/useSearch.js';
 import { enableMockMode, resetMockMode, isMockMode } from '@/shared/lib/dataSource.js';
 
-/**
- * Paramètres transmis à la recherche.
- *
- * Le mode démo est actif par défaut, donc l'API n'est pas appelée par défaut.
- * Ces tests vérifient donc la chaîne d'appel : sortir de la démo pour
- * contrôler la requête, y revenir pour contrôler les données affichées.
- */
+
 beforeEach(() => {
   vi.clearAllMocks();
   resetMockMode();

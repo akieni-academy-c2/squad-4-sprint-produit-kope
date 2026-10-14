@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/**
- * `loader` doit être stable : `useCallback` ou fonction de module.
- */
+
 export function useAsyncData(loader, deps = []) {
   const [data, setData] = useState(undefined);
   const [loading, setLoading] = useState(true);
@@ -13,13 +11,10 @@ export function useAsyncData(loader, deps = []) {
     loaderRef.current = loader;
   }, [loader]);
 
-  // Un `useRef` plutôt qu'un `useState` : l'identifiant de requête n'est jamais
-  // lu au rendu, et un état déclencherait un rendu de plus à chaque appel.
   const requestId = useRef(0);
   const controller = useRef(null);
 
   const load = useCallback(async ({ silent = false } = {}) => {
-    // Invalide toute requête précédente et prend la main.
     controller.current?.abort();
     const localController = new AbortController();
     controller.current = localController;
@@ -27,9 +22,6 @@ export function useAsyncData(loader, deps = []) {
 
     const isStale = () => id !== requestId.current;
 
-    // `silent` : garde les données affichées pendant la requête. Utilisé après
-    // une écriture, où remplacer la page par un squelette ferait clignoter tout
-    // l'écran au moment où l'utilisateur attend le résultat de son action.
     if (!silent) setLoading(true);
     setError(null);
     try {
@@ -47,20 +39,11 @@ export function useAsyncData(loader, deps = []) {
     }
   }, []);
 
-  // Mise à jour locale après une écriture réussie. Un `reload()` ferait
-// clignoter toute la page pour un simple interrupteur ; ne rien faire laisse
-// l'affichage faux jusqu'au prochain rechargement.
 const mutate = useCallback((update) => {
   setData((prev) => (typeof update === 'function' ? update(prev) : update));
 }, []);
 
 useEffect(() => {
-    // Cet effet existe pour déclencher le chargement : poser l'état y est sa
-    // raison d'être, pas un effet de bord accidentel. La règle
-    // `set-state-in-effect` vise le cas inverse - recalculer un état dérivé à
-    // chaque rendu, ce qu'un `useMemo` ferait mieux. L'erreur est déjà captée
-    // par l'état `error` : ce `catch` ne sert qu'à ne pas laisser une promesse
-    // rejetée sans gestionnaire.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load().catch(() => {});
     return () => controller.current?.abort();

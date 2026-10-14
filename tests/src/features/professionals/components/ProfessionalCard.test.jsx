@@ -3,12 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router-dom';
 import { ProfessionalCard } from '@/features/professionals/components/ProfessionalCard.jsx';
 
-/**
- * Mise en page des cartes de professionnels.
- *
- * Dans une carte étroite, l'étoile restait seule sur sa ligne et la moyenne
- * passait à la suivante : la note et le nombre d'avis doivent rester groupés.
- */
+
 
 const render = (element) => renderToStaticMarkup(<MemoryRouter>{element}</MemoryRouter>);
 
@@ -26,7 +21,6 @@ describe('ProfessionalCard - note', () => {
   it('garde l’étoile et la moyenne sur une seule ligne (grille)', () => {
     const html = render(<ProfessionalCard mode="grid" item={PRO} />);
 
-    // Un seul conteneur insécable porte l'étoile ET le texte de la note.
     expect(
       html,
       'l’étoile et la moyenne doivent partager un conteneur `nowrap`',
@@ -52,18 +46,8 @@ describe('ProfessionalCard - note', () => {
   });
 });
 
-/**
- * Sémantique de liste.
- *
- * La carte est rendue directement dans une <ul> par SearchResults. Elle ne
- * rendait pas son propre <li> : en mode liste, l'enveloppe du parent et celle
- * de la carte se cumulaient en <li><li>, ce que React refuse d'hydrater
- * ("In HTML, <li> cannot be a descendant of <li>"). En mode grille, la <Link>
- * était posée comme enfant direct de <ul>. L appartient désormais au parent.
- */
+
 describe('ProfessionalCard - sémantique de liste', () => {
-  // `<li` seul matcherait `<linearGradient` (l'étoile à demi-remplie). On ne
-  // retient que la balise réellement ouverte, sans attribut ni slash final.
   const hasListItem = (html) => /<li(\s|>)/.test(html);
 
   it('ne rend pas de <li> : la carte est le contenu de l\'élément de liste', () => {
@@ -81,7 +65,6 @@ describe('ProfessionalCard - sémantique de liste', () => {
         </ul>,
       );
 
-      // Exactement un <li>, et c'est celui du parent.
       expect(html, mode).toMatch(/^<ul><li><a /);
       expect(html, mode).not.toContain('<li><li>');
       expect(html.match(/<li(\s|>)/g), mode).toHaveLength(1);

@@ -1,15 +1,8 @@
-/**
- * Le texte est une donnée et non du JSX : le lien de la case à cocher doit s'afficher sans
- * charger la page entière, le serveur enregistre la version acceptée et non un simple
- * `consent: true`, et une reformulation ne doit pas ressembler à un changement d'écran.
- */
+
 
 export const TERMS_VERSION = '2026-01-15';
 
-/**
- * Chaque entrée porte un `slug` stable : c'est la cible des liens profonds depuis les
- * formulaires et les e-mails, et il ne change pas quand on reformule un paragraphe.
- */
+
 export const TERMS_SECTIONS = [
   {
     slug: 'objet',
@@ -96,9 +89,3 @@ export const TERMS_SECTIONS = [
     ],
   },
 ];
-
-/** Adresse d'une section, pour un lien profond depuis un formulaire. */
-export const termsHref = (slug) => `/conditions-utilisation${slug ? `#${slug}` : ''}`;
-
-/** Sections indexées par `slug`, pour retrouver un point d'ancrage. */
-export const TERMS_BY_SLUG = new Map(TERMS_SECTIONS.map((s) => [s.slug, s]));

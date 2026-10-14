@@ -60,9 +60,6 @@ export function SearchPage() {
     setParams(next);
   };
 
-  // Propriétés communes aux deux rendus : le panneau est affiché deux fois,
-  // en colonne fixe sur desktop et dans le Sheet sur mobile. Seul le second
-  // reçoit la fermeture, l'autre n'a rien à fermer.
   const refineProps = {
     available: available ?? '',
     minRating: minRating ?? '',

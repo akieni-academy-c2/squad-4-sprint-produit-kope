@@ -59,13 +59,13 @@ function warnStoreDegraded(err) {
 }
 
 async function isAllowed(id, windowMs, max) {
-   if (!checked) 
+   if (!checked)
     try {
       await resolveStore();
     } catch (err) {
       warnStoreDegraded(err);
     }
-  
+
   if (store !== 'postgres') return consumeInMemory(id, windowMs, max);
 
   try {
@@ -109,7 +109,7 @@ export function loginLimit({ windowMs = 15 * 60_000, maxPerIp = 10, maxPerAccoun
   const byAccount = rateLimit({ windowMs, max: maxPerAccount, key: 'login-account', byAccount: true });
 
   return async function limitLogin(req, res, next) {
-    
+
     await byIp(req, res, (err) => {
       if (err) return next(err);
       return byAccount(req, res, next);

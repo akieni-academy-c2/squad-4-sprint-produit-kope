@@ -3,7 +3,7 @@ import { paginationSchema } from '../../utils/commonSchemas.js';
 
 const emptyToUndefined = (value) => (value === '' || value == null ? undefined : value);
 
-export const REPORT_REASONS = [
+const REPORT_REASONS = [
   'fake_profile',
   'harassment',
   'spam',
@@ -13,7 +13,7 @@ export const REPORT_REASONS = [
 ];
 
 
-export const REVIEW_REPORT_REASONS = [
+const REVIEW_REPORT_REASONS = [
   'abusive',
   'false',
   'spam',

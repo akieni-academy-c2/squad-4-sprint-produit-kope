@@ -9,15 +9,9 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-/**
- * Aucune animation ici : durée dans la classe CSS, délai de démontage dans le
- * hook, et les deux divergeaient. Le mouvement relève de `@/shared/motion`.
- */
+
 export function useOverlay({ open, onClose, dismissable = true }) {
   const panelRef = useRef(null);
-  // `onClose` est recréé à chaque rendu du parent : le garder en dépendance
-  // relançait l'effet et le focus revenait au déclencheur en pleine saisie. La
-  // ref lit la valeur courante sans ré-abonner l'effet.
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -39,7 +33,6 @@ export function useOverlay({ open, onClose, dismissable = true }) {
       }
       if (event.key !== 'Tab') return;
 
-      // Piégeage : la tabulation ne doit jamais sortir de la surface ouverte.
       const panel = panelRef.current;
       if (!panel) return;
       const items = [...panel.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
@@ -60,7 +53,6 @@ export function useOverlay({ open, onClose, dismissable = true }) {
     };
 
     document.addEventListener('keydown', onKeyDown, true);
-    // Focus initial sur le premier élément interactif de la surface.
     const frame = requestAnimationFrame(() => {
       const target = panelRef.current?.querySelector(FOCUSABLE);
       target?.focus();

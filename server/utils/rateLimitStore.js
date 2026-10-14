@@ -7,9 +7,6 @@ const DEFAULT_WINDOW_MS = 15 * 60_000;
 export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db = pool) {
   const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
 
-  // `make_interval(secs => $2::int)` plutôt que `($2 || ' seconds')::interval` :
-  // le second form concatène puis reparse du texte à chaque ligne mise à jour,
-  // et un `interval` construit ainsi n'est pas sargable sur `window_start`.
   const { rows } = await db.query(
     `INSERT INTO rate_limits (key, window_start, count)
           VALUES ($1, now(), 1)
@@ -25,10 +22,6 @@ export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db
       RETURNING count`,
     [key, windowSeconds],
   );
-  // `RETURNING count` rend toujours une ligne en cas de succès. La garde reste
-// malgré tout : une ligne manquante ne doit pas faire tomber le limiteur, ce qui
-// reviendrait à désactiver la protection sur une erreur de base. On retombe sur
-// 1, la valeur la plus conservatrice.
 return rows[0]?.count ?? 1;
 }
 

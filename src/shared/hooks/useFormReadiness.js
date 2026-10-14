@@ -8,16 +8,8 @@ const sameValue = (a, b) => {
   return String(a ?? '') === String(b ?? '');
 };
 
-/**
- * Évaluation hors React : le test tourne en `node`, sans bibliothèque de rendu.
- * `dirty` évite un PUT inutile ; `rules` et `wrongOn` couvrent ce que le schéma
- * ne dit pas.
- */
-/**
- * Un champ est facultatif si son schéma accepte `undefined`, sinon `ready`
- * l'exigerait à tort. Résultat mis en cache : `safeParse` était relancé pour
- * chaque champ à chaque frappe.
- */
+
+
 const optionalFieldsCache = new WeakMap();
 
 function optionalFields(schema, fields) {
@@ -26,8 +18,6 @@ function optionalFields(schema, fields) {
     cache = new Set();
     optionalFieldsCache.set(schema, cache);
   }
-  // `forEach` et non `for...of` : la règle `curly` du projet interdit les
-  // accolades après `for`, et un `if` seul sous `for` se lit comme une faute.
   fields.forEach((field) => {
     if (!cache.has(field) && schema.shape[field].safeParse(undefined).success) cache.add(field);
   });
@@ -45,7 +35,6 @@ export function evaluateForm(schema, values, initial = values, { ignore = [], ru
   for (const field of fields) {
     const raw = values[field];
 
-    // Les cases à cocher vides doivent rester « inactives », pas en erreur.
     if (typeof raw === 'boolean' || raw == null || String(raw).trim() === '') {
       statuses[field] = FIELD_STATUS.IDLE;
       continue;
@@ -62,8 +51,6 @@ export function evaluateForm(schema, values, initial = values, { ignore = [], ru
     statuses[field] = FIELD_STATUS.OK;
   }
 
-  // `ready` : valide, et chaque champ obligatoire est OK. Un champ facultatif
-  // laissé vide ne bloque pas - il n'a rien à corriger.
   const ready =
     success &&
     fields.every(
@@ -77,17 +64,10 @@ export function evaluateForm(schema, values, initial = values, { ignore = [], ru
   return { ready, dirty, statuses, errors };
 }
 
-/**
- * `initial` sert de référence à `dirty` et suit `baseline` dès qu'il est fourni,
- * sans quoi le formulaire resterait « modifié » après un enregistrement réussi.
- * Pas de `useMemo` : `rules` et `wrongOn` arrivent en objet littéral à chaque rendu.
- */
+
 export function useFormReadiness(schema, values, options) {
   const { baseline, ...rest } = options ?? {};
 
-  // Instantané figé au premier rendu, qu'un `baseline` explicite peut ensuite
-  // remplacer. Reprendre `values` à chaque rendu rendrait `dirty` toujours
-  // faux ; ne jamais le mettre à jour le rendrait toujours vrai.
   const [mountedValues] = useState(() => values);
 
   return evaluateForm(schema, values, baseline ?? mountedValues, rest);

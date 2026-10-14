@@ -1,9 +1,6 @@
 import { Button, Modal } from '@/shared/components/ui';
 
-/**
- * `title` porte l'objet, `description` la perte concrète. L'action est à droite,
- * jamais pré-sélectionnée ; dès l'enregistrement la modale ne se ferme plus.
- */
+
 export function ConfirmDialog({
   open,
   title,

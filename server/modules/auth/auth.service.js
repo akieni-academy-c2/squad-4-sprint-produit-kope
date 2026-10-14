@@ -20,12 +20,8 @@ const DUMMY_HASH = bcrypt.hashSync('mot-de-passe-factice', env.BCRYPT_ROUNDS);
 
 function rethrowDuplicate(err) {
   if (err.code !== '23505') throw err;
-  // Le nom du champ est dans l'erreur PostgreSQL ; on n'expose que le nôtre.
   if (err.constraint === 'professionals_display_name_unique' || err.detail?.includes('display_name'))
     throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
-  // Index partiel : la violation porte sur `users_email_unique`, pas sur une
-  // contrainte de colonne. Sans ce cas, une adresse déjà prise serait rapportée
-  // comme un numéro en double - un message qui désigne le mauvais champ.
   if (err.constraint === 'users_email_unique' || err.detail?.includes('email'))
     throw ApiError.conflict(DUPLICATE_EMAIL, { email: DUPLICATE_EMAIL });
   throw ApiError.conflict(DUPLICATE_PHONE, { phone: DUPLICATE_PHONE });
@@ -66,7 +62,7 @@ export async function login({ phone, password }) {
   const passwordMatches = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
   if (!user || !passwordMatches) throw ApiError.unauthorized(INVALID_CREDENTIALS);
   if (user.blockedAt) throw ApiError.forbidden(ACCOUNT_BLOCKED);
-  
+
   if (user.suspendedAt) throw ApiError.forbidden(ACCOUNT_SUSPENDED);
 
   const { passwordHash: _passwordHash, blockedAt: _blockedAt, suspendedAt: _suspendedAt, ...publicUser } = user;

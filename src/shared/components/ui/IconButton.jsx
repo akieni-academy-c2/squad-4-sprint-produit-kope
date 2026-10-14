@@ -2,10 +2,7 @@ import { motion } from 'motion/react';
 import { SPRING } from '@/shared/motion/timing.js';
 import { cn } from '@/shared/utils';
 
-/**
- * Instance Motion plutôt que CSS : l'icône est sous le doigt. `whileHover` et
- * non `:hover`, collé après le tap.
- */
+
 export function IconButton({
   icon: Icon,
   label,
@@ -18,8 +15,6 @@ export function IconButton({
   return (
     <motion.button
       type="button"
-      // `hover` plutôt que `focus-visible` : le survol est un retour immédiat,
-      // le focus est un retour de clavier. Les deux cohabitent.
       whileHover={disabled ? undefined : { scale: 1.04 }}
       whileTap={disabled ? undefined : { scale: 0.9 }}
       transition={SPRING.press}

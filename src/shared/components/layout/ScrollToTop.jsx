@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-/**
- * `pathname` seul : un changement de query string est interne à la page.
- * `behavior: 'instant'`, sinon un `scroll-behavior: smooth` étire le retour.
- */
+
 export function ScrollToTop() {
   const { pathname } = useLocation();
 

@@ -21,8 +21,6 @@ function fallbackPortrait(seed) {
 
 
 function coverImage(item, homePreview) {
-  // En avant-première (accueil), le visuel est fourni par l'appelant depuis les
-  // images locales ; le portrait généré ne sert que de repli.
   if (homePreview) return item.previewImage || fallbackPortrait(item.id);
   return item.avatarUrl || item.image || item.coverUrl || item.photoUrl || fallbackPortrait(item.id);
 }
@@ -50,9 +48,6 @@ function ProfileMedia({ item, homePreview }) {
 export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
   const avg = Number(item.rating?.average ?? 0);
   const cnt = Number(item.rating?.count ?? 0);
-  // `item` est passé tel quel : l'éventuelle copie `{ ...item, featuredPrompt }`
-  // créait une nouvelle identité à chaque rendu, ce qui interdisait toute
-  // mémoïsation de la carte la plus utilisée de l'application.
   const coverSrc = coverImage(item, homePreview);
 
   if (mode === 'grid')
@@ -80,8 +75,6 @@ export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-1.5 text-[12px] text-gray-700">
                 {cnt > 0 ? (
-                  // `whitespace-nowrap` : dans une carte étroite, l'étoile restait
-                  // seule sur sa ligne et la moyenne passait à la suivante.
                   <span className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-gray-900">
                     <Star size={12} className="shrink-0 fill-amber-400 text-amber-400" aria-hidden />
                     <span>
@@ -105,12 +98,8 @@ export function ProfessionalCard({ item, mode = 'list', homePreview = false }) {
     );
 
 
-  // La carte ne rend pas de <li> : la sémantique de liste appartient au parent
-  // qui possède la <ul>. Le rendre ici imbriquait deux <li> dans SearchResults,
-  // qui enveloppe déjà chaque ligne, et laissait une <Link> nue comme enfant
-  // direct de <ul> en mode grille.
   return (
-    <Link href={ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
+    <Link href={homePreview ? '/search' : ROUTES.PROFESSIONAL(item.id)} className="group block h-full">
       <Card className={cn(
         'group flex h-full cursor-pointer flex-col overflow-hidden gap-0 border border-gray-200 bg-white ring-0 ring-primary-200/60 hover:ring-3 transition-all sm:flex-row',
       )}>

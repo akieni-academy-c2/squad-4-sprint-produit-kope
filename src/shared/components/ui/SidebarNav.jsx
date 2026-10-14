@@ -14,7 +14,6 @@ export function SidebarNav({ items, active, onChange, ariaLabel, orientation = '
         <button
           key={id}
           type="button"
-          // Navigation, pas onglets ARIA : il n'y a pas de tabpanel associé.
           aria-current={active === id ? 'page' : undefined}
           onClick={() => onChange(id)}
           className={cn(
