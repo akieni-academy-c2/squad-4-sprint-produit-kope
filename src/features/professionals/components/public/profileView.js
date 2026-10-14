@@ -6,6 +6,11 @@ export const CITY = 'Brazzaville';
 export const ABOUT_HEADING = 'À propos';
 export const ABOUT_FALLBACK = 'Aucune présentation n’a encore été renseignée.';
 
+/**
+ * Initiales de l'avatar de repli : deux lettres au plus, `??` si le nom est vide.
+ * @param {string} displayName
+ * @returns {string}
+ */
 export function initialsOf(displayName) {
   return (
     (displayName || '')
@@ -17,6 +22,15 @@ export function initialsOf(displayName) {
   );
 }
 
+/**
+ * Vue de présentation du profil public : dérive de la fiche brute et de la note
+ * tous les libellés affichés. `mainZone` écarte volontairement la ville, sinon le
+ * fil d'Ariane afficherait « à Brazzaville » pour un professionnel dont la seule
+ * zone est Brazzaville.
+ * @param {object} profile fiche professionnelle
+ * @param {{average?: number, count?: number}} rating note agrégée
+ * @returns {object} champs consommés par la page publique
+ */
 export function getProfileView(profile, rating) {
   const tradeName = profile.trade?.name || 'Artisan';
   const zones = (profile.zones ?? []).map((z) => z?.name).filter(Boolean);

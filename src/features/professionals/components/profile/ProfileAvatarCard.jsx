@@ -2,6 +2,10 @@ import { Camera } from 'lucide-react';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
 
+/**
+ * Carte d'avatar. L'envoi est piloté par le parent : il fournit la progression
+ * et neutralise le sélecteur pendant l'upload, le composant ne fait qu'afficher.
+ */
 export function ProfileAvatarCard({ user, avatar, name, tradeName, editing, uploading, uploadProgress, onAvatarChange }) {
   return (
     <Card className="overflow-hidden">

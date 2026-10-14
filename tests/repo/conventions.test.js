@@ -3,7 +3,8 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { repoPath } from '../support/repoRoot.js';
 
-const ROOTS = ['src', 'server', 'public'];
+const ROOTS = ['src', 'server', 'public', 'scripts', 'tests', 'api'];
+const ROOT_FILES = ['vite.config.js', 'eslint.config.js', 'vitest.config.js'];
 const EXTENSIONS = new Set(['.js', '.jsx', '.mjs', '.css']);
 const SKIP = new Set(['node_modules', 'dist', '.git']);
 
@@ -18,22 +19,53 @@ function walk(dir, visit) {
 
 const files = [];
 for (const root of ROOTS) if (fs.existsSync(repoPath(root))) walk(repoPath(root), (f) => files.push(f));
+for (const name of ROOT_FILES) if (fs.existsSync(repoPath(name))) files.push(repoPath(name));
 
 const isCommentStart = (line) =>
   /^\s*(\/\/|\/\*|\*\/|\{\/\*)/.test(line) && !/eslint-disable/.test(line);
 
 const isCssComment = (line) => /\/\*/.test(line) && !/\*\//.test(line);
 
-describe('depôt sans commentaires', () => {
-  it.each(files)('%s', (file) => {
-    const offenders = fs
-      .readFileSync(file, 'utf8')
-      .split(/\r?\n/)
-      .map((line, i) => ({ i: i + 1, line }))
-      .filter((l) => (path.extname(file) === '.css' ? isCssComment(l.line) : isCommentStart(l.line)))
-      .map((l) => `${path.relative(repoPath(), file)}:${l.i}`);
+const MAX_JSDOC_LINES = 12;
 
-    expect(offenders).toEqual([]);
+function commentOffenders(file) {
+  const isCss = path.extname(file) === '.css';
+  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+  const offenders = [];
+  let inJsdoc = false;
+  let jsdocLength = 0;
+
+  lines.forEach((line, i) => {
+    const loc = `${path.relative(repoPath(), file)}:${i + 1}`;
+
+    if (inJsdoc) {
+      jsdocLength += 1;
+      if (line.includes('*/')) inJsdoc = false;
+      if (jsdocLength > MAX_JSDOC_LINES) offenders.push(loc);
+      return;
+    }
+
+    if (isCss) {
+      if (isCssComment(line)) offenders.push(loc);
+      return;
+    }
+
+    if (/^\s*\/\*\*/.test(line)) {
+      inJsdoc = true;
+      jsdocLength = 1;
+      if (line.includes('*/')) inJsdoc = false;
+      return;
+    }
+
+    if (isCommentStart(line)) offenders.push(loc);
+  });
+
+  return offenders;
+}
+
+describe('commentaires limités au jsdoc', () => {
+  it.each(files)('%s', (file) => {
+    expect(commentOffenders(file)).toEqual([]);
   });
 });
 

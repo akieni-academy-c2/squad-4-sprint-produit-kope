@@ -24,16 +24,6 @@ export default defineConfig([
     },
   },
   {
-    // Règles de dépôt.
-    //
-    // Ces quatre contrôles vivaient dans des tests qui lisaient le code source
-    // pour y chercher des chaînes. Ils vérifiaient que le fichier **contenait**
-    // un texte, pas que l'écran produisait le bon résultat - et ils ne
-    // s'exécutaient qu'au moment de la suite, donc après coup.
-    //
-    // Un contrôle statique appartient au linter : il tourne à l'enregistrement,
-    // il donne une position sur la ligne fautive, et il n'occupe aucun temps de
-    // test. Aucun test ne les perd : ils n'en étaient pas.
     files: ['src/**/*.jsx'],
     rules: {
       'no-restricted-syntax': [
@@ -77,18 +67,12 @@ export default defineConfig([
     },
   },
   {
-    // Les tests sont rangés comme le code qu'ils vérifient : ce qui touche au
-    // serveur s'exécute avec les globales Node, ce qui touche à l'interface
-    // avec celles du navigateur. Un `.test.jsx` sous `tests/server/` est donc
-    // aussi un signal que le test est rangé du mauvais côté.
     files: ['tests/src/**/*.js'],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
   },
   {
-    // Un repository ne fait que traduire SQL. S'il importe un service, la
-    // frontière s'est dissoute et le module devient impossible à tester seul.
     files: ['server/modules/**/*.repository.js'],
     rules: {
       'no-restricted-imports': ['error', {
@@ -100,9 +84,6 @@ export default defineConfig([
     },
   },
   {
-    // Les couches ne se traversent que vers le bas : une route declare des
-    // middlewares, un controller appelle un service, un service passe par un
-    // repository. Sauter une couche rend le module dependant de ses voisins.
     files: ['server/modules/**/*.controller.js'],
     rules: {
       'no-restricted-imports': ['error', {

@@ -30,7 +30,7 @@ export const registerProfessionalSchema = z.object({
   tradeId: idSchema('Choisissez un métier'),
   zoneIds: zoneIdsSchema,
   consent: consentSchema,
-  
+
   termsVersion: termsVersionSchema,
 });
 

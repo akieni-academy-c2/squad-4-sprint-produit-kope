@@ -1,6 +1,12 @@
 export const DESC_MIN = 30;
 export const DESC_MAX = 500;
 
+/**
+ * État initial du formulaire. Les zones y sont normalisées en identifiants
+ * numériques : l'API renvoie des objets, le formulaire ne manipule que des ids.
+ * @param {object} profile
+ * @returns {object}
+ */
 export function extractInitial(profile) {
   return {
     displayName: profile?.displayName ?? '',
