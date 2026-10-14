@@ -134,7 +134,7 @@ const CSS = `
 
   .figures {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm;
-    margin-top: auto; padding-top: 10mm;
+    margin-top: auto; padding: 0 22mm 9mm;
   }
   .figures div { border-top: 2px solid var(--rule); padding-top: 2.5mm; }
   .figures b { display: block; font-size: 19pt; font-weight: 600; letter-spacing: -0.02em; }
@@ -492,6 +492,15 @@ const volumeRows = [...volumes.entries()]
   .map(([name, n]) => `<tr><td class="name mono">${escapeHtml(name.toLowerCase())}</td><td class="num">${n}</td></tr>`)
   .join('');
 
+const totalColumns = [...entities.values()].reduce((n, e) => n + e.columns.length, 0);
+const totalRelations = sheets.reduce((n, { sheet }) => n + sheet.relations.length, 0);
+const figures = [
+  [String(entities.size), 'tables métier'],
+  [String(totalColumns), 'colonnes'],
+  [String(totalRelations), 'relations'],
+  [String(counts), 'migrations appliquées'],
+];
+
 const html = `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8" />
 <title>KOP — Schéma et dictionnaire des données</title>
@@ -532,7 +541,14 @@ execFileSync(
   { stdio: 'ignore' },
 );
 
-fs.rmSync(profile, { recursive: true, force: true });
+/**
+ * Le moteur garde encore le profil ouvert quelques instants après avoir rendu :
+ * un échec de suppression ne doit pas faire échouer la génération, le
+ * dossier restant ne contenant aucune donnée utile.
+ */
+try {
+  fs.rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+} catch {}
 
 const bytes = fs.statSync(PDF_PATH).size;
 const raw = fs.readFileSync(PDF_PATH).toString('latin1');

@@ -20,6 +20,7 @@
     "migrate:down": "node-pg-migrate down -m server/db/migrations",
     "migrate:create": "node-pg-migrate create -m server/db/migrations --migration-file-language sql",
     "schema:doc": "node scripts/describe-schema.mjs",
+    "docs:pdf": "node scripts/build-data-dictionary-pdf.mjs",
     "seed:admin": "node server/db/seeds/admin.js",
     "seed:clients": "node server/db/seeds/clients.js"
   },

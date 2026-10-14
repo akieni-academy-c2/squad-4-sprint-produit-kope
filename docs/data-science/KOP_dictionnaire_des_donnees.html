@@ -92,7 +92,10 @@
   .sheet svg { width: 100%; height: auto; display: block; }
   .sheet .legend { display: flex; gap: 6mm; margin-top: 3mm; font-size: 8pt; color: var(--ink-soft); }
 
-  .cover { page: cover; height: 297mm; display: flex; flex-direction: column; }
+  .cover {
+    page: cover; height: 297mm; display: flex; flex-direction: column;
+    position: relative; z-index: 2; background: #fff;
+  }
   .cover-band { height: 6mm; background: var(--accent); }
   .cover-body { flex: 1; padding: 40mm 22mm 10mm; display: flex; flex-direction: column; }
   .cover h1 { font-size: 30pt; line-height: 1.1; letter-spacing: -0.02em; }
@@ -102,6 +105,14 @@
   .cover dt { color: var(--ink-soft); }
   .cover dd { margin: 0; font-weight: 600; }
   .cover-foot { padding: 0 22mm 18mm; color: var(--ink-faint); font-size: 8.4pt; }
+
+  .figures {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm;
+    margin-top: auto; padding: 0 22mm 9mm;
+  }
+  .figures div { border-top: 2px solid var(--rule); padding-top: 2.5mm; }
+  .figures b { display: block; font-size: 19pt; font-weight: 600; letter-spacing: -0.02em; }
+  .figures span { font-size: 8.4pt; color: var(--ink-soft); }
 
   .toc { break-after: page; }
   .toc ol { list-style: none; padding: 0; margin: 0; counter-reset: s; }
@@ -133,6 +144,12 @@
         <dt>Source</dt><dd>Base vivante, extraite par introspection</dd>
         <dt>Généré par</dt><dd class="mono">npm run docs:pdf</dd>
       </dl>
+    </div>
+    <div class="figures">
+      <div><b>12</b><span>tables métier</span></div>
+      <div><b>81</b><span>colonnes</span></div>
+      <div><b>14</b><span>relations</span></div>
+      <div><b>31</b><span>migrations appliquées</span></div>
     </div>
     <div class="cover-foot">
       KOP — annuaire des artisans du bâtiment à Brazzaville.<br />
@@ -175,9 +192,9 @@
     réécrite quatre fois et la table <code>zones</code> a reçu <code>city_id</code> plus tard.
     Lire les migrations reconstitue une intention, pas l’état réel.</p>
   </section>
-<div class="chapter">
-  <p class="eyebrow">Volumes relevés</p>
-  <h2>Ce que contient la base aujourd’hui</h2>
+<div>
+  <p class="eyebrow" style="margin-top:6mm">Volumes relevés</p>
+  <h3>Ce que contient la base aujourd’hui</h3>
   <p class="lede">Relevé au moment de l’extraction, tables techniques exclues.</p>
   <table><thead><tr><th>Table</th><th style="width:18%">Lignes</th></tr></thead>
   <tbody><tr><td class="name mono">trade_categories</td><td class="num">5</td></tr><tr><td class="name mono">trades</td><td class="num">4</td></tr><tr><td class="name mono">cities</td><td class="num">6</td></tr><tr><td class="name mono">zones</td><td class="num">9</td></tr><tr><td class="name mono">users</td><td class="num">10</td></tr><tr><td class="name mono">professionals</td><td class="num">4</td></tr><tr><td class="name mono">professional_zones</td><td class="num">11</td></tr><tr><td class="name mono">photos</td><td class="num">7</td></tr><tr><td class="name mono">reviews</td><td class="num">0</td></tr><tr><td class="name mono">contacts</td><td class="num">1</td></tr><tr><td class="name mono">account_reports</td><td class="num">0</td></tr><tr><td class="name mono">review_reports</td><td class="num">0</td></tr></tbody></table>
