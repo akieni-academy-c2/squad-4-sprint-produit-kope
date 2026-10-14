@@ -15,7 +15,12 @@ vite*.txt
 *.log.txt
 
 dist
+# Fichiers de travail jetables, jamais commités
+tmp-*
+*.tmp
+
 node_modules
+dist
 dist-ssr
 *.local
 
