@@ -7,26 +7,9 @@ import { overlayBackdrop, sheetPanel, sidePanel } from '@/shared/motion/variants
 import { useOverlay } from './useOverlay.js';
 
 /**
- * Feuille superposée, par le bas ou par le côté.
- *
- * ## Le mouvement
- *
- * La feuille **entre en se poussant** : ressort, et non courbe. Un ressort
- * conserve sa vitesse quand il est interrompu - refermer une feuille à
- * mi-parcours puis la rouvrir repart de là où elle était, au lieu de
- * recommencer à chaque fois. C'est ce qui la fait lire comme un objet et non
- * comme une transition CSS.
- *
- * Elle arrive aussi légèrement **en dessous de sa taille** (`scale: 0.98`) :
- * à l'échelle 1, elle monte à plat et sans épaisseur ; en dessous, elle grandit
- * en même temps qu'elle monte, et le geste se lit comme un tirage vers soi.
- *
- * ## Le retour
- *
- * `AnimatePresence` gère la présence, plus un minuteur. Une feuille fermée puis
- * rouverte dans la foulée ne peut plus être démontée par le minuteur de la
- * fermeture précédente : `useOverlay` ne s'occupe plus que du comportement
- * (Échap, focus, scroll).
+ * Ressort et non courbe : il conserve sa vitesse s'il est interrompu, la feuille
+ * repart d'où elle en était. Elle arrive en dessous de sa taille, pour que le
+ * geste se lise comme un tirage vers soi.
  */
 export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
   const innerRef = useRef(null);
@@ -67,14 +50,11 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
             // La variante n'est pas propagée depuis le fond : elle dépend du
             // bord d'entrée, que le parent ignore.
             variants={side === 'bottom' ? sheetPanel : sidePanel}
-            // États nommés explicites plutôt qu'hérités du fond.
-            //
-            // La propagation implicite fonctionne - mais elle est implicite.
-            // Une refonte du fond, un `variants` oublié, une réorganisation du
-            // JSX suffisaient à faire disparaître la sortie, **sans erreur et
-            // sans avertissement** : la feuille se refermait d'un coup. Nommer
-            // les trois états rend la sortie visible à la lecture, et impossible
-            // à perdre par accident.
+            // États nommés plutôt qu'hérités du fond. La propagation implicite
+            // fonctionne, mais elle disparaît sans erreur ni avertissement
+            // dès qu'une refonte du fond ou du JSX la coupe : la feuille se
+            // referme alors d'un coup. Nommer les trois états rend la sortie
+            // visible à la lecture.
             initial="initial"
             animate="animate"
             exit="exit"

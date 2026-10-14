@@ -25,12 +25,8 @@ export function placeholderImage(label = '') {
 }
 
 /**
- * Réservation explicite, pour les sections de la page d'accueil.
- *
- * Le tirage par empreinte fonctionne, mais deux sections peuvent retomber sur
- * la même image et donner l'impression de répéter un visage. Ici chaque
- * emplacement est attribué à la main : `usedBy` sert à retirer du tirage ce que
- * les sections précédentes ont déjà pris.
+ * `usedBy` retire du tirage les images déjà prises : deux sections ne doivent
+ * pas retomber sur la même et donner l'impression de répéter un visage.
  */
 export function reserveImage(label, usedBy = []) {
   const available = IMAGES.filter((image) => !usedBy.includes(image));

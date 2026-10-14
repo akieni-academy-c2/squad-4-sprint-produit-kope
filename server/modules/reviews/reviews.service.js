@@ -42,13 +42,7 @@ export async function mine(clientId, query) {
   return paginateSafely(rows, query, () => repository.countByClient(clientId));
 }
 
-/**
- * Charge un avis en vérifiant qu'il appartient au client.
- *
- * Le 404 est volontaire et non un 403 : confirmer qu'un avis existe alors
- * qu'il est celui de quelqu'un d'autre permet d'énumérer les avis du site.
- * Le client voit donc « introuvable » dans les deux cas.
- */
+
 async function ownedReview(reviewId, clientId) {
   const review = await repository.findOwnedById(reviewId, clientId);
   if (!review) throw ApiError.notFound('Avis introuvable');

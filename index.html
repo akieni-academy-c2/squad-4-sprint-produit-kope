@@ -19,8 +19,15 @@ plugin `kop-head-tags` (vite.config.js), depuis src/shared/data/credits.js. -->
     />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="KOP" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="KOP" />
 
     <!-- Palette verte de l'application. La valeur précédente était orange,
          couleur qui n'apparaît nulle part dans le design. -->
@@ -36,7 +43,6 @@ plugin `kop-head-tags` (vite.config.js), depuis src/shared/data/credits.js. -->
       property="og:description"
       content="L'annuaire des artisans du bâtiment au Congo. Plombier, électricien, maçon, menuisier."
     />
-    <!-- PNG et non SVG : les réseaux sociaux refusent le SVG en aperçu. -->
     <meta property="og:image" content="/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

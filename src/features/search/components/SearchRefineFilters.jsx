@@ -118,9 +118,6 @@ export function SearchRefineFilters({
       </div>
 
       <div className="border-t border-gray-100 p-2">
-        {/* Ce bouton valide, il ne remet pas à zéro : la réinitialisation a
-            déjà son propre accès dans l'en-tête. Appeler `onReset` ici
-            annulait les filtres juste après les avoir choisis. */}
         <Button size="sm" className="w-full" onClick={() => onApply?.()} disabled={!dirty}>
           Appliquer
         </Button>

@@ -9,13 +9,7 @@ export function getMyContacts({ page = 1, pageSize = 20 } = {}) {
   );
 }
 
-/**
- * Enregistre un contact pris puis ouvre le canal.
- *
- * L'appel et le lien WhatsApp partent toujours : un échec d'enregistrement ne
- * doit jamais empêcher de joindre le professionnel. L'erreur est seulement
- * signalée, l'utilisateur ne voit pas d'écran bloqué.
- */
+
 export function logContact(toUserId, channel) {
   return callApi(
     () => api.postJson('/contacts', { toUserId, channel }),

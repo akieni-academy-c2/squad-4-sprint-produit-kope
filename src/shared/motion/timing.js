@@ -1,13 +1,7 @@
 /**
- * Le temps du mouvement : courbes, durées, ressorts.
- *
- * Les variantes de `variants.js` disent *quoi* bouger ; ce fichier dit *combien
- * de temps* et *avec quelle courbe*. Le choix se fait ici, une fois.
- *
- * Deux invariants :
- *   - la courbe suit le sens du mouvement - une entrée décélère, une sortie
- *     accélère, un déplacement à l'écran reste symétrique ;
- *   - une sortie dure moins longtemps qu'une entrée, par construction (`exitOf`).
+ * Le temps du mouvement : `variants.js` dit *quoi* bouger, ce fichier *combien de temps*
+ * et *avec quelle courbe*. Deux invariants : la courbe suit le sens du mouvement, et une
+ * sortie dure moins longtemps qu'une entrée par construction (`exitOf`).
  */
 
 /**
@@ -31,11 +25,8 @@ export const EASE = {
 };
 
 /**
- * L'échelle des durées, en secondes. Nommées d'après ce qui se passe.
- *
- * La durée suit la distance parcourue et le rayon de ce qui bouge, jamais son
- * importance : un bandeau qui traverse 400 px met plus de temps à s'installer
- * qu'un texte qui se décale de 8 px.
+ * L'échelle des durées, en secondes, nommées d'après ce qui se passe : la durée suit la
+ * distance parcourue et le rayon de ce qui bouge, jamais son importance.
  */
 export const DURATION = {
   /** Retour de pression, survol. En dessous de 90 ms, l'œil voit un clignotement. */
@@ -51,11 +42,8 @@ export const DURATION = {
 };
 
 /**
- * Sous 60 ms, l'œil ne perçoit pas un mouvement mais un scintillement - deux
- * états séparés par du vide, c'est-à-dire un rechargement de page.
- *
- * Contrainte sur l'échelle, pas un cran de l'échelle : la mélanger aux durées
- * la rendrait non ordonnée, donc invérifiable.
+ * Contrainte et non cran de l'échelle : la mélanger aux durées la rendrait non
+ * ordonnée. Sous 60 ms, l'œil perçoit un scintillement.
  */
 export const PERCEPTIBLE = 0.06;
 
@@ -63,20 +51,8 @@ export const PERCEPTIBLE = 0.06;
 export const exitOf = (enterSeconds) => Number((enterSeconds * 0.7).toFixed(3));
 
 /**
- * Ressorts, pour ce qui peut être interrompu et repris.
- *
- * Un ressort conserve sa vitesse courante quand l'animation est interrompue ;
- * une courbe CSS repart de zéro. D'où leur usage réservé aux surfaces et aux
- * réorganisations.
- *
- * Les amortissements sont **calculés**, pas choisis à l'œil : le seuil critique
- * vaut `2 × √(stiffness × masse)`, et tous sont juste au-dessus. Un objet qui
- * dépasse sa cible se lit comme un jouet.
- *
- * `visualDuration` aligne la durée ressentie : deux ressorts de paramètres
- * différents se terminent ensemble à l'œil.
- *
- * Vérifié à chaque exécution par `tests/src/shared/motion/motion.test.js`.
+ * Un ressort conserve sa vitesse courante, une courbe CSS repart de zéro.
+ * Amortissements calculés : seuil critique `2 × √(stiffness × masse)`.
  */
 export const SPRING = {
   /** Seuil critique : 2 × √(700 × 0.6) = 40.99. */

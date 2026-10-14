@@ -2,10 +2,7 @@ import { SESSION_COOKIE } from '../../config/session.js';
 import { currentUser } from '../../middlewares/identity.js';
 import * as service from './auth.service.js';
 
-/**
- * Ouvre la session : c'est elle qui porte l'authentification.
- * Le cookie `sid` (httpOnly) est renvoyé automatiquement par le navigateur.
- */
+
 function startSession(req, user) {
   return new Promise((resolve, reject) => {
     req.session.regenerate((err) => {
@@ -48,19 +45,13 @@ export async function logout(req, res, next) {
   });
 }
 
-/**
- * « Qui suis-je ? » - répond 200 avec `user: null` quand aucune session n'est
- * ouverte. Un 401 ici était le comportement normal d'un visiteur non connecté,
- * mais il affichait une erreur rouge dans la console du navigateur et le faisait
- * passer pour un défaut. Aucun risque : la route ne renvoie que la session de
- * l'appelant.
- */
+
 export async function me(req, res, next) {
   const identity = currentUser(req);
   if (!identity) return res.json({ user: null });
 
   const user = await service.getCurrentUser(identity.id);
-  // Compte supprimé depuis : on ferme la session.
+  
   if (!user) return logout(req, res, next);
 
   res.json({ user });

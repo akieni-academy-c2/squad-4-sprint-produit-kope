@@ -17,11 +17,9 @@ import { BecomeProCard } from './BecomeProCard.jsx';
 import { formatPhoneFR } from '@/shared/utils';
 
 /**
- * Champ de saisie avec son état.
- *
- * `{ status, total }` suffit : `FormField` n'a besoin que du statut pour
- * colorer la bordure et sortir la ligne d'état. `error` reste prioritaire -
- * c'est le message du schéma Zod, plus précis que « presque correct ».
+ * `{ status, total }` suffit : `FormField` n'a besoin que du statut pour colorer
+ * la bordure et sortir la ligne d'état. `error` reste prioritaire, c'est le
+ * message du schéma Zod, plus précis que « presque correct ».
  */
 function Field({ label, value, onChange, type = 'text', placeholder, hint, status, error, id }) {
   return (
@@ -136,9 +134,7 @@ export function ClientProfileSection({ user }) {
         </div>
       </div>
 
-      {/* Même composant que l'espace pro : les deux profils décrivent la même
-          personne, ils ne peuvent pas diverger sur la carte d'identité. */}
-      <ProfileAvatarCard
+       <ProfileAvatarCard
         user={user}
         avatar={avatar}
         name={name}
@@ -198,10 +194,7 @@ export function ClientProfileSection({ user }) {
 
             <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" loading={saving} disabled={!canSubmit}>{label}</Button>
-              {/* Un bouton grisé sans dire quoi corriger est une impasse : le
-                  libellé passe de « Enregistrer » à « Complétez le prénom »
-                  dès qu'un champ manque. */}
-              {!ready && (
+               {!ready && (
                 <span aria-live="polite" className="text-xs text-gray-500">
                   {label}
                 </span>
@@ -240,9 +233,7 @@ export function ClientProfileSection({ user }) {
         <BecomeProCard />
       </div>
 
-      {/* Déconnexion en dernier, seulement sur mobile. Desktop la trouve dans le
-          menu compte du header ; ici, ce serait la seule sortie de l'écran. */}
-      <div className="space-y-4 sm:hidden">
+       <div className="space-y-4 sm:hidden">
         <Button variant="outline" size="md" className="w-full" onClick={() => openModal(AUTH_MODAL_MODES.CHANGE_PASSWORD)}>
           Changer le mot de passe
         </Button>

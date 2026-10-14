@@ -9,30 +9,9 @@ import { ScrollDepth } from '@/shared/motion/ScrollDepth.jsx';
 import hero from '@/shared/assets/hero.png';
 
 /**
- * Le héros est le seul endroit de l'application où une **chorégraphie** se
- * justifie.
- *
- * Partout ailleurs, un contenu qui arrive doit arriver vite et sans spectacle.
- * Ici l'exception est réelle : c'est la première image de la page, elle est
- * au-dessus de la ligne de flottaison, et elle est lue en même temps que le
- * reste. Un écran qui apparaît d'un bloc se lit comme une page vide qu'on
- * remplit ; un écran qui se pose en 340 ms se lit comme une composition.
- *
- * ## Ce qui évite le résultat générique
- *
- * - **le total est borné** à 340 ms, pas à 340 ms × le nombre d'éléments ;
- * - **les décalages sont de 8 à 12 px**, pas de 40 : au-delà, un élément
- *   paraît *arriver d'ailleurs* ;
- * - **la photo n'est pas traduite**. Le texte se pose en montant ; une image
- *   se pose en se calant, par un léger recul d'échelle. Traduire les deux,
- *   c'est les traiter comme le même objet alors que ce ne sont pas les mêmes.
- *
- * ## Pourquoi pas de `whileInView` plus bas dans la page
- *
- * Le contenu sous la ligne de flottaison est **déjà voulu** : l'utilisateur a
- * fait défiler pour le voir. Le faire apparaître en plus retarde sa lecture
- * pour un effet qu'il n'a pas demandé, et rien ne l'avertit. C'est la
- * signature des animations générées : partout, toujours, dans le même sens.
+ * Seul endroit où une chorégraphie se justifie : premier écran, au-dessus de
+ * la ligne de flottaison, lu en même temps que le reste. Plus bas, le contenu
+ * est déjà voulu et n'a pas besoin d'être annoncé.
  */
 
 export function HeroSection() {
@@ -63,13 +42,6 @@ export function HeroSection() {
         <rect x="1140" y="420" width="20" height="20" rx="6" transform="rotate(-30 1150 430)" fill="#2d5c4a" opacity="0.09" />
         <circle cx="950" cy="300" r="4" fill="#2d5c4a" opacity="0.14" />
       </svg>
-      {/* Le parent porte la cadence, les enfants ne portent que leur état.
-          `initial={false}` : c'est le premier rendu de la page, la composition
-          est déjà là - l'animer en entrée n'ajouterait qu'un blanc de 340 ms
-          avant le premier mot.
-
-          `ScrollDepth` enveloppe les deux colonnes pour y lier un parallaxe :
-          le texte se retire plus vite que la page, le visuel moins vite. */}
       <ScrollDepth
         className="container-kop relative z-10 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center"
         text={
@@ -95,10 +67,6 @@ export function HeroSection() {
           </motion.div>
         }
         visual={
-          /* La photo se cale au lieu de monter. `scale: 1.03` : au-delà de 1.05
-             le recadrage se voit pendant l'animation et l'image semble glisser ;
-             en dessous de 1.02 le mouvement est trop faible pour être lu et elle
-             apparaît simplement. */
           <motion.div
             variants={{
               initial: { opacity: 0, scale: 1.03 },
@@ -110,8 +78,6 @@ export function HeroSection() {
               <ImageWithSkeleton
                 src={hero}
                 alt="Artisanne KOP"
-                // Premier visuel de la page : il doit être prioritaire sur le
-                // reste, sinon le héros s'affiche après les images du bas.
                 eager
                 ratio="h-85 sm:h-100"
                 skeletonClassName="bg-accent-500/30"
@@ -127,7 +93,6 @@ export function HeroSection() {
       />
 
 
-      {/* 2. SEARCH WIDGET */}
       <aside className="container-kop relative -space-y-px z-10">
         <p className="bg-[#F5F6F6] rounded-t-sm border border-[#B9C2BE] border-b-transparent  px-4 py-2 inline-flex items-center gap-2 text-xs font-semibold text-gray-600">
           <span className="inline-flex items-center gap-2"><Search size={14} aria-hidden /> Recherche par mot-clé</span>

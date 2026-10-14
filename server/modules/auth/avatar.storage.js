@@ -7,16 +7,13 @@ import { decodeImage } from '../../utils/images.js';
 
 const SIZE = 512;
 
-/* Redimensionne */
 export async function processAvatar(buffer) {
-  // decodeImage contrôle le format sur les octets du fichier. Sans lui,
-  // sharp réencodait un GIF, un TIFF ou une archive déguisée en image.
   const image = await decodeImage(buffer, { field: 'avatar' });
 
   return image.rotate().resize(SIZE, SIZE, { fit: 'cover' }).jpeg({ quality: 80 }).toBuffer();
 }
 
-/* Enregistre l'avatar */
+
 export async function saveAvatar(buffer, userId) {
   const relativePath = `avatars/${userId}-${randomUUID()}.jpg`;
 

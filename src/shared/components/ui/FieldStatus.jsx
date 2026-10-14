@@ -3,11 +3,8 @@ import { cn } from '@/shared/utils';
 import { FIELD_STATUS } from '@/shared/hooks/useFieldStatus.js';
 
 /**
- * Ligne d'état sous un champ.
- *
- * Quand la valeur est correcte, aucun texte : c'est la bordure de l'input qui
- * passe au vert (voir `FormField`), un mot en plus serait redondant.
- * L'état « presque bon » reste annoncé, car il indique ce qu'il reste à faire.
+ * Valeur correcte : aucun texte, la bordure de l'input passe au vert. L'état
+ * « presque bon » reste annoncé : il dit ce qu'il reste à faire.
  */
 export function FieldStatusLine({ status, missing = 0, total = 1, hint, message }) {
   if (status === FIELD_STATUS.IDLE)

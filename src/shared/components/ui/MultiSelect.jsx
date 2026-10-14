@@ -12,16 +12,8 @@ const controlClasses = (error) =>
   );
 
 /**
- * Identifiants annoncés par le déclencheur.
- *
- * `-help` et non `-hint` : `FormField` rend le texte d'aide avec cet
- * suffixe. Un suffixe différent produisait un `aria-describedby` pointant
- * dans le vide - l'indication n'était donc jamais annoncée, sans erreur et
- * sans avertissement.
- *
- * Les deux identifiants sont posés par le parent, pas déduits : c'est
- * `FormField` qui décide des suffixes, dupliquer la convention ici la ferait
- * diverger à nouveau.
+ * Suffixe `-help` imposé par `FormField` : un autre produisait un
+ * `aria-describedby` pointant dans le vide.
  */
 const describedBy = (id, { hint, error }) => {
   const ids = [error ? `${id}-error` : null, hint ? `${id}-help` : null].filter(Boolean);

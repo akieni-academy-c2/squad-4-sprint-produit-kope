@@ -4,14 +4,7 @@ import { Button, CustomSelect, FormField, Modal } from '@/shared/components/ui';
 import { ErrorState } from '@/shared/components/ui/ErrorState.jsx';
 import { useNotification } from '@/shared/context/NotificationContext.jsx';
 
-/**
- * Formulaire de signalement, pour les trois cibles possibles.
- *
- * La cible est passée par `submit` plutôt que déduite ici : chaque appelant
- * connaît son endpoint, et le formulaire n'a pas à savoir distinguer un avis
- * d'un contact. Ce qui est réellement partagé - les motifs, la validation, le
- * libellé d'attente - ne doit pas être recopié par cible.
- */
+
 export function ReportDialog({
   open,
   onClose,
@@ -113,18 +106,13 @@ export function ReportDialog({
   );
 }
 
-/**
- * Déclencheur texte discret.
- *
- * Le signalement est une action de recours, pas une action principale : il ne
- * doit pas se confondre avec « Appeler » ou « WhatsApp » sur la même ligne.
- */
 export function ReportTrigger({ onClick, label = 'Signaler', className = '' }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-gray-400 underline-offset-4 transition hover:text-danger-500 hover:underline ${className}`}
+      // `gray-400` sur fond clair plafonne a 2,5:1, sous le seuil AA.
+      className={`inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-gray-500 underline-offset-4 transition hover:text-danger-500 hover:underline ${className}`}
     >
       <Flag size={12} aria-hidden />
       {label}

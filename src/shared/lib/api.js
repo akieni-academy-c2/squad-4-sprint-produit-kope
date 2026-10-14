@@ -50,13 +50,7 @@ async function parseResponse(res) {
   return payload;
 }
 
-/**
- * Délai au-delà duquel une requête est abandonnée.
- *
- * Sans lui, une connexion qui reste ouverte laisse le chargement correspondant
- * en suspens indéfiniment, et il n'existe aucun chemin d'annulation : changer de
- * filtre ne.stoppe pas la requête précédente.
- */
+/** Sans lui, une connexion ouverte laisse le chargement en suspens indéfiniment. */
 const REQUEST_TIMEOUT_MS = 15_000;
 
 export async function fetchApi(url, options = {}) {

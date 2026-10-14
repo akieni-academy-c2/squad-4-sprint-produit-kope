@@ -17,7 +17,6 @@ const MISSING_ITEMS = [
   { code: 'photos', label: 'Ajoutez au moins une photo de réalisation', isMissing: (p) => p.photoCount === 0 },
 ];
 
-/** US-04 */
 export async function getOwnProfile(userId) {
   const profile = await repository.findOwnProfile(userId);
   if (!profile) throw ApiError.notFound('Profil introuvable');
@@ -38,7 +37,7 @@ export async function getOwnProfile(userId) {
 
 const DUPLICATE_DISPLAY_NAME = 'Ce nom affiché est déjà pris, choisissez-en un autre';
 
-/** US-04 */
+
 export async function updateOwnProfile(userId, { displayName, tradeId, description, yearsExperience, whatsapp, zoneIds }) {
   if (!(await repository.tradeExists(tradeId)))
     throw ApiError.badRequest('Choisissez un métier valide', { tradeId: 'Choisissez un métier' });
@@ -58,16 +57,14 @@ export async function updateOwnProfile(userId, { displayName, tradeId, descripti
       );
       await repository.replaceZones(userId, zoneIds, tx);
     });
-  } catch (err) {
-    // 23505 sur l'index professionals_display_name_unique.
-    if (err.code === '23505')
+  } catch (err) {if (err.code === '23505')
       throw ApiError.conflict(DUPLICATE_DISPLAY_NAME, { displayName: DUPLICATE_DISPLAY_NAME });
     throw err;
   }
   return getOwnProfile(userId);
 }
 
-/** US-12 */
+
 export function setAvailability(userId, isAvailable) {
   return repository.setAvailability(userId, isAvailable);
 }

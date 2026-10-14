@@ -52,12 +52,8 @@ export function AuthProvider({ children }) {
   const hasRole = useCallback((role) => Boolean(user?.role && user.role === role), [user]);
 
   /**
-   * Vrai pour un professionnel et un administrateur.
-   *
-   * Ces deux rôles connaissent déjà la plateforme : la page « Comment ça
-   * marche » ne leur apporte rien, et devenir prestataire ne leur est plus
-   * possible. Un client, lui, garde les deux - il peut encore découvrir le
-   * service, et devenir prestataire est un choix qui lui revient.
+   * Ces deux rôles ne peuvent plus devenir prestataires. Un client garde
+   * les deux options.
    */
   const isServiceProvider = Boolean(
     user && (user.role === ROLES.PRO || user.role === ROLES.ADMIN),
@@ -71,7 +67,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Le Provider et son hook vivent ensemble : c'est le pattern React advocated.
+// Le Provider et son hook vivent ensemble : pattern React advocated.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuthContext() {
   const ctx = useContext(AuthContext);

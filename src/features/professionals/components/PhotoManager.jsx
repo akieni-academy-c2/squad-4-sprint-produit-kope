@@ -48,8 +48,7 @@ export function PhotoManager({ photos = [], onChange }) {
     setEditing(null);
   };
 
-  /** Contrôles côté client avant d'envoyer le fichier : le serveur les revalide. */
-  const checkFile = (file) => {
+   const checkFile = (file) => {
     if (!ALLOWED_MIME.includes(file.type)) return 'Format non autorisé : seulement JPG ou PNG.';
     if (file.size > MAX_FILE_SIZE_BYTES) return 'Fichier trop volumineux (max 5 Mo).';
     return null;

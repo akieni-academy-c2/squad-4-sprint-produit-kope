@@ -1,13 +1,6 @@
 import { cn } from '@/shared/utils';
 
-/**
- * Tuile de statistique, partagée par l'espace administrateur et le compte
- * client.
- *
- * Extraite de `AdminStats` pour que les deux espaces parlent la même langue
- * visuelle : mêmes rayons, même bordure `#e2e8e5`, même chiffre en
- * `text-3xl font-extrabold`. Une copie dans chaque espace finirait par diverger.
- */
+/** Partagée par l'espace administrateur et le compte client. */
 export function KpiCard({ label, value, hint, onClick, tone = 'default', icon = null, footer = null }) {
   const clickable = typeof onClick === 'function';
   const Wrapper = clickable ? 'button' : 'div';
@@ -46,9 +39,8 @@ const GROUP_TONES = {
   danger: 'border-danger-500 bg-danger-500',
   teal: 'border-teal-600 bg-teal-500',
   neutral: 'border-gray-600 bg-gray-500',
-  // Bandeau d'en-tête : teinté et non plein. Les tuiles posées dedans restent
-  // blanches, un aplat de marque les aurait transformées en simple texte sur
-  // fond coloré et perdu leur lecture en tuile.
+  // Bandeau d'en-tête : teinté et non plein. Un aplat de marque
+  // transformerait les tuiles blanches posées dedans en texte sur fond coloré.
   mint: 'border-mint-200 bg-mint-50',
 };
 

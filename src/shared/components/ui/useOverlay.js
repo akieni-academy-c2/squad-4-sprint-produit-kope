@@ -10,38 +10,14 @@ const FOCUSABLE = [
 ].join(',');
 
 /**
- * Comportement d'une surface superposée (Modal, Dialog, Sheet) :
- * touche Échap, blocage du scroll, piégeage du focus et restitution du focus
- * à l'élément déclencheur.
- *
- * ## Ce que ce hook ne fait plus, et pourquoi
- *
- * Il portait jusqu'ici l'animation : un état `show` basculé sur
- * `requestAnimationFrame` et un `setTimeout` de 300 ms qui démontrait le
- * portail à la fin. Deux problèmes.
- *
- * Le premier est que la durée d'une animation CSS **vit dans la classe** -
- * `transition-* duration-300` - tandis que le délai de démontage vit dans le
- * hook. Les deux chiffres sont écrits à deux endroits, à 60 lignes de distance,
- * et divergent au premier changement : la surface disparaît avant d'avoir fini
- * de partir, ou reste 300 ms dans le vide.
- *
- * Le second est qu'un `setTimeout` ne connaît pas l'interruption. Si
- * l'utilisateur rouvre la feuille pendant qu'elle se referme, l'ancien minuteur
- * la démonte 300 ms plus tard, en plein milieu de l'ouverture. `AnimatePresence`
- * fait le même travail en connaissant l'état réel : tant qu'un élément est dans
- * l'arbre, il reste.
- *
- * Le mouvement appartient donc à `AnimatePresence` et aux variantes de
- * `@/shared/motion` ; ce hook ne garde que le **comportement**.
+ * Aucune animation ici : durée dans la classe CSS, délai de démontage dans le
+ * hook, et les deux divergeaient. Le mouvement relève de `@/shared/motion`.
  */
 export function useOverlay({ open, onClose, dismissable = true }) {
   const panelRef = useRef(null);
-  // `onClose` est presque toujours une flèche recréée à chaque rendu du parent.
-  // Le garder en dépendance relançait l'effet à chaque rendu : le focus était
-  // rendu au déclencheur puis immédiatement repris par un requestAnimationFrame,
-  // en plein milieu d'une saisie. La ref lit la valeur courante sans jamais
-  // ré-abonner l'effet.
+  // `onClose` est recréé à chaque rendu du parent : le garder en dépendance
+  // relançait l'effet et le focus revenait au déclencheur en pleine saisie. La
+  // ref lit la valeur courante sans ré-abonner l'effet.
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;

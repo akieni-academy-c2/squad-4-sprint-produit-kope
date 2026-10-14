@@ -1,27 +1,9 @@
-/**
- * Compteur de tentatives partagé entre instances.
- *
- * La mémoire ne suffit pas en serverless : chaque conteneur a son propre
- * compteur, qui repart à zéro à chaque démarrage à froid. PostgreSQL donne un
- * compteur unique quel que soit le nombre d'instances, au prix d'une écriture
- * par tentative - négligeable pour des routes de connexion.
- *
- * `RATE_LIMIT_STORE=memory` revient au comportement local si la table n'est pas
- * encore migrée.
- */
+
 import { pool } from '../db/pool.js';
 
 const DEFAULT_WINDOW_MS = 15 * 60_000;
 
-/**
- * Consomme un jeton pour `key`.
- * Renvoie le nombre de tentatives consommées dans la fenêtre courante.
- *
- * `windowMs` est fourni par l'appelant : la fenêtre était figée à 15 minutes,
- * ce qui rendait toute configuration par route inopérante - l'en-tête
- * Retry-After annonçait la fenêtre demandée alors que le compteur suivait
- * celle du store.
- */
+
 export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db = pool) {
   const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
 

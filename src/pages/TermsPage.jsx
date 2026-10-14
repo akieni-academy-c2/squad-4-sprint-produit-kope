@@ -6,29 +6,9 @@ import { ROUTES, STICKY_TOP } from '@/shared/lib/constants.js';
 import { TERMS_SECTIONS, TERMS_VERSION } from '@/shared/content/terms.js';
 import { SUPPORT_EMAIL } from '@/shared/constants/support.js';
 
-/**
- * Conditions d'utilisation.
- *
- * ## La version est affichée, pas seulement liée
- *
- * Une case à cocher qui dit « j'accepte » sans dire **quoi** n'est pas un
- * consentement : deux ans plus tard, ni l'utilisateur ni l'exploitant ne
- * peuvent dire ce qui avait été lu. La version et sa date sont donc dans le
- * titre de la page, et le serveur enregistre celle qui a été acceptée.
- *
- * ## Un sommaire, parce que la page est longue
- *
- * Douze sections qu'on fait défiler sans savoir où on va. Le sommaire est collé
- * au bord haut de la colonne sur desktop : il est à côté de la lecture, pas
- * au-dessus d'elle. Sur mobile il tombe sous le titre, hors du chemin de
- * lecture.
- */
 export function TermsPage() {
   usePageTitle('Conditions d’utilisation - KOP');
 
-  // Un lien profond vers une section doit l'amener à l'écran : sans cela, le
-  // navigateur positionne la vue avant que la mise en page soit faite, et le
-  // curseur atterrit au milieu de la page.
   useEffect(() => {
     const id = window.location.hash.slice(1);
     if (!id) return;

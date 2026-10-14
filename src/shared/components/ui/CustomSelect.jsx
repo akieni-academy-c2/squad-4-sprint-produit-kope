@@ -234,8 +234,6 @@ export function CustomSelect({
           </span>
           <ChevronDown className={cn('h-4 w-4 shrink-0 text-gray-500 transition-transform', open && 'rotate-180')} />
         </button>
-        {/* Permet de remplacer un <select name> natif : le composant reste
-            lisible par un FormData à la soumission du formulaire. */}
         {name && <input type="hidden" name={name} value={value ?? ''} />}
       </div>
       {menu}

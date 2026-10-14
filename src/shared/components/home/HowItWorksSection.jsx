@@ -13,9 +13,7 @@ export function HowItWorksSection() {
         intro="Une fuite, un mur à repeindre, une idée à concrétiser ? Rencontrez les professionnels de votre quartier et échangez directement avec eux."
       />
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-        {/* La clé porte sur le Fragment : sans elle, React signale une liste
-            sans clés uniques (la clé placée sur Card ne compte pas). */}
-        {STEPS.map((s, index) => (
+         {STEPS.map((s, index) => (
           <Fragment key={s.n}>
             <Card className={`${s.tone} flex-1 aspect-4/4.5 bg-primary-600! p-2 border-0! shadow-none! flex flex-col justify-between`}>
               <div className='px-4'>

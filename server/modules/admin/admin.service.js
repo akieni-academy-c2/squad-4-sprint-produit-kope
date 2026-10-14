@@ -50,12 +50,8 @@ export async function setUserBlocked(actorId, id, blocked) {
 
   const updated = await repository.setUserBlocked(id, blocked);
   if (!updated) throw ApiError.notFound('Utilisateur introuvable');
-  // La session est conservée : `loadActiveUser` refusera chaque requête avec
-  // un 403 motivé, ce qui est plus clair pour l'utilisateur qu'une déconnexion.
   return updated;
 }
-
-/** Lève ou applique la suspension d'un compte. */
 export async function setUserSuspended(actorId, id, suspended) {
   if (Number(actorId) === Number(id)) throw ApiError.badRequest('Vous ne pouvez pas suspendre votre propre compte');
 
@@ -84,8 +80,6 @@ export async function createAdmin({ firstName, lastName, phone, password }) {
 export async function getStats() {
   const stats = await repository.countStats();
   const recent = await repository.listRecentProfessionals(5);
-  // `published` et `hidden` sont disjoints (la vue exclut les profils masqués) :
-  // le solde correspond aux profils incomplets.
   const incomplete = Math.max(0, stats.total - stats.published - stats.hidden);
   return {
     users: stats.users,
@@ -98,7 +92,6 @@ export async function getStats() {
     reviewsHidden: stats.reviewsHidden,
     ratingAverage: stats.ratingAverage,
     contacts: stats.contacts,
-    // File de modération, pour la vue d'ensemble.
     reportsPending: stats.reportsPending ?? 0,
     usersBlocked: stats.usersBlocked ?? 0,
     usersSuspended: stats.usersSuspended ?? 0,
@@ -106,26 +99,19 @@ export async function getStats() {
   };
 }
 
-/** profil masqué = absent des recherches. */
 export async function setProfessionalHidden(id, hidden) {
   const updated = await repository.setProfessionalHidden(id, hidden);
   if (!updated) throw ApiError.notFound('Profil introuvable');
   return { id, hidden };
 }
 
-/** avis masqué = non affiché et exclu des calculs. */
 export async function setReviewHidden(id, hidden) {
   const updated = await repository.setReviewHidden(id, hidden);
   if (!updated) throw ApiError.notFound('Avis introuvable');
   return { id, hidden };
 }
 
-/**
- * Fabrique des opérations d'un catalogue : les règles (doublon, clé étrangère
- * inconnue, ressource encore utilisée) sont identiques pour les 4 entités.
- *
- * `fkLabel` active la gestion de la clé étrangère optionnelle.
- */
+
 function makeCatalogService({ catalog, list, entity, duplicate, fkLabel, usedByProfessionals, usedByChildren }) {
   const translate = (err) => {
     if (err?.code === '23505') throw ApiError.conflict(duplicate);
@@ -142,8 +128,6 @@ function makeCatalogService({ catalog, list, entity, duplicate, fkLabel, usedByP
       }
     },
 
-    // Le contrôle « introuvable » reste hors du try : capturé par son propre
-    // catch, il remontait par accident via le re-throw final.
     async update(id, { name, fkId }) {
       let updated;
       try {

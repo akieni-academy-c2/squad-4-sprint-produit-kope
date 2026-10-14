@@ -1,24 +1,8 @@
 import { useSyncExternalStore } from 'react';
 
 /**
- * Activation de la démo par variable d'environnement.
- *
- * ## Sens par défaut
- *
- * Le mode démo est **opt-in** : `VITE_USE_MOCKS=true` l'active, tout le reste
- * le laisse éteint. Il était jusqu'ici inversé - `VITE_USE_MOCKS=false` le
- * désactivait, et son absence l'activait - ce qui revenait à livrer en
- * production un sélecteur de rôle « Administrateur » et une identité factice
- * persistée dans le localStorage, sur toute personne qui n'avait pas posé la
- * variable. Une base injoignable suffisait ensuite à faire afficher des données
- * de démonstration à l'ensemble des visiteurs comme si tout allait bien.
- *
- * Le développement local garde le mode démo sans rien déclarer : `import.meta.env.DEV`
- * est vrai dans `vite dev` et faux dans toute construction de production.
- *
- * La comparaison ignore la casse et les espaces : un .env écrit à la main
- * contient souvent « true » encadré, et une variable apparemment ignorée est
- * plus difficile à diagnostiquer qu'une activation franche.
+ * Mode démo opt-in : inversé, il livrait en production un sélecteur de rôle
+ * « Administrateur » dès que la base était injoignable.
  */
 const mocksAllowed =
   import.meta.env?.DEV === true ||

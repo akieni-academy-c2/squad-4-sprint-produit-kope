@@ -21,9 +21,7 @@ export function FormField({
   children,
   required,
   counter,
-  /** État de saisie renvoyé par `useFieldStatus` : { status, missing, total }. */
   liveStatus,
-  /** Règles de mot de passe annotées par `checkPassword`. */
   passwordRules,
   ...rest
 }) {
@@ -32,7 +30,6 @@ export function FormField({
   const helpId = help ? `${id}-help` : undefined;
   const describedBy = [errorId, helpId].filter(Boolean).join(' ') || undefined;
 
-  // Une valeur saisie et valide colore l'input en vert ; l'erreur reste prioritaire.
   const valid = !error && liveStatus?.status === FIELD_STATUS.OK;
 
   return (
@@ -51,10 +48,6 @@ export function FormField({
         <div className="mt-0.5 text-right text-[11px] text-gray-400">{counter}</div>
       )}
       {help && <p id={helpId} className={FIELD_HELP}>{help}</p>}
-      {/* Le mot de passe porte son propre retour : pas de ligne d'état en plus.
-          `hint` n'est transmis que s'il n'y a pas de `help` : sinon le même
-          texte serait rendu deux fois sur un champ vide, une fois ici et une
-          fois dans `FieldStatusLine`. */}
       {passwordRules ? (
         <PasswordRules rules={passwordRules} />
       ) : (

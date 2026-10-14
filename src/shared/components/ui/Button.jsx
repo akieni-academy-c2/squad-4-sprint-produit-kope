@@ -22,6 +22,12 @@ const VARIANTS = {
     'bg-mint-50 text-primary-700 border border-mint-200 hover:bg-mint-100 disabled:opacity-60',
   dark:
     'bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:text-white/80',
+  // Blanc sur aplat vert : le bouton d'appel sur la carte de contact. La
+  // variante existe parce qu'une surcharge `className="bg-white text-primary-700"`
+  // n'est pas fiable - voir `cn()` - et qu'un fond blanc avec un texte resté
+  // blanc rendait le bouton invisible.
+  inverse:
+    'bg-white text-primary-700 border border-white hover:bg-white/90 disabled:bg-white/60 disabled:text-primary-400',
 };
 
 const SIZES = {
@@ -37,34 +43,10 @@ const SIZES = {
 };
 
 /**
- * Enfoncement sous le doigt.
- *
- * ## Pourquoi du CSS et non un ressort de Framer Motion
- *
- * C'est la question à se poser, et la réponse est « du CSS », pour une raison
- * concrète : **au relâchement, le doigt est déjà parti.** La seule chose qu'un
- * ressort apporte de plus est de conserver la vitesse courante quand
- * l'animation est interrompue - ce qui compte pour une feuille qu'on rouvre à
- * mi-parcours, et pas pour un appui. Ici, personne ne voit la vitesse de retour.
- *
- * En échange, un ressort coûte à chaque bouton de l'application : un type
- * `motion` à construire, une instance à abonner à la boucle d'animation, une
- * props `whileTap` à propager à travers `as={Link}`. Pour 30 ms de retour que
- * `:active` rend gratuitement, sur le compositeur, en JavaScript zéro.
- *
- * Le ressort est réservé à ce qui peut **vraiment** être interrompu et repris -
- * voir `src/shared/motion/timing.js`.
- *
- * ## Les valeurs
- *
- * `0.97` : en dessous de `0.95` le bouton s'enfonce au lieu de s'appuyer ; au
- * dessus de `0.98`, le retour est plus court que l'appui et ça tremble.
- *
- * `100 ms` à l'aller, `150 ms` au retour - un ressort appliqué à la main ferait
- * exactement la même chose, sans la dépendance.
- *
- * `active:` disparaît sur un bouton désactivé grâce à `disabled:active:scale-100`
- * : sinon l'interface dirait « tu peux appuyer » le temps du geste.
+ * Enfoncement en CSS et non en ressort Motion : au relâchement, le doigt est
+ * déjà parti, personne ne voit la vitesse de retour. Ressort réservé à ce qui
+ * peut être interrompu (`motion/timing.js`).
+ * `0.97` : sous `0.95` il s'enfonce au lieu de s'appuyer ; au-dessus de `0.98` ça tremble.
  */
 const PRESS =
   'transition-[color,background-color,border-color,box-shadow,transform] duration-100 ease-out active:scale-[0.97] active:duration-150 disabled:active:scale-100';
@@ -98,12 +80,6 @@ export function Button({
       {...rest}
     >
       {loading && <Spinner size="xs" className={children ? '' : 'mx-auto'} />}
-      {/* L'étiquette est masquée visuellement pendant le chargement pour ne pas
-          faire sauter la largeur du bouton. `aria-hidden` est indispensable :
-          sans lui, un lecteur d'écran annonce le libellé deux fois - une fois
-          pour la copie visible en cours de chargement, une fois pour le titre
-          accessible du bouton. `inert` empêche aussi le focus ou la sélection
-          d'atteindre ce texte fantôme. */}
       {loading ? (
         <span className="opacity-0 absolute pointer-events-none" aria-hidden="true" inert="">
           {children}

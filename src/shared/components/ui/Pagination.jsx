@@ -1,19 +1,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
-/**
- * Habillage de la barre de pagination.
- *
- * Il fait partie du composant, et n'est pas une classe à passer à la main.
- *
- * Extrapolé, l'oubli est silencieux : la barre s'affiche sans rien autour et
- * flotte au milieu du contenu, sur le fond de la page, à côté de cartes qui,
- * elles, ont une bordure. Cinq listes sur onze étaient dans ce cas.
- *
- * `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes
- * voisines. À `gray-300`, la pagination dessinait une boîte plus sombre que
- * tout ce qu'elle contrôle.
- */
+/** `border-gray-200` et non `gray-300` : la bordure doit être celle des cartes voisines. */
 const BAR = 'mt-4 w-full rounded-md border border-gray-200 bg-white px-4 py-2';
 
 function getButtons(current, totalPages) {

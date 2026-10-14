@@ -3,22 +3,11 @@ import { env } from '../config/env.js';
 const PG_ERRORS = {
   '23505': [409, 'Cette valeur existe déjà'],
   '23503': [400, 'Référence invalide (métier, zone…)'],
-  '23514': [400, 'Données invalides'],
-  // Valeur hors plage pour le type : un identifiant trop grand pour un
-  // smallint, une longueur de chaîne dépassée. Donnée invalide, pas panne.
-  '22003': [400, 'Valeur hors limites'],
-  // Type incompatible à la conversion : ex. (sess->'user'->>'id')::bigint
-  // sur une session au format inattendu.
+  '23514': [400, 'Données invalides'],'22003': [400, 'Valeur hors limites'],
   '22P02': [400, 'Format de donnée invalide'],
   '22001': [400, 'Valeur trop longue'],
 };
-/**
- * Erreurs de forme de requête émises par busboy, via Multer.
- *
- * Toutes sont des fautes du client : sans ce mapping, `err.status` vaut
- * `undefined`, le statut retombe sur 500, et un formulaire mal rempli se
- *Signale comme une panne du serveur.
- */
+
 const UPLOAD_ERRORS = {
   LIMIT_FILE_SIZE: () =>
     `La photo dépasse ${Math.round(env.MAX_FILE_SIZE_BYTES / (1024 * 1024))} Mo`,
@@ -58,10 +47,6 @@ export function errorHandler(err, req, res, next) {
   } else if (PG_ERRORS[err.code]) [status, message] = PG_ERRORS[err.code];
 
   if (status >= 500) {
-    // Jamais l'erreur brute : l'objet `pg` transporte le détail de la contrainte
-    // violée, qui contient la valeur refusée. C'est une donnée personnelle qui
-    // part dans les journaux, et une invitation à l'injection de marqueurs
-    // (`${jndi:…}`) si la collecte les transmet à un moteur de logs.
     console.error('[error]', {
       code: err.code,
       constraint: err.constraint,

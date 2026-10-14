@@ -11,7 +11,6 @@ export async function create({ professionalId, reporterId, reason, message, targ
   return rows[0];
 }
 
-/** Rôle du compte visé, au moment où le signalement est déposé. */
 export async function targetRoleOf(userId, db = pool) {
   const { rows } = await db.query('SELECT role FROM users WHERE id = $1', [userId]);
   return rows[0]?.role ?? null;
@@ -25,15 +24,7 @@ export async function exists(reporterId, professionalId, db = pool) {
   return rowCount > 0;
 }
 
-/**
- * Nombre de signalements reçus, tous statuts confondus, **en ne comptant que
- * ceux qui peuvent déclencher une sanction automatique**.
- *
- * Voir `shouldAutoSanction` dans le service : les signalements déposés par un
- * professionnel sont recevables mais hors comptage, sinon un petit groupe de
- * professionnels coordonnés pourrait faire suspendre un concurrent en
- * atteignant le seuil.
- */
+
 export async function countSanctionable(professionalId, db = pool) {
   const { rows } = await db.query(
     `SELECT COUNT(*)::int AS count
@@ -45,7 +36,6 @@ export async function countSanctionable(professionalId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/** Liste les signalements regroupés par professionnel. */
 export async function list({ limit, offset, status, q }, db = pool) {
   const conditions = [];
   const values = [];
@@ -115,8 +105,6 @@ export async function list({ limit, offset, status, q }, db = pool) {
   );
   return rows;
 }
-
-/** Compte des professionnels signalés (tous statuts confondus). */
 export async function countGrouped({ status, q }, db = pool) {
   const conditions = [];
   const values = [];
@@ -144,20 +132,7 @@ export async function countGrouped({ status, q }, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/**
- * Signalements déposés par un utilisateur, avec le nom du professionnel.
- *
- * Séparée de `list` : celle-ci est la vue administrateur, groupée par
- * professionnel et motivée par la modération. Ici le client veut savoir ce que
- * *lui* a déposé et sur qui, pour pouvoir le retirer.
- */
-/**
- * Tris de « Mes signalements ».
- *
- * Littéraux choisis par correspondance, jamais interpolés : la liste est
- * indexée sur `ORDER BY`, un choix par `ORDER BY ${tri}` ouvrirait une
- * injection sur une liste paginée.
- */
+
 const ORDER_BY = {
   recent: 'r.created_at DESC, r.id DESC',
   oldest: 'r.created_at ASC, r.id ASC',
@@ -173,9 +148,6 @@ export async function listByReporter(reporterId, { limit, offset, status, q, sor
   }
   if (q) {
     values.push(`%${q}%`);
-    // Le nom affiché n'existe que pour un professionnel. Pour un client
-    // ciblé, on retombe sur son nom : sans cela, une recherche par nom ne
-    // trouverait jamais un signalement déposé contre un client.
     conditions.push(
       `(COALESCE(p.display_name, cu.first_name || ' ' || cu.last_name) ILIKE $${values.length} OR r.message ILIKE $${values.length})`,
     );
@@ -216,13 +188,7 @@ export async function countByReporter(reporterId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/**
- * Suppression par l'auteur du signalement, uniquement s'il est en attente.
- *
- * La condition `status = 'pending'` est portée par le `WHERE` : un signalement
- * déjà traité ne produit aucune ligne supprimée, l'appelant reçoit donc `null`
- * et répond 404, exactement comme un signalement qui n'est pas le sien.
- */
+
 export async function deleteByReporter(id, reporterId, db = pool) {
   const { rows } = await db.query(
     `DELETE FROM account_reports
@@ -245,11 +211,6 @@ export async function setStatus(id, status, db = pool) {
   return rows[0] ?? null;
 }
 
-// ---------- Signalements d'avis ----------
-//
-// Table et flux séparés de ceux des comptes : la cible est un contenu, les
-// effets sont « retirer l'avis » et non « suspendre le compte ». Les confondre
-// ferait porter à l'un les compteurs et les seuils de l'autre.
 
 export async function createReviewReport({ reviewId, reporterId, reason, message }, db = pool) {
   const { rows } = await db.query(
@@ -269,13 +230,7 @@ export async function reviewReportExists(reviewId, reporterId, db = pool) {
   return rowCount > 0;
 }
 
-/**
- * Avis reçu par ce professionnel, avec les éléments du signalement.
- *
- * La jointure `r.professional_id = $1` est la garantie : elle ne renvoie rien
- * si l'avis n'a pas été laissé sur la fiche du demandeur. Le contrôle est donc
- * porté par la requête, pas seulement par une comparaison en JavaScript.
- */
+
 export async function findReceivedReview(reviewId, professionalId, db = pool) {
   const { rows } = await db.query(
     `SELECT r.id, r.rating, r.comment, r.client_id AS "clientId",
@@ -294,7 +249,6 @@ export async function findReceivedReview(reviewId, professionalId, db = pool) {
   return rows[0] ?? null;
 }
 
-/** File de modération des avis, avec l'auteur du signalement. */
 export async function listReviewReports({ limit, offset, status } = {}, db = pool) {
   const conditions = [];
   const values = [];

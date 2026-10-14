@@ -23,7 +23,6 @@ export function getFullName(user) {
   );
 }
 
-/** « 12 an(s) » - chaîne vide quand l'expérience n'est pas renseignée. */
 export function formatYearsExperience(years) {
   if (years == null || years === '') return '';
   return `${years} an(s)`;

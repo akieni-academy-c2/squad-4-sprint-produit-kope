@@ -2,24 +2,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react';
 
 /**
- * Profondeur liée au défilement.
- *
- * Le défilement est le seul mouvement que l'utilisateur pilote : il n'a pas à
- * être masqué. Trois usages, tous informatifs :
- *
- *   - le texte remonte plus vite que la page - repère de profondeur ;
- *   - le visuel s'élève et grandit de 6 %, rapport de taille d'une perspective ;
- *   - la barre du haut, seule information que rien d'autre ne porte.
- *
- * Aucun fondu à l'apparition : le contenu sous la ligne de flottaison est
- * voulu, le faire apparaître en plus retarde sa lecture.
- *
- * `useReducedMotion` coupe le parallaxe. `MotionConfig` neutralise les
- * animations d'entrée, mais un parallaxe est un suivi continu de la position de
- * défilement, pas une transition - la configuration n'a rien à en dire.
- *
- * `offset` mesure la course sur la section : sans lui, la barre avancerait alors
- * que la section est sortie de l'écran.
+ * `useReducedMotion` coupe le parallaxe : `MotionConfig` ne neutralise que les
+ * animations d'entrée. `offset` mesure la course sur la section.
  */
 export function ScrollDepth({ text, visual, className }) {
   const target = useRef(null);

@@ -17,12 +17,6 @@ import { User } from 'lucide-react';
 const DIALOG_LABEL = AUTH_MODAL_LABELS;
 const DEFAULT_DIALOG_LABEL = AUTH_MODAL_DEFAULT_LABEL;
 
-/**
- * Le panneau de gauche accompagne le formulaire affiché : un visiteur qui
- * s'inscrit comme particulier et un professionnel qui se présente ne doivent
- * pas lire la même promesse. Seul le visuel et le texte changent, la mise en
- * page reste celle partagée par toutes les modales.
- */
 const SIDE_PANEL = {
   'register-pro': {
     image: form,

@@ -11,7 +11,6 @@ import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
 import { ROUTES } from '@/shared/lib/constants.js';
 import { cn } from '@/shared/utils';
 
-/** Au-delà de ce délai, l'attente est réelle et mérite un squelette. */
 const SKELETON_DELAY_MS = 200;
 
 export function SearchFilters({ initial = {}, variant = "search", className, searching = false, onApply }) {
@@ -85,10 +84,6 @@ export function SearchFilters({ initial = {}, variant = "search", className, sea
           <h2 className="text-sm font-bold text-gray-900">Recherche</h2>
         </div>
 
-        {/* La carte reste en place pendant le chargement : seuls les champs
-            se remplissent. Un retour anticipé affichait un bloc de squelettes
-            sans bordure, donc la colonne disparaissait puis réapparaissait -
-            l'inverse du panneau d'affinage, qui reste visible en permanence. */}
         <div className="space-y-4 p-2" aria-busy={showSkeleton || undefined}>
           {showSkeleton ? (
             <>

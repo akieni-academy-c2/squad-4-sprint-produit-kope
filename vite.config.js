@@ -22,14 +22,7 @@ const person = (author) => ({
   ...(author.sameAs?.length ? { sameAs: author.sameAs } : {}),
 })
 
-/**
- * Crédits injectés dans index.html.
- *
- * Aucun de ces noms n'est rendu dans l'interface. Ils servent aux moteurs de
- * recherche et aux moteurs de réponse IA, qui ont besoin d'un auteur nommé et
- * de liens `sameAs` vers des profils existants pour rattacher le site à une
- * personne réelle plutôt qu'à une entité anonyme.
- */
+
 function creditsJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -64,18 +57,7 @@ function creditsJsonLd() {
   }
 }
 
-/**
- * Sitemap.xml, généré au build.
- *
- * Un fichier écrit à la main dans public/ ne peut pas contenir le domaine de
- * production : il resterait sur un `localhost` en développement et sur un autre
- * domaine en ligne. Ici il est produit à partir de SITE_URL, donc toujours
- * cohérent avec le canonical.
- *
- * Seules les pages stables sont listées. Les fiches `/professionals/:id` ont
- * un contenu variable : les déclarer ici ferait soumettre des URL qui
- * répondent 404 tant qu'aucun professionnel n'existe sous cet identifiant.
- */
+
 const SITEMAP_PATHS = [
   { loc: '/', priority: '1.0', changefreq: 'weekly' },
   { loc: '/search', priority: '0.9', changefreq: 'daily' },
@@ -106,9 +88,6 @@ function sitemap() {
           `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
       })
 
-      // robots.txt exige une URL absolue : une racine seule est ignorée. Le
-      // fichier de public/ reste la référence en développement, où SITE_URL
-      // n'est pas défini.
       this.emitFile({
         type: 'asset',
         fileName: 'robots.txt',
@@ -123,7 +102,6 @@ function sitemap() {
 }
 
 
-/** Injecte les crédits et les URL absolues dans le <head>. */
 function headTags() {
   return {
     name: 'kop-head-tags',
@@ -146,10 +124,6 @@ function headTags() {
         `    </script>`,
       ].join('\n')
 
-      // Les versions absolues remplacent les balises relatives d'index.html.
-      // Enchaîner les deux produirait deux <meta property="og:image"> : le
-      // premier lu l'emporte, et une URL relative n'est pas résolue par Twitter
-      // ni Facebook.
       const cleaned = SITE_URL
         ? html
             .replace(/^[ \t]*<meta name="twitter:image"[^>]*>\r?\n/gm, '')
@@ -163,8 +137,6 @@ function headTags() {
   }
 }
 
-
-// https://vite.dev/config/
 
 export default defineConfig({
   plugins: [

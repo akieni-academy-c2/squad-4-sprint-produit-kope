@@ -9,13 +9,6 @@ import * as controller from './photos.controller.js';
 
 const router = Router();
 
-/**
- * Un ajout de photo est la requête la plus chère de l'API : Multer lit 5 Mo en
- * mémoire, sharp décode et ré-encode deux fois. Sans plafond, un compte
- * professionnel gratuit peut sature les workers libvips et la facturation
- * Cloudinary en boucle. La limite est par utilisateur, pas par IP : derrière
- * une box, une famille entière n'a pas à se partager le quota.
- */
 const photoWriteLimit = rateLimit({
   key: 'photos-write',
   max: 30,
@@ -23,7 +16,6 @@ const photoWriteLimit = rateLimit({
   byUser: true,
 });
 
-// US-05
 router.post(
   '/me/photos',
   requireRole('professional'),
@@ -33,7 +25,7 @@ router.post(
   controller.add,
 );
 
-// Modification du titre
+
 router.put(
   '/me/photos/:id',
   requireRole('professional'),

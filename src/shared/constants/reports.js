@@ -9,12 +9,9 @@ export const REPORT_REASON_OPTIONS = [
 ];
 
 /**
- * Motifs de signalement d'un avis.
- *
- * Listes distinctes de celles d'un profil : « fausse identité » et « avis
- * différé » ne visent pas un contenu, et « avis trompeur » n'a pas d'équivalent
- * pour une fiche. Réutiliser les mêmes options obligerait l'utilisateur à
- * choisir « faux profil » pour un avis, qui n'a pas de profil.
+ * Listes distinctes de celles d'un profil : « avis différé » ne vise pas un contenu et
+ * « avis trompeur » n'a pas d'équivalent pour une fiche. Réutiliser les mêmes options
+ * obligerait à choisir « faux profil » pour un avis.
  */
 export const REVIEW_REPORT_REASON_OPTIONS = [
   { value: 'abusive', label: 'Avis insultant ou injurieux' },

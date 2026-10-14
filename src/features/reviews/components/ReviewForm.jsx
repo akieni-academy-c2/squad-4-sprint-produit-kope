@@ -9,13 +9,6 @@ import { Card } from '@/shared/components/ui/Card.jsx';
 
 const MAX = 300;
 
-/**
- * Formulaire d'avis, en dépôt ou en correction.
- *
- * `review` bascule le mode : le formulaire est le même, l'appel derrière change.
- * Un second formulaire aurait dupliqué la validation de la note et le compteur
- * de caractères, qui auraient divergé du premier au premier ajustement.
- */
 export function ReviewForm({ professionalId, review = null, onSuccess }) {
   const { toast } = useNotification();
   const isEdit = Boolean(review);

@@ -43,19 +43,6 @@ export function NotificationProvider({ children }) {
         aria-atomic="true"
         className="pointer-events-none fixed inset-x-0 bottom-4 z-toast flex flex-col items-center gap-2 px-4 sm:right-4 sm:items-end sm:px-0"
       >
-        {/*
-          `AnimatePresence` plutôt qu'une animation CSS.
-
-          L'animation d'avant, `animate-[slideUp_.2s_ease-out]`, ne se jouait
-          qu'à l'entrée : à la fermeture, le message disparaissait sur-le-champ,
-          en coupant net. Et sa durée était écrite dans la classe, hors de
-          l'échelle du projet.
-
-          Le message est le seul élément de l'interface qui **arrive par-dessus
-          le contenu** sans le pousser : il ne peut donc pas entrer comme une
-          tuile, mais comme un objet qu'on pose. D'où l'échelle à 0.98 et le
-          ressort - et une vraie animation de sortie.
-        */}
         <AnimatePresence initial={false}>
           {toasts.map((t) => (
             <motion.div
@@ -91,7 +78,7 @@ export function NotificationProvider({ children }) {
   );
 }
 
-// Le Provider et son hook vivent ensemble : c'est le pattern React advocated.
+// Le Provider et son hook vivent ensemble : pattern React advocated.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useNotification() {
   const ctx = useContext(NotificationContext);

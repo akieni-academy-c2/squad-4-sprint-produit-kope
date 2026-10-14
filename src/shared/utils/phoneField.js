@@ -1,6 +1,4 @@
 /**
- * Utilitaires du champ téléphone à indicatif fixe.
- *
  * Isolé de PhoneInput.jsx : la règle de fast-refresh impose qu'un fichier
  * de composant n'exporte que des composants.
  */

@@ -38,7 +38,12 @@ export function ClientDashboardPage() {
       filteredSections={WITH_FILTERS}
       navAriaLabel="Navigation du profil"
       sidebar={({ items, active, onChange }) => (
-        <ClientDashboardSidebar items={items} active={active} onChange={onChange} />
+        <ClientDashboardSidebar
+          items={items}
+          active={active}
+          onChange={onChange}
+          userId={user?.id}
+        />
       )}
       renderSection={(active, rightContainer, navigate) => (
         <>

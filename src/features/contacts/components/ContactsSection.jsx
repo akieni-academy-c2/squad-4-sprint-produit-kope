@@ -94,26 +94,13 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             <Badge variant={contact.outgoing ? 'info' : 'primary'} size="sm">
               {contact.outgoing ? 'Contacté' : 'Vous a contacté'}
             </Badge>
-            {/* « Nouveau » signalait un message entrant jamais ouvert. C'est un
-                état de lecture, pas un statut de la relation : ce qui compte
-                sur la carte, c'est l'état du signalement. */}
+            
             {reported && (
               <Badge variant="danger" size="sm">
                 Signalé
               </Badge>
             )}
 
-            {/* Signalement possible pour tout correspondant, client comme
-                professionnel : le serveur refuse toute cible sans conversation
-                réelle, et un signalement de professionnel ne compte pas au
-                seuil de blocage automatique - il est traité par un
-                administrateur, jamais suspendu par un compteur.
-
-                À côté de « Contacté », pas avec « Appeler ». Le signalement est
-                un geste de recours sur la relation, il appartient au même
-                registre que le badge qui la décrit. Sur la ligne des canaux, il
-                se lisait comme un troisième moyen de joindre - exactement ce que
-                la ternaire du pied cherche à éviter. */}
             {!reported && (
               <ReportTrigger onClick={() => onReport(contact)} label="Signaler" />
             )}
@@ -127,10 +114,6 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             {formatDateFr(contact.createdAt)}
           </span>
 
-          {/* Un seul bouton, jamais les deux : la carte propose de reprendre contact
-              par le dernier canal utilisé. Après un appel, c'est Appeler ;
-              sinon c'est WhatsApp, le canal principal du site. Proposer les
-              deux à la fois transforme une fiche en liste de choix. */}
           {contact.phone &&
             (contact.channel === 'call' ? (
               <Button

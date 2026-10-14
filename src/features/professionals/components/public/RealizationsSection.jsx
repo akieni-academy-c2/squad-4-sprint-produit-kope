@@ -3,7 +3,7 @@ import { Calendar } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Card } from '@/shared/components/ui/Card.jsx';
 import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
-import { formatDateFr, truncate } from '@/shared/utils';
+import { formatDateFrShort, truncate } from '@/shared/utils';
 import { ROUTES } from '@/shared/lib/constants.js';
 
 const VISIBLE_PHOTOS = 6;
@@ -12,10 +12,6 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
   return (
     <section className="space-y-6">
       <section className="space-y-4">
-        {/* Fil d'Ariane réservé au desktop : sur mobile il est rendu dans la
-            card profil (PublicProfileMobileIntro), où il décrit la page
-            courante. Ici il arriverait sous la card, détaché de ce qu'il
-            désigne. */}
         <nav aria-label="Fil d'Ariane" className="hidden text-sm text-gray-500 pb-4 pt-2 border-b border-gray-200 lg:block">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
@@ -42,7 +38,7 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
         ) : (
           <>
             <ul className="space-y-4">
-              {photos.map((photo, index) => {
+              {photos.slice(0, VISIBLE_PHOTOS).map((photo, index) => {
                 const title = photo.title || photo.caption;
                 const captionLine1 = `${tradeName} - ${title || 'Réalisation'}`;
                 const captionLine2 = [localisation, photo.description].filter(Boolean).join(' • ');
@@ -51,7 +47,6 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
                     <button
                       type="button"
                       onClick={() => onOpenPhoto(index)}
-                      aria-label={`Ouvrir la photo ${index + 1}`}
                       className="group block w-full overflow-hidden rounded-sm border border-gray-200 bg-white text-left transition hover:border-primary-200 hover:shadow-sm focus-ring"
                     >
                       <ImageWithSkeleton
@@ -67,9 +62,9 @@ export function RealizationsSection({ photos, displayName, tradeName, localisati
                           <p className="text-sm leading-6 text-gray-600">{truncate(captionLine2, 180)}</p>
                         )}
                         {photo.createdAt && (
-                          <p className="flex items-center gap-1.5 pt-1 text-xs text-gray-400">
+                          <p className="flex items-center gap-1.5 pt-1 text-xs text-gray-500">
                             <Calendar size={13} className="shrink-0" aria-hidden />
-                            Publié le {formatDateFr(photo.createdAt)}
+                            Publié le {formatDateFrShort(photo.createdAt)}
                           </p>
                         )}
                       </div>

@@ -4,17 +4,8 @@ import { cn } from '@/shared/utils';
 import { Sheet } from './Sheet.jsx';
 
 /**
- * La barre ne dépasse jamais cinq cellules, bouton « Menu » compris.
- *
- * Cinq destinations quand la liste tient exactement dedans - c'est le compte
- * client, le plus large ensemble de sections. Au-delà, une cellule est prise par
- * le « Menu » et les destinations visibles passent à quatre : compter le Menu
- * à part donnerait six cellules, une de trop, et sur un mobile de 360 px chaque
- * icône seFIND à ~60 px au lieu de ~72.
- *
- * Cinq, et non quatre dans le cas courant : à quatre, le profil du client
- * disparaissait derrière un « Menu », un onglet accessible en un geste de plus
- * que tous les autres.
+ * Plafond de cinq cellules, bouton « Menu » compris : à six, une icône se ferait
+ * écraser sur un mobile de 360 px.
  */
 const MAX_CELLS = 5;
 
@@ -45,10 +36,10 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
             <li key={id} className="min-w-0 flex-1">
               <button
                 type="button"
-                // Ce sont des boutons de navigation, pas des onglets ARIA :
-                // `aria-current` est le signal correct (pas de tabpanel ici).
-                // Une entrée `isAction` ouvre une fenêtre : la page n'a pas
-                // changé de section, l'annoncer comme active serait faux.
+                // Ce sont des boutons de navigation, pas des onglets ARIA : `aria-current`
+                // est le signal correct, il n'y a pas de tabpanel ici. Une
+                // entrée `isAction` ouvre une fenêtre : la page n'a pas changé
+                // de section, l'annoncer comme active serait faux.
                 aria-current={!isAction && active === id ? 'page' : undefined}
                 onClick={() => onChange(id)}
                 className={cn(

@@ -169,9 +169,7 @@ export function MyReportsSection({ rightContainer = null }) {
                       />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-gray-900">{report.professionalName}</p>
-                        {/* Nom + métier : c'est ce couple qui identifie la fiche
-                            signalée, le nom seul revient trop souvent. */}
-                        <p className="truncate text-xs text-gray-500">
+                         <p className="truncate text-xs text-gray-500">
                           {report.professionalTrade
                             ? `${report.professionalTrade} · ${reportReasonLabel(report.reason)}`
                             : reportReasonLabel(report.reason)}

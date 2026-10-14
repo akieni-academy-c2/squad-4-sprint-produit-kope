@@ -59,15 +59,6 @@ const clientName = (review) =>
   fullNameInitials(review.client?.firstName, review.client?.lastName) ||
   'Client';
 
-/**
- * Un bloc titré d'avis : état de chargement, d'erreur, vide ou liste, puis sa
- * propre pagination.
- *
- * Le composant, et non la section, parce que « Tous » affiche deux blocs
- * côte à côte. Chaque moitié a ses états - l'une peut être vide pendant que
- * l'autre est pleine - et les écrire deux fois les ferait diverger au premier
- * ajustement.
- */
 function ReviewBlock({
   title,
   loading,
@@ -110,35 +101,17 @@ function ReviewBlock({
   );
 }
 
-// « Tous » n'est pas un simple confort : le professionnel cherche le plus
-// souvent à voir *ce qu'il a reçu* ou *ce qu'il a donné*, mais il vérifie aussi
-// l'ensemble. Sans cette option, retrouver le total demande de choisir une
-// moitié au hasard.
 const ORIGIN_OPTIONS = [
   { value: 'all', label: 'Tous les avis' },
   { value: 'recus', label: 'Avis reçus' },
   { value: 'donnes', label: 'Avis donnés' },
 ];
 
-// Page assez courte pour que la liste reste lisible sans défilement interminable,
-// assez longue pour ne pas faire sautiller la pagination sur un écran de bureau.
 const PAGE_SIZE = 10;
 
-// Plafond de la portion d'avis donnés chargée pour la vue « Tous ». La fusion
-// se fait dans le navigateur, donc il faut les deux ensembles complets.
 const MERGE_LIMIT = 100;
 
-/**
- * Onglet « Mes avis » de l'espace professionnel.
- *
- * Deux ensembles, parce qu'un professionnel est deux rôles sur la plateforme :
- * il reçoit des avis sur sa fiche, et il en dépose sur celle des autres. Les
- * premiers ne se gèrent pas - il les consulte et les conteste - les seconds
- * sont les siens, donc modifiables, masquables et supprimables.
- *
- * Les deux listes partagent `ReviewCard` avec le compte client : même carte,
- * mêmes gestes, même design.
- */
+
 export function ProReviewsSection({ professionalId, rightContainer = null }) {
   const { toast } = useNotification();
 
@@ -153,20 +126,12 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
   const [editingId, setEditingId] = useState(null);
   const [pendingId, setPendingId] = useState(null);
 
-  // `error` est indispensable : sans lui, un échec réseau affichait « Aucun
-  // avis pour le moment », faisant croire que le professionnel n'a aucun avis
-  // alors que la liste n'a simplement pas pu être chargée.
   const received = useAsyncData(async () => {
     if (!professionalId) return null;
     return listReviews(professionalId, { pageSize: FETCH_LIMIT });
   }, [professionalId]);
 
-  // « Tous » a besoin des deux ensembles **complets** pour les fusionner, donc
-  // d'une requête qui ne pagine pas côté serveur : sinon la page 1 du mélange
-  // ne contiendrait que les avis reçus, et les avis donnés n'arriveraient
-  // qu'en deuxième page. « Avis donnés » seul garde la pagination serveur, qui
-  // sait appliquer les filtres.
-  const given = useAsyncData(
+   const given = useAsyncData(
     () =>
       getMyReviews({
         ...(origin === 'donnes' ? { page, pageSize: PAGE_SIZE } : { pageSize: MERGE_LIMIT }),
@@ -186,23 +151,17 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
     setOrigin('all');
   };
 
-  // Changer un filtre ramène en première page : rester sur la page 3 d'un
-  // résultat filtré affiche un vide alors que des avis existent.
-  const changeFilter = (setter) => (value) => {
+   const changeFilter = (setter) => (value) => {
     setter(value);
     setPage(1);
   };
 
   const receivedItems = useMemo(() => received.data?.items ?? [], [received.data]);
-  // Le dépassement se voit dans le nombre renvoyé, pas dans le champ `total` :
-  // `total` est le compte réel, il peut dépasser sans que la page soit pleine.
-  const truncated = receivedItems.length >= FETCH_LIMIT;
+   const truncated = receivedItems.length >= FETCH_LIMIT;
 
   const givenItems = useMemo(() => given.data?.items ?? [], [given.data]);
   const givenTotal = given.data?.total ?? 0;
 
-  // « Avis reçus » passe par l'endpoint public, sans filtres : le filtrage se
-  // fait sur la portion chargée, puis on pagine cette portion.
   const filteredReceived = useMemo(() => {
     const needle = q.trim().toLowerCase();
     let rows = needle
@@ -218,17 +177,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
     return [...rows].sort(SORTERS[sort] ?? SORTERS.recent);
   }, [receivedItems, q, rating, sort]);
 
-  /**
-   * « Tous » : un seul tableau, fusionné et rangé par date.
-   *
-   * Deux listes juxtaposées sous leurs titres.fontions deux tableaux, et
-   * obligent à comparer leurs dates de part et d'autre. Un professionnel veut
-   * une chronologie : ce qui s'est passé, dans l'ordre.
-   *
-   * `kind` sert seulement à choisir la carte - un avis donné et un avis reçu ne
-   * se gèrent pas pareil - jamais à les séparer dans le rendu.
-   */
-  const merged = useMemo(() => {
+    const merged = useMemo(() => {
     if (origin !== 'all') return [];
     const rows = [
       ...filteredReceived.map((r) => ({ ...r, kind: 'recus' })),
@@ -287,9 +236,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
 
   const filters = (searchId) => (
     <AdminFilterPanel dirty={dirty} onReset={resetFilters}>
-      {/* L'origine est un filtre et non un onglet : les deux listes partagent
-          recherche, note et tri. En onglet, ces filtres ne s'appliqueraient
-          qu'à une moitié de l'écran sans que rien ne le dise. */}
       <div className="divide-y divide-gray-100">
         <AdminFilterGroup title="Recherche">
           <SearchInput
@@ -302,11 +248,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
           />
         </AdminFilterGroup>
 
-        {/* L'origine vient après la recherche, pas avant. C'est le filtre le
-            plus large - il garde les deux listes - alors que la recherche est le
-            geste que l'utilisateur fait en premier : en dessous, on commence par
-            taper. */}
-        <AdminFilterGroup title="Origine">
+         <AdminFilterGroup title="Origine">
           <CustomSelect
             value={origin}
             onChange={changeFilter(setOrigin)}
@@ -349,11 +291,7 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
         searchId="pro-reviews-search"
         filters={filters}
       >
-        {/* « Tous » rend un seul tableau fusionné et rangé par date : deux
-            listes sous leurs titres font deux tableaux, et obligent à comparer
-            leurs dates de part et d'autre. Le professionnel veut une
-            chronologie. */}
-        <div className="space-y-4">
+         <div className="space-y-4">
           {origin === 'all' ? (
             <ReviewBlock
               loading={received.loading || given.loading}
@@ -513,9 +451,6 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
         </div>
       </AccountSectionLayout>
 
-      {/* Retirer l'avis est une décision d'administration, pas du professionnel :
-          le signalement ne produit aucun effet immédiat, et le formulaire le
-          dit pour ne pas laisser croire à un retrait automatique. */}
       <ReportDialog
         open={reportingId != null}
         onClose={() => setReportingId(null)}

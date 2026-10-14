@@ -1,32 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
- * Chargement de données asynchrones, en un seul endroit.
- *
- * ## Pourquoi un seul hook
- *
- * Six composants recopiaient le même effet - état `loading`, `error`, `data`,
- * un `load()` déclenché au montage et un `catch` vide. Toutes les copies
- * avaient les deux mêmes défauts, invisibles parce qu'ils étaient partout :
- *
- * - **pas de garde de course** : deux changements de filtre rapprochés
- *  .Peignent leurs réponses dans l'ordre d'arrivée, pas dans l'ordre demandé.
- *   Sur une recherche, la requête ancienne, plus lente, écrasait la nouvelle.
- * - **pas d'annulation au démontage** : la réponse arrivait sur un composant
- *   gone.
- * - `reload`changeait d'identité à chaque rendu, ce qui rendait impossible de
- *   l'utiliser comme dépendance d'un effet en aval.
- *
- * ## course
- *
- * Un compteur monotone marque chaque appel. Seul le dernier écrit dans l'état :
- * une réponse arrivée trop tard est ignorée. `AbortController` va plus loin,
- * en arrêtant réellement le téléchargement.
- *
- * @param {() => Promise<T>} loader  doit être stable : `useCallback`, ou une
- *   fonction de module.
- * @param {unknown[]} deps  rechargé quand l'une de ces valeurs change.
- * @template T
+ * `loader` doit être stable : `useCallback` ou fonction de module.
  */
 export function useAsyncData(loader, deps = []) {
   const [data, setData] = useState(undefined);
@@ -43,7 +18,7 @@ export function useAsyncData(loader, deps = []) {
   const requestId = useRef(0);
   const controller = useRef(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ silent = false } = {}) => {
     // Invalide toute requête précédente et prend la main.
     controller.current?.abort();
     const localController = new AbortController();
@@ -52,7 +27,10 @@ export function useAsyncData(loader, deps = []) {
 
     const isStale = () => id !== requestId.current;
 
-    setLoading(true);
+    // `silent` : garde les données affichées pendant la requête. Utilisé après
+    // une écriture, où remplacer la page par un squelette ferait clignoter tout
+    // l'écran au moment où l'utilisateur attend le résultat de son action.
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const result = await loaderRef.current({ signal: localController.signal });
@@ -62,10 +40,10 @@ export function useAsyncData(loader, deps = []) {
     } catch (err) {
       if (isStale() || localController.signal.aborted) return undefined;
       setError(err);
-      setData(undefined);
+      if (!silent) setData(undefined);
       throw err;
     } finally {
-      if (!isStale()) setLoading(false);
+      if (!isStale() && !silent) setLoading(false);
     }
   }, []);
 

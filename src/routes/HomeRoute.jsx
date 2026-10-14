@@ -4,9 +4,7 @@ import { landingHrefFor } from '@/shared/utils/userMenuUtils.js';
 
 /**
  * Accueil conditionnel à la session. `landingHrefFor` porte la règle.
- *
- * L'attente du chargement est obligatoire : `user` vaut `null` pendant la
- * requête, donc décider tout de suite afficherait la home avant de la quitter.
+ * L'attente du chargement est obligatoire : `user` vaut `null` pendant la requête.
  */
 export function HomeRoute({ children }) {
   const { user, loading } = useAuthContext();

@@ -57,12 +57,6 @@ export async function countByProfessional(professionalId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/**
- * Tris de « Mes avis ».
- *
- * Les valeurs sont des littéraux, jamais interpolées depuis la requête : la
- * liste est indexée sur `ORDER BY`, le choix se fait par correspondance.
- */
 const ORDER_BY = {
   recent: 'r.created_at DESC, r.id DESC',
   oldest: 'r.created_at ASC, r.id ASC',
@@ -71,9 +65,6 @@ const ORDER_BY = {
 };
 
 export async function listByClient(clientId, { limit = 20, offset = 0, q = '', rating, professionalId, visibility = 'all', sort = 'recent' } = {}, db = pool) {
-  // Les avis masqués restent listés ici : c'est la seule façon, pour le
-  // client, de les retrouver et de les réafficher. Le filtrage se fait sur la
-  // fiche publique, pas sur le compte.
   const conditions = ['r.client_id = $1'];
   const values = [clientId];
 
@@ -124,13 +115,6 @@ export async function countByClient(clientId, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-/**
- * Rattache l'avis à son propriétaire.
- *
- * Toutes les écritures passent par cette lecture : `client_id` n'est jamais
- * repris du corps de la requête, donc un avis ne peut pas être modifié par un
- * autre client même en devinant son identifiant.
- */
 export async function findOwnedById(reviewId, clientId, db = pool) {
   const { rows } = await db.query(
     `SELECT r.id, r.rating, r.comment, r.is_hidden AS "isHidden",

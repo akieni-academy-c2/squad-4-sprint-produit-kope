@@ -88,16 +88,6 @@ export function getCurrentUser() {
   );
 }
 
-/**
- * Profils de démonstration, par rôle.
- *
- * Les écrans client, professionnel et administrateur ne lisent pas les mêmes
- * données : sans ces comptes, les tester demande trois inscriptions et trois
- * formulaires remplis à chaque fois.
- *
- * Seul point d'entrée vers les mocks pour un composant : la règle d'architecture
- * réserve `shared/mocks` aux services de feature.
- */
 export function demoRoles() {
   return [
     {
@@ -109,8 +99,6 @@ export function demoRoles() {
     {
       role: ROLES.PRO,
       label: 'Professionnel',
-      // Même identifiant que le premier mock : la fiche publique consultable
-      // correspond au professionnel connecté.
       user: {
         id: MOCK_PROS[0]?.id ?? 1,
         role: ROLES.PRO,
@@ -118,8 +106,6 @@ export function demoRoles() {
         phone: MOCK_PROS[0]?.phone ?? '+242061000001',
         firstName: MOCK_PROS[0]?.firstName ?? '',
         lastName: MOCK_PROS[0]?.lastName ?? '',
-        // Vide à dessein : le formulaire doit montrer un champ à remplir,
-        // pas une adresse qui laisserait croire qu'elle est en lecture seule.
         email: '',
       },
       href: ROUTES.DASHBOARD_PRO,
@@ -133,9 +119,6 @@ export function demoRoles() {
         firstName: 'Client',
         lastName: 'Démo',
         phone: '+242065000002',
-        // Champ laissé vide à dessein : la démo doit montrer le formulaire
-        // d'e-mail dans l'état « non renseigné », où l'utilisateur voit qu'il
-        // peut le remplir. Une adresse pré-remplie le ferait croire en lecture.
         email: '',
         createdAt: new Date(Date.now() - 84 * 86400000).toISOString(),
       },
@@ -144,13 +127,11 @@ export function demoRoles() {
   ];
 }
 
-/** Connecte un profil de démonstration sans passer par le formulaire. */
 export function loginAsDemo(user) {
   setDemoUser(user);
   return user;
 }
 
-/** Referme la session de démonstration et rend la main à la vraie API. */
 export function leaveDemo() {
   setDemoUser(null);
 }

@@ -8,15 +8,6 @@ import { createAdminSchema } from '@/shared/utils/validators.js';
 const INPUT_CLASS =
   'h-9 rounded-sm border border-gray-300 bg-white px-2.5 text-sm outline-none focus:border-primary-500';
 
-/**
- * Les champs de ce formulaire.
- *
- * `phone` est absent de la liste : c'est le seul des quatre à avoir une saisie
- * particulière, et il est rendu à part juste après. Le lister ici et le traiter
- * à part aurait laissé deux endroits où le téléphone est défini - c'est
- * exactement ce qui a fait que les autres formulaires de l'application
- * avaient un champ libre.
- */
 const FIELDS = [
   { key: 'firstName', placeholder: 'Prénom', type: 'text', autoFocus: true },
   { key: 'lastName', placeholder: 'Nom', type: 'text' },
@@ -63,12 +54,7 @@ export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOp
           />
         ))}
 
-        {/*
-          Le téléphone sort de la grille : `PhoneInput` est une coque à deux
-          volets et ne prend pas la hauteur de 36 px des autres champs. Le
-          laisser dans `FIELDS` aurait produit une ligne de hauteur différente
-          dans une grille censée être homogène.
-        */}
+        
         <PhoneInput
           id="create-admin-phone"
           value={draft.phone}

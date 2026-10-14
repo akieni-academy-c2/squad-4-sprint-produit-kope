@@ -13,7 +13,7 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
   return (
     <aside className={`space-y-6 ${STICKY_COLUMN}`}>
       <Card className="overflow-hidden p-0">
-        <div className="bg-gradient-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
+        <div className="bg-linear-to-r from-primary-50 to-kop-mint/60 p-5 pb-4">
           <div className="flex items-center gap-4">
             <UserAvatar user={user} src={profile?.avatarUrl ?? undefined} name={displayName} className="h-14 w-14" />
             <div className="min-w-0">
@@ -27,15 +27,6 @@ export function ProSidebar({ user, profile, displayName, items, active, onChange
           <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Statut</p>
           <p className="mt-1 text-sm font-semibold capitalize text-gray-900">{profile?.status ?? '-'}</p>
 
-          {/* Dans la carte, avant la navigation : le lien vaut pour la fiche
-              affichée juste au-dessus. En bas de colonne, sous la navigation, il
-              se lisait comme un bouton de plus parmi les onglets - et il
-              disparaissait sur mobile, où la colonne est remplacée par la barre
-              du bas. */}
-          {/* Prévisualisation : on quitte le tableau de bord pour voir sa
-              fiche comme un visiteur, on compare, on revient corriger. D'où le
-              nouvel onglet - et d'où `Link` plutôt que `RouterLink` : ce dernier
-              intercepte le clic et annulerait l'ouverture. */}
           {isPublished && (
             <Button
               as={Link}

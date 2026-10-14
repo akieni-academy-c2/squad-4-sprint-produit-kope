@@ -10,11 +10,9 @@ import { personas as PERSONA_DATA } from './personas.json';
 const IMAGES = [what1, what2, what3, user1, user2, hero];
 
 /**
- * Identités et portraits de démonstration, générés par `npm run mock:personas`.
- *
- * Le catalogue est figé dans le dépôt : l'application reste déterministe et ne
- * contacte aucun service tiers à l'exécution. Repli sur `FALLBACK_NAMES` si le
- * fichier n'a pas encore été généré.
+ * Généré par `npm run mock:personas` et figé dans le dépôt : l'application reste
+ * déterministe et ne contacte aucun service tiers. Repli sur `FALLBACK_NAMES`
+ * si le fichier n'a pas encore été généré.
  */
 const PERSONAS = PERSONA_DATA ?? [];
 
@@ -103,11 +101,8 @@ function nameAt(offset) {
 }
 
 /**
- * Répartition des professionnels de démonstration.
- *
- * Les femmes restent minoritaires dans ces métiers - c'est la réalité du
- * terrain - sauf en maçonnerie, où elles sont nombreuses et plutôt jeunes.
- * Le catalogue de personas fournit donc deux réserves distinctes.
+ * Les femmes restent minoritaires dans ces métiers, sauf en maçonnerie où elles
+ * sont nombreuses et plutôt jeunes : le catalogue fournit deux réserves distinctes.
  */
 const ROSTER = [
   { tradeId: 1, gender: 'male' },
@@ -133,12 +128,8 @@ const FEMALE_POOL = PERSONAS.filter((p) => p.gender === 'female').sort((a, b) =>
 const CAREER_START = 18;
 
 /**
- * Ancienneté cohérente avec l'âge.
- *
- * Personne ne peut avoir exercé plus longtemps que la durée écoulée depuis
- * ses 18 ans, et un artisan plus âgé a fait une carrière plus longue. La
- * valeur suit donc l'âge - entre 45 et 70 % de la carrière possible, pour que
- * deux professionnels du même âge n'aient pas la même ancienneté.
+ * 45 à 70 % de la carrière possible depuis 18 ans, pour que deux
+ * professionnels du même âge n'aient pas la même ancienneté.
  */
 function careerYears(age, seed) {
   const elapsed = Math.max(0, age - CAREER_START);
@@ -148,15 +139,8 @@ function careerYears(age, seed) {
 }
 
 /**
- * Visuels de démonstration.
- *
- * Les portraits du service externe sont réalistes mais imposent un appel
- * réseau à chaque affichage. On alterne donc portraits et visuels du projet :
- * la démonstration reste utilisable hors ligne.
- *
- * L'index décale de 2 par professional : sans cela, le pas de 2 sur
- * l'alternance et le pas de 6 sur le stock se synchronisent, et trois visuels
- * seulement reviennent deux fois chacun.
+ * L'index décale de 2 par professionnel, sinon le pas de 2 et le pas de 6 se
+ * synchronisent.
  */
 const PORTRAIT_SHARE = 2;
 
@@ -231,10 +215,8 @@ const REVIEWS_POOL = [
 ];
 
 /**
- * Avis masqués par un administrateur, par identifiant.
- *
  * `mockReviewsFor` régénère la liste à chaque lecture : sans ce registre, un
- * avis masqué réapparaîtrait aussitôt et le filtre « Masqués » resterait vide.
+ * avis masqué réapparaîtrait aussitôt.
  */
 const MOCK_HIDDEN_REVIEWS = new Set();
 
@@ -331,11 +313,9 @@ export function getProDetailMock(id) {
 // ---------- Contacts mock ----------
 
 /**
- * Contacts du client : une ligne par contact pris, canal compris.
- *
- * Le même professionnel apparaît deux fois (9003 et 9004) - un appel puis un
- * WhatsApp. C'est le cas normal : la contrainte d'unicité sur la paire a été
- * levée en migration, et le regroupement par professionnel s'appuie dessus.
+ * Le même professionnel apparaît deux fois (9003 et 9004), un appel puis un
+ * WhatsApp : c'est le cas normal, la contrainte d'unicité sur la paire ayant été
+ * levée en migration.
  */
 let MOCK_MY_CONTACTS = [
   {
@@ -726,13 +706,7 @@ export function mockReportProfessional({ professionalId, reporterId = 901, reaso
 // confondre ferait porter à l'un les compteurs de l'autre.
 let MOCK_REVIEW_REPORTS = [];
 
-/**
- * Signalement d'un correspondant, depuis la liste des contacts.
- *
- * Même refus que le serveur : sans conversation, on ne signale rien. Sans
- * cette garde, la démo accepterait n'importe quel identifiant et laisserait
- * croire que le contrôle existe.
- */
+/** Même refus que le serveur : sans conversation, on ne signale rien. */
 export function mockReportContact(userId, { reason, message = null }, reporterId = 901) {
   const linked = MOCK_MY_CONTACTS.some(
     (c) =>

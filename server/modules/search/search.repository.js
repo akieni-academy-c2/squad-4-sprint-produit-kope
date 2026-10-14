@@ -60,14 +60,7 @@ export async function searchPublished(
   return rows;
 }
 
-/**
- * Compte des résultats sans pagination (utilisé quand la page demandée est vide).
- *
- * Doit rester symétrique de `searchPublished` : même FROM, même WHERE, même
- * GROUP BY / HAVING. Un `COUNT(*)` posé directement sur le JOIN compterait les
- * lignes - un professionnel avec 3 avis valait 3 professionnels - et le HAVING
- * porterait sur la moyenne globale au lieu de la moyenne par professionnel.
- */
+
 export async function countPublished(
   { tradeId, zoneId, cityId, keyword, available, minExperience, minRating },
   db = pool,

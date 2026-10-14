@@ -201,17 +201,11 @@ export function Navbar() {
             </ul>
           </nav>
 
-          {/* Le pied ne change pas de forme selon la session : un filet le sépare
-              toujours de la navigation. Seule la fiche utilisateur mérite une
-              card - pour un visiteur, ce sont deux portes d'entrée, pas une
-              identité à afficher. */}
           <div className="border-t border-gray-100 p-4 pb-safe">
             {loading ? (
               <div className="h-14 w-full animate-pulse rounded-md bg-gray-100" />
             ) : !user ? (
-              // Mêmes composants et mêmes variantes que la barre desktop :
-              // l'invité reconnaît l'action avant même de lire l'écran.
-              <div className="flex flex-col gap-2">
+               <div className="flex flex-col gap-2">
                 <Button
                   variant="outline"
                   size="md"

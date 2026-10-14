@@ -12,15 +12,7 @@ import { listReviews } from '@/features/reviews/services/reviews.service.js';
 
 const RECENT_COUNT = 4;
 
-/**
- * Vue d'ensemble de l'espace professionnel.
- *
- * Même construction que celle du client : des compteurs qui ouvrent la section
- * qu'ils résument, puis les dernières lignes de chaque section. Un aperçu
- * n'a pas à avoir deux rendus - celui du professionnel montrait quatre tuiles
- * statiques, sans aucun chiffre qui réponde à « où en suis-je ? » : ni mes
- * contacts, ni mes avis.
- */
+
 export function OverviewSection({ profile, onNavigate }) {
   const professionalId = profile?.id;
 
@@ -61,14 +53,14 @@ export function OverviewSection({ profile, onNavigate }) {
           />
           <KpiCard
             label="Contacts"
-            value={loading ? '–' : data?.contactsTotal ?? 0}
+            value={loading ? '-' : data?.contactsTotal ?? 0}
             hint="Clients et professionnels"
             icon={<Phone size={12} aria-hidden />}
             onClick={() => onNavigate?.('contacts')}
           />
           <KpiCard
             label="Avis reçus"
-            value={loading ? '–' : data?.reviewsTotal ?? 0}
+            value={loading ? '-' : data?.reviewsTotal ?? 0}
             hint="Note moyenne et avis"
             icon={<Star size={12} aria-hidden />}
             onClick={() => onNavigate?.('avis')}

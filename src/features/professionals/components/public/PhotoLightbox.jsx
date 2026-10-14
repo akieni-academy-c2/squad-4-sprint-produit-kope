@@ -2,10 +2,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/Button.jsx';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
 
-/**
- * Visionneuse d'une réalisation. L'index et la navigation restent gérés par la
- * page : ce composant ne fait que l'affichage.
- */
 export function PhotoLightbox({ photos, index, onClose, onPrev, onNext }) {
   const photo = photos[index];
   if (!photo) return null;

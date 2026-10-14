@@ -1,30 +1,14 @@
 /**
- * Conditions d'utilisation - version courante.
- *
- * ## Pourquoi le texte est une donnée et pas du JSX
- *
- * Trois raisons, toutes pratiques.
- *
- * **Le lien doit être affichable sans la page.** La case à cocher de
- * l'inscription renvoie vers une section précise ; avoir à charger la page
- * entière pour connaître la date de la version affichée serait absurde.
- *
- * **Un consentement sans version est un consentement nul.** Le serveur
- * enregistre la version acceptée, pas seulement `consent: true`. Dans deux ans,
- * « il avait accepté » ne veut rien dire si on ne sait pas ce qu'il avait lu.
- *
- * **Le contenu se relit sans toucher à l'interface.** Modifier une condition ne
- * doit pas ressembler à une modification de page.
+ * Le texte est une donnée et non du JSX : le lien de la case à cocher doit s'afficher sans
+ * charger la page entière, le serveur enregistre la version acceptée et non un simple
+ * `consent: true`, et une reformulation ne doit pas ressembler à un changement d'écran.
  */
 
 export const TERMS_VERSION = '2026-01-15';
 
 /**
- * Sections, dans l'ordre d'affichage.
- *
- * Chaque entrée porte un `slug` stable : c'est la cible des liens profonds
- * depuis les formulaires et les e-mails. Le `slug` ne change pas quand on
- * reformule un paragraphe.
+ * Chaque entrée porte un `slug` stable : c'est la cible des liens profonds depuis les
+ * formulaires et les e-mails, et il ne change pas quand on reformule un paragraphe.
  */
 export const TERMS_SECTIONS = [
   {

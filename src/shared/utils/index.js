@@ -1,5 +1,12 @@
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/**
+ * `clsx` accepte les formes conditionnelles, `twMerge` résout les conflits.
+ * Sans lui, le gagnant se décide par l'ordre interne du CSS généré.
+ */
 export function cn(...inputs) {
-  return inputs.filter(Boolean).join(' ');
+  return twMerge(clsx(inputs));
 }
 
 export function formatPhoneFR(value) {
@@ -21,14 +28,8 @@ export function toWhatsappUrl(phone) {
 }
 
 /**
- * Formateur partagé.
- *
- * `new Intl.DateTimeFormat(...)` n'est pas une opération anodine : la première
- * construction force le chargement synchrone des données de locale ICU, et
- * chaque construction suivante reparse les options et réalloue. Dans une liste
- * de 100 lignes - ActivityTiles, CatalogItemCard, ReviewList, AdminStats - la
- * fonction était appelée autant de fois qu'il y avait d'éléments, à chaque
- * rendu. Le formateur est donc construit une fois et réutilisé.
+ * La première construction charge les données de locale, les suivantes
+ * reparsent les options : appelé par élément, le formateur est construit une fois.
  */
 let dateFormatter = null;
 
@@ -48,6 +49,21 @@ export function formatDateFr(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value);
   return frDateTime().format(date);
+}
+
+/** Sur une publication l'heure n'apporte rien : seules ces parties sont gardées. */
+const DATE_PARTS = new Set(['day', 'month', 'year']);
+
+/** Même formateur mis en cache, filtré sur les parties de date. */
+export function formatDateFrShort(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return frDateTime()
+    .formatToParts(date)
+    .filter((part) => DATE_PARTS.has(part.type))
+    .map((part) => part.value)
+    .join(' ');
 }
 
 export function fullNameInitials(firstName, lastName) {
