@@ -26,12 +26,18 @@ export function ReportGroup({
     >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50/70 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <UserAvatar
-            src={group.professionalAvatarUrl}
-            name={professionalName}
-            className="h-8 w-8 shrink-0"
-            iconSize={14}
-          />
+          <Link
+            href={ROUTES.PROFESSIONAL(professionalId)}
+            className="shrink-0 rounded-full transition hover:opacity-80"
+            aria-label={`Voir la fiche publique de ${professionalName || `professionnel #${professionalId}`}`}
+          >
+            <UserAvatar
+              src={group.professionalAvatarUrl}
+              name={professionalName}
+              className="h-8 w-8"
+              iconSize={14}
+            />
+          </Link>
           <Link
             href={ROUTES.PROFESSIONAL(professionalId)}
             className="truncate text-sm font-bold text-gray-900 transition hover:text-primary-700 hover:underline"

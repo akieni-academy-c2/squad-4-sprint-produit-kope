@@ -88,7 +88,7 @@ function PublicationRate({ stats }) {
   );
 }
 
-function RecentProfessionals({ items, onOpenAll }) {
+function RecentProfessionals({ items, href }) {
   if (items.length === 0)
     return (
       <p className="rounded-[14px] border border-dashed border-gray-200 bg-[#f7faf8] p-6 text-center text-sm text-gray-500">
@@ -141,13 +141,12 @@ function RecentProfessionals({ items, onOpenAll }) {
         ))}
       </ul>
 
-      <button
-        type="button"
-        onClick={onOpenAll}
+      <Link
+        href={href}
         className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 transition hover:text-primary-700"
       >
         Voir tous les professionnels <ArrowRight size={14} aria-hidden />
-      </button>
+      </Link>
     </>
   );
 }
