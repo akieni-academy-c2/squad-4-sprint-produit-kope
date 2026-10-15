@@ -25,8 +25,15 @@ const QUALITY = { 640: 72, 1280: 78 }
  * Réencode les images matricielles importées en WebP, en exportant l'URL
  * (la plus grande variante) et un `srcSet` pour le navigateur. Le contrat
  * d'import reste une chaîne : aucun appelant n'a à changer.
+ *
+ * `emitFile` renvoie un identifiant de référence (`DUq8YoikZLXEejpNZ1KQvg`),
+ * pas un chemin, et le nom final n'est connu qu'une fois le bundle produit.
+ * Utilisé tel quel comme URL, il donne un `src` vers un fichier inexistant. Le
+ * code généré transite donc par un jeton, remplacé en `generateBundle`.
  */
-function imageOptimizer() {
+export function imageOptimizer() {
+  const pending = new Map()
+
   return {
     name: 'kop-image-optimizer',
     /**
@@ -50,18 +57,27 @@ function imageOptimizer() {
           .webp({ quality: QUALITY[width] ?? 78, effort: 5 })
           .toBuffer()
 
-        urls.push({
-          width,
-          url: this.emitFile({ type: 'asset', name: `${base}-${width}.webp`, source }),
-        })
+        const refId = this.emitFile({ type: 'asset', name: `${base}-${width}.webp`, source })
+        const token = `__KOP_ASSET_${pending.size}__`
+        pending.set(token, refId)
+        urls.push({ width, token })
       }
 
       const largest = urls[urls.length - 1]
 
       return [
-        `export default ${JSON.stringify(largest.url)};`,
-        `export const srcSet = ${JSON.stringify(urls.map(({ url, width }) => `${url} ${width}w`).join(', '))};`,
+        `export default ${JSON.stringify(largest.token)};`,
+        `export const srcSet = ${JSON.stringify(urls.map(({ token, width }) => `${token} ${width}w`).join(', '))};`,
       ].join('\n')
+    },
+    generateBundle(_options, bundle) {
+      if (pending.size === 0) return
+
+      for (const item of Object.values(bundle)) {
+        if (item.type !== 'chunk') continue
+        for (const [token, refId] of pending)
+          item.code = item.code.split(token).join(this.getFileName(refId))
+      }
     },
   }
 }
