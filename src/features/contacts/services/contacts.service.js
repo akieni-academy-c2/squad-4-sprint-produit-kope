@@ -1,11 +1,30 @@
 import { api } from "@/shared/lib/api.js";
 import { callApi } from "@/shared/lib/dataSource.js";
-import { mockMyContacts, mockLogContact } from "@/shared/mocks/appMock.js";
+import {
+  mockMyContacts,
+  mockLogContact,
+  mockMarkContactSeen,
+  mockMarkAllSeen,
+} from "@/shared/mocks/appMock.js";
 
 export function getMyContacts({ page = 1, pageSize = 20 } = {}) {
   return callApi(
     () => api.get("/contacts", { page, pageSize }),
     async () => mockMyContacts({ page, pageSize }),
+  );
+}
+
+export function markContactSeen(contactId) {
+  return callApi(
+    () => api.patchJson(`/contacts/${contactId}/seen`, {}),
+    async () => mockMarkContactSeen(contactId),
+  );
+}
+
+export function markAllContactsSeen() {
+  return callApi(
+    () => api.patchJson("/contacts/seen", {}),
+    async () => mockMarkAllSeen(),
   );
 }
 

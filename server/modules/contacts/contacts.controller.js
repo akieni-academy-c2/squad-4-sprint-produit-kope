@@ -14,3 +14,16 @@ export async function list(req, res) {
     await service.listContacts(requiredUserId(req), req.validated.query),
   );
 }
+
+export async function markSeen(req, res) {
+  const seen = await service.markContactSeen(
+    requiredUserId(req),
+    req.validated.params.id,
+  );
+  res.json({ seen });
+}
+
+export async function markAllSeen(req, res) {
+  const seen = await service.markAllContactsSeen(requiredUserId(req));
+  res.json({ seen });
+}

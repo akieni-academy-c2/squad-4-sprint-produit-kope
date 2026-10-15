@@ -32,8 +32,27 @@ export async function createContact(
   }
 }
 
+export async function markAllContactsSeen(userId) {
+  return repository.markAllSeen(userId);
+}
+
+/**
+ * Ne renvoie pas d'erreur si la demande était déjà vue ou n'appartient pas à
+ * l'appelant : l'opération est idempotente, et l'appelant n'a rien à faire
+ * dans les deux cas.
+ */
+export async function markContactSeen(userId, contactId) {
+  return repository.markSeen(contactId, userId);
+}
+
+/**
+ * Lecture pure : cette liste ne marque plus les demandes entrantes comme vues.
+ *
+ * Le faire ici coûtait un aller-retour base à chaque affichage, pour un statut
+ * qu'aucun écran ne lit et qui devenait illisible de toute façon : la transition
+ * se déclenchait à la lecture, donc au moment du rendu tout était déjà `seen`.
+ */
 export async function listContacts(userId, pagination) {
-  await repository.markIncomingAsSeen(userId);
   const rows = await repository.listForUser(userId, {
     limit: pagination.pageSize,
     offset: offsetOf(pagination),

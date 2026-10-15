@@ -69,3 +69,26 @@ export function destinationIndex(cards, entryIndex, draggingItem) {
   if (gapAt < 0) return entryIndex;
   return entryIndex > gapAt ? entryIndex - 1 : entryIndex;
 }
+
+/**
+ * Sérialise des tâches asynchrones : la suivante n'est tentée qu'une fois la
+ * précédente réglée.
+ *
+ * Sans cela, deux permutations déclenchées coup sur coup partent en parallèle et
+ * la base tranche sur l'ordre d'arrivée des réponses, pas sur l'ordre des
+ * gestes : le dernier à répondre écrase le dernier dépôt.
+ *
+ * La promesse rendue est celle de la tâche fournie, pour que l'appelant
+ * traite sa propre erreur. La file, elle, reste utilisable si une tâche échoue.
+ */
+export function createSerialQueue() {
+  let chain = Promise.resolve();
+  return (task) => {
+    const next = chain.then(
+      () => task(),
+      () => task(),
+    );
+    chain = next.catch(() => {});
+    return next;
+  };
+}

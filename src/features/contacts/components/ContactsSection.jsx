@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react";
-import { MessageCircle, Phone, Users } from "lucide-react";
+import { CheckCheck, MessageCircle, Phone, Users } from "lucide-react";
 import { useAsyncData } from "@/shared/hooks/useAsyncData.js";
-import { getMyContacts } from "../services/contacts.service.js";
+import {
+  getMyContacts,
+  logContact,
+  markAllContactsSeen,
+  markContactSeen,
+} from "../services/contacts.service.js";
 import { Button } from "@/shared/components/ui/Button.jsx";
 import { Card } from "@/shared/components/ui/Card.jsx";
 import { CustomSelect } from "@/shared/components/ui/CustomSelect.jsx";
@@ -22,7 +27,6 @@ import {
   ReportDialog,
   ReportTrigger,
 } from "@/features/reports/components/ReportDialog.jsx";
-import { logContact } from "../services/contacts.service.js";
 import { formatDateFr, toWhatsappUrl } from "@/shared/utils";
 import { Pagination } from "@/shared/components/ui/Pagination.jsx";
 
@@ -47,11 +51,16 @@ const CHANNEL_OPTIONS = [
   { value: "whatsapp", label: "WhatsApp" },
 ];
 
-function ContactRow({ contact, onReach, onReport, reported }) {
+const isUnread = (contact) => !contact.outgoing && contact.status === "new";
+
+function ContactRow({ contact, onReach, onReport, onSeen, reported }) {
   const name = contact.displayName || "Utilisateur";
   const { toast } = useNotification();
+  const unread = isUnread(contact);
 
   const reach = (channel, href, newTab) => {
+    if (unread) onSeen(contact);
+
     if (newTab) window.open(href, "_blank", "noopener,noreferrer");
     else window.location.href = href;
 
@@ -95,6 +104,12 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {unread && (
+              <Badge variant="warning" size="sm">
+                Nouveau
+              </Badge>
+            )}
+
             <Badge variant={contact.outgoing ? "info" : "primary"} size="sm">
               {contact.outgoing ? "Contacté" : "Vous a contacté"}
             </Badge>
@@ -120,24 +135,36 @@ function ContactRow({ contact, onReach, onReport, reported }) {
             {formatDateFr(contact.createdAt)}
           </span>
 
-          {contact.phone &&
-            (contact.channel === "call" ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {unread && (
               <Button
                 variant="subtle"
                 size="sm"
-                onClick={() => reach("call", tel, false)}
+                onClick={() => onSeen(contact)}
               >
-                <Phone size={14} aria-hidden /> Appeler
+                <CheckCheck size={14} aria-hidden /> Marquer comme vu
               </Button>
-            ) : (
-              <Button
-                variant="subtle"
-                size="sm"
-                onClick={() => reach("whatsapp", wa, true)}
-              >
-                <MessageCircle size={14} aria-hidden /> WhatsApp
-              </Button>
-            ))}
+            )}
+
+            {contact.phone &&
+              (contact.channel === "call" ? (
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  onClick={() => reach("call", tel, false)}
+                >
+                  <Phone size={14} aria-hidden /> Appeler
+                </Button>
+              ) : (
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  onClick={() => reach("whatsapp", wa, true)}
+                >
+                  <MessageCircle size={14} aria-hidden /> WhatsApp
+                </Button>
+              ))}
+          </div>
         </div>
       </Card>
     </li>
@@ -145,9 +172,21 @@ function ContactRow({ contact, onReach, onReport, reported }) {
 }
 
 export function ContactsSection({ rightContainer = null }) {
+  const { toast } = useNotification();
   const [reload, setReload] = useState(0);
   const [reporting, setReporting] = useState(null);
   const [reportedIds, setReportedIds] = useState([]);
+
+  /**
+   * Les identifiants marqués vus depuis le dernier chargement.
+   *
+   * Le statut seul ne suffit pas : recharger la liste ferait repartir les
+   * badges, alors que l'utilisateur a déjà traité ces demandes. On superpose
+   * donc les identifiants à la réponse du serveur, sans refetcher 100 contacts à
+   * chaque clic.
+   */
+  const [seenIds, setSeenIds] = useState(() => new Set());
+
   const {
     data: itemsData,
     loading,
@@ -157,7 +196,31 @@ export function ContactsSection({ rightContainer = null }) {
     return data.items || [];
   }, [reload]);
 
-  const items = useMemo(() => itemsData ?? [], [itemsData]);
+  const items = useMemo(() => {
+    if (!seenIds.size) return itemsData ?? [];
+
+    return (itemsData ?? []).map((c) =>
+      seenIds.has(c.id) ? { ...c, status: "seen" } : c,
+    );
+  }, [itemsData, seenIds]);
+
+  const unreadCount = useMemo(() => items.filter(isUnread).length, [items]);
+
+  const reportError = (err) =>
+    toast({ message: err?.message || "Statut non enregistré.", type: "error" });
+
+  const markSeen = (contact) => {
+    setSeenIds((prev) => new Set(prev).add(contact.id));
+    markContactSeen(contact.id).catch(reportError);
+  };
+
+  const markAll = () => {
+    const ids = items.filter(isUnread).map((c) => c.id);
+    if (!ids.length) return;
+
+    setSeenIds((prev) => new Set([...prev, ...ids]));
+    markAllContactsSeen().catch(reportError);
+  };
 
   const refresh = () => setReload((n) => n + 1);
 
@@ -261,13 +324,22 @@ export function ContactsSection({ rightContainer = null }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
-          Mes contacts
-        </h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Les professionnels et clients que vous avez appelés ou écrits.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
+            Mes contacts
+          </h2>
+          <p className="mt-1 text-sm text-gray-600">
+            Les professionnels et clients que vous avez appelés ou écrits.
+          </p>
+        </div>
+
+        {unreadCount > 0 && (
+          <Button variant="subtle" size="sm" onClick={markAll}>
+            <CheckCheck size={14} aria-hidden /> Tout marquer comme vu (
+            {unreadCount})
+          </Button>
+        )}
       </div>
 
       <AccountSectionLayout
@@ -303,6 +375,7 @@ export function ContactsSection({ rightContainer = null }) {
                     key={c.id}
                     contact={c}
                     onReach={refresh}
+                    onSeen={markSeen}
                     onReport={setReporting}
                     reported={reportedIds.includes(c.userId)}
                   />

@@ -119,8 +119,16 @@ Journal des prises de contact entre deux comptes.
 
 - `channel` : `message`, `call` ou `whatsapp`.
 - Un message n'est obligatoire que pour le canal `message` (`CHECK` en base).
-- `status` suit `new` → `seen` → `done`. Ouvrir sa liste de contacts fait
-  passer les entrants en `seen`.
+- `status` est un `contact_status` (`new`, `seen`, `done`), valant `new` par
+  défaut. La transition vers `seen` est déclenchée par un geste de
+  l'utilisateur — appeler, écrire sur WhatsApp, ou « tout marquer comme vu » —
+  et **jamais par la lecture de la liste**. Une lecture qui consommait le statut
+  le faisait avant le premier rendu : le badge n'aurait rien eu à afficher.
+  Le marquage est idempotent (`WHERE status = 'new'`) et ne peut porter que sur
+  une demande **reçue** (`recipient_id`) : on ne marque jamais un contact que
+  l'on a soi-même écrit. `done` n'est pas implémenté.
+- La migration `…_contacts_seen_backfill` met à `seen` tout l'historique
+  existant, pour que le badge n'annonce pas d'un coup tout l'historique.
 - Pas d'ordre chronologique garanti dans le stockage : le tri se fait à la lecture.
 
 ---

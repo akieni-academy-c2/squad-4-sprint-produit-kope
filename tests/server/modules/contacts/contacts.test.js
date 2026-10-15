@@ -108,10 +108,7 @@ describe("contacts.service", () => {
     });
   });
 
-  it("liste mes contacts et marque les demandes reçues comme vues", async () => {
-    const seen = vi
-      .spyOn(contactsRepository, "markIncomingAsSeen")
-      .mockResolvedValue(undefined);
+  it("liste mes contacts sans rien écrire", async () => {
     vi.spyOn(contactsRepository, "listForUser").mockResolvedValue([
       {
         id: 1,
@@ -136,11 +133,76 @@ describe("contacts.service", () => {
       pageSize: 20,
     });
 
-    expect(seen).toHaveBeenCalledWith(7);
+    /**
+     * La liste marquait chaque demande entrante comme vue avant même de la lire.
+     * Aucun écran ne consommait ce statut, et la lecture étant le déclencheur, il
+     * ne pouvait plus rien afficher. Une lecture qui écrit coûte un aller-retour
+     * à chaque affichage pour un résultat invisible.
+     */
+    expect(contactsRepository.markIncomingAsSeen).toBeUndefined();
     expect(res.total).toBe(1);
     expect(res.items[0]).not.toHaveProperty("total");
     expect(res.items[0].displayName).toBe("Atelier Kengo");
     expect(res.items[0].outgoing).toBe(false);
+  });
+
+  it("délègue le marquage en plaçant l'appelant en second argument", async () => {
+    const mark = vi
+      .spyOn(contactsRepository, "markSeen")
+      .mockResolvedValue(true);
+
+    await expect(contactsService.markContactSeen(7, 5)).resolves.toBe(true);
+    expect(mark).toHaveBeenCalledWith(5, 7);
+  });
+
+  it("délègue le marquage groupé à l'appelant", async () => {
+    const markAll = vi
+      .spyOn(contactsRepository, "markAllSeen")
+      .mockResolvedValue(3);
+
+    await expect(contactsService.markAllContactsSeen(7)).resolves.toBe(3);
+    expect(markAll).toHaveBeenCalledWith(7);
+  });
+});
+
+describe("contacts.repository (écriture du statut)", () => {
+  const stub = (rowCount) => {
+    const query = vi.fn().mockResolvedValue({ rowCount });
+    return { query, db: { query } };
+  };
+
+  /**
+   * Sans `recipient_id = $2`, n'importe quel utilisateur connecté pourrait
+   *ococcus une demande qui ne lui est pas adressée. Sans `status = 'new'`, le
+   * marquage n'est plus idempotent et réécrit à chaque affichage.
+   */
+  it("n'écrit que sur une demande reçue et encore nouvelle", async () => {
+    const { db, query } = stub(1);
+
+    await expect(contactsRepository.markSeen(5, 7, db)).resolves.toBe(true);
+
+    const [sql, params] = query.mock.calls[0];
+    expect(sql).toContain("recipient_id = $2");
+    expect(sql).toContain("status = 'new'");
+    expect(sql).toContain("id = $1");
+    expect(params).toEqual([5, 7]);
+  });
+
+  it("ne signale aucun changement si la ligne est ineligible", async () => {
+    const { db } = stub(0);
+
+    await expect(contactsRepository.markSeen(5, 7, db)).resolves.toBe(false);
+  });
+
+  it("marque en masse seulement les demandes reçues", async () => {
+    const { db, query } = stub(4);
+
+    await expect(contactsRepository.markAllSeen(7, db)).resolves.toBe(4);
+
+    const [sql, params] = query.mock.calls[0];
+    expect(sql).toContain("recipient_id = $1");
+    expect(sql).toContain("status = 'new'");
+    expect(params).toEqual([7]);
   });
 });
 

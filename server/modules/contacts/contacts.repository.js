@@ -43,11 +43,30 @@ export async function hasContactBetween(userA, userB, db = pool) {
   return rowCount > 0;
 }
 
-export async function markIncomingAsSeen(userId, db = pool) {
-  await db.query(
+/**
+ * Marque une demande entrante comme vue.
+ *
+ * `recipient_id = $2` interdit de toucher la conversation d'autrui, et
+ * `status = 'new'` rend l'opération idempotente : une seconde passe ne réécrit
+ * rien. La liste ne déclenche plus la transition — seul un geste de
+ * l'utilisateur le déclenche, sinon le statut serait déjà `seen` au moment du
+ * rendu et ne pourrait rien afficher.
+ */
+export async function markSeen(contactId, userId, db = pool) {
+  const { rowCount } = await db.query(
+    "UPDATE contacts SET status = 'seen' WHERE id = $1 AND recipient_id = $2 AND status = 'new'",
+    [contactId, userId],
+  );
+  return rowCount > 0;
+}
+
+/** Repli pour les demandes sans téléphone, où aucun geste n'est déclenché. */
+export async function markAllSeen(userId, db = pool) {
+  const { rowCount } = await db.query(
     "UPDATE contacts SET status = 'seen' WHERE recipient_id = $1 AND status = 'new'",
     [userId],
   );
+  return rowCount;
 }
 
 export async function listForUser(

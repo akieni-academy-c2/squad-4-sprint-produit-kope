@@ -470,6 +470,33 @@ export function mockMyContacts({ page = 1, pageSize = 20 } = {}) {
   return paginateMock(MOCK_MY_CONTACTS, page, pageSize);
 }
 
+export function mockMarkAllSeen() {
+  const seen = MOCK_MY_CONTACTS.filter(
+    (c) => !c.outgoing && c.status === "new",
+  ).length;
+
+  MOCK_MY_CONTACTS = MOCK_MY_CONTACTS.map((c) =>
+    !c.outgoing && c.status === "new" ? { ...c, status: "seen" } : c,
+  );
+  return { seen };
+}
+
+/**
+ * Même contrat que le serveur : une demande sortante ou déjà vue ne change pas,
+ * donc l'appel est idempotent.
+ */
+export function mockMarkContactSeen(contactId) {
+  const target = MOCK_MY_CONTACTS.find((c) => c.id === contactId);
+
+  if (!target || target.outgoing || target.status === "seen")
+    return { seen: false };
+
+  MOCK_MY_CONTACTS = MOCK_MY_CONTACTS.map((c) =>
+    c.id === contactId ? { ...c, status: "seen" } : c,
+  );
+  return { seen: true };
+}
+
 export function mockLogContact(toUserId, channel) {
   const counterpart = MOCK_MY_CONTACTS.find(
     (c) => String(c.userId) === String(toUserId),

@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNotification } from "@/shared/context/NotificationContext.jsx";
 import {
   groupKeyOf,
   groupItems,
+  createSerialQueue,
   displayEntries as buildEntries,
   destinationIndex as entryDestination,
 } from "./catalog/catalogUtils.js";
@@ -112,6 +113,15 @@ export function useCatalogBoard({
     reload();
   };
 
+  /**
+   * La file est initialisée une seule fois : elle vit en dehors du rendu, sinon
+   * deux glisser-déposer repartiraient en parallèle et la base trancherait sur
+   * l'ordre d'arrivée des réponses plutôt que sur l'ordre des gestes.
+   */
+  const enqueueRef = useRef(null);
+  enqueueRef.current ??= createSerialQueue();
+  const enqueueReorder = enqueueRef.current;
+
   const submitSearch = (e) => {
     e.preventDefault();
     setSearch(query.trim());
@@ -195,9 +205,11 @@ export function useCatalogBoard({
       (i) => i.id !== itemId && groupKeyOf(i[groupByKey]) !== targetKey,
     );
     setItems([...rest, ...bucket]);
-    updateItem(itemId, { name: moved.name, [groupByKey]: targetKey })
-      .then(() => reorderItems(bucket.map((i) => i.id)))
-      .catch(failAndReload);
+    enqueueReorder(() =>
+      updateItem(itemId, { name: moved.name, [groupByKey]: targetKey }).then(
+        () => reorderItems(bucket.map((i) => i.id)),
+      ),
+    ).catch(failAndReload);
   };
 
   const dropGroup = (groupId, targetIndex) => {
@@ -208,7 +220,7 @@ export function useCatalogBoard({
     const to = from < targetIndex ? targetIndex - 1 : targetIndex;
     next.splice(Math.max(0, Math.min(to, next.length)), 0, moved);
     setGroups(next);
-    reorderGroups(next.map((g) => g.id)).catch(failAndReload);
+    enqueueReorder(() => reorderGroups(next.map((g) => g.id))).catch(failAndReload);
   };
 
   const handleDrop = (targetKey, entryIndex) => {

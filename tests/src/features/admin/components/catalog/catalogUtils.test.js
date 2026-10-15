@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  createSerialQueue,
   destinationIndex,
   displayEntries,
   groupItems,
@@ -108,6 +109,59 @@ describe("utilitaires du catalogue admin", () => {
     it("décale les index situés après le trou", () => {
       expect(destinationIndex(cards([1, 2, 3]), 2, { id: 1 })).toBe(1);
       expect(destinationIndex(cards([1, 2, 3]), 1, { id: 1 })).toBe(0);
+    });
+  });
+
+  /**
+   * Sans file, deux glisser-déposer coup sur coup partent en parallèle : la base
+   * tranche sur l'ordre d'arrivée des réponses et le dernier à répondre écrase
+   * le dernier geste de l'administrateur.
+   */
+  describe("file sérialisée", () => {
+    it("n'envoie la tâche suivante qu'une fois la précédente réglée", async () => {
+      const run = createSerialQueue();
+      const trace = [];
+      let release;
+      let second;
+
+      run(() => {
+        trace.push("1:début");
+        return new Promise((resolve) => {
+          release = resolve;
+        }).then(() => {
+          trace.push("1:fin");
+        });
+      });
+
+      second = run(() => {
+        trace.push("2:début");
+      });
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(trace).toEqual(["1:début"]);
+
+      release();
+      await second;
+
+      expect(trace).toEqual(["1:début", "1:fin", "2:début"]);
+    });
+
+    it("rend la promesse de la tâche pour que l'appelant traite son erreur", async () => {
+      const run = createSerialQueue();
+      const echec = new Error("réseau");
+
+      await expect(run(() => Promise.reject(echec))).rejects.toBe(echec);
+    });
+
+    it("poursuit après un échec au lieu de figer la file", async () => {
+      const run = createSerialQueue();
+
+      await expect(run(() => Promise.reject(new Error("réseau")))).rejects.toThrow(
+        "réseau",
+      );
+      await expect(run(() => "fait")).resolves.toBe("fait");
     });
   });
 });
