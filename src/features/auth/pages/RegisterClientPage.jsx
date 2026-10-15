@@ -223,7 +223,6 @@ export function RegisterClientForm({ bare = false } = {}) {
                 identityButton
               )}
             </Button>
-
           </>
         )}
 
@@ -313,11 +312,15 @@ export function RegisterClientForm({ bare = false } = {}) {
                 size="lg"
                 className="flex-1"
               >
-              Créer mon compte
+                Créer mon compte
               </Button>
             </div>
-            
-            <p className= {`bg-yellow-500/40 ${securityReady ? "hidden":"block"} transition-all duration-300 text-sm px-2 py-1 rounded-md rounded-tl-none!`}>{securityButton}</p>
+
+            <p
+              className={`bg-yellow-500/40 ${securityReady ? "hidden" : "block"} transition-all duration-300 text-sm px-2 py-1 rounded-md rounded-tl-none!`}
+            >
+              {securityButton}
+            </p>
           </>
         )}
       </form>

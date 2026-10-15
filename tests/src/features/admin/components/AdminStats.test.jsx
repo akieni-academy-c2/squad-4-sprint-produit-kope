@@ -77,8 +77,20 @@ const STATS = {
 const render = (element) =>
   renderToStaticMarkup(<MemoryRouter>{element}</MemoryRouter>);
 
+/**
+ * Reproduit ce que le DashboardShell fournit : un constructeur d'URL. Les
+ * raccourcis sont des liens, donc le rendu dépend de ce que renvoie cette
+ * fonction.
+ */
+const sectionLink = (id, filters) =>
+  filters
+    ? `/admin/${id}?${new URLSearchParams(filters).toString()}`
+    : `/admin/${id}`;
+
 describe("Vue d'ensemble - mise en page", () => {
-  const html = render(<AdminOverview stats={STATS} />);
+  const html = render(
+    <AdminOverview stats={STATS} sectionLink={sectionLink} />,
+  );
 
   it("met le travail en attente avant les chiffres", () => {
     expect(html.indexOf("À traiter")).toBeLessThan(html.indexOf("Plateforme"));
@@ -103,10 +115,20 @@ describe("Vue d'ensemble - mise en page", () => {
     expect(html).toContain("suspendu");
   });
 
-  it("rend chaque indicateur sous forme de bouton", () => {
-    const buttons = html.split('<button type="button"').length - 1;
+  it("rend chaque raccourci sous forme de lien vers sa section", () => {
+    const links = html.split("<a ").length - 1;
 
-    expect(buttons).toBeGreaterThanOrEqual(10);
+    expect(links).toBeGreaterThanOrEqual(10);
+    expect(html).toContain('href="/admin/reports?status=pending"');
+    expect(html).toContain('href="/admin/reviews?hidden=true"');
+    expect(html).toContain('href="/admin/users"');
+  });
+
+  it("ne laisse aucun lien sans destination", () => {
+    const anchors = html.match(/<a [^>]*>/g) ?? [];
+
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const anchor of anchors) expect(anchor).toMatch(/href="\/[^"]+"/);
   });
 
   it("calcule le taux de publication", () => {

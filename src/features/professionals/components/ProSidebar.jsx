@@ -10,14 +10,7 @@ import {
   STICKY_COLUMN,
 } from "@/shared/lib/constants.js";
 
-export function ProSidebar({
-  user,
-  profile,
-  displayName,
-  items,
-  active,
-  onChange,
-}) {
+export function ProSidebar({ user, profile, displayName, items, active }) {
   const isPublished = profile?.status === PROFILE_STATUS.PUBLISHED;
   const publicId = user?.id || profile?.userId || profile?.id || "0";
 
@@ -71,7 +64,6 @@ export function ProSidebar({
         <SidebarNav
           items={items}
           active={active}
-          onChange={onChange}
           ariaLabel="Navigation de l'espace pro"
         />
       </div>

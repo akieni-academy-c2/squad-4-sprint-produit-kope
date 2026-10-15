@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { cn } from "@/shared/utils";
+import { BrandMark } from "@/shared/components/layout/BrandMark.jsx";
 import { Skeleton } from "./Skeleton.jsx";
 
 const LOADING = "loading";
@@ -43,12 +44,16 @@ export function ImageWithSkeleton({
   return (
     <div className={cn("relative overflow-hidden", ratio, frameClassName)}>
       {status === LOADING && (
-        <Skeleton
+        <div
+          aria-hidden
           className={cn(
-            "absolute inset-0 h-full w-full rounded-none",
+            "absolute inset-0 flex h-full w-full items-center justify-center rounded-none",
             skeletonClassName,
           )}
-        />
+        >
+          <Skeleton className="absolute inset-0 h-full w-full rounded-none" />
+          <BrandMark size={16} className="relative text-primary-500/45" />
+        </div>
       )}
 
       {status === FAILED && (

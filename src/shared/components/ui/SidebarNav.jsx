@@ -1,9 +1,9 @@
+import { Link } from "@/shared/components/ui/Link.jsx";
 import { cn } from "@/shared/utils";
 
 export function SidebarNav({
   items,
   active,
-  onChange,
   ariaLabel,
   orientation = "vertical",
 }) {
@@ -16,12 +16,11 @@ export function SidebarNav({
         isHorizontal ? "flex w-screen " : "space-y-1",
       )}
     >
-      {items.map(({ id, label, icon: Icon }) => (
-        <button
+      {items.map(({ id, label, href, icon: Icon }) => (
+        <Link
           key={id}
-          type="button"
+          href={href}
           aria-current={active === id ? "page" : undefined}
-          onClick={() => onChange(id)}
           className={cn(
             "flex cursor-pointer items-center gap-3 rounded-sm border text-sm font-semibold transition",
             isHorizontal
@@ -34,7 +33,7 @@ export function SidebarNav({
         >
           <Icon size={18} aria-hidden />
           {label}
-        </button>
+        </Link>
       ))}
     </nav>
   );

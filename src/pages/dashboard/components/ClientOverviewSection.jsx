@@ -13,7 +13,7 @@ import { getMyReports } from "@/features/reports/services/reports.service.js";
 
 const RECENT_COUNT = 4;
 
-export function ClientOverviewSection({ onNavigate }) {
+export function ClientOverviewSection({ sectionLink }) {
   const { data, loading, error } = useAsyncData(async () => {
     const [reviews, contacts, reports] = await Promise.all([
       getMyReviews({ pageSize: RECENT_COUNT }),
@@ -45,21 +45,21 @@ export function ClientOverviewSection({ onNavigate }) {
             value={loading ? "-" : (data?.reviewsTotal ?? 0)}
             hint="Modifiables et masquables"
             icon={<Star size={12} aria-hidden />}
-            onClick={() => onNavigate?.("avis")}
+            href={sectionLink("avis")}
           />
           <KpiCard
             label="Professionnels"
             value={loading ? "-" : (data?.contactsTotal ?? 0)}
             hint="Rencontrés par appel ou WhatsApp"
             icon={<Phone size={12} aria-hidden />}
-            onClick={() => onNavigate?.("contacts")}
+            href={sectionLink("contacts")}
           />
           <KpiCard
             label="Signalements"
             value={loading ? "-" : (data?.reportsTotal ?? 0)}
             hint="Suivi de traitement"
             icon={<Flag size={12} aria-hidden />}
-            onClick={() => onNavigate?.("signalements")}
+            href={sectionLink("signalements")}
           />
         </div>
       </StatGroup>
@@ -91,7 +91,7 @@ export function ClientOverviewSection({ onNavigate }) {
                   rating={review.rating}
                   createdAt={review.createdAt}
                   actionLabel={`Ouvrir mes avis - avis sur ${review.professionalName}`}
-                  onClick={() => onNavigate?.("avis")}
+                  href={sectionLink("avis")}
                 />
               ))}
             </ul>
@@ -122,7 +122,7 @@ export function ClientOverviewSection({ onNavigate }) {
                   key={contact.id}
                   contact={contact}
                   actionLabel={`Ouvrir mes contacts - ${contact.displayName || "Utilisateur"}`}
-                  onClick={() => onNavigate?.("contacts")}
+                  href={sectionLink("contacts")}
                 />
               ))}
             </ul>
