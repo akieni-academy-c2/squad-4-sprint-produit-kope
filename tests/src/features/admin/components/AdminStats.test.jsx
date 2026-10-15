@@ -131,6 +131,16 @@ describe("Vue d'ensemble - mise en page", () => {
     for (const anchor of anchors) expect(anchor).toMatch(/href="\/[^"]+"/);
   });
 
+  /**
+   * Ce lien a été un bouton dont le gestionnaire avait disparu lors d'une
+   * conversion automatisée : la prop `href` était passée au composant, qui
+   * attendait `onOpenAll`. Le rendu ne portait plus aucun lien, et aucun test ne
+   * le voyait.
+   */
+  it("transforme « Voir tous les professionnels » en lien", () => {
+    expect(html).toContain('href="/admin/professionals"');
+  });
+
   it("calcule le taux de publication", () => {
     expect(html).toContain("60%");
     expect(html).toContain("9 profil");
