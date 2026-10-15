@@ -2,15 +2,15 @@ import { MapPin, Star } from "lucide-react";
 import { Link } from "@/shared/components/ui/Link.jsx";
 import { Badge } from "@/shared/components/ui/Badge.jsx";
 import { Card } from "@/shared/components/ui/Card.jsx";
+import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery.js";
 import { ROUTES } from "@/shared/lib/constants.js";
+import { TagList } from "./TagList.jsx";
 import {
   ABOUT_FALLBACK,
   ABOUT_HEADING,
   CITY,
-  initialsOf,
 } from "./profileView.js";
-import { TagList } from "./TagList.jsx";
 
 export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -59,20 +59,15 @@ export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
         <div className="flex flex-col gap-5">
           <div className="relative w-full shrink-0">
             <div className="aspect-4/4 w-full overflow-hidden rounded-sm bg-gray-100">
-              {avatarSrc ? (
-                <img
-                  src={avatarSrc}
-                  alt={profile.displayName}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center text-2xl font-extrabold text-primary-700">
-                  {initialsOf(profile.displayName)}
-                </span>
-              )}
+              <UserAvatar
+                src={avatarSrc}
+                name={profile.displayName}
+                className="size-full"
+                rounded="rounded-sm"
+                iconSize={44}
+                fallbackClassName="bg-gray-100 text-primary-700"
+                priority
+              />
             </div>
           </div>
 

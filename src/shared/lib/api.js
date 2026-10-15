@@ -89,11 +89,16 @@ async function fetchApi(url, options = {}) {
 }
 
 export const api = {
-  get: (url, params) => {
+  /**
+   * `options` est ajouté après `method` pour rester rétrocompatible : un appel
+   * à deux arguments se comporte comme avant. Il sert surtout à transmettre un
+   * `signal` d'annulation, qu'aucun appelant ne fourni spontanément.
+   */
+  get: (url, params, options) => {
     const fullUrl = params
       ? `${url}?${new URLSearchParams(params).toString()}`
       : url;
-    return fetchApi(fullUrl, { method: "GET" });
+    return fetchApi(fullUrl, { method: "GET", ...options });
   },
   postJson: (url, body) =>
     fetchApi(url, {

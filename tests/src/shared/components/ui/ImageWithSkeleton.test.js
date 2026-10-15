@@ -9,14 +9,6 @@ const EXEMPT = new Map([
     "légende flottante superposée",
   ],
   [
-    "src/features/professionals/components/public/PublicProfileSidebar.jsx",
-    "avatar avec initiales de repli",
-  ],
-  [
-    "src/features/professionals/components/public/PublicProfileMobileIntro.jsx",
-    "avatar mobile",
-  ],
-  [
     "src/features/professionals/components/public/PhotoLightbox.jsx",
     "image en taille réelle, sans recadrage",
   ],

@@ -1,7 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { User } from "lucide-react";
 import { cn } from "@/shared/utils";
 
+/**
+ * Avatar unique de l'application : la photo quand elle existe, l'icône `User`
+ * sinon. Le repli couvre les deux cas d'absence - pas d'URL du tout, ou URL
+ * morte - pour qu'aucun affichage ne se termine sur une image cassée.
+ *
+ * `priority` marque l'avatar comme candidat LCP : il doit alors être rendu sans
+ * attente, car c'est souvent la première image visible d'une page.
+ */
 export function UserAvatar({
   user,
   name,
@@ -10,8 +18,14 @@ export function UserAvatar({
   src,
   iconSize = 16,
   rounded = "rounded-full",
+  priority = false,
 }) {
-  const [failed, setFailed] = useState(false);
+  /**
+   * Mémorise l'URL morte, pas un booléen : changer de photo doit montrer la
+   * nouvelle image dès le rendu suivant. Un booléen remis à zéro par un effet
+   * laisserait passer un rendu avec le repli alors que la photo est valide.
+   */
+  const [failedUrl, setFailedUrl] = useState(null);
   const label =
     name ||
     [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim() ||
@@ -20,19 +34,16 @@ export function UserAvatar({
 
   const photoUrl = src ?? user?.avatarUrl;
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFailed(false);
-  }, [photoUrl]);
-
-  if (photoUrl && !failed)
+  if (photoUrl && failedUrl !== photoUrl)
     return (
       <img
         src={photoUrl}
         alt={label}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
         decoding="async"
         className={cn(className, rounded, "object-cover")}
-        onError={() => setFailed(true)}
+        onError={() => setFailedUrl(photoUrl)}
       />
     );
 

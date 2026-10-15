@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/shared/lib/api.js";
 import { callApi } from "@/shared/lib/dataSource.js";
 import { searchMock } from "@/shared/mocks/appMock.js";
@@ -49,6 +49,7 @@ export async function searchProfessionals({
   minRating,
   minExperience,
   page,
+  signal,
 }) {
   const params = {};
   if (trade) params.trade = String(trade);
@@ -75,7 +76,7 @@ export async function searchProfessionals({
   return callApi(
     () =>
       cached(`search:${cacheKey}`, 30_000, () =>
-        api.get("/professionals", params),
+        api.get("/professionals", params, { signal }),
       ),
     async () =>
       searchMock({
@@ -109,7 +110,22 @@ export function useSearch({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const requestId = useRef(0);
+  const controller = useRef(null);
+
+  /**
+   * Chaque frappe relance `run`, donc deux recherches partent souvent de front.
+   * Le jeton d'identifiant départage les réponses : seule la dernière arrivée
+   * écrase l'état. Sans cela, la plus lente gagne et l'utilisateur voit les
+   * résultats d'un texte qu'il a déjà effacé.
+   */
   const run = useCallback(async () => {
+    controller.current?.abort();
+    const local = new AbortController();
+    controller.current = local;
+    const id = ++requestId.current;
+    const isStale = () => id !== requestId.current;
+
     setLoading(true);
     setError(null);
     try {
@@ -122,7 +138,9 @@ export function useSearch({
         minRating,
         minExperience,
         page: page || 1,
+        signal: local.signal,
       });
+      if (isStale()) return null;
       const items = data?.items ?? [];
       if (sort === "rating")
         setResults({
@@ -152,17 +170,21 @@ export function useSearch({
           });
         setResults({ ...data, items: shuffle(items, seed) });
       }
+      return data;
     } catch (err) {
+      if (isStale() || local.signal.aborted) return null;
       setResults(null);
       setError(err);
+      return null;
     } finally {
-      setLoading(false);
+      if (!isStale()) setLoading(false);
     }
   }, [trade, zone, city, q, available, minRating, minExperience, page, sort]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     run();
+    return () => controller.current?.abort();
   }, [run]);
 
   return { results, loading, error, refresh: run };

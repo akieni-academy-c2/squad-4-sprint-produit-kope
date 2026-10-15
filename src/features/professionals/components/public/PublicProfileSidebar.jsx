@@ -9,40 +9,10 @@ import {
   ABOUT_FALLBACK,
   ABOUT_HEADING,
   CITY,
-  initialsOf,
 } from "./profileView.js";
 import { TagList } from "./TagList.jsx";
 import { STICKY_TOP } from "@/shared/lib/constants.js";
-
-function Avatar({
-  src,
-  name,
-  alt = "",
-  wrapperClassName,
-  fallbackClassName,
-  priority = false,
-}) {
-  return (
-    <div className={`shrink-0 overflow-hidden bg-gray-100 ${wrapperClassName}`}>
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : undefined}
-          decoding="async"
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <span
-          className={`flex h-full w-full items-center justify-center font-extrabold text-primary-700 ${fallbackClassName}`}
-        >
-          {initialsOf(name)}
-        </span>
-      )}
-    </div>
-  );
-}
+import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
 
 export function PublicProfileSidebar({
   profile,
@@ -59,12 +29,13 @@ export function PublicProfileSidebar({
     <aside className="min-w-0 space-y-4 lg:self-stretch">
       <Card className="space-y-3.5 p-4">
         <div className="flex items-center gap-3">
-          <Avatar
+          <UserAvatar
             src={avatarSrc}
             name={profile.displayName}
-            alt={profile.displayName}
-            wrapperClassName="h-16 w-16 rounded-md"
-            fallbackClassName="text-xl"
+            className="h-16 w-16 shrink-0"
+            rounded="rounded-md"
+            iconSize={28}
+            fallbackClassName="bg-gray-100 text-primary-700"
             priority
           />
 
@@ -214,11 +185,12 @@ export function PublicProfileSidebar({
       </section>
 
       <Card className={`flex items-center gap-3 p-3 ${STICKY_TOP}`}>
-        <Avatar
+        <UserAvatar
           src={avatarSrc}
           name={profile.displayName}
-          wrapperClassName="h-10 w-10 rounded-full"
-          fallbackClassName="text-sm"
+          className="h-10 w-10 shrink-0"
+          iconSize={16}
+          fallbackClassName="bg-gray-100 text-primary-700"
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-gray-900">

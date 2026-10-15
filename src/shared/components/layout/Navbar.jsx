@@ -76,7 +76,7 @@ export function Navbar() {
         <div className="ml-auto hidden md:flex items-center gap-2">
           <nav
             aria-label="Navigation principale"
-            className="hidden items-center gap-6 lg:flex"
+            className="hidden items-center gap-2 md:flex"
           >
             {navItems.map((item) => {
               if (item.to === ROUTES.REGISTER_PRO)
@@ -85,7 +85,7 @@ export function Navbar() {
                     key={item.to}
                     type="button"
                     onClick={() => openModal(AUTH_MODAL_MODES.REGISTER_PRO)}
-                    className="rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900"
+                    className="hidden rounded-[10px] py-2 text-sm font-semibold text-gray-700 transition hover:text-gray-900 lg:inline-flex"
                   >
                     {item.label}
                   </button>

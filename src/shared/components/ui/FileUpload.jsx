@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button.jsx";
 import { Input } from "./Input.jsx";
 import { Edit, Trash2 } from "lucide-react";
@@ -46,23 +46,26 @@ export function FileUpload({
     onChange?.(file);
   };
 
-  const previewUrl = useMemo(
-    () =>
-      typeof value === "string"
-        ? value
-        : value
-          ? URL.createObjectURL(value)
-          : null,
-    [value],
-  );
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  useEffect(
-    () => () => {
-      if (previewUrl && typeof value !== "string")
-        URL.revokeObjectURL(previewUrl);
-    },
-    [previewUrl, value],
-  );
+  /**
+   * `URL.createObjectURL` alloue une ressource hors de React : elle se crée dans
+   * un effet, jamais pendant le rendu, que StrictMode invoque deux fois. Le
+   * `setState` se justifie ici - l'URL ne peut pas se déduire au rendu sans
+   * allouer une ressource à chaque passe - et le retour du callback libère
+   * l'URL au changement de fichier comme au démontage.
+   */
+  useEffect(() => {
+    let url = null;
+    if (typeof value !== "string" && value) url = URL.createObjectURL(value);
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreviewUrl(typeof value === "string" ? value : url);
+
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [value]);
 
   return (
     <div className="space-y-2">

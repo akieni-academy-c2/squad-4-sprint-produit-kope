@@ -13,9 +13,15 @@ const VARIANT = {
   [PROFILE_STATUS.HIDDEN]: "danger",
 };
 
+/**
+ * La clé vient du code de la règle manquante, pas de sa position : la liste suit
+ * l'ordre de la checklist, qui peut evoluer sans que l'ordre de `missing` change,
+ * et une clé par index ferait alors adopter l'etat d'une ligne a l'autre.
+ */
 function MissingChecklist({ missing }) {
   if (!missing?.length) return null;
-  const items = missing.map((m) => ({
+  const items = missing.map((m, i) => ({
+    key: m.code ?? `manquant-${i}`,
     label:
       m.label || RG04_CHECKLIST.find((r) => r.code === m.code)?.label || m.code,
   }));
@@ -25,9 +31,9 @@ function MissingChecklist({ missing }) {
         À compléter
       </p>
       <ul className="mt-2 space-y-1.5 text-sm">
-        {items.map((it, i) => (
+        {items.map((it) => (
           <li
-            key={i}
+            key={it.key}
             className="flex items-start gap-2 rounded-sm border border-amber-200/70 bg-amber-50 px-3 py-2 text-amber-800"
           >
             <TriangleAlert size={15} className="mt-0.5 shrink-0" aria-hidden />

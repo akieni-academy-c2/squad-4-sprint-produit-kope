@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * La liste de dépendances est fournie par l'appelant : c'est le contrat du
+ * hook, pas une liste que le lint pourrait déduire. La conserver telle quelle
+ * évite de recharger quand l'appelant passe un tableau littéral à chaque rendu.
+ */
 export function useAsyncData(loader, deps = []) {
   const [data, setData] = useState(undefined);
   const [loading, setLoading] = useState(true);

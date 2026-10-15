@@ -86,3 +86,24 @@ describe("Justification du header sur mobile", () => {
     expect(render()).toContain("absolute right-3");
   });
 });
+
+/**
+ * Les media queries ne s'appliquent pas au rendu statique, mais les classes si :
+ * on vérifie donc les seuils déclarés, qui pilotent le comportement responsive.
+ */
+describe("Adaptation de la barre aux tailles", () => {
+  it("espace tous les onglets du même pas que le reste de la barre", () => {
+    const html = render();
+
+    expect(html).toContain('class="hidden items-center gap-2 md:flex"');
+    expect(html).not.toContain("gap-6");
+  });
+
+  it("retire Devenir Prestataire avant le grand écran", () => {
+    expect(render()).toContain("lg:inline-flex");
+  });
+
+  it("ne supprime pas l'onglet, il le masque", () => {
+    expect(render()).toContain("Devenir Prestataire");
+  });
+});

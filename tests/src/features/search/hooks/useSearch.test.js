@@ -22,6 +22,11 @@ afterEach(() => {
   enableMockMode();
 });
 
+/**
+ * `searchProfessionals` transmet désormais un troisième argument `options` au
+ * transport, afin que le hook puisse annuler une recherche dépassée. Les
+ * assertions ci-dessous vérifient donc trois arguments.
+ */
 describe("searchProfessionals - sortie de démo", () => {
   it("transmets métier, zone, mot-clé et page à l'API", async () => {
     expect(isMockMode()).toBe(false);
@@ -33,18 +38,38 @@ describe("searchProfessionals - sortie de démo", () => {
       page: "2",
     });
 
-    expect(api.get).toHaveBeenCalledWith("/professionals", {
-      trade: "2",
-      zone: "3",
-      q: "plombier",
-      page: "2",
-    });
+    expect(api.get).toHaveBeenCalledWith(
+      "/professionals",
+      {
+        trade: "2",
+        zone: "3",
+        q: "plombier",
+        page: "2",
+      },
+      { signal: undefined },
+    );
   });
 
   it("accepte une recherche limitée à la zone", async () => {
     await searchProfessionals({ zone: "3" });
 
-    expect(api.get).toHaveBeenCalledWith("/professionals", { zone: "3" });
+    expect(api.get).toHaveBeenCalledWith(
+      "/professionals",
+      { zone: "3" },
+      { signal: undefined },
+    );
+  });
+
+  it("remonte le signal d'annulation jusqu'à l'appel réseau", async () => {
+    const controller = new AbortController();
+
+    await searchProfessionals({ q: "plombier", signal: controller.signal });
+
+    expect(api.get).toHaveBeenCalledWith(
+      "/professionals",
+      { q: "plombier" },
+      { signal: controller.signal },
+    );
   });
 });
 
