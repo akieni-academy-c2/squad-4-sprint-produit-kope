@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8" />
-<title>KOP — Schéma et dictionnaire des données</title>
+<title>KOP - Schéma et dictionnaire des données</title>
 <style>
   @page { size: A4; margin: 18mm 16mm 16mm; }
   @page landscape { size: A4 landscape; margin: 12mm; }
@@ -152,7 +152,7 @@
       <div><b>31</b><span>migrations appliquées</span></div>
     </div>
     <div class="cover-foot">
-      KOP — annuaire des artisans du bâtiment à Brazzaville.<br />
+      KOP - annuaire des artisans du bâtiment à Brazzaville.<br />
       Document produit par extraction automatique : toute évolution du schéma se
       répercute à la prochaine génération.
     </div>
@@ -160,7 +160,7 @@
 <section class="toc">
     <p class="eyebrow">Sommaire</p>
     <h2>Ce que contient ce document</h2>
-    <ol><li><strong>Objet et périmètre</strong><br /><span>ce que le document couvre, et ce qu’il ne couvre pas</span></li><li><strong>Architecture en une page</strong><br /><span>les trois ensembles de tables et la règle de publication</span></li><li><strong>Planche 1 — Cœur du modèle</strong><br /><span>comptes, profils et référentiels</span></li><li><strong>Planche 2 — Retours et modération</strong><br /><span>avis, contacts et signalements</span></li><li><strong>Dictionnaire des données</strong><br /><span>une entrée par table : rôle, colonnes, règles</span></li><li><strong>Grain</strong><br /><span>ce que compte exactement une ligne de chaque table</span></li><li><strong>Comportement des suppressions</strong><br /><span>mesuré sur la base, chaque essai annulé</span></li><li><strong>Invariants</strong><br /><span>ce qui est garanti en base et ce qui ne l’est pas</span></li><li><strong>Limites pour l’analyse</strong><br /><span>trois manques structurels à connaître</span></li><li><strong>Requêtes de référence</strong><br /><span>les jointures utiles, exécutées et vérifiées</span></li></ol>
+    <ol><li><strong>Objet et périmètre</strong><br /><span>ce que le document couvre, et ce qu’il ne couvre pas</span></li><li><strong>Architecture en une page</strong><br /><span>les trois ensembles de tables et la règle de publication</span></li><li><strong>Planche 1 - Cœur du modèle</strong><br /><span>comptes, profils et référentiels</span></li><li><strong>Planche 2 - Retours et modération</strong><br /><span>avis, contacts et signalements</span></li><li><strong>Dictionnaire des données</strong><br /><span>une entrée par table : rôle, colonnes, règles</span></li><li><strong>Grain</strong><br /><span>ce que compte exactement une ligne de chaque table</span></li><li><strong>Comportement des suppressions</strong><br /><span>mesuré sur la base, chaque essai annulé</span></li><li><strong>Invariants</strong><br /><span>ce qui est garanti en base et ce qui ne l’est pas</span></li><li><strong>Limites pour l’analyse</strong><br /><span>trois manques structurels à connaître</span></li><li><strong>Requêtes de référence</strong><br /><span>les jointures utiles, exécutées et vérifiées</span></li></ol>
   </section>
 <section class="chapter">
     <p class="eyebrow">Chapitre 1</p>
@@ -172,11 +172,11 @@
     <div class="callout warn">
       <p><strong>Les volumes présentés sont ceux d’un environnement de développement.</strong>
       Au moment de l’extraction : 4 profils, 10 comptes, 0 avis, 0 signalement. Un modèle
-      statistique construit sur ces volumes n’aurait aucun sens — ces données valident la
+      statistique construit sur ces volumes n’aurait aucun sens - ces données valident la
       chaîne de production, pas une distribution. Pour des volumes réels, interroger la base
       de production, qui répond au même schéma.</p>
       <p>Quatre tables sont à ignorer : <code>pgmigrations</code>, <code>session</code>,
-      <code>rate_limits</code> et <code>playing_with_neon</code> — cette dernière est
+      <code>rate_limits</code> et <code>playing_with_neon</code> - cette dernière est
       l’exemple créé par l’hébergeur, absent du code de l’application.</p>
     </div>
 
@@ -248,9 +248,9 @@
   </section>
 <section class="sheet">
     <p class="eyebrow">Planche 1</p>
-    <h2>Cœur du modèle — comptes, profils, référentiels</h2>
+    <h2>Cœur du modèle - comptes, profils, référentiels</h2>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1156 474"
-  width="1156" height="474" role="img" aria-label="Cœur du modèle — comptes, profils, référentiels">
+  width="1156" height="474" role="img" aria-label="Cœur du modèle - comptes, profils, référentiels">
   <rect width="1156" height="474" fill="#ffffff"/>
   <g><path d="M368 171.75 H393.5 V353 H454" fill="none" stroke="#c4c7c5"
             stroke-width="1.1" stroke-linejoin="round"/>
@@ -726,7 +726,7 @@
       la colonne « Clés » reprend les contraintes d’unicité et les clés étrangères.</p>
     <div class="card">
           <h3 class="mono">users</h3>
-          <p class="meta">Comptes — Toutes les identités de la plateforme, tous rôles confondus</p>
+          <p class="meta">Comptes - Toutes les identités de la plateforme, tous rôles confondus</p>
           <p>L'authentification se fait par téléphone : `phone` est l'identifiant de connexion, pas une donnée de contact secondaire. `email` est facultatif et stocké normalisé en minuscules, avec une unicité insensible à la casse. `blocked_at` et `suspended_at` portent les sanctions : non nuls, ils retirent le compte de l'annuaire public sans jamais supprimer la ligne.</p>
           <table>
             <thead><tr>
@@ -741,7 +741,7 @@
                 </tr><tr>
                   <td class="name">role</td>
                   <td class="type">user_role</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">phone</td>
@@ -751,59 +751,59 @@
                 </tr><tr>
                   <td class="name">password_hash</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">first_name</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">last_name</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">consented_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">avatar_url</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">blocked_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">suspended_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">email</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr><tr>
                   <td class="name">terms_version</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : aucune · Unicité : <code>phone</code></p>
         </div><div class="card">
           <h3 class="mono">professionals</h3>
-          <p class="meta">Profils artisans — La vitrine publique d’un compte passé artisan</p>
+          <p class="meta">Profils artisans - La vitrine publique d’un compte passé artisan</p>
           <p>Une ligne au plus par compte, la clé primaire étant `user_id`. `is_available` décrit la disponibilité courante, ce n’est pas la publication : celle-ci est calculée par la vue `published_professionals`. `is_hidden` est un masquage volontaire du professionnel, distinct d’une suspension décidée par la modération.</p>
           <table>
             <thead><tr>
@@ -818,7 +818,7 @@
                 </tr><tr>
                   <td class="name">display_name</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">trade_id</td>
@@ -828,32 +828,32 @@
                 </tr><tr>
                   <td class="name">description</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">years_experience</td>
                   <td class="type">smallint</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">whatsapp</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">is_available</td>
                   <td class="type">boolean</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">is_hidden</td>
                   <td class="type">boolean</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">updated_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un compte disposant d’un profil artisan</td>
                 </tr><tr>
                   <td class="name">city_id</td>
@@ -865,7 +865,7 @@
           <p class="meta">Clés étrangères : <code>user_id</code>, <code>trade_id</code>, <code>city_id</code></p>
         </div><div class="card">
           <h3 class="mono">trades</h3>
-          <p class="meta">Métiers — Référentiel des métiers proposés</p>
+          <p class="meta">Métiers - Référentiel des métiers proposés</p>
           <p>Quatre métiers au départ. Les identifiants sont figés et repris en dur dans la page d’accueil, qui les propose en accès direct.</p>
           <table>
             <thead><tr>
@@ -885,7 +885,7 @@
                 </tr><tr>
                   <td class="name">sort_order</td>
                   <td class="type">integer</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un métier du référentiel</td>
                 </tr><tr>
                   <td class="name">category_id</td>
@@ -895,14 +895,14 @@
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un métier du référentiel</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>category_id</code> · Unicité : <code>name</code></p>
         </div><div class="card">
           <h3 class="mono">trade_categories</h3>
-          <p class="meta">Catégories de métiers — Regroupement des métiers pour la navigation</p>
+          <p class="meta">Catégories de métiers - Regroupement des métiers pour la navigation</p>
           <p>Référentiel prévu pour la navigation, non encore rattaché aux métiers en base.</p>
           <table>
             <thead><tr>
@@ -922,14 +922,14 @@
                 </tr><tr>
                   <td class="name">sort_order</td>
                   <td class="type">integer</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une catégorie de métiers</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : aucune · Unicité : <code>name</code></p>
         </div><div class="card">
           <h3 class="mono">cities</h3>
-          <p class="meta">Villes — Référentiel géographique</p>
+          <p class="meta">Villes - Référentiel géographique</p>
           <p>Six villes congolaises. Une seule sert actuellement, Brazzaville.</p>
           <table>
             <thead><tr>
@@ -949,14 +949,14 @@
                 </tr><tr>
                   <td class="name">sort_order</td>
                   <td class="type">integer</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une ville</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : aucune · Unicité : <code>name</code></p>
         </div><div class="card">
           <h3 class="mono">zones</h3>
-          <p class="meta">Quartiers — Zones d’intervention, rattachées à une ville</p>
+          <p class="meta">Quartiers - Zones d’intervention, rattachées à une ville</p>
           <p>Neuf quartiers de Brazzaville. `city_id` est facultatif : une zone sans ville reste valide, elle est alors exclue des listes publiques.</p>
           <table>
             <thead><tr>
@@ -976,7 +976,7 @@
                 </tr><tr>
                   <td class="name">sort_order</td>
                   <td class="type">integer</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un quartier</td>
                 </tr><tr>
                   <td class="name">city_id</td>
@@ -986,14 +986,14 @@
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>un quartier</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>city_id</code> · Unicité : <code>name</code></p>
         </div><div class="card">
           <h3 class="mono">professional_zones</h3>
-          <p class="meta">Zones d’intervention — Association entre un artisan et un quartier</p>
+          <p class="meta">Zones d’intervention - Association entre un artisan et un quartier</p>
           <p>Table de jonction sans attribut propre. La clé primaire composite empêche deux fois la même zone pour un même artisan. Au moins une ligne est exigée pour qu’un profil soit publié.</p>
           <table>
             <thead><tr>
@@ -1015,7 +1015,7 @@
           <p class="meta">Clés étrangères : <code>professional_id</code>, <code>zone_id</code></p>
         </div><div class="card">
           <h3 class="mono">photos</h3>
-          <p class="meta">Réalisations — Photos publiées par un artisan</p>
+          <p class="meta">Réalisations - Photos publiées par un artisan</p>
           <p>Au moins une photo est exigée pour la publication. `file_path` et `thumb_path` sont des chemins relatifs : l’URL publique est reconstruite par l’application, vers Cloudinary en production.</p>
           <table>
             <thead><tr>
@@ -1035,39 +1035,39 @@
                 </tr><tr>
                   <td class="name">file_path</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr><tr>
                   <td class="name">thumb_path</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr><tr>
                   <td class="name">caption</td>
                   <td class="type">varchar(100)</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr><tr>
                   <td class="name">title</td>
                   <td class="type">varchar(100)</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr><tr>
                   <td class="name">description</td>
                   <td class="type">varchar(500)</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une photo de réalisation</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>professional_id</code></p>
         </div><div class="card">
           <h3 class="mono">reviews</h3>
-          <p class="meta">Avis — Note et commentaire laissés par un client</p>
+          <p class="meta">Avis - Note et commentaire laissés par un client</p>
           <p>Un seul avis par client et par artisan, garantie par une contrainte d’unicité. La note va de 1 à 5. Aucun agrégat n’est stocké : la moyenne est recalculée à chaque lecture sur les seuls avis non masqués. Un avis se modifie et se supprime en place, sans conserve d’historique.</p>
           <table>
             <thead><tr>
@@ -1078,48 +1078,48 @@
                   <td class="name">id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge pk">PK</span></td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">client_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">professional_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">rating</td>
                   <td class="type">smallint</td>
-                  <td>—</td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>-</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">comment</td>
                   <td class="type">varchar(300)</td>
-                  <td>—</td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>-</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">is_hidden</td>
                   <td class="type">boolean</td>
-                  <td>—</td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>-</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>-</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr><tr>
                   <td class="name">updated_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un avis — au plus un par (client, artisan)</td>
+                  <td>-</td>
+                  <td>un avis - au plus un par (client, artisan)</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>client_id</code>, <code>professional_id</code> · Unicité : <code>client_id</code>, <code>professional_id</code></p>
         </div><div class="card">
           <h3 class="mono">contacts</h3>
-          <p class="meta">Prises de contact — Journal des échanges entre deux comptes</p>
+          <p class="meta">Prises de contact - Journal des échanges entre deux comptes</p>
           <p>Le `channel` indique la forme de l’échange : `message`, `call` ou `whatsapp`. Un message n’est obligatoire que pour le canal `message`. `status` suit le cycle `new` puis `seen` puis `done` ; ouvrir sa liste de contacts fait passer les entrants en `seen`.</p>
           <table>
             <thead><tr>
@@ -1144,29 +1144,29 @@
                 </tr><tr>
                   <td class="name">message</td>
                   <td class="type">text</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une prise de contact, dans un sens donné</td>
                 </tr><tr>
                   <td class="name">status</td>
                   <td class="type">contact_status</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une prise de contact, dans un sens donné</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une prise de contact, dans un sens donné</td>
                 </tr><tr>
                   <td class="name">channel</td>
                   <td class="type">contact_channel</td>
-                  <td>—</td>
+                  <td>-</td>
                   <td>une prise de contact, dans un sens donné</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>sender_id</code>, <code>recipient_id</code></p>
         </div><div class="card">
           <h3 class="mono">account_reports</h3>
-          <p class="meta">Signalements de compte — Signalements visant un client ou un artisan</p>
+          <p class="meta">Signalements de compte - Signalements visant un client ou un artisan</p>
           <p>La colonne `professional_id` porte la cible du signalement : sa clé étrangère pointe vers `users`, et `target_role` distingue un client d’un artisan. Le nom de colonne est donc trompeur, la contrainte s’appelle d’ailleurs `account_reports_target_fkey`. Un compte ne peut être signalé qu’une fois par le même auteur.</p>
           <table>
             <thead><tr>
@@ -1177,53 +1177,53 @@
                   <td class="name">id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge pk">PK</span></td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">professional_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">reporter_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">reason</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">message</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">status</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">resolved_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr><tr>
                   <td class="name">target_role</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement — au plus un par (cible, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement - au plus un par (cible, auteur)</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>professional_id</code>, <code>reporter_id</code> · Unicité : <code>professional_id</code>, <code>reporter_id</code></p>
         </div><div class="card">
           <h3 class="mono">review_reports</h3>
-          <p class="meta">Signalements d’avis — Signalements visant un avis, pas un compte</p>
+          <p class="meta">Signalements d’avis - Signalements visant un avis, pas un compte</p>
           <p>Mêmes règles qu’un signalement de compte, mais la cible est l’avis. Un avis signalé reste en base : la modération agit sur son contenu ou le masque.</p>
           <table>
             <thead><tr>
@@ -1234,42 +1234,42 @@
                   <td class="name">id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge pk">PK</span></td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">review_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">reporter_id</td>
                   <td class="type">bigint</td>
                   <td><span class="badge fk">FK</span> <span class="badge uk">UK</span></td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">reason</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">message</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">status</td>
                   <td class="type">text</td>
-                  <td>—</td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">resolved_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr><tr>
                   <td class="name">created_at</td>
                   <td class="type">timestamptz</td>
-                  <td>—</td>
-                  <td>un signalement d’avis — au plus un par (avis, auteur)</td>
+                  <td>-</td>
+                  <td>un signalement d’avis - au plus un par (avis, auteur)</td>
                 </tr></tbody>
           </table>
           <p class="meta">Clés étrangères : <code>review_id</code>, <code>reporter_id</code> · Unicité : <code>review_id</code>, <code>reporter_id</code></p>
@@ -1282,7 +1282,7 @@
       <code>count(*)</code> n’a pas de sens interprétable.</p>
     <table>
       <thead><tr><th style="width:32%">Table</th><th>Une ligne par…</th></tr></thead>
-      <tbody><tr><td class="name mono">users</td><td>un compte</td></tr><tr><td class="name mono">professionals</td><td>un compte disposant d’un profil artisan</td></tr><tr><td class="name mono">trades</td><td>un métier du référentiel</td></tr><tr><td class="name mono">trade_categories</td><td>une catégorie de métiers</td></tr><tr><td class="name mono">cities</td><td>une ville</td></tr><tr><td class="name mono">zones</td><td>un quartier</td></tr><tr><td class="name mono">professional_zones</td><td>un couple (artisan, quartier)</td></tr><tr><td class="name mono">photos</td><td>une photo de réalisation</td></tr><tr><td class="name mono">reviews</td><td>un avis — au plus un par (client, artisan)</td></tr><tr><td class="name mono">contacts</td><td>une prise de contact, dans un sens donné</td></tr><tr><td class="name mono">account_reports</td><td>un signalement — au plus un par (cible, auteur)</td></tr><tr><td class="name mono">review_reports</td><td>un signalement d’avis — au plus un par (avis, auteur)</td></tr></tbody>
+      <tbody><tr><td class="name mono">users</td><td>un compte</td></tr><tr><td class="name mono">professionals</td><td>un compte disposant d’un profil artisan</td></tr><tr><td class="name mono">trades</td><td>un métier du référentiel</td></tr><tr><td class="name mono">trade_categories</td><td>une catégorie de métiers</td></tr><tr><td class="name mono">cities</td><td>une ville</td></tr><tr><td class="name mono">zones</td><td>un quartier</td></tr><tr><td class="name mono">professional_zones</td><td>un couple (artisan, quartier)</td></tr><tr><td class="name mono">photos</td><td>une photo de réalisation</td></tr><tr><td class="name mono">reviews</td><td>un avis - au plus un par (client, artisan)</td></tr><tr><td class="name mono">contacts</td><td>une prise de contact, dans un sens donné</td></tr><tr><td class="name mono">account_reports</td><td>un signalement - au plus un par (cible, auteur)</td></tr><tr><td class="name mono">review_reports</td><td>un signalement d’avis - au plus un par (avis, auteur)</td></tr></tbody>
     </table>
   </section>
 <section class="chapter">
@@ -1300,7 +1300,7 @@
       <thead><tr>
         <th style="width:26%">Relation</th><th style="width:14%">Déclaré</th><th>Comportement vérifié</th>
       </tr></thead>
-      <tbody><tr><td class="name mono">users → professionals</td><td>CASCADE</td><td>Le profil, ses zones et ses photos partent.</td></tr><tr><td class="name mono">users → contacts</td><td>CASCADE</td><td>Les prises de contact partent.</td></tr><tr><td class="name mono">users → account_reports</td><td>CASCADE</td><td>Les signalements dont il est l’auteur partent.</td></tr><tr><td class="name mono">users → review_reports</td><td>CASCADE</td><td>Les signalements d’avis dont il est l’auteur partent.</td></tr><tr><td class="name mono">reviews → professionals</td><td>aucune</td><td>REFUSÉ — 23503. Un artisan ayant des avis ne peut pas être supprimé.</td></tr><tr><td class="name mono">professionals → photos</td><td>CASCADE</td><td>Part avec le profil.</td></tr><tr><td class="name mono">professionals → professional_zones</td><td>CASCADE</td><td>Part avec le profil.</td></tr><tr><td class="name mono">zones → professional_zones</td><td>aucune</td><td>REFUSÉ — 23503. Un quartier référencé ne peut pas être supprimé.</td></tr><tr><td class="name mono">trades → professionals</td><td>aucune</td><td>REFUSÉ — 23503. Un métier référencé ne peut pas être supprimé.</td></tr><tr><td class="name mono">cities → zones</td><td>SET NULL</td><td>La zone survit, devient orpheline.</td></tr><tr><td class="name mono">cities → professionals</td><td>SET NULL</td><td>Le profil survit sans ville.</td></tr></tbody>
+      <tbody><tr><td class="name mono">users → professionals</td><td>CASCADE</td><td>Le profil, ses zones et ses photos partent.</td></tr><tr><td class="name mono">users → contacts</td><td>CASCADE</td><td>Les prises de contact partent.</td></tr><tr><td class="name mono">users → account_reports</td><td>CASCADE</td><td>Les signalements dont il est l’auteur partent.</td></tr><tr><td class="name mono">users → review_reports</td><td>CASCADE</td><td>Les signalements d’avis dont il est l’auteur partent.</td></tr><tr><td class="name mono">reviews → professionals</td><td>aucune</td><td>REFUSÉ - 23503. Un artisan ayant des avis ne peut pas être supprimé.</td></tr><tr><td class="name mono">professionals → photos</td><td>CASCADE</td><td>Part avec le profil.</td></tr><tr><td class="name mono">professionals → professional_zones</td><td>CASCADE</td><td>Part avec le profil.</td></tr><tr><td class="name mono">zones → professional_zones</td><td>aucune</td><td>REFUSÉ - 23503. Un quartier référencé ne peut pas être supprimé.</td></tr><tr><td class="name mono">trades → professionals</td><td>aucune</td><td>REFUSÉ - 23503. Un métier référencé ne peut pas être supprimé.</td></tr><tr><td class="name mono">cities → zones</td><td>SET NULL</td><td>La zone survit, devient orpheline.</td></tr><tr><td class="name mono">cities → professionals</td><td>SET NULL</td><td>Le profil survit sans ville.</td></tr></tbody>
     </table>
     <h3>Ce que cela change pour une analyse</h3>
     <p><strong>Aucun avis ne peut devenir orphelin.</strong> Le blocage de clé étrangère
@@ -1377,5 +1377,5 @@
     migration SQL versionnée dans <code>server/db/migrations</code>, jamais par une
     modification directe en base. Pour régénérer : <code>npm run docs:pdf</code>.</p>
   </section>
-<div class="fixed-foot"><span>KOP — Schéma et dictionnaire des données</span><span>14 octobre 2026</span></div>
+<div class="fixed-foot"><span>KOP - Schéma et dictionnaire des données</span><span>14 octobre 2026</span></div>
 </body></html>

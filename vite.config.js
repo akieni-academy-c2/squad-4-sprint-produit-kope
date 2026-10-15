@@ -41,6 +41,16 @@ export function imageOptimizer() {
      */
     enforce: 'pre',
     apply: 'build',
+    /**
+     * `vite build --watch` réutilise l'instance entre les rebuilds : sans cette
+     * remise à zéro, `pending` cumule les jetons morts et `generateBundle` les
+     * rescane sur chaque chunk. Le jeton est dérivé de `pending.size`, donc la
+     * table doit repartir de zéro pour que les deux builds ne se marchent pas
+     * dessus.
+     */
+    buildStart() {
+      pending.clear()
+    },
     async load(id) {
       const [file] = id.split('?')
       if (!RASTER.test(file)) return null

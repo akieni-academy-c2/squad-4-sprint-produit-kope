@@ -207,7 +207,7 @@ async function main() {
       parts.push(
         `| ${isPk ? '**' : ''}\`${col.name}\`${isPk ? '**' : ''} | \`${col.type}\` | ${
           col.nullable ? 'oui' : 'non'
-        } | ${col.default_value ? `\`${mdEscape(col.default_value)}\`` : '—'} |`,
+        } | ${col.default_value ? `\`${mdEscape(col.default_value)}\`` : '-'} |`,
       );
     }
     parts.push('');
@@ -260,7 +260,7 @@ async function main() {
 
   fs.writeFileSync(path.join(OUT, 'schema.md'), parts.join('\n'), 'utf8');
   console.log(
-    `docs/data-science/schema.md — ${business.length} tables métier, ${viewList.length} vue`,
+    `docs/data-science/schema.md - ${business.length} tables métier, ${viewList.length} vue`,
   );
 }
 

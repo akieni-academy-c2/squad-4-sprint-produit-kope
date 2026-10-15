@@ -16,8 +16,14 @@ describe("optimiseur d'images", () => {
     const plugin = imageOptimizer();
     const refIds = [...REF_IDS];
     const ctx = {
-      emitFile: () => refIds.shift(),
-      getFileName: (refId) => `assets/what2-417-${refId}.webp`,
+      emitFile: () => {
+        if (refIds.length === 0) throw new Error('emitFile() depasse le jeu de references');
+        return refIds.shift();
+      },
+      getFileName: (refId) => {
+        if (typeof refId !== 'string') throw new TypeError(`reference invalide: ${refId}`);
+        return `assets/what2-417-${refId}.webp`;
+      },
     };
 
     const code = await plugin.load.call(ctx, repoPath('src/shared/assets/what2.png'));

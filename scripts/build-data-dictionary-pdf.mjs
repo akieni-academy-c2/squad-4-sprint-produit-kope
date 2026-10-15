@@ -176,7 +176,7 @@ function coverPage(figures) {
       ${figures.map(([value, label]) => `<div><b>${value}</b><span>${label}</span></div>`).join('\n      ')}
     </div>
     <div class="cover-foot">
-      KOP — annuaire des artisans du bâtiment à Brazzaville.<br />
+      KOP - annuaire des artisans du bâtiment à Brazzaville.<br />
       Document produit par extraction automatique : toute évolution du schéma se
       répercute à la prochaine génération.
     </div>
@@ -187,8 +187,8 @@ function tocPage() {
   const items = [
     ['Objet et périmètre', 'ce que le document couvre, et ce qu’il ne couvre pas'],
     ['Architecture en une page', 'les trois ensembles de tables et la règle de publication'],
-    ['Planche 1 — Cœur du modèle', 'comptes, profils et référentiels'],
-    ['Planche 2 — Retours et modération', 'avis, contacts et signalements'],
+    ['Planche 1 - Cœur du modèle', 'comptes, profils et référentiels'],
+    ['Planche 2 - Retours et modération', 'avis, contacts et signalements'],
     ['Dictionnaire des données', 'une entrée par table : rôle, colonnes, règles'],
     ['Grain', 'ce que compte exactement une ligne de chaque table'],
     ['Comportement des suppressions', 'mesuré sur la base, chaque essai annulé'],
@@ -214,11 +214,11 @@ function scopeSection() {
     <div class="callout warn">
       <p><strong>Les volumes présentés sont ceux d’un environnement de développement.</strong>
       Au moment de l’extraction : 4 profils, 10 comptes, 0 avis, 0 signalement. Un modèle
-      statistique construit sur ces volumes n’aurait aucun sens — ces données valident la
+      statistique construit sur ces volumes n’aurait aucun sens - ces données valident la
       chaîne de production, pas une distribution. Pour des volumes réels, interroger la base
       de production, qui répond au même schéma.</p>
       <p>Quatre tables sont à ignorer : <code>pgmigrations</code>, <code>session</code>,
-      <code>rate_limits</code> et <code>playing_with_neon</code> — cette dernière est
+      <code>rate_limits</code> et <code>playing_with_neon</code> - cette dernière est
       l’exemple créé par l’hébergeur, absent du code de l’application.</p>
     </div>
 
@@ -320,7 +320,7 @@ function dictionarySection(entities) {
         const uniques = [...new Set(entity.columns.filter((c) => c.uk).map((c) => c.name))];
         return `<div class="card">
           <h3 class="mono">${escapeHtml(name)}</h3>
-          <p class="meta">${escapeHtml(purpose.title)} — ${escapeHtml(purpose.role)}</p>
+          <p class="meta">${escapeHtml(purpose.title)} - ${escapeHtml(purpose.role)}</p>
           <p>${purpose.detail}</p>
           <table>
             <thead><tr>
@@ -336,7 +336,7 @@ function dictionarySection(entities) {
                     column.pk ? '<span class="badge pk">PK</span>' : '',
                     column.fk ? '<span class="badge fk">FK</span>' : '',
                     column.uk ? '<span class="badge uk">UK</span>' : '',
-                  ].filter(Boolean).join(' ') || '—'}</td>
+                  ].filter(Boolean).join(' ') || '-'}</td>
                   <td>${escapeHtml(GRAIN[name] ?? '')}</td>
                 </tr>`,
               )
@@ -503,7 +503,7 @@ const figures = [
 
 const html = `<!doctype html>
 <html lang="fr"><head><meta charset="utf-8" />
-<title>KOP — Schéma et dictionnaire des données</title>
+<title>KOP - Schéma et dictionnaire des données</title>
 <style>${CSS}</style></head>
 <body>
 ${coverPage(figures)}
@@ -525,7 +525,7 @@ ${invariantsSection()}
 ${limitsSection()}
 ${queriesSection()}
 ${appendixSection(counts)}
-<div class="fixed-foot"><span>KOP — Schéma et dictionnaire des données</span><span>${escapeHtml(TODAY)}</span></div>
+<div class="fixed-foot"><span>KOP - Schéma et dictionnaire des données</span><span>${escapeHtml(TODAY)}</span></div>
 </body></html>`;
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -555,6 +555,6 @@ const raw = fs.readFileSync(PDF_PATH).toString('latin1');
 const pages = (raw.match(/\/Type\s*\/Page[^s]/g) || []).length;
 const media = [...new Set((raw.match(/\/MediaBox\s*\[[^\]]*\]/g) || []).map((m) => m.replace(/\s+/g, ' ')))];
 
-console.log(`${path.relative('.', PDF_PATH)} — ${(bytes / 1024).toFixed(0)} Ko, ${pages} pages`);
+console.log(`${path.relative('.', PDF_PATH)} - ${(bytes / 1024).toFixed(0)} Ko, ${pages} pages`);
 console.log(`formats : ${media.join(' | ')}`);
-console.log(`${path.relative('.', HTML_PATH)} — source reproductible`);
+console.log(`${path.relative('.', HTML_PATH)} - source reproductible`);

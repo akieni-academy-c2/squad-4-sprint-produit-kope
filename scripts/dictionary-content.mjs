@@ -86,10 +86,10 @@ export const GRAIN = {
   zones: 'un quartier',
   professional_zones: 'un couple (artisan, quartier)',
   photos: 'une photo de réalisation',
-  reviews: 'un avis — au plus un par (client, artisan)',
+  reviews: 'un avis - au plus un par (client, artisan)',
   contacts: 'une prise de contact, dans un sens donné',
-  account_reports: 'un signalement — au plus un par (cible, auteur)',
-  review_reports: 'un signalement d’avis — au plus un par (avis, auteur)',
+  account_reports: 'un signalement - au plus un par (cible, auteur)',
+  review_reports: 'un signalement d’avis - au plus un par (avis, auteur)',
 };
 
 /**
@@ -102,11 +102,11 @@ export const DELETES = [
   ['users → contacts', 'CASCADE', 'Les prises de contact partent.'],
   ['users → account_reports', 'CASCADE', 'Les signalements dont il est l’auteur partent.'],
   ['users → review_reports', 'CASCADE', 'Les signalements d’avis dont il est l’auteur partent.'],
-  ['reviews → professionals', 'aucune', 'REFUSÉ — 23503. Un artisan ayant des avis ne peut pas être supprimé.'],
+  ['reviews → professionals', 'aucune', 'REFUSÉ - 23503. Un artisan ayant des avis ne peut pas être supprimé.'],
   ['professionals → photos', 'CASCADE', 'Part avec le profil.'],
   ['professionals → professional_zones', 'CASCADE', 'Part avec le profil.'],
-  ['zones → professional_zones', 'aucune', 'REFUSÉ — 23503. Un quartier référencé ne peut pas être supprimé.'],
-  ['trades → professionals', 'aucune', 'REFUSÉ — 23503. Un métier référencé ne peut pas être supprimé.'],
+  ['zones → professional_zones', 'aucune', 'REFUSÉ - 23503. Un quartier référencé ne peut pas être supprimé.'],
+  ['trades → professionals', 'aucune', 'REFUSÉ - 23503. Un métier référencé ne peut pas être supprimé.'],
   ['cities → zones', 'SET NULL', 'La zone survit, devient orpheline.'],
   ['cities → professionals', 'SET NULL', 'Le profil survit sans ville.'],
 ];

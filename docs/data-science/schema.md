@@ -38,13 +38,13 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `reporter_id` | `bigint` | non | — |
-| `reason` | `text` | non | — |
-| `message` | `text` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `professional_id` | `bigint` | non | - |
+| `reporter_id` | `bigint` | non | - |
+| `reason` | `text` | non | - |
+| `message` | `text` | oui | - |
 | `status` | `text` | non | `'pending'::text` |
-| `resolved_at` | `timestamp with time zone` | oui | — |
+| `resolved_at` | `timestamp with time zone` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 | `target_role` | `text` | non | `'professional'::text` |
 
@@ -74,8 +74,8 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
+| **`id`** | `smallint` | non | - |
+| `name` | `text` | non | - |
 | `sort_order` | `integer` | non | `0` |
 
 - Clé primaire : `id`
@@ -94,10 +94,10 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `sender_id` | `bigint` | non | — |
-| `recipient_id` | `bigint` | non | — |
-| `message` | `text` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `sender_id` | `bigint` | non | - |
+| `recipient_id` | `bigint` | non | - |
+| `message` | `text` | oui | - |
 | `status` | `contact_status` | non | `'new'::contact_status` |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 | `channel` | `contact_channel` | non | `'message'::contact_channel` |
@@ -122,14 +122,14 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `file_path` | `text` | non | — |
-| `thumb_path` | `text` | non | — |
-| `caption` | `character varying(100)` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `professional_id` | `bigint` | non | - |
+| `file_path` | `text` | non | - |
+| `thumb_path` | `text` | non | - |
+| `caption` | `character varying(100)` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
-| `title` | `character varying(100)` | oui | — |
-| `description` | `character varying(500)` | oui | — |
+| `title` | `character varying(100)` | oui | - |
+| `description` | `character varying(500)` | oui | - |
 
 - Clé primaire : `id`
 - `professional_id` → `professionals.user_id` (suppression : CASCADE)
@@ -147,8 +147,8 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`professional_id`** | `bigint` | non | — |
-| **`zone_id`** | `smallint` | non | — |
+| **`professional_id`** | `bigint` | non | - |
+| **`zone_id`** | `smallint` | non | - |
 
 - Clé primaire : `professional_id`, `zone_id`
 - `professional_id` → `professionals.user_id` (suppression : CASCADE)
@@ -167,16 +167,16 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`user_id`** | `bigint` | non | — |
-| `display_name` | `text` | non | — |
-| `trade_id` | `smallint` | non | — |
-| `description` | `text` | oui | — |
-| `years_experience` | `smallint` | oui | — |
-| `whatsapp` | `text` | oui | — |
+| **`user_id`** | `bigint` | non | - |
+| `display_name` | `text` | non | - |
+| `trade_id` | `smallint` | non | - |
+| `description` | `text` | oui | - |
+| `years_experience` | `smallint` | oui | - |
+| `whatsapp` | `text` | oui | - |
 | `is_available` | `boolean` | non | `true` |
 | `is_hidden` | `boolean` | non | `false` |
 | `updated_at` | `timestamp with time zone` | non | `now()` |
-| `city_id` | `smallint` | oui | — |
+| `city_id` | `smallint` | oui | - |
 
 - Clé primaire : `user_id`
 - `city_id` → `cities.id` (suppression : SET NULL)
@@ -201,13 +201,13 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `review_id` | `bigint` | non | — |
-| `reporter_id` | `bigint` | non | — |
-| `reason` | `text` | non | — |
-| `message` | `text` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `review_id` | `bigint` | non | - |
+| `reporter_id` | `bigint` | non | - |
+| `reason` | `text` | non | - |
+| `message` | `text` | oui | - |
 | `status` | `text` | non | `'pending'::text` |
-| `resolved_at` | `timestamp with time zone` | oui | — |
+| `resolved_at` | `timestamp with time zone` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 
 - Clé primaire : `id`
@@ -233,11 +233,11 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `client_id` | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `rating` | `smallint` | non | — |
-| `comment` | `character varying(300)` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `client_id` | `bigint` | non | - |
+| `professional_id` | `bigint` | non | - |
+| `rating` | `smallint` | non | - |
+| `comment` | `character varying(300)` | oui | - |
 | `is_hidden` | `boolean` | non | `false` |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 | `updated_at` | `timestamp with time zone` | non | `now()` |
@@ -266,8 +266,8 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
+| **`id`** | `smallint` | non | - |
+| `name` | `text` | non | - |
 | `sort_order` | `integer` | non | `0` |
 
 - Clé primaire : `id`
@@ -286,10 +286,10 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
+| **`id`** | `smallint` | non | - |
+| `name` | `text` | non | - |
 | `sort_order` | `integer` | non | `0` |
-| `category_id` | `smallint` | oui | — |
+| `category_id` | `smallint` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 
 - Clé primaire : `id`
@@ -311,19 +311,19 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `role` | `user_role` | non | — |
-| `phone` | `text` | non | — |
-| `password_hash` | `text` | non | — |
-| `first_name` | `text` | oui | — |
-| `last_name` | `text` | oui | — |
-| `consented_at` | `timestamp with time zone` | oui | — |
+| **`id`** | `bigint` | non | - |
+| `role` | `user_role` | non | - |
+| `phone` | `text` | non | - |
+| `password_hash` | `text` | non | - |
+| `first_name` | `text` | oui | - |
+| `last_name` | `text` | oui | - |
+| `consented_at` | `timestamp with time zone` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
-| `avatar_url` | `text` | oui | — |
-| `blocked_at` | `timestamp with time zone` | oui | — |
-| `suspended_at` | `timestamp with time zone` | oui | — |
-| `email` | `text` | oui | — |
-| `terms_version` | `text` | oui | — |
+| `avatar_url` | `text` | oui | - |
+| `blocked_at` | `timestamp with time zone` | oui | - |
+| `suspended_at` | `timestamp with time zone` | oui | - |
+| `email` | `text` | oui | - |
+| `terms_version` | `text` | oui | - |
 
 - Clé primaire : `id`
 - Unicité : `phone`
@@ -350,10 +350,10 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 | Colonne | Type | Null | Défaut |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
+| **`id`** | `smallint` | non | - |
+| `name` | `text` | non | - |
 | `sort_order` | `integer` | non | `0` |
-| `city_id` | `smallint` | oui | — |
+| `city_id` | `smallint` | oui | - |
 | `created_at` | `timestamp with time zone` | non | `now()` |
 
 - Clé primaire : `id`

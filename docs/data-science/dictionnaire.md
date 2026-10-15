@@ -1,7 +1,7 @@
-# Dictionnaire des données — KOP
+# Dictionnaire des données - KOP
 
 Document d'accompagnement de [schema.md](schema.md). Il explique ce que chaque
-table représente et, surtout, **les règles que le code applique** — parce que
+table représente et, surtout, **les règles que le code applique** - parce que
 beaucoup de contraintes métier ne sont pas dans le schéma : elles sont dans une
 vue ou dans le service.
 
@@ -15,7 +15,7 @@ trouve, le contacte, et peut laisser un avis.
 
 **Les volumes actuels sont ceux d'un environnement de développement, pas de la
 production.** Au moment de l'extraction : 4 profils, 10 comptes, **0 avis**, 0
-signalement. Un modèle statistique construit dessus n'aurait aucun sens — ces
+signalement. Un modèle statistique construit dessus n'aurait aucun sens - ces
 données servent à valider la chaîne, pas à entraîner un modèle. Pour des volumes
 réels, il faut interroger la base de production, qui répond au même schéma.
 

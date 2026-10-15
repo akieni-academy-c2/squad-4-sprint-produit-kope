@@ -1,4 +1,4 @@
-# Schéma relationnel — KOP
+# Schéma relationnel - KOP
 
 Diagramme de classes du modèle, style MERISE / *crow's foot*. Le complément
 référentiel de [schema.md](schema.md) (colonnes, types, index) et de
@@ -189,7 +189,7 @@ Trois relations méritent une note :
 Une ligne de, et le grain exact. Sans cette phrase, un `count(*)` n'a pas de sens
 interprétable.
 
-| Table | Grain — une ligne par… |
+| Table | Grain - une ligne par… |
 | :--- | :--- |
 | `users` | compte |
 | `professionals` | compte disposant d'un profil artisan |
@@ -199,10 +199,10 @@ interprétable.
 | `zones` | quartier |
 | `professional_zones` | couple (artisan, quartier) |
 | `photos` | photo de réalisation |
-| `reviews` | avis — au plus un par (client, artisan) |
+| `reviews` | avis - au plus un par (client, artisan) |
 | `contacts` | prise de contact, dans un sens donné |
-| `account_reports` | signalement — au plus un par (cible, auteur) |
-| `review_reports` | signalement d'avis — au plus un par (avis, auteur) |
+| `account_reports` | signalement - au plus un par (cible, auteur) |
+| `review_reports` | signalement d'avis - au plus un par (avis, auteur) |
 | `published_professionals` | artisan visible dans l'annuaire public |
 
 ## Suppressions
@@ -211,7 +211,7 @@ Comportement **mesuré** sur la base, chaque essai étant annulé par `ROLLBACK`
 `||` = exactement un, `o{` = zéro ou plusieurs.
 
 Point capital : toutes les clés étrangères sont **non deferrable**. Sur une telle
-clé, `NO ACTION` se comporte comme `RESTRICT` — la suppression est refusée, elle
+clé, `NO ACTION` se comporte comme `RESTRICT` - la suppression est refusée, elle
 n'est pas différée. La colonne « Suppression » de `schema.md` affiche donc
 `aucune`, mais la réalité est un blocage.
 
@@ -219,11 +219,11 @@ n'est pas différée. La colonne « Suppression » de `schema.md` affiche donc
 | :--- | :--- | :--- |
 | `users → professionals` | CASCADE | le profil, ses zones et ses photos partent |
 | `users → contacts` | CASCADE | les prises de contact partent |
-| `users → account_reports` | CASCADE | les signalements dont il est l'auteur partent || `reviews → professionals` | aucune | **REFUSÉ** — `23503`, un artisan ayant des avis ne peut pas être supprimé |
+| `users → account_reports` | CASCADE | les signalements dont il est l'auteur partent || `reviews → professionals` | aucune | **REFUSÉ** - `23503`, un artisan ayant des avis ne peut pas être supprimé |
 | `professionals → photos` | CASCADE | part avec le profil |
 | `professionals → professional_zones` | CASCADE | part avec le profil |
-| `zones → professional_zones` | aucune | **REFUSÉ** — `23503`, un quartier référencé ne peut pas être supprimé |
-| `trades → professionals` | aucune | **REFUSÉ** — `23503`, un métier référencé ne peut pas être supprimé |
+| `zones → professional_zones` | aucune | **REFUSÉ** - `23503`, un quartier référencé ne peut pas être supprimé |
+| `trades → professionals` | aucune | **REFUSÉ** - `23503`, un métier référencé ne peut pas être supprimé |
 | `cities → zones` | SET NULL | la zone survit, devient orpheline |
 | `cities → professionals` | SET NULL | le profil survit sans ville |
 

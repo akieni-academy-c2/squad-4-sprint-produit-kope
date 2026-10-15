@@ -33,7 +33,7 @@ function parse() {
 
     if (inBlock) {
       if (ATTRIBUTE.test(line)) attributes += 1;
-      else errors.push(`ligne ${n} : attribut invalide — ${line}`);
+      else errors.push(`ligne ${n} : attribut invalide - ${line}`);
       return;
     }
 
@@ -58,7 +58,7 @@ function parse() {
       return;
     }
 
-    errors.push(`ligne ${n} : ligne non reconnue — ${line}`);
+    errors.push(`ligne ${n} : ligne non reconnue - ${line}`);
   });
 
   if (inBlock) errors.push('bloc d\'attributs jamais refermé');

@@ -35,7 +35,7 @@ const FONT = "Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 /** Planche 1 : qui existe, ce qu'il propose, où. */
 const SHEET_CORE = {
   id: 'core',
-  title: 'Cœur du modèle — comptes, profils, référentiels',
+  title: 'Cœur du modèle - comptes, profils, référentiels',
   columns: [
     ['TRADE_CATEGORIES', 'TRADES', 'CITIES', 'ZONES'],
     ['USERS', 'PROFESSIONALS'],
