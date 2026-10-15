@@ -1,6 +1,5 @@
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
-import { ErrorState } from '@/shared/components/ui/ErrorState.jsx';
-
+import { Skeleton } from "@/shared/components/ui/Skeleton.jsx";
+import { ErrorState } from "@/shared/components/ui/ErrorState.jsx";
 
 export function ProfileLoadingState() {
   return (
@@ -17,7 +16,9 @@ export function ProfileErrorState({ error, onRetry }) {
     <div className="container-kop py-10">
       <ErrorState
         title="Erreur de chargement du profil"
-        message={error?.message || 'Impossible de charger votre profil. Réessayez.'}
+        message={
+          error?.message || "Impossible de charger votre profil. Réessayez."
+        }
         onAction={onRetry}
         className="mx-auto max-w-xl"
       />

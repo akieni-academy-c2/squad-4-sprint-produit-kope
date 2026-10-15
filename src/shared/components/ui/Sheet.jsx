@@ -1,22 +1,28 @@
-import { useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'motion/react';
-import { X } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { overlayBackdrop, sheetPanel, sidePanel } from '@/shared/motion/variants.js';
-import { useOverlay } from './useOverlay.js';
+import { useRef } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
+import { cn } from "@/shared/utils";
+import {
+  overlayBackdrop,
+  sheetPanel,
+  sidePanel,
+} from "@/shared/motion/variants.js";
+import { useOverlay } from "./useOverlay.js";
 
-
-export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
+export function Sheet({ open, onOpenChange, side = "right", id, children }) {
   const innerRef = useRef(null);
-  const { panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
+  const { panelRef } = useOverlay({
+    open,
+    onClose: () => onOpenChange?.(false),
+  });
 
   const setRefs = (node) => {
     panelRef.current = node;
     innerRef.current = node;
   };
 
-  if (typeof document === 'undefined') return null;
+  if (typeof document === "undefined") return null;
 
   return createPortal(
     <AnimatePresence>
@@ -35,11 +41,11 @@ export function Sheet({ open, onOpenChange, side = 'right', id, children }) {
             role="dialog"
             aria-modal="true"
             className={cn(
-              side === 'bottom'
-                ? 'absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-safe-sheet shadow-2xl'
-                : 'absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col overflow-y-auto overscroll-contain bg-white shadow-2xl',
+              side === "bottom"
+                ? "absolute inset-x-0 bottom-0 flex max-h-[90dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-white p-4 pb-safe-sheet shadow-2xl"
+                : "absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col overflow-y-auto overscroll-contain bg-white shadow-2xl",
             )}
-            variants={side === 'bottom' ? sheetPanel : sidePanel}
+            variants={side === "bottom" ? sheetPanel : sidePanel}
             initial="initial"
             animate="animate"
             exit="exit"

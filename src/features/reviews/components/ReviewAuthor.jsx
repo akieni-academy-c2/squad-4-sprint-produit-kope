@@ -1,10 +1,11 @@
-import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
-import { fullNameInitials } from '@/shared/utils';
+import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
+import { fullNameInitials } from "@/shared/utils";
 
-export function ReviewAuthor({ review, className = 'h-8 w-8' }) {
+export function ReviewAuthor({ review, className = "h-8 w-8" }) {
   const first = review.client?.firstName;
   const last = review.client?.lastName;
-  const name = review.client?.displayName || fullNameInitials(first, last) || 'Membre';
+  const name =
+    review.client?.displayName || fullNameInitials(first, last) || "Membre";
   return (
     <div className="flex items-center gap-2.5">
       <UserAvatar

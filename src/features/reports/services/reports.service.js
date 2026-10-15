@@ -1,16 +1,22 @@
-import { api } from '@/shared/lib/api.js';
-import { callApi } from '@/shared/lib/dataSource.js';
+import { api } from "@/shared/lib/api.js";
+import { callApi } from "@/shared/lib/dataSource.js";
 import {
   mockDeleteMyReport,
   mockMyReports,
   mockReportContact,
   mockReportReview,
-} from '@/shared/mocks/appMock.js';
+} from "@/shared/mocks/appMock.js";
 
-export function getMyReports({ page = 1, pageSize = 20, status, q, sort } = {}) {
+export function getMyReports({
+  page = 1,
+  pageSize = 20,
+  status,
+  q,
+  sort,
+} = {}) {
   return callApi(
     () =>
-      api.get('/reports/mine', {
+      api.get("/reports/mine", {
         page,
         pageSize,
         ...(status ? { status } : {}),
@@ -30,14 +36,20 @@ export function deleteMyReport(id) {
 
 export function reportContact(userId, payload) {
   return callApi(
-    () => api.postJson(`/contacts/${userId}/reports`, payload).then((r) => r.report),
+    () =>
+      api
+        .postJson(`/contacts/${userId}/reports`, payload)
+        .then((r) => r.report),
     async () => mockReportContact(userId, payload),
   );
 }
 
 export function reportReview(reviewId, payload) {
   return callApi(
-    () => api.postJson(`/reviews/${reviewId}/reports`, payload).then((r) => r.report),
+    () =>
+      api
+        .postJson(`/reviews/${reviewId}/reports`, payload)
+        .then((r) => r.report),
     async () => mockReportReview(reviewId, payload),
   );
 }

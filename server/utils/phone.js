@@ -1,23 +1,25 @@
-const COUNTRY_CODE = '242';
-
+const COUNTRY_CODE = "242";
 
 const MOBILE_PATTERN = /^(04|05|06)\d{7}$/;
 
 export function normalizePhone(input) {
-  if (typeof input !== 'string') return null;
+  if (typeof input !== "string") return null;
 
-  let digits = input.replace(/[\s().-]/g, '');
-  if (digits.startsWith('+')) digits = digits.slice(1);
-  else if (digits.startsWith('00')) digits = digits.slice(2);
+  let digits = input.replace(/[\s().-]/g, "");
+  if (digits.startsWith("+")) digits = digits.slice(1);
+  else if (digits.startsWith("00")) digits = digits.slice(2);
 
   if (!/^\d+$/.test(digits)) return null;
 
-  if (digits.startsWith(COUNTRY_CODE) && digits.length === COUNTRY_CODE.length + 9)
+  if (
+    digits.startsWith(COUNTRY_CODE) &&
+    digits.length === COUNTRY_CODE.length + 9
+  )
     digits = digits.slice(COUNTRY_CODE.length);
 
   return MOBILE_PATTERN.test(digits) ? `+${COUNTRY_CODE}${digits}` : null;
 }
 
 export function toWhatsappUrl(phone) {
-  return `https://wa.me/${phone.replace(/\D/g, '')}`;
+  return `https://wa.me/${phone.replace(/\D/g, "")}`;
 }

@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   listCities,
   listTrades,
   listZones,
   invalidateReferenceCache,
   peekReferenceData,
-} from '../services/reference.service.js';
+} from "../services/reference.service.js";
 
 export function useReferenceData() {
   const cached = peekReferenceData();
@@ -22,7 +22,11 @@ export function useReferenceData() {
     setLoading(true);
     setError(null);
     try {
-      const [t, z, c] = await Promise.all([listTrades(), listZones(), listCities()]);
+      const [t, z, c] = await Promise.all([
+        listTrades(),
+        listZones(),
+        listCities(),
+      ]);
       if (!mounted.current) return;
       setTrades(t);
       setZones(z);

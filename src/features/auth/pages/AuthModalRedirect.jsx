@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { ROLES, ROUTES } from '@/shared/lib/constants.js';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { useAuthModal } from "@/shared/context/AuthModalContext.jsx";
+import { ROLES, ROUTES } from "@/shared/lib/constants.js";
 
 function dashboardForRole(role) {
   if (role === ROLES.CLIENT) return ROUTES.DASHBOARD_CLIENT;
@@ -18,9 +18,8 @@ export function AuthModalRedirect({ mode }) {
 
   useEffect(() => {
     if (loading) return;
-    if (user)
-      navigate(dashboardForRole(user.role), { replace: true });
-     else {
+    if (user) navigate(dashboardForRole(user.role), { replace: true });
+    else {
       open(mode);
       navigate(ROUTES.HOME, { replace: true });
     }

@@ -1,11 +1,16 @@
-import * as service from './admin.service.js';
+import * as service from "./admin.service.js";
 
 export async function listProfessionals(req, res) {
   res.json(await service.listProfessionals(req.validated.query));
 }
 
 export async function setProfessionalHidden(req, res) {
-  res.json(await service.setProfessionalHidden(req.validated.params.id, req.validated.body.hidden));
+  res.json(
+    await service.setProfessionalHidden(
+      req.validated.params.id,
+      req.validated.body.hidden,
+    ),
+  );
 }
 
 export async function listReviews(req, res) {
@@ -13,7 +18,12 @@ export async function listReviews(req, res) {
 }
 
 export async function setReviewHidden(req, res) {
-  res.json(await service.setReviewHidden(req.validated.params.id, req.validated.body.hidden));
+  res.json(
+    await service.setReviewHidden(
+      req.validated.params.id,
+      req.validated.body.hidden,
+    ),
+  );
 }
 
 export async function listUsers(req, res) {
@@ -22,13 +32,21 @@ export async function listUsers(req, res) {
 
 export async function setUserBlocked(req, res) {
   res.json(
-    await service.setUserBlocked(req.user.id, req.validated.params.id, req.validated.body.blocked),
+    await service.setUserBlocked(
+      req.user.id,
+      req.validated.params.id,
+      req.validated.body.blocked,
+    ),
   );
 }
 
 export async function setUserSuspended(req, res) {
   res.json(
-    await service.setUserSuspended(req.user.id, req.validated.params.id, req.validated.body.suspended),
+    await service.setUserSuspended(
+      req.user.id,
+      req.validated.params.id,
+      req.validated.body.suspended,
+    ),
   );
 }
 
@@ -49,7 +67,9 @@ export async function createTrade(req, res) {
 }
 
 export async function updateTrade(req, res) {
-  res.json(await service.updateTrade(req.validated.params.id, req.validated.body));
+  res.json(
+    await service.updateTrade(req.validated.params.id, req.validated.body),
+  );
 }
 
 export async function deleteTrade(req, res) {
@@ -69,7 +89,12 @@ export async function createTradeCategory(req, res) {
 }
 
 export async function updateTradeCategory(req, res) {
-  res.json(await service.updateTradeCategory(req.validated.params.id, req.validated.body));
+  res.json(
+    await service.updateTradeCategory(
+      req.validated.params.id,
+      req.validated.body,
+    ),
+  );
 }
 
 export async function deleteTradeCategory(req, res) {
@@ -89,7 +114,9 @@ export async function createZone(req, res) {
 }
 
 export async function updateZone(req, res) {
-  res.json(await service.updateZone(req.validated.params.id, req.validated.body));
+  res.json(
+    await service.updateZone(req.validated.params.id, req.validated.body),
+  );
 }
 
 export async function deleteZone(req, res) {
@@ -109,7 +136,9 @@ export async function createCity(req, res) {
 }
 
 export async function updateCity(req, res) {
-  res.json(await service.updateCity(req.validated.params.id, req.validated.body));
+  res.json(
+    await service.updateCity(req.validated.params.id, req.validated.body),
+  );
 }
 
 export async function deleteCity(req, res) {

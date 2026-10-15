@@ -1,10 +1,10 @@
-import { Link } from '@/shared/components/ui/Link.jsx';
-import { Ban, Calendar, Check, Phone } from 'lucide-react';
-import { Badge, Button, Tooltip, UserAvatar } from '@/shared/components/ui';
-import { ROLES, ROUTES } from '@/shared/lib/constants.js';
-import { formatDateFr } from '@/shared/utils';
-import { getUserName, ROLE_LABELS, ROLE_VARIANTS } from './adminUserOptions.js';
-import { formatPhoneFR } from '@/shared/utils';
+import { Link } from "@/shared/components/ui/Link.jsx";
+import { Ban, Calendar, Check, Phone } from "lucide-react";
+import { Badge, Button, Tooltip, UserAvatar } from "@/shared/components/ui";
+import { ROLES, ROUTES } from "@/shared/lib/constants.js";
+import { formatDateFr } from "@/shared/utils";
+import { getUserName, ROLE_LABELS, ROLE_VARIANTS } from "./adminUserOptions.js";
+import { formatPhoneFR } from "@/shared/utils";
 
 export function AdminUserRow({ user, isSelf, onToggleBlock }) {
   const name = getUserName(user);
@@ -13,7 +13,11 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
 
   const avatar = (
     <UserAvatar
-      user={{ firstName: user.firstName, lastName: user.lastName, avatarUrl: user.avatarUrl }}
+      user={{
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatarUrl: user.avatarUrl,
+      }}
       name={name}
       className="h-11 w-11"
     />
@@ -22,7 +26,7 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
   return (
     <li
       className={`flex flex-col overflow-hidden rounded-lg border bg-white ${
-        blocked ? 'border-rose-200 bg-rose-50/40' : 'border-gray-200'
+        blocked ? "border-rose-200 bg-rose-50/40" : "border-gray-200"
       }`}
     >
       <div className="flex items-start gap-3 p-4">
@@ -55,11 +59,10 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
               <span className="truncate">{formatPhoneFR(user.phone)}</span>
             </p>
           )}
-
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-1">
-          <Badge variant={ROLE_VARIANTS[user.role] || 'neutral'}>
+          <Badge variant={ROLE_VARIANTS[user.role] || "neutral"}>
             {ROLE_LABELS[user.role] || user.role}
           </Badge>
           {blocked && <Badge variant="danger">Bloqué</Badge>}
@@ -68,12 +71,11 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
 
       <div className="  flex items-center justify-between gap-1 border-t border-gray-100 bg-gray-50/80 p-4 ">
         {user.createdAt && (
-            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-              <Calendar className="h-3.5 w-3.5 shrink-0" />
-              Inscrit le {formatDateFr(user.createdAt)}
-            </p>
-          )}
-
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            Inscrit le {formatDateFr(user.createdAt)}
+          </p>
+        )}
 
         {isSelf ? (
           <span className="text-xs text-gray-400">Votre compte</span>
@@ -86,11 +88,11 @@ export function AdminUserRow({ user, isSelf, onToggleBlock }) {
               onClick={() => onToggleBlock(user, false)}
               aria-label={`Débloquer ${name}`}
             >
-              <Check className="size-3.5"  />
+              <Check className="size-3.5" />
             </Button>
           </Tooltip>
         ) : (
-          <Tooltip side='' content="Bloquer le compte">
+          <Tooltip side="" content="Bloquer le compte">
             <Button
               size="sm"
               variant="subtle"

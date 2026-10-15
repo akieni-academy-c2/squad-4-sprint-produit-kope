@@ -1,8 +1,8 @@
-import { Calendar, Pencil, Trash2, Users } from 'lucide-react';
-import { Button, Tooltip } from '@/shared/components/ui';
-import { formatDateFr } from '@/shared/utils';
-import { usedBy } from '../catalog/catalogUtils.js';
-import { InlineInput, PositionBadge } from '../catalog/InlineInput.jsx';
+import { Calendar, Pencil, Trash2, Users } from "lucide-react";
+import { Button, Tooltip } from "@/shared/components/ui";
+import { formatDateFr } from "@/shared/utils";
+import { usedBy } from "../catalog/catalogUtils.js";
+import { InlineInput, PositionBadge } from "../catalog/InlineInput.jsx";
 
 function ItemFooter({ item }) {
   return (
@@ -33,18 +33,18 @@ export function CatalogItemCard({
   handlers,
 }) {
   const { item, state, entryKey } = entry;
-  const isGap = state === 'gap';
-  const isPreview = state === 'preview';
+  const isGap = state === "gap";
+  const isPreview = state === "preview";
 
   return (
     <article
       key={entryKey}
-      draggable={canReorder && editingItemId !== item.id && state === 'normal'}
+      draggable={canReorder && editingItemId !== item.id && state === "normal"}
       aria-hidden={isGap || undefined}
       onDragStart={(e) => {
         handlers.startDrag(item.id);
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', String(item.id));
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", String(item.id));
       }}
       onDragEnd={handlers.resetDrag}
       onDragOver={(e) => {
@@ -59,17 +59,20 @@ export function CatalogItemCard({
       }}
       className={`overflow-hidden rounded-md border bg-white p-2.5 ${
         isPreview
-          ? 'relative z-20 cursor-grabbing border-primary-500 border-2 border-dashed shadow-lg'
+          ? "relative z-20 cursor-grabbing border-primary-500 border-2 border-dashed shadow-lg"
           : isGap
-            ? 'border-2 border-dashed border-primary-300 bg-primary-50'
-            : 'cursor-grab border-gray-200 active:cursor-grabbing'
+            ? "border-2 border-dashed border-primary-300 bg-primary-50"
+            : "cursor-grab border-gray-200 active:cursor-grabbing"
       } ${
-        overKey === groupKey && drag?.kind === 'item' && drag.id !== item.id && state === 'normal'
-          ? 'ring-2 ring-primary-300'
-          : ''
+        overKey === groupKey &&
+        drag?.kind === "item" &&
+        drag.id !== item.id &&
+        state === "normal"
+          ? "ring-2 ring-primary-300"
+          : ""
       }`}
     >
-      <div className={`flex items-start gap-2 ${isGap ? 'invisible' : ''}`}>
+      <div className={`flex items-start gap-2 ${isGap ? "invisible" : ""}`}>
         <PositionBadge value={index + 1} muted={isGap} />
 
         {editingItemId === item.id ? (
@@ -82,7 +85,9 @@ export function CatalogItemCard({
             className="flex-1"
           />
         ) : (
-          <p className="min-w-0 flex-1 break-words text-sm font-semibold text-gray-900">{item.name}</p>
+          <p className="min-w-0 flex-1 break-words text-sm font-semibold text-gray-900">
+            {item.name}
+          </p>
         )}
       </div>
 
@@ -90,7 +95,7 @@ export function CatalogItemCard({
 
       <div
         className={`-mx-2.5 -mb-2.5 mt-3 flex items-center justify-end gap-1 rounded-b-md border-t border-gray-100 bg-gray-50/80 px-2.5 py-1.5 ${
-          isGap ? 'invisible' : ''
+          isGap ? "invisible" : ""
         }`}
       >
         <Tooltip content="Modifier">
@@ -109,7 +114,7 @@ export function CatalogItemCard({
             size="icon-sm"
             variant="ghost"
             className="text-rose-600 hover:bg-rose-50"
-            onClick={() => handlers.requestDelete('item', item)}
+            onClick={() => handlers.requestDelete("item", item)}
             aria-label={`Supprimer ${item.name}`}
           >
             <Trash2 className="h-3.5 w-3.5" />

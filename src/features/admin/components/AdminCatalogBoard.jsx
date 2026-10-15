@@ -1,24 +1,24 @@
-import { Plus, X } from 'lucide-react';
-import { Button, CustomSelect, DataState, Modal } from '@/shared/components/ui';
+import { Plus, X } from "lucide-react";
+import { Button, CustomSelect, DataState, Modal } from "@/shared/components/ui";
 import {
   AdminFilterGroup,
   AdminFilterPanel,
   AdminSectionLayout,
-} from './AdminSectionLayout.jsx';
-import { groupKeyOf, tintFor } from './catalog/catalogUtils.js';
-import { CatalogGroupColumn } from './catalog/CatalogGroupColumn.jsx';
-import { CatalogItemCard } from './catalog/CatalogItemCard.jsx';
-import { InlineInput } from './catalog/InlineInput.jsx';
-import { useCatalogBoard } from './useCatalogBoard.js';
+} from "./AdminSectionLayout.jsx";
+import { groupKeyOf, tintFor } from "./catalog/catalogUtils.js";
+import { CatalogGroupColumn } from "./catalog/CatalogGroupColumn.jsx";
+import { CatalogItemCard } from "./catalog/CatalogItemCard.jsx";
+import { InlineInput } from "./catalog/InlineInput.jsx";
+import { useCatalogBoard } from "./useCatalogBoard.js";
 
 export function AdminCatalogBoard({
   rightContainer = null,
-  groupLabel = 'groupe',
-  groupNoun = 'groupe',
-  itemNoun = 'élément',
-  itemPlaceholder = 'Nouvel élément',
-  allGroupsLabel = 'Tous',
-  searchId = 'cat-search',
+  groupLabel = "groupe",
+  groupNoun = "groupe",
+  itemNoun = "élément",
+  itemPlaceholder = "Nouvel élément",
+  allGroupsLabel = "Tous",
+  searchId = "cat-search",
   groupByKey,
   listGroups,
   listItems,
@@ -48,13 +48,35 @@ export function AdminCatalogBoard({
   });
 
   const {
-    groups, items, loading, error, saving,
-    query, setQuery, groupFilter, setGroupFilter,
-    newGroup, setNewGroup, addingTo, drafts,
-    editingGroupId, groupName, editingItemId, itemName,
-    confirm, setConfirm,
-    canReorder, dirty, submitSearch, resetFilters, submitNewGroup,
-    displayEntries, cardsOf, doDelete, itemHandlers, groupHandlers,
+    groups,
+    items,
+    loading,
+    error,
+    saving,
+    query,
+    setQuery,
+    groupFilter,
+    setGroupFilter,
+    newGroup,
+    setNewGroup,
+    addingTo,
+    drafts,
+    editingGroupId,
+    groupName,
+    editingItemId,
+    itemName,
+    confirm,
+    setConfirm,
+    canReorder,
+    dirty,
+    submitSearch,
+    resetFilters,
+    submitNewGroup,
+    displayEntries,
+    cardsOf,
+    doDelete,
+    itemHandlers,
+    groupHandlers,
   } = board;
 
   const renderFilters = (searchId) => (
@@ -73,7 +95,7 @@ export function AdminCatalogBoard({
             {query && (
               <button
                 type="button"
-                onClick={() => setQuery('')}
+                onClick={() => setQuery("")}
                 aria-label="Effacer la recherche"
                 className="grid h-6 w-6 shrink-0 place-items-center rounded-sm text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
               >
@@ -88,7 +110,7 @@ export function AdminCatalogBoard({
             value={groupFilter}
             onChange={setGroupFilter}
             options={[
-              { value: '', label: allGroupsLabel },
+              { value: "", label: allGroupsLabel },
               ...groups.map((g) => ({ value: String(g.id), label: g.name })),
             ]}
             className="w-full"
@@ -132,8 +154,10 @@ export function AdminCatalogBoard({
               groupKey={groupKeyOf(group.id)}
               entries={displayEntries(groupKeyOf(group.id))}
               realCount={cardsOf(groupKeyOf(group.id)).length}
-              filteredOut={Boolean(groupFilter) && groupFilter !== String(group.id)}
-              draft={drafts[group.id] || ''}
+              filteredOut={
+                Boolean(groupFilter) && groupFilter !== String(group.id)
+              }
+              draft={drafts[group.id] || ""}
               tint={tintFor(group.name)}
               groupNoun={groupNoun}
               itemPlaceholder={itemPlaceholder}
@@ -151,7 +175,7 @@ export function AdminCatalogBoard({
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start text-gray-600"
-                onClick={() => setNewGroup('')}
+                onClick={() => setNewGroup("")}
               >
                 <Plus className="h-4 w-4" />
                 {`Nouveau ${groupNoun}`}
@@ -174,15 +198,23 @@ export function AdminCatalogBoard({
         open={Boolean(confirm)}
         onClose={() => !saving && setConfirm(null)}
         dismissable={!saving}
-        title={confirm?.kind === 'group' ? `Supprimer ce ${groupNoun} ?` : `Supprimer cet ${itemNoun} ?`}
+        title={
+          confirm?.kind === "group"
+            ? `Supprimer ce ${groupNoun} ?`
+            : `Supprimer cet ${itemNoun} ?`
+        }
         description={
-          confirm?.kind === 'group'
+          confirm?.kind === "group"
             ? `Cette action est définitive. Un ${groupNoun} contenant des ${itemNoun}s ne peut pas être supprimé.`
             : `Cette action est définitive. Un ${itemNoun} utilisé par des professionnels ne peut pas être supprimé.`
         }
         actions={
           <>
-            <Button variant="secondary" onClick={() => setConfirm(null)} disabled={saving}>
+            <Button
+              variant="secondary"
+              onClick={() => setConfirm(null)}
+              disabled={saving}
+            >
               Annuler
             </Button>
             <Button variant="danger" onClick={doDelete} loading={saving}>

@@ -1,6 +1,9 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
-export async function create({ professionalId, reporterId, reason, message, targetRole = 'professional' }, db = pool) {
+export async function create(
+  { professionalId, reporterId, reason, message, targetRole = "professional" },
+  db = pool,
+) {
   const { rows } = await db.query(
     `INSERT INTO account_reports (professional_id, reporter_id, reason, message, target_role)
      VALUES ($1, $2, $3, $4, $5)
@@ -12,18 +15,19 @@ export async function create({ professionalId, reporterId, reason, message, targ
 }
 
 export async function targetRoleOf(userId, db = pool) {
-  const { rows } = await db.query('SELECT role FROM users WHERE id = $1', [userId]);
+  const { rows } = await db.query("SELECT role FROM users WHERE id = $1", [
+    userId,
+  ]);
   return rows[0]?.role ?? null;
 }
 
 export async function exists(reporterId, professionalId, db = pool) {
   const { rowCount } = await db.query(
-    'SELECT 1 FROM account_reports WHERE reporter_id = $1 AND professional_id = $2',
+    "SELECT 1 FROM account_reports WHERE reporter_id = $1 AND professional_id = $2",
     [reporterId, professionalId],
   );
   return rowCount > 0;
 }
-
 
 export async function countSanctionable(professionalId, db = pool) {
   const { rows } = await db.query(
@@ -51,7 +55,7 @@ export async function list({ limit, offset, status, q }, db = pool) {
     );
   }
 
-  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   values.push(limit, offset);
 
   const { rows } = await db.query(
@@ -119,7 +123,7 @@ export async function countGrouped({ status, q }, db = pool) {
       `(p.display_name ILIKE $${values.length} OR r.message ILIKE $${values.length} OR u.first_name ILIKE $${values.length} OR u.last_name ILIKE $${values.length})`,
     );
   }
-  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
   const { rows } = await db.query(
     `SELECT COUNT(DISTINCT r.professional_id)::int AS count
@@ -132,14 +136,17 @@ export async function countGrouped({ status, q }, db = pool) {
   return Number(rows[0]?.count ?? 0);
 }
 
-
 const ORDER_BY = {
-  recent: 'r.created_at DESC, r.id DESC',
-  oldest: 'r.created_at ASC, r.id ASC',
+  recent: "r.created_at DESC, r.id DESC",
+  oldest: "r.created_at ASC, r.id ASC",
 };
 
-export async function listByReporter(reporterId, { limit, offset, status, q, sort = 'recent' } = {}, db = pool) {
-  const conditions = ['r.reporter_id = $1'];
+export async function listByReporter(
+  reporterId,
+  { limit, offset, status, q, sort = "recent" } = {},
+  db = pool,
+) {
+  const conditions = ["r.reporter_id = $1"];
   const values = [reporterId];
 
   if (status) {
@@ -172,7 +179,7 @@ export async function listByReporter(reporterId, { limit, offset, status, q, sor
        LEFT JOIN professionals p ON p.user_id = r.professional_id
        JOIN users cu ON cu.id = r.professional_id
        LEFT JOIN trades t ON t.id = p.trade_id
-      WHERE ${conditions.join(' AND ')}
+      WHERE ${conditions.join(" AND ")}
       ORDER BY ${ORDER_BY[sort] ?? ORDER_BY.recent}
       LIMIT $${values.length - 1} OFFSET $${values.length}`,
     values,
@@ -182,12 +189,11 @@ export async function listByReporter(reporterId, { limit, offset, status, q, sor
 
 export async function countByReporter(reporterId, db = pool) {
   const { rows } = await db.query(
-    'SELECT COUNT(*)::int AS count FROM account_reports WHERE reporter_id = $1',
+    "SELECT COUNT(*)::int AS count FROM account_reports WHERE reporter_id = $1",
     [reporterId],
   );
   return Number(rows[0]?.count ?? 0);
 }
-
 
 export async function deleteByReporter(id, reporterId, db = pool) {
   const { rows } = await db.query(
@@ -211,8 +217,10 @@ export async function setStatus(id, status, db = pool) {
   return rows[0] ?? null;
 }
 
-
-export async function createReviewReport({ reviewId, reporterId, reason, message }, db = pool) {
+export async function createReviewReport(
+  { reviewId, reporterId, reason, message },
+  db = pool,
+) {
   const { rows } = await db.query(
     `INSERT INTO review_reports (review_id, reporter_id, reason, message)
      VALUES ($1, $2, $3, $4)
@@ -224,12 +232,11 @@ export async function createReviewReport({ reviewId, reporterId, reason, message
 
 export async function reviewReportExists(reviewId, reporterId, db = pool) {
   const { rowCount } = await db.query(
-    'SELECT 1 FROM review_reports WHERE review_id = $1 AND reporter_id = $2',
+    "SELECT 1 FROM review_reports WHERE review_id = $1 AND reporter_id = $2",
     [reviewId, reporterId],
   );
   return rowCount > 0;
 }
-
 
 export async function findReceivedReview(reviewId, professionalId, db = pool) {
   const { rows } = await db.query(
@@ -249,7 +256,10 @@ export async function findReceivedReview(reviewId, professionalId, db = pool) {
   return rows[0] ?? null;
 }
 
-export async function listReviewReports({ limit, offset, status } = {}, db = pool) {
+export async function listReviewReports(
+  { limit, offset, status } = {},
+  db = pool,
+) {
   const conditions = [];
   const values = [];
 
@@ -275,7 +285,7 @@ export async function listReviewReports({ limit, offset, status } = {}, db = poo
        JOIN users ru ON ru.id = rv.client_id
        JOIN users rep ON rep.id = rr.reporter_id
        LEFT JOIN professionals p ON p.user_id = ru.id
-      ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+      ${conditions.length ? `WHERE ${conditions.join(" AND ")}` : ""}
       ORDER BY rr.created_at DESC, rr.id DESC
       LIMIT $${values.length - 1} OFFSET $${values.length}`,
     values,
@@ -284,7 +294,9 @@ export async function listReviewReports({ limit, offset, status } = {}, db = poo
 }
 
 export async function countReviewReports(db = pool) {
-  const { rows } = await db.query('SELECT COUNT(*)::int AS count FROM review_reports');
+  const { rows } = await db.query(
+    "SELECT COUNT(*)::int AS count FROM review_reports",
+  );
   return Number(rows[0]?.count ?? 0);
 }
 

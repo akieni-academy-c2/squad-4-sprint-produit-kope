@@ -1,20 +1,29 @@
-import { useCallback, useState } from 'react';
-import { cn } from '@/shared/utils';
-import { Skeleton } from './Skeleton.jsx';
+import { useCallback, useState } from "react";
+import { cn } from "@/shared/utils";
+import { Skeleton } from "./Skeleton.jsx";
 
-const LOADING = 'loading';
-const LOADED = 'loaded';
-const FAILED = 'failed';
+const LOADING = "loading";
+const LOADED = "loaded";
+const FAILED = "failed";
 
-
+/**
+ * Image avec placeholders. `priority` marque l'image comme candidate LCP : le
+ * navigateur la découvre alors avant même l'analyse du HTML, et React émet le
+ * preload qui va avec.
+ *
+ * Un échec de chargement affiche un bloc neutre plutôt que rien : sans lui, une
+ * image morte resterait à `opacity-0` au-dessus d'un cadre vide, invisible pour
+ * l'internaute comme pour un lecteur d'écran.
+ */
 export function ImageWithSkeleton({
   src,
   alt,
-  ratio = 'aspect-4/3',
+  ratio = "aspect-4/3",
   className,
   frameClassName,
   skeletonClassName,
   eager = false,
+  priority = false,
   srcSet,
   sizes,
   ...rest
@@ -32,9 +41,24 @@ export function ImageWithSkeleton({
   }, []);
 
   return (
-    <div className={cn('relative overflow-hidden', ratio, frameClassName)}>
+    <div className={cn("relative overflow-hidden", ratio, frameClassName)}>
       {status === LOADING && (
-        <Skeleton className={cn('absolute inset-0 h-full w-full rounded-none', skeletonClassName)} />
+        <Skeleton
+          className={cn(
+            "absolute inset-0 h-full w-full rounded-none",
+            skeletonClassName,
+          )}
+        />
+      )}
+
+      {status === FAILED && (
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0 h-full w-full rounded-none bg-gray-200",
+            skeletonClassName,
+          )}
+        />
       )}
 
       {src && (
@@ -44,13 +68,14 @@ export function ImageWithSkeleton({
           srcSet={srcSet}
           sizes={sizes}
           alt={alt}
-          loading={eager ? 'eager' : 'lazy'}
+          loading={priority || eager ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
           decoding="async"
           onLoad={() => setStatus(LOADED)}
           onError={() => setStatus(FAILED)}
           className={cn(
-            'h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none',
-            status === LOADED ? 'opacity-100' : 'opacity-0',
+            "h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none",
+            status === LOADED ? "opacity-100" : "opacity-0",
             className,
           )}
           {...rest}

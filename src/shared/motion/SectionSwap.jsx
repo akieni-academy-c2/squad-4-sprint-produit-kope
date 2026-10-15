@@ -1,6 +1,5 @@
-import { AnimatePresence, motion } from 'motion/react';
-import { sectionSwap } from './variants.js';
-
+import { AnimatePresence, motion } from "motion/react";
+import { sectionSwap } from "./variants.js";
 
 export function SectionSwap({ sectionKey, className, children }) {
   return (

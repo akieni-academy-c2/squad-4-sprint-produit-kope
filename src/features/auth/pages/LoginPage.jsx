@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Link } from '@/shared/components/ui/Link.jsx';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { FormField } from '@/shared/components/ui/FormField.jsx';
-import { Input } from '@/shared/components/ui/Input.jsx';
-import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
-import { useForm } from '@/shared/hooks/useForm.js';
-import { loginSchema } from '@/shared/utils/validators.js';
-import { login } from '../services/auth.service.js';
-import { ROLES, ROUTES } from '@/shared/lib/constants.js';
-import { Lock, LockOpen } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link } from "@/shared/components/ui/Link.jsx";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { useAuthModal } from "@/shared/context/AuthModalContext.jsx";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import { Button } from "@/shared/components/ui/Button.jsx";
+import { FormField } from "@/shared/components/ui/FormField.jsx";
+import { Input } from "@/shared/components/ui/Input.jsx";
+import { PhoneInput } from "@/shared/components/ui/PhoneInput.jsx";
+import { useForm } from "@/shared/hooks/useForm.js";
+import { loginSchema } from "@/shared/utils/validators.js";
+import { login } from "../services/auth.service.js";
+import { ROLES, ROUTES } from "@/shared/lib/constants.js";
+import { Lock, LockOpen } from "lucide-react";
 
-const INITIAL = { phone: '', password: '' };
+const INITIAL = { phone: "", password: "" };
 
 function dashboardForRole(role) {
   if (role === ROLES.CLIENT) return ROUTES.DASHBOARD_CLIENT;
@@ -31,8 +31,15 @@ export function LoginForm({ bare = false } = {}) {
   const { toast } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { values, errors, globalError, submitting, setField, handleSubmit, setGlobalError } =
-    useForm(loginSchema, INITIAL, async (data) => login(data));
+  const {
+    values,
+    errors,
+    globalError,
+    submitting,
+    setField,
+    handleSubmit,
+    setGlobalError,
+  } = useForm(loginSchema, INITIAL, async (data) => login(data));
 
   useEffect(() => {
     if (user) navigate(dashboardForRole(user.role), { replace: true });
@@ -43,29 +50,38 @@ export function LoginForm({ bare = false } = {}) {
     const res = await handleSubmit(e);
     if (res.ok) {
       setUser(res.result);
-      const rawNext = params.get('next');
-      const safeNext = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//')
-        ? rawNext
-        : null;
+      const rawNext = params.get("next");
+      const safeNext =
+        rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//")
+          ? rawNext
+          : null;
       const next = safeNext || dashboardForRole(res.result.role);
-      toast({ message: 'Bienvenue !', type: 'success' });
+      toast({ message: "Bienvenue !", type: "success" });
       closeModal();
       navigate(next, { replace: true });
     } else if (res.error && !res.error?.errors)
-      toast({ message: res.error?.message || 'Identifiants incorrects', type: 'error' });
-
+      toast({
+        message: res.error?.message || "Identifiants incorrects",
+        type: "error",
+      });
   };
 
   return (
-    <div className={`${bare ? 'w-full px-5' : 'mx-auto w-full max-w-md px-5'} space-y-4 `}>
-
-      <h1 className="text-3xl font-extrabold tracking-tight text-primary-500!">Connexion</h1>
+    <div
+      className={`${bare ? "w-full px-5" : "mx-auto w-full max-w-md px-5"} space-y-4 `}
+    >
+      <h1 className="text-3xl font-extrabold tracking-tight text-primary-500!">
+        Connexion
+      </h1>
       <p className=" text-sm mb-8 text-gray-500">
         Accédez à votre espace client, professionnel ou administrateur.
       </p>
       <form className="space-y-4 sm:space-y-5" onSubmit={onSubmit} noValidate>
         {(globalError || errors._global) && (
-          <div role="alert" className="rounded-[16px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <div
+            role="alert"
+            className="rounded-[16px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+          >
             {globalError || errors._global}
           </div>
         )}
@@ -78,7 +94,7 @@ export function LoginForm({ bare = false } = {}) {
           <PhoneInput
             id="login-phone"
             value={values.phone}
-            onChange={(value) => setField('phone', value)}
+            onChange={(value) => setField("phone", value)}
             autoComplete="tel"
             error={errors.phone}
           />
@@ -94,26 +110,41 @@ export function LoginForm({ bare = false } = {}) {
           <div className="relative">
             <Input
               id="login-password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={values.password}
               autoComplete="current-password"
               error={errors.password}
-              onChange={(e) => setField('password', e.target.value)}
+              onChange={(e) => setField("password", e.target.value)}
               placeholder="8 caractères minimum"
             />
             <button
               className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
-              type="button" aria-label="Afficher le mot de passe"
-              onClick={() => setShowPassword(!showPassword)}>
+              type="button"
+              aria-label="Afficher le mot de passe"
+              onClick={() => setShowPassword(!showPassword)}
+            >
               {showPassword ? (
-                <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
+                <LockOpen
+                  size={18}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500"
+                  aria-hidden
+                />
               ) : (
-                <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />
+                <Lock
+                  size={18}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  aria-hidden
+                />
               )}
             </button>
           </div>
         </FormField>
-        <Button type="submit" loading={submitting} size="lg" className="w-full!">
+        <Button
+          type="submit"
+          loading={submitting}
+          size="lg"
+          className="w-full!"
+        >
           Se connecter
         </Button>
       </form>
@@ -122,7 +153,10 @@ export function LoginForm({ bare = false } = {}) {
         <Link
           href={ROUTES.REGISTER_CLIENT}
           className="text-primary-500 link-underline  font-semibold hover:text-primary-600 ml-1"
-        > S'inscrire</Link>
+        >
+          {" "}
+          S'inscrire
+        </Link>
       </p>
     </div>
   );

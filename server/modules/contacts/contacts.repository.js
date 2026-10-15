@@ -1,4 +1,4 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
 const COUNTERPART = `
        FROM contacts c
@@ -19,7 +19,10 @@ const COUNTERPART_COLUMNS = `
             ) AS "displayName",
             t.name AS "tradeName"`;
 
-export async function create({ senderId, recipientId, message, channel = 'message' }, db = pool) {
+export async function create(
+  { senderId, recipientId, message, channel = "message" },
+  db = pool,
+) {
   const { rows } = await db.query(
     `INSERT INTO contacts (sender_id, recipient_id, message, channel)
      VALUES ($1, $2, $3, $4)
@@ -28,7 +31,6 @@ export async function create({ senderId, recipientId, message, channel = 'messag
   );
   return rows[0];
 }
-
 
 export async function hasContactBetween(userA, userB, db = pool) {
   const { rowCount } = await db.query(
@@ -48,9 +50,13 @@ export async function markIncomingAsSeen(userId, db = pool) {
   );
 }
 
-export async function listForUser(userId, { limit = 20, offset = 0 } = {}, db = pool) {
-  const outgoing = COUNTERPART.replace('%s', 'c.recipient_id');
-  const incoming = COUNTERPART.replace('%s', 'c.sender_id');
+export async function listForUser(
+  userId,
+  { limit = 20, offset = 0 } = {},
+  db = pool,
+) {
+  const outgoing = COUNTERPART.replace("%s", "c.recipient_id");
+  const incoming = COUNTERPART.replace("%s", "c.sender_id");
   const { rows } = await db.query(
     `WITH mine AS (
        SELECT c.id, c.message, c.channel, c.status, TRUE AS outgoing, c.created_at AS "createdAt",

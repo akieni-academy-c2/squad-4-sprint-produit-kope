@@ -1,6 +1,5 @@
-import { Check } from 'lucide-react';
-import { cn } from '@/shared/utils';
-
+import { Check } from "lucide-react";
+import { cn } from "@/shared/utils";
 
 export function StepIndicator({ steps, current }) {
   return (
@@ -14,22 +13,22 @@ export function StepIndicator({ steps, current }) {
           <li key={step} className="flex flex-1 items-center gap-2">
             <div className="flex items-center gap-2">
               <span
-                aria-current={active ? 'step' : undefined}
+                aria-current={active ? "step" : undefined}
                 className={cn(
-                  'flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',
+                  "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors",
                   active
-                    ? 'bg-primary-500 text-white'
+                    ? "bg-primary-500 text-white"
                     : done
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-gray-100 text-gray-500',
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-gray-100 text-gray-500",
                 )}
               >
                 {done ? <Check size={13} aria-hidden /> : number}
               </span>
               <span
                 className={cn(
-                  'hidden text-xs font-medium sm:block',
-                  active ? 'text-gray-900' : 'text-gray-500',
+                  "hidden text-xs font-medium sm:block",
+                  active ? "text-gray-900" : "text-gray-500",
                 )}
               >
                 {step}
@@ -38,7 +37,10 @@ export function StepIndicator({ steps, current }) {
             {number < steps.length && (
               <span
                 aria-hidden
-                className={cn('h-px flex-1', done ? 'bg-emerald-200' : 'bg-gray-200')}
+                className={cn(
+                  "h-px flex-1",
+                  done ? "bg-emerald-200" : "bg-gray-200",
+                )}
               />
             )}
           </li>

@@ -1,8 +1,8 @@
-import { ApiError } from '../utils/ApiError.js';
-import { getAccountState } from '../modules/auth/auth.repository.js';
+import { ApiError } from "../utils/ApiError.js";
+import { getAccountState } from "../modules/auth/auth.repository.js";
 
-const ACCOUNT_BLOCKED = 'Ce compte a été bloqué par un administrateur.';
-const ACCOUNT_SUSPENDED = 'Votre compte a été suspendu.';
+const ACCOUNT_BLOCKED = "Ce compte a été bloqué par un administrateur.";
+const ACCOUNT_SUSPENDED = "Votre compte a été suspendu.";
 export function currentUser(req) {
   return req.user ?? req.session?.user ?? null;
 }

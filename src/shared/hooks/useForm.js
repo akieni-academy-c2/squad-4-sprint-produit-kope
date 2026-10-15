@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { validateFrontend } from '@/shared/utils/validators.js';
+import { useCallback, useState } from "react";
+import { validateFrontend } from "@/shared/utils/validators.js";
 
 export function useForm(schema, initialValues = {}, onSubmit) {
   const [values, setValues] = useState(initialValues);
@@ -13,22 +13,31 @@ export function useForm(schema, initialValues = {}, onSubmit) {
     setGlobalError(null);
   }, []);
 
-  const reset = useCallback((next = initialValues) => {
-    setValues(next);
-    setErrors({});
-    setGlobalError(null);
-  }, [initialValues]);
+  const reset = useCallback(
+    (next = initialValues) => {
+      setValues(next);
+      setErrors({});
+      setGlobalError(null);
+    },
+    [initialValues],
+  );
 
   const handleSubmit = useCallback(
     async (event) => {
       event?.preventDefault?.();
       setGlobalError(null);
-      const { success, data, errors: fieldErrors } = validateFrontend(schema, values);
+      const {
+        success,
+        data,
+        errors: fieldErrors,
+      } = validateFrontend(schema, values);
       setErrors(fieldErrors || {});
       if (!success) {
         const firstKey = Object.keys(fieldErrors || {})[0];
-        if (firstKey && typeof document !== 'undefined')
-          document.querySelector(`[id="${firstKey}"], [name="${firstKey}"]`)?.focus?.();
+        if (firstKey && typeof document !== "undefined")
+          document
+            .querySelector(`[id="${firstKey}"], [name="${firstKey}"]`)
+            ?.focus?.();
 
         return { ok: false };
       }
@@ -37,8 +46,7 @@ export function useForm(schema, initialValues = {}, onSubmit) {
         const result = await onSubmit?.(data);
         return { ok: true, result };
       } catch (err) {
-        if (err?.errors)
-          setErrors((e) => ({ ...e, ...err.errors }));
+        if (err?.errors) setErrors((e) => ({ ...e, ...err.errors }));
 
         if (err?.message) setGlobalError(err.message);
         return { ok: false, error: err };

@@ -1,40 +1,45 @@
-import { useMemo } from 'react';
-import { validateFrontend } from '@/shared/utils/validators.js';
-
+import { useMemo } from "react";
+import { validateFrontend } from "@/shared/utils/validators.js";
 
 export const PASSWORD_RULES = [
-  { key: 'length', label: '8 caractères minimum', test: (v) => v.length >= 8 },
+  { key: "length", label: "8 caractères minimum", test: (v) => v.length >= 8 },
   {
-    key: 'case',
-    label: 'une majuscule et une minuscule',
+    key: "case",
+    label: "une majuscule et une minuscule",
     test: (v) => /[a-zà-ÿ]/u.test(v) && /[A-ZÀ-Ÿ]/u.test(v),
   },
   {
-    key: 'special',
-    label: 'un chiffre ou caractère spécial (@ - _ …)',
+    key: "special",
+    label: "un chiffre ou caractère spécial (@ - _ …)",
     test: (v) => /[^A-Za-zÀ-ÿ\s]/.test(v),
   },
 ];
 
 export function checkPassword(value) {
-  const v = String(value ?? '');
-  const rules = PASSWORD_RULES.map((rule) => ({ ...rule, passed: rule.test(v) }));
-  return { rules, missing: rules.filter((r) => !r.passed).length, total: rules.length };
+  const v = String(value ?? "");
+  const rules = PASSWORD_RULES.map((rule) => ({
+    ...rule,
+    passed: rule.test(v),
+  }));
+  return {
+    rules,
+    missing: rules.filter((r) => !r.passed).length,
+    total: rules.length,
+  };
 }
 
-
 export const FIELD_STATUS = {
-  IDLE: 'idle',
-  NEAR: 'near',
-  OK: 'ok',
+  IDLE: "idle",
+  NEAR: "near",
+  OK: "ok",
 
-  WRONG: 'wrong',
+  WRONG: "wrong",
 };
-
 
 export function useFieldStatus(validate, value, { rules = null } = {}) {
   return useMemo(() => {
-    if (!value || String(value).trim() === '') return { status: FIELD_STATUS.IDLE, missing: 0, total: 0 };
+    if (!value || String(value).trim() === "")
+      return { status: FIELD_STATUS.IDLE, missing: 0, total: 0 };
 
     if (rules) {
       const missing = rules.filter((rule) => !rule.test(String(value))).length;
@@ -57,7 +62,6 @@ export function useFieldStatus(validate, value, { rules = null } = {}) {
     };
   }, [validate, value, rules]);
 }
-
 
 export function fieldValidator(schema, field, wrongOn = null) {
   const validate = (value) => {

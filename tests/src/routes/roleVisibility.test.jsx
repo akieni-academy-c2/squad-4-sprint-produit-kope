@@ -1,40 +1,49 @@
-import { renderToStaticMarkup } from 'react-dom/server';
-import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { renderToStaticMarkup } from "react-dom/server";
+import { MemoryRouter } from "react-router-dom";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 
+const { authState } = vi.hoisted(() => ({
+  authState: { current: null, loading: false },
+}));
 
-
-const { authState } = vi.hoisted(() => ({ authState: { current: null, loading: false } }));
-
-vi.mock('@/shared/context/AuthContext.jsx', () => ({
+vi.mock("@/shared/context/AuthContext.jsx", () => ({
   useAuthContext: () => ({
     user: authState.current,
     loading: authState.loading,
     hasRole: (role) => authState.current?.role === role,
     isServiceProvider: Boolean(
-      authState.current
-      && ['professional', 'admin'].includes(authState.current.role),
+      authState.current &&
+      ["professional", "admin"].includes(authState.current.role),
     ),
   }),
 }));
 
-vi.mock('@/shared/context/AuthModalContext.jsx', () => ({
+vi.mock("@/shared/context/AuthModalContext.jsx", () => ({
   useAuthModal: () => ({ open: vi.fn() }),
 }));
 
-vi.mock('@/shared/hooks/useAsyncData.js', () => ({
-  useAsyncData: () => ({ data: { items: [] }, loading: false, error: null, reload: vi.fn() }),
+vi.mock("@/shared/hooks/useAsyncData.js", () => ({
+  useAsyncData: () => ({
+    data: { items: [] },
+    loading: false,
+    error: null,
+    reload: vi.fn(),
+  }),
 }));
 
-const { Navbar } = await import('@/shared/components/layout/Navbar.jsx');
-const { HomePage } = await import('@/pages/HomePage.jsx');
-const { HomeRoute } = await import('@/routes/HomeRoute.jsx');
-const { landingHrefFor, dashboardHref } = await import('@/shared/utils/userMenuUtils.js');
+const { Navbar } = await import("@/shared/components/layout/Navbar.jsx");
+const { HomePage } = await import("@/pages/HomePage.jsx");
+const { HomeRoute } = await import("@/routes/HomeRoute.jsx");
+const { landingHrefFor, dashboardHref } =
+  await import("@/shared/utils/userMenuUtils.js");
 
-const render = (element) => renderToStaticMarkup(<MemoryRouter>{element}</MemoryRouter>);
+const render = (element) =>
+  renderToStaticMarkup(<MemoryRouter>{element}</MemoryRouter>);
 
 function connectAs(role) {
-  authState.current = role ? { id: 1, role, firstName: 'Ama', lastName: 'B' } : null;
+  authState.current = role
+    ? { id: 1, role, firstName: "Ama", lastName: "B" }
+    : null;
 }
 
 beforeEach(() => {
@@ -42,86 +51,86 @@ beforeEach(() => {
   connectAs(null);
 });
 
-describe('Navbar', () => {
-  it('montre tous les liens et renvoie le logo vers la home si non connecté', () => {
+describe("Navbar", () => {
+  it("montre tous les liens et renvoie le logo vers la home si non connecté", () => {
     const html = render(<Navbar />);
 
-    expect(html).toContain('Comment ça marche');
-    expect(html).toContain('Devenir Prestataire');
+    expect(html).toContain("Comment ça marche");
+    expect(html).toContain("Devenir Prestataire");
     expect(html).toContain('href="/"');
   });
 
-  it('réduit la navigation à la recherche pour un client', () => {
-    connectAs('client');
+  it("réduit la navigation à la recherche pour un client", () => {
+    connectAs("client");
     const html = render(<Navbar />);
 
-    expect(html).not.toContain('Comment ça marche');
-    expect(html).not.toContain('Devenir Prestataire');
-    expect(html).toContain('Trouver un professionnel');
+    expect(html).not.toContain("Comment ça marche");
+    expect(html).not.toContain("Devenir Prestataire");
+    expect(html).toContain("Trouver un professionnel");
   });
 
-  it('envoie le logo vers la recherche pour un client', () => {
-    connectAs('client');
+  it("envoie le logo vers la recherche pour un client", () => {
+    connectAs("client");
     expect(render(<Navbar />)).toContain('href="/search"');
   });
 
-  it('masque les deux liens pour un professionnel', () => {
-    connectAs('professional');
+  it("masque les deux liens pour un professionnel", () => {
+    connectAs("professional");
     const html = render(<Navbar />);
 
-    expect(html).not.toContain('Comment ça marche');
-    expect(html).not.toContain('Devenir Prestataire');
-    expect(html).toContain('Trouver un professionnel');
+    expect(html).not.toContain("Comment ça marche");
+    expect(html).not.toContain("Devenir Prestataire");
+    expect(html).toContain("Trouver un professionnel");
   });
 
-  it('envoie le logo vers l\'espace professionnel', () => {
-    connectAs('professional');
+  it("envoie le logo vers l'espace professionnel", () => {
+    connectAs("professional");
     expect(render(<Navbar />)).toContain('href="/dashboard/pro"');
   });
 
-  it('masque les deux liens pour un administrateur', () => {
-    connectAs('admin');
+  it("masque les deux liens pour un administrateur", () => {
+    connectAs("admin");
     const html = render(<Navbar />);
 
-    expect(html).not.toContain('Comment ça marche');
-    expect(html).not.toContain('Devenir Prestataire');
+    expect(html).not.toContain("Comment ça marche");
+    expect(html).not.toContain("Devenir Prestataire");
   });
 
-  it('envoie le logo vers l\'administration', () => {
-    connectAs('admin');
+  it("envoie le logo vers l'administration", () => {
+    connectAs("admin");
     expect(render(<Navbar />)).toContain('href="/admin"');
   });
 });
 
-describe('Recherche dans la navigation', () => {
-  it('reste un lien simple si non connecté', () => {
+describe("Recherche dans la navigation", () => {
+  it("reste un lien simple si non connecté", () => {
     const html = render(<Navbar />);
 
-    expect(html).toContain('Trouver un professionnel');
+    expect(html).toContain("Trouver un professionnel");
     expect(html).toContain('href="/search"');
-    expect(html).not.toContain('border-gray-300 bg-white/25');
+    expect(html).not.toContain("border-gray-300 bg-white/25");
   });
 
-  it('devient un bouton marqué pour un client', () => {
-    connectAs('client');
+  it("devient un bouton marqué pour un client", () => {
+    connectAs("client");
     const html = render(<Navbar />);
 
-    expect(html).toContain('border-gray-300 bg-white/25');
+    expect(html).toContain("border-gray-300 bg-white/25");
     expect(html).toContain('href="/search"');
   });
 
-  it('reste un bouton marqué pour un professionnel', () => {
-    connectAs('professional');
-    expect(render(<Navbar />)).toContain('border-gray-300 bg-white/25');
+  it("reste un bouton marqué pour un professionnel", () => {
+    connectAs("professional");
+    expect(render(<Navbar />)).toContain("border-gray-300 bg-white/25");
   });
 
-  it('reste un bouton marqué pour un administrateur', () => {
-    connectAs('admin');
-    expect(render(<Navbar />)).toContain('border-gray-300 bg-white/25');
+  it("reste un bouton marqué pour un administrateur", () => {
+    connectAs("admin");
+    expect(render(<Navbar />)).toContain("border-gray-300 bg-white/25");
   });
 
-  it('continue de mener vers /search', () => {
-    connectAs('professional');
+  it("continue de mener vers /search", () => {
+    connectAs("professional");
 
     const html = render(<Navbar />);
     const searchLinks = html.match(/href="\/search"/g) ?? [];
@@ -129,87 +138,103 @@ describe('Recherche dans la navigation', () => {
     expect(searchLinks.length).toBeGreaterThan(0);
   });
 
-  it('n\'affiche qu\'un seul lien de recherche par surface', () => {
-    for (const role of [null, 'client', 'professional', 'admin']) {
+  it("n'affiche qu'un seul lien de recherche par surface", () => {
+    for (const role of [null, "client", "professional", "admin"]) {
       connectAs(role);
       const desktop = render(<Navbar />);
-      expect(desktop.split('href="/search"').length - 1, String(role)).toBeLessThanOrEqual(3);
+      expect(
+        desktop.split('href="/search"').length - 1,
+        String(role),
+      ).toBeLessThanOrEqual(3);
     }
   });
 });
 
-describe('HomePage', () => {
-  it('affiche « Comment ça marche » et le bouton devenir pro si non connecté', () => {
+describe("HomePage", () => {
+  it("affiche « Comment ça marche » et le bouton devenir pro si non connecté", () => {
     const html = render(<HomePage />);
 
-    expect(html).toContain('Vous avez le savoir-faire');
-    expect(html).toContain('Cherchez près de chez vous');
+    expect(html).toContain("Vous avez le savoir-faire");
+    expect(html).toContain("Cherchez près de chez vous");
   });
 
-  it('conserve les deux sections pour un client', () => {
-    connectAs('client');
+  it("conserve les deux sections pour un client", () => {
+    connectAs("client");
     const html = render(<HomePage />);
 
-    expect(html).toContain('Vous avez le savoir-faire');
-    expect(html).toContain('Cherchez près de chez vous');
+    expect(html).toContain("Vous avez le savoir-faire");
+    expect(html).toContain("Cherchez près de chez vous");
   });
 
-  it('retire les deux sections pour un professionnel', () => {
-    connectAs('professional');
+  it("retire les deux sections pour un professionnel", () => {
+    connectAs("professional");
     const html = render(<HomePage />);
 
-    expect(html).not.toContain('Vous avez le savoir-faire');
-    expect(html).not.toContain('Cherchez près de chez vous');
+    expect(html).not.toContain("Vous avez le savoir-faire");
+    expect(html).not.toContain("Cherchez près de chez vous");
   });
 
-  it('retire les deux sections pour un administrateur', () => {
-    connectAs('admin');
+  it("retire les deux sections pour un administrateur", () => {
+    connectAs("admin");
     const html = render(<HomePage />);
 
-    expect(html).not.toContain('Vous avez le savoir-faire');
-    expect(html).not.toContain('Cherchez près de chez vous');
+    expect(html).not.toContain("Vous avez le savoir-faire");
+    expect(html).not.toContain("Cherchez près de chez vous");
   });
 
-  it('garde le reste de la page intact', () => {
+  it("garde le reste de la page intact", () => {
     const html = render(<HomePage />);
 
-    expect(html).toContain('Le bon artisan');
-    expect(html).toContain('Faut-il un compte pour chercher');
+    expect(html).toContain("Le bon artisan");
+    expect(html).toContain("Faut-il un compte pour chercher");
   });
 });
 
-describe('Redirection de /', () => {
-
-  it('renvoie le client vers la recherche et les autres vers leur gestion', () => {
-    expect(landingHrefFor({ role: 'client' })).toBe('/search');
-    expect(landingHrefFor({ role: 'professional' })).toBe('/dashboard/pro');
-    expect(landingHrefFor({ role: 'admin' })).toBe('/admin');
+describe("Redirection de /", () => {
+  it("renvoie le client vers la recherche et les autres vers leur gestion", () => {
+    expect(landingHrefFor({ role: "client" })).toBe("/search");
+    expect(landingHrefFor({ role: "professional" })).toBe("/dashboard/pro");
+    expect(landingHrefFor({ role: "admin" })).toBe("/admin");
   });
 
-  it('laisse la home à qui n\'est pas connecté', () => {
-    expect(landingHrefFor(null)).toBe('/');
-    expect(landingHrefFor(undefined)).toBe('/');
+  it("laisse la home à qui n'est pas connecté", () => {
+    expect(landingHrefFor(null)).toBe("/");
+    expect(landingHrefFor(undefined)).toBe("/");
   });
 
-  it('donne la même destination que le logo', () => {
-    for (const role of ['client', 'professional', 'admin']) {
+  it("donne la même destination que le logo", () => {
+    for (const role of ["client", "professional", "admin"]) {
       connectAs(role);
-      expect(render(<Navbar />), role).toContain(`href="${landingHrefFor({ role })}"`);
+      expect(render(<Navbar />), role).toContain(
+        `href="${landingHrefFor({ role })}"`,
+      );
     }
   });
 
-  it('laisse l\'espace client accessible depuis le menu', () => {
-    expect(dashboardHref('client')).toBe('/dashboard/client');
+  it("laisse l'espace client accessible depuis le menu", () => {
+    expect(dashboardHref("client")).toBe("/dashboard/client");
   });
 
-  it('affiche la home quand personne n\'est connecté', () => {
-    expect(render(<HomeRoute><p>ACCUEIL</p></HomeRoute>)).toContain('ACCUEIL');
+  it("affiche la home quand personne n'est connecté", () => {
+    expect(
+      render(
+        <HomeRoute>
+          <p>ACCUEIL</p>
+        </HomeRoute>,
+      ),
+    ).toContain("ACCUEIL");
   });
 
-  it('n\'affiche rien avant la fin du chargement de session', () => {
-    connectAs('client');
+  it("n'affiche rien avant la fin du chargement de session", () => {
+    connectAs("client");
     authState.loading = true;
 
-    expect(render(<HomeRoute><p>ACCUEIL</p></HomeRoute>)).toBe('');
+    expect(
+      render(
+        <HomeRoute>
+          <p>ACCUEIL</p>
+        </HomeRoute>,
+      ),
+    ).toBe("");
   });
 });

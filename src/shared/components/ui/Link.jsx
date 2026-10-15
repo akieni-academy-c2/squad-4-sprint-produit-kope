@@ -1,12 +1,19 @@
-import { Link as RouterLink } from 'react-router-dom';
-import { cn } from '@/shared/utils';
+import { Link as RouterLink } from "react-router-dom";
+import { cn } from "@/shared/utils";
 
-
-export function Link({ href, target, replace, className, children, ref, ...rest }) {
+export function Link({
+  href,
+  target,
+  replace,
+  className,
+  children,
+  ref,
+  ...rest
+}) {
   const isExternal =
-    target === '_blank' ||
-    /^(https?:|mailto:|tel:)/i.test(href ?? '') ||
-    (href != null && !String(href).startsWith('/'));
+    target === "_blank" ||
+    /^(https?:|mailto:|tel:)/i.test(href ?? "") ||
+    (href != null && !String(href).startsWith("/"));
 
   if (isExternal)
     return (
@@ -23,7 +30,13 @@ export function Link({ href, target, replace, className, children, ref, ...rest 
     );
 
   return (
-    <RouterLink ref={ref} to={href} replace={replace} className={cn(className)} {...rest}>
+    <RouterLink
+      ref={ref}
+      to={href}
+      replace={replace}
+      className={cn(className)}
+      {...rest}
+    >
       {children}
     </RouterLink>
   );

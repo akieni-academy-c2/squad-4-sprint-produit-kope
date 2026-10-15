@@ -1,1 +1,1 @@
-export { ConfirmDialog as AdminConfirmModal } from '@/shared/components/ui/ConfirmDialog.jsx';
+export { ConfirmDialog as AdminConfirmModal } from "@/shared/components/ui/ConfirmDialog.jsx";

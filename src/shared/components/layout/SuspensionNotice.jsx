@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Link } from '@/shared/components/ui/Link.jsx';
-import { LifeBuoy, Mail, Phone } from 'lucide-react';
-import { Button, Modal } from '@/shared/components/ui';
-import { SUSPENDED_EVENT } from '@/shared/lib/api.js';
-import { SUPPORT_EMAIL, SUPPORT_MAILTO, SUPPORT_PHONE, SUPPORT_TEL } from '@/shared/constants/support.js';
-import { ROUTES } from '@/shared/lib/constants.js';
-
+import { useEffect, useState } from "react";
+import { Link } from "@/shared/components/ui/Link.jsx";
+import { LifeBuoy, Mail, Phone } from "lucide-react";
+import { Button, Modal } from "@/shared/components/ui";
+import { SUSPENDED_EVENT } from "@/shared/lib/api.js";
+import {
+  SUPPORT_EMAIL,
+  SUPPORT_MAILTO,
+  SUPPORT_PHONE,
+  SUPPORT_TEL,
+} from "@/shared/constants/support.js";
+import { ROUTES } from "@/shared/lib/constants.js";
 
 export function SuspensionNotice() {
   const [open, setOpen] = useState(false);
@@ -35,10 +39,15 @@ export function SuspensionNotice() {
     >
       <div className="space-y-4">
         <div className="flex items-start gap-3 rounded-sm bg-amber-50 p-3">
-          <LifeBuoy size={18} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
+          <LifeBuoy
+            size={18}
+            className="mt-0.5 shrink-0 text-amber-600"
+            aria-hidden
+          />
           <p className="text-sm leading-6 text-gray-700">
-            Votre compte a été suspendu après plusieurs signalements. Vous pouvez contester cette décision : notre
-            service client examine votre dossier.
+            Votre compte a été suspendu après plusieurs signalements. Vous
+            pouvez contester cette décision : notre service client examine votre
+            dossier.
           </p>
         </div>
 
@@ -49,7 +58,10 @@ export function SuspensionNotice() {
               Email
             </dt>
             <dd>
-              <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-primary-700 hover:underline">
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="font-semibold text-primary-700 hover:underline"
+              >
                 {SUPPORT_EMAIL}
               </a>
             </dd>
@@ -60,7 +72,10 @@ export function SuspensionNotice() {
               Téléphone
             </dt>
             <dd>
-              <a href={SUPPORT_TEL} className="font-semibold text-primary-700 hover:underline">
+              <a
+                href={SUPPORT_TEL}
+                className="font-semibold text-primary-700 hover:underline"
+              >
                 {SUPPORT_PHONE}
               </a>
             </dd>
@@ -68,10 +83,14 @@ export function SuspensionNotice() {
         </dl>
 
         <p className="text-xs text-gray-500">
-          Vous pouvez aussi{' '}
-          <Link href={ROUTES.SEARCH} onClick={() => setOpen(false)} className="font-semibold text-primary-700 hover:underline">
+          Vous pouvez aussi{" "}
+          <Link
+            href={ROUTES.SEARCH}
+            onClick={() => setOpen(false)}
+            className="font-semibold text-primary-700 hover:underline"
+          >
             continuer à parcourir les professionnels
-          </Link>{' '}
+          </Link>{" "}
           sans votre compte.
         </p>
       </div>

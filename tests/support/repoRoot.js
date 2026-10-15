@@ -1,9 +1,8 @@
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 
-
-const MARKER = ['server/app.js', 'src/main.jsx'];
+const MARKER = ["server/app.js", "src/main.jsx"];
 
 function findRepoRoot(from) {
   let dir = from;
@@ -16,6 +15,5 @@ function findRepoRoot(from) {
 }
 
 export const REPO_ROOT = findRepoRoot(dirname(fileURLToPath(import.meta.url)));
-
 
 export const repoPath = (...parts) => resolve(REPO_ROOT, ...parts);

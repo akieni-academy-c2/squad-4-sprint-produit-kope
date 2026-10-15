@@ -1,34 +1,46 @@
-import { useCallback, useState } from 'react';
-import { Calendar, CornerDownRight, Eye, EyeOff } from 'lucide-react';
-import { Button, CustomSelect, SearchInput, Pagination, StarRating, DataState, Tooltip, UserAvatar } from '@/shared/components/ui';
+import { useCallback, useState } from "react";
+import { Calendar, CornerDownRight, Eye, EyeOff } from "lucide-react";
+import {
+  Button,
+  CustomSelect,
+  SearchInput,
+  Pagination,
+  StarRating,
+  DataState,
+  Tooltip,
+  UserAvatar,
+} from "@/shared/components/ui";
 import {
   AdminFilterGroup,
   AdminFilterPanel,
   AdminSectionLayout,
-} from './AdminSectionLayout.jsx';
-import { AdminConfirmModal } from './AdminConfirmModal.jsx';
-import { useAdminPage } from '../hooks/useAdminPage.js';
-import { useAdminFilters } from '../hooks/useAdminFilters.js';
-import { useAdminList } from '../hooks/useAdminList.js';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { listReviews, setReviewHidden } from '../services/admin.service.js';
-import { formatDateFr, fullNameInitials } from '@/shared/utils';
+} from "./AdminSectionLayout.jsx";
+import { AdminConfirmModal } from "./AdminConfirmModal.jsx";
+import { useAdminPage } from "../hooks/useAdminPage.js";
+import { useAdminFilters } from "../hooks/useAdminFilters.js";
+import { useAdminList } from "../hooks/useAdminList.js";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import { listReviews, setReviewHidden } from "../services/admin.service.js";
+import { formatDateFr, fullNameInitials } from "@/shared/utils";
 
 const PAGE_SIZE = 25;
 
 const VISIBILITY_OPTIONS = [
-  { value: '', label: 'Tous les avis' },
-  { value: 'false', label: 'Non masqués' },
-  { value: 'true', label: 'Masqués' },
+  { value: "", label: "Tous les avis" },
+  { value: "false", label: "Non masqués" },
+  { value: "true", label: "Masqués" },
 ];
 
-export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }) {
+export function AdminReviewsTable({
+  rightContainer = null,
+  initialFilters = {},
+}) {
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
   const [confirm, setConfirm] = useState(null);
   const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
-    query: '',
-    hidden: '',
+    query: "",
+    hidden: "",
     ...initialFilters,
   });
 
@@ -37,7 +49,7 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
       listReviews({
         page,
         pageSize: PAGE_SIZE,
-        hidden: applied.hidden === '' ? undefined : applied.hidden === 'true',
+        hidden: applied.hidden === "" ? undefined : applied.hidden === "true",
         query: applied.query,
       }),
     [page, applied.hidden, applied.query],
@@ -47,15 +59,15 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
   const apply = async () => {
     if (!confirm) return;
     try {
-      await setReviewHidden(confirm.item.id, confirm.action === 'hide');
+      await setReviewHidden(confirm.item.id, confirm.action === "hide");
       toast({
-        message: confirm.action === 'hide' ? 'Avis masqué.' : 'Avis rétabli.',
-        type: 'success',
+        message: confirm.action === "hide" ? "Avis masqué." : "Avis rétabli.",
+        type: "success",
       });
       setConfirm(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     }
   };
 
@@ -78,8 +90,8 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
           <SearchInput
             id={searchId}
             value={draft.query}
-            onChange={(e) => set('query', e.target.value)}
-            onClear={() => set('query', '')}
+            onChange={(e) => set("query", e.target.value)}
+            onClear={() => set("query", "")}
             placeholder="Client, professionnel ou contenu..."
             aria-label="Rechercher un avis"
           />
@@ -89,7 +101,7 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
           <CustomSelect
             value={draft.hidden}
             onChange={(v) => {
-              set('hidden', v, { immediate: true });
+              set("hidden", v, { immediate: true });
               setPage(1);
             }}
             options={VISIBILITY_OPTIONS}
@@ -113,14 +125,17 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
             (data?.items || []).map((r) => (
               <li
                 key={r.id}
-                className={`rounded-lg border bg-white p-4 ${r.isHidden ? 'border-rose-200 bg-rose-50/30' : 'border-gray-200'}`}
+                className={`rounded-lg border bg-white p-4 ${r.isHidden ? "border-rose-200 bg-rose-50/30" : "border-gray-200"}`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 flex-col">
                     <div className="flex items-center gap-2">
                       <UserAvatar user={r.client} className="h-7 w-7" />
                       <p className="truncate text-sm font-semibold text-gray-900">
-                        {fullNameInitials(r.client?.firstName, r.client?.lastName) || 'Client'}
+                        {fullNameInitials(
+                          r.client?.firstName,
+                          r.client?.lastName,
+                        ) || "Client"}
                       </p>
                       {r.isHidden ? (
                         <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-700">
@@ -134,10 +149,19 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
                     </div>
 
                     <div className="mt-1 flex items-center gap-1.5 opacity-60 grayscale">
-                      <CornerDownRight className="h-4 w-4 shrink-0 text-gray-300" aria-hidden />
-                      <UserAvatar user={r.professional} className="h-6 w-6" iconSize={12} />
+                      <CornerDownRight
+                        className="h-4 w-4 shrink-0 text-gray-300"
+                        aria-hidden
+                      />
+                      <UserAvatar
+                        user={r.professional}
+                        className="h-6 w-6"
+                        iconSize={12}
+                      />
                       <p className="truncate text-xs text-gray-500">
-                        {r.professional?.displayName || r.professional?.name || `Pro #${r.professional?.id || '?'}`}
+                        {r.professional?.displayName ||
+                          r.professional?.name ||
+                          `Pro #${r.professional?.id || "?"}`}
                       </p>
                     </div>
 
@@ -154,7 +178,9 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
                           size="icon-sm"
                           variant="ghost"
                           className="text-primary-600 hover:bg-mint-100"
-                          onClick={() => setConfirm({ item: r, action: 'show' })}
+                          onClick={() =>
+                            setConfirm({ item: r, action: "show" })
+                          }
                           aria-label="Rétablir l'avis"
                         >
                           <Eye className="h-4 w-4" />
@@ -166,7 +192,9 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
                           size="icon-sm"
                           variant="ghost"
                           className="text-rose-600 hover:bg-rose-50"
-                          onClick={() => setConfirm({ item: r, action: 'hide' })}
+                          onClick={() =>
+                            setConfirm({ item: r, action: "hide" })
+                          }
                           aria-label="Masquer l'avis"
                         >
                           <EyeOff className="h-4 w-4" />
@@ -211,14 +239,18 @@ export function AdminReviewsTable({ rightContainer = null, initialFilters = {} }
         open={Boolean(confirm)}
         onCancel={() => setConfirm(null)}
         onConfirm={apply}
-        danger={confirm?.action === 'hide'}
-        title={confirm?.action === 'hide' ? 'Masquer cet avis ?' : 'Rétablir cet avis ?'}
+        danger={confirm?.action === "hide"}
+        title={
+          confirm?.action === "hide"
+            ? "Masquer cet avis ?"
+            : "Rétablir cet avis ?"
+        }
         description={
-          confirm?.action === 'hide'
+          confirm?.action === "hide"
             ? "L'avis disparaîtra de la fiche publique."
             : "L'avis sera de nouveau visible sur la fiche du professionnel."
         }
-        confirmLabel={confirm?.action === 'hide' ? 'Masquer' : 'Rétablir'}
+        confirmLabel={confirm?.action === "hide" ? "Masquer" : "Rétablir"}
       />
     </AdminSectionLayout>
   );

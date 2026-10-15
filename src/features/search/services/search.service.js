@@ -1,1 +1,1 @@
-export { searchProfessionals, useSearch } from '../hooks/useSearch.js';
+export { searchProfessionals, useSearch } from "../hooks/useSearch.js";

@@ -1,4 +1,4 @@
-import { pool } from './pool.js';
+import { pool } from "./pool.js";
 
 /**
  * Contrat minimal entre le code applicatif et le schéma. Chaque entrée
@@ -7,21 +7,21 @@ import { pool } from './pool.js';
  * À compléter quand une migration ajoute une dépendance lue par le code.
  */
 const REQUIRED = [
-  { relation: 'users' },
-  { relation: 'trades' },
-  { relation: 'zones' },
-  { relation: 'cities' },
-  { relation: 'professionals' },
-  { relation: 'professional_zones' },
-  { relation: 'photos' },
-  { relation: 'reviews' },
-  { relation: 'published_professionals' },
-  { column: 'zones.city_id' },
-  { column: 'users.avatar_url' },
-  { column: 'users.email' },
-  { column: 'professionals.city_id' },
-  { column: 'photos.thumb_path' },
-  { column: 'reviews.updated_at' },
+  { relation: "users" },
+  { relation: "trades" },
+  { relation: "zones" },
+  { relation: "cities" },
+  { relation: "professionals" },
+  { relation: "professional_zones" },
+  { relation: "photos" },
+  { relation: "reviews" },
+  { relation: "published_professionals" },
+  { column: "zones.city_id" },
+  { column: "users.avatar_url" },
+  { column: "users.email" },
+  { column: "professionals.city_id" },
+  { column: "photos.thumb_path" },
+  { column: "reviews.updated_at" },
 ];
 
 /**
@@ -55,7 +55,7 @@ export async function findMissingSchema(db = pool) {
   for (const { table_name, column_name } of columns.rows)
     found.add(`${table_name}.${column_name}`);
 
-  return REQUIRED.map((required) => required.column ?? required.relation).filter(
-    (object) => !found.has(object),
-  );
+  return REQUIRED.map(
+    (required) => required.column ?? required.relation,
+  ).filter((object) => !found.has(object));
 }
