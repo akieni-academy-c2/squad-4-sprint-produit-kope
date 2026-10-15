@@ -27,17 +27,28 @@ export function AdminProfessionalCard({ pro, onToggleVisibility }) {
   return (
     <li className=" relative flex flex-col rounded-lg border border-gray-200 bg-white p-4">
       <div className="flex items-start gap-3">
-        <UserAvatar
-          user={{
-            firstName: pro.firstName,
-            lastName: pro.lastName,
-            avatarUrl: pro.avatarUrl,
-          }}
-          name={name}
-          className="h-11 w-11"
-        />
+        <Link
+          href={ROUTES.PROFESSIONAL(id)}
+          className="shrink-0 rounded-full transition hover:opacity-80"
+          aria-label={`Voir la fiche publique de ${name}`}
+        >
+          <UserAvatar
+            user={{
+              firstName: pro.firstName,
+              lastName: pro.lastName,
+              avatarUrl: pro.avatarUrl,
+            }}
+            name={name}
+            className="h-11 w-11"
+          />
+        </Link>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-gray-900">{name}</p>
+          <Link
+            href={ROUTES.PROFESSIONAL(id)}
+            className="block truncate font-semibold text-gray-900 transition hover:text-primary-700 hover:underline"
+          >
+            {name}
+          </Link>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
             <Wrench className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{pro.trade || "-"}</span>
