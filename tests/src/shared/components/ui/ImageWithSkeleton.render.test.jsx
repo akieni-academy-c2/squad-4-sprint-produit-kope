@@ -64,3 +64,23 @@ describe("Repli sur image morte", () => {
     expect(html).toContain("bg-gray-200");
   });
 });
+
+/**
+ * Le placeholder d'une image est le premier élément visible d'une page qui
+ * charge. Un bloc gris anonyme ne dit rien du site ; y poser la marque donne au
+ * visiteur un point d'ancrage, et signale que l'attente est normale.
+ */
+describe("Marque dans le placeholder", () => {
+  it("affiche la marque centree pendant le chargement", () => {
+    const html = render({ src: IMG });
+
+    expect(html).toContain("KOP");
+    expect(html).toMatch(/flex h-full w-full items-center justify-center/);
+  });
+
+  it("ne montre pas la marque sur une image morte", () => {
+    const html = render({});
+
+    expect(html).not.toContain("KOP");
+  });
+});

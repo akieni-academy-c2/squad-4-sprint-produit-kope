@@ -115,7 +115,7 @@ export function ProProfilePage() {
           onChange={onChange}
         />
       )}
-      renderSection={(active, rightContainer, navigate) => (
+      renderSection={(active, rightContainer, sectionLink) => (
         <div className="space-y-6">
           {active === "overview" && (
             <>
@@ -130,7 +130,7 @@ export function ProProfilePage() {
                   loading={savingAvailability}
                 />
               </div>
-              <OverviewSection profile={profile} onNavigate={navigate} />
+              <OverviewSection profile={profile} sectionLink={sectionLink} />
             </>
           )}
 

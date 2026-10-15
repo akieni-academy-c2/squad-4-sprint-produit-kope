@@ -12,7 +12,7 @@ import { listReviews } from "@/features/reviews/services/reviews.service.js";
 
 const RECENT_COUNT = 4;
 
-export function OverviewSection({ profile, onNavigate }) {
+export function OverviewSection({ profile, sectionLink }) {
   const professionalId = profile?.id;
 
   const { data, loading } = useAsyncData(async () => {
@@ -41,28 +41,28 @@ export function OverviewSection({ profile, onNavigate }) {
             value={profile?.photoCount ?? profile?.photos?.length ?? 0}
             hint="Photos de vos travaux"
             icon={<ImageIcon size={12} aria-hidden />}
-            onClick={() => onNavigate?.("photos")}
+            href={sectionLink("photos")}
           />
           <KpiCard
             label="Zones"
             value={profile?.zones?.length ?? 0}
             hint={profile?.cityName || "Ville non renseignée"}
             icon={<MapPin size={12} aria-hidden />}
-            onClick={() => onNavigate?.("profil")}
+            href={sectionLink("profil")}
           />
           <KpiCard
             label="Contacts"
             value={loading ? "-" : (data?.contactsTotal ?? 0)}
             hint="Clients et professionnels"
             icon={<Phone size={12} aria-hidden />}
-            onClick={() => onNavigate?.("contacts")}
+            href={sectionLink("contacts")}
           />
           <KpiCard
             label="Avis reçus"
             value={loading ? "-" : (data?.reviewsTotal ?? 0)}
             hint="Note moyenne et avis"
             icon={<Star size={12} aria-hidden />}
-            onClick={() => onNavigate?.("avis")}
+            href={sectionLink("avis")}
           />
         </div>
       </StatGroup>
@@ -100,7 +100,7 @@ export function OverviewSection({ profile, onNavigate }) {
                   rating={review.rating}
                   createdAt={review.createdAt}
                   actionLabel={`Ouvrir mes avis - avis reçu`}
-                  onClick={() => onNavigate?.("avis")}
+                  href={sectionLink("avis")}
                 />
               ))}
             </ul>
@@ -129,7 +129,7 @@ export function OverviewSection({ profile, onNavigate }) {
                   key={contact.id}
                   contact={contact}
                   actionLabel={`Ouvrir mes contacts - ${contact.displayName || "Utilisateur"}`}
-                  onClick={() => onNavigate?.("contacts")}
+                  href={sectionLink("contacts")}
                 />
               ))}
             </ul>

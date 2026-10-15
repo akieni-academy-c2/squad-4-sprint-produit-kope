@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Link } from "@/shared/components/ui/Link.jsx";
+import { BrandMark } from "@/shared/components/layout/BrandMark.jsx";
 import { UserMenu } from "./UserMenu.jsx";
 import { DemoRoleSwitcher } from "./DemoRoleSwitcher.jsx";
 import {
@@ -63,12 +64,7 @@ export function Navbar() {
           href={logoHref}
           className="flex items-center gap-2 focus-ring rounded-xl p-1 -ml-1 shrink-0 text-primary-500"
         >
-          <span aria-hidden className="flex items-center gap-1.5">
-            <Drill size={20} />
-            <span className="font-extrabold moo-lah-lah-regular tracking-tight text-[27px]  -ml-0.5">
-              KOP
-            </span>
-          </span>
+          <BrandMark size={20} className="text-primary-500" />
         </Link>
 
         <DemoRoleSwitcher />

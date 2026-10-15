@@ -71,6 +71,8 @@ export const env = {
   PG_IDLE_TIMEOUT_MS: Number(process.env.PG_IDLE_TIMEOUT_MS) || 10000,
 
   RATE_LIMIT_STORE: process.env.RATE_LIMIT_STORE ?? "postgres",
+  REFERENCE_CACHE_TTL_MS:
+    Number(process.env.REFERENCE_CACHE_TTL_MS) || 5 * 60 * 1000,
 
   BCRYPT_ROUNDS: clampRounds(Number(process.env.BCRYPT_ROUNDS) || 12),
 

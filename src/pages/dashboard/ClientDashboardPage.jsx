@@ -52,10 +52,10 @@ export function ClientDashboardPage() {
           userId={user?.id}
         />
       )}
-      renderSection={(active, rightContainer, navigate) => (
+      renderSection={(active, rightContainer, sectionLink) => (
         <>
           {active === "apercu" && (
-            <ClientOverviewSection onNavigate={navigate} />
+            <ClientOverviewSection sectionLink={sectionLink} />
           )}
           {active === "profil" && <ClientProfileSection user={user} />}
           {active === "avis" && (

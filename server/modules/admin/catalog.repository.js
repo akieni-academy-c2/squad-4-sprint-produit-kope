@@ -1,4 +1,5 @@
 import { pool } from "../../db/pool.js";
+import { cacheInvalidate } from "../../utils/cache.js";
 
 function makeCatalog({ table, alias, fk = null, inUseSql }) {
   const insertColumns = fk
@@ -12,6 +13,13 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
     : "id, name";
   const updateSet = fk ? `name = $2, ${fk.column} = $3` : "name = $2";
 
+  /**
+   * Toute écriture sur le référentiel vide les listes publiques. Elles
+   * encompasses les villes, dont la liste dépend des quartiers : vider tout le
+   * préfixe garantit qu'aucune écriture ne laisse une liste périmée.
+   */
+  const invalidate = () => cacheInvalidate("reference:");
+
   return {
     async create(name, fkId, db = pool) {
       const { rows } = await db.query(
@@ -20,6 +28,7 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
          RETURNING ${insertReturning}`,
         fk ? [name, fkId ?? null] : [name],
       );
+      invalidate();
       return rows[0];
     },
 
@@ -28,6 +37,7 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
         `UPDATE ${table} SET ${updateSet} WHERE id = $1 RETURNING ${insertReturning}`,
         fk ? [id, name, fkId ?? null] : [id, name],
       );
+      invalidate();
       return rows[0] ?? null;
     },
 
@@ -36,6 +46,7 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
         `DELETE FROM ${table} WHERE id = $1`,
         [id],
       );
+      invalidate();
       return rowCount > 0;
     },
 
@@ -46,6 +57,7 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
           WHERE ${alias}.id = u.id`,
         [ids],
       );
+      invalidate();
     },
 
     async inUse(id, db = pool) {
