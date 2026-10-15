@@ -482,11 +482,11 @@ export function ProReviewsSection({ professionalId, rightContainer = null }) {
         open={reportingId != null}
         onClose={() => setReportingId(null)}
         title="Signaler cet avis"
-        description="Votre signalement est transmis à l’administration."
+        description="Votre signalement est transmis à l'administration."
         reasonOptions={REVIEW_REPORT_REASON_OPTIONS}
         reasonLabel="Motif du signalement"
-        reasonHelp="Le motif aide l’administration à traiter le signalement."
-        notice="L’avis reste visible en attendant la décision. Seul un administrateur peut le retirer."
+        reasonHelp="Le motif aide l'administration à traiter le signalement."
+        notice="L'avis reste visible en attendant la décision. Seul un administrateur peut le retirer."
         successMessage="Avis signalé. Merci."
         submitLabel="Signaler cet avis"
         submit={async (payload) => {

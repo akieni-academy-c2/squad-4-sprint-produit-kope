@@ -8,10 +8,10 @@ export function ReportDialog({
   open,
   onClose,
   title = "Signaler",
-  description = "Votre signalement est transmis à l’administration.",
+  description = "Votre signalement est transmis à l'administration.",
   reasonOptions,
   reasonLabel = "Motif du signalement",
-  reasonHelp = "Le motif aide l’administration à traiter le signalement.",
+  reasonHelp = "Le motif aide l'administration à traiter le signalement.",
   notice,
   submit,
   successMessage = "Signalement envoyé. Merci.",
@@ -43,7 +43,7 @@ export function ReportDialog({
       toast({ message: successMessage, type: "success" });
       close();
     } catch (err) {
-      setError(err?.message || "Erreur lors de l’envoi du signalement.");
+      setError(err?.message || "Erreur lors de l'envoi du signalement.");
     } finally {
       setSubmitting(false);
     }

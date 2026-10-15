@@ -15,22 +15,22 @@ const render = (props = {}) =>
   );
 
 describe("affichage", () => {
-  it("affiche l’indicatif à gauche de la saisie", () => {
+  it("affiche l'indicatif à gauche de la saisie", () => {
     expect(render()).toContain("+242");
   });
 
-  it("sépare l’indicatif de la saisie", () => {
+  it("sépare l'indicatif de la saisie", () => {
     const html = render();
     expect(html).toContain("border-r");
     expect(html).toMatch(/h-4 w-px/);
   });
 
-  it("ne met pas l’indicatif dans le placeholder", () => {
+  it("ne met pas l'indicatif dans le placeholder", () => {
     const placeholder = /placeholder="([^"]*)"/.exec(render())?.[1];
     expect(placeholder).not.toContain("+242");
   });
 
-  it("annonce dans son placeholder exactement ce qu’il produira", () => {
+  it("annonce dans son placeholder exactement ce qu'il produira", () => {
     const placeholder = /placeholder="([^"]*)"/.exec(render())?.[1];
     expect(formatPhoneDisplay("068898888")).toBe(placeholder);
   });

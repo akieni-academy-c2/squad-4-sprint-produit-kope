@@ -121,7 +121,7 @@ describe("Cartes de la page d'accueil", () => {
     expect(html).toContain("data:image/svg+xml");
   });
 
-  it("affiche l’image locale fournie en avant-première", () => {
+  it("affiche l'image locale fournie en avant-première", () => {
     const previewImage = "/assets/user1-audit.png";
     const html = render(
       <ProfessionalCard

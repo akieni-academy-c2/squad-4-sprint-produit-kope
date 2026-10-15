@@ -61,7 +61,7 @@ describe("BottomNav", () => {
     expect(html).toContain("Mes avis");
   });
 
-  it("marque l’entrée active via aria-current, sans rôle tab", () => {
+  it("marque l'entrée active via aria-current, sans rôle tab", () => {
     const html = renderToStaticMarkup(
       <BottomNav items={items} active="avis" onChange={() => {}} />,
     );

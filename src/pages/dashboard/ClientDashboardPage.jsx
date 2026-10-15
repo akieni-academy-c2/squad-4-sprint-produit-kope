@@ -12,7 +12,7 @@ import { ClientOverviewSection } from "./components/ClientOverviewSection.jsx";
 const NAV_ITEMS = [
   {
     id: "apercu",
-    label: "Vue d’ensemble",
+    label: "Vue d'ensemble",
     shortLabel: "Aperçu",
     icon: LayoutDashboard,
   },

@@ -29,7 +29,7 @@ const SIDE_PANEL = {
   "register-pro": {
     image: form,
     imageAlt: "Professionnelle KOP à son atelier",
-    title: "Votre savoir-faire mérite d’être à portée.",
+    title: "Votre savoir-faire mérite d'être à portée.",
     description:
       "Un profil pour présenter votre activité. Un espace pour retrouver les demandes de vos futurs clients.",
   },

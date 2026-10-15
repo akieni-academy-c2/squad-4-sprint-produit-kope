@@ -77,7 +77,7 @@ const STATS = {
 const render = (element) =>
   renderToStaticMarkup(<MemoryRouter>{element}</MemoryRouter>);
 
-describe("Vue d’ensemble - mise en page", () => {
+describe("Vue d'ensemble - mise en page", () => {
   const html = render(<AdminOverview stats={STATS} />);
 
   it("met le travail en attente avant les chiffres", () => {
@@ -152,7 +152,7 @@ describe("Vue d’ensemble - mise en page", () => {
   });
 });
 
-describe("Vue d’ensemble - navigation filtrée", () => {
+describe("Vue d'ensemble - navigation filtrée", () => {
   it("pré-applique le filtre « avis masqués » sur la modération des avis", () => {
     const html = render(
       <AdminReviewsTable initialFilters={{ hidden: "true" }} />,

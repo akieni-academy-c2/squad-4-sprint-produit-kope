@@ -218,7 +218,7 @@ export function ProfileEditForm({
                 { value: "", label: "Non renseignée" },
                 ...cities.map((c) => ({ value: String(c.id), label: c.name })),
               ]}
-              aria-label="Ville d’exercice"
+              aria-label="Ville d'exercice"
               aria-invalid={Boolean(errors.cityId) || undefined}
               aria-describedby={errors.cityId ? "pe-city-error" : undefined}
             />
@@ -245,7 +245,7 @@ export function ProfileEditForm({
             required
             hint={
               effectiveCityId == null
-                ? "Choisissez d’abord une ville pour voir ses zones."
+                ? "Choisissez d'abord une ville pour voir ses zones."
                 : "Sélectionnez au moins une zone."
             }
             error={errors.zoneIds}

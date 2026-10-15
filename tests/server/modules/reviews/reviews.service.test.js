@@ -146,7 +146,7 @@ describe("Un professionnel peut aussi laisser un avis", () => {
     ).rejects.toMatchObject({ status: 409 });
   });
 
-  it("enregistre l’avis d’un professionnel", async () => {
+  it("enregistre l'avis d'un professionnel", async () => {
     vi.spyOn(professionalsRepository, "existsPublished").mockResolvedValue(
       true,
     );

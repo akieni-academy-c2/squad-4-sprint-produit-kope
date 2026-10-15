@@ -19,7 +19,7 @@ const UPLOAD_ERRORS = {
   LIMIT_PART_COUNT: () => "Trop de segments dans la requête",
   LIMIT_FIELD_KEY: () => "Nom de champ trop long",
   LIMIT_FIELD_VALUE: () => "Valeur de champ trop longue",
-  LIMIT_HEADER_PAIRS: () => "Trop d’en-têtes",
+  LIMIT_HEADER_PAIRS: () => "Trop d'en-têtes",
 };
 
 export function errorHandler(err, req, res, next) {

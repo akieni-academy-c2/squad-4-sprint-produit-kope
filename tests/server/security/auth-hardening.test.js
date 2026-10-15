@@ -46,7 +46,7 @@ beforeEach(() => {
   );
 });
 
-describe("changement d’identité du compte", () => {
+describe("changement d'identité du compte", () => {
   it("refuse un nouveau numéro sans mot de passe courant", async () => {
     await expect(
       service.updateAccount(7, { phone: "+242069999999" }),
@@ -94,7 +94,7 @@ describe("changement d’identité du compte", () => {
     expect(repository.updateAccount).toHaveBeenCalled();
   });
 
-  it("compare toujours, même si le compte n’existe pas", async () => {
+  it("compare toujours, même si le compte n'existe pas", async () => {
     repository.getPasswordHash.mockResolvedValue(undefined);
     await expect(
       service.updateAccount(404, { phone: "+242069999999" }),
@@ -105,8 +105,8 @@ describe("changement d’identité du compte", () => {
   });
 });
 
-describe("schémas d’authentification", () => {
-  it("n’accepte pas un mot de passe au-delà de la limite de bcrypt", () => {
+describe("schémas d'authentification", () => {
+  it("n'accepte pas un mot de passe au-delà de la limite de bcrypt", () => {
     expect(
       loginSchema.safeParse({ phone: "061234567", password: "a".repeat(72) })
         .success,
@@ -128,7 +128,7 @@ describe("schémas d’authentification", () => {
 });
 
 describe("coût du hachage", () => {
-  it("est d’au moins 12 par défaut", () => {
+  it("est d'au moins 12 par défaut", () => {
     expect(env.BCRYPT_ROUNDS).toBeGreaterThanOrEqual(12);
     expect(env.BCRYPT_ROUNDS).toBeLessThanOrEqual(15);
   });

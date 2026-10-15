@@ -17,12 +17,12 @@ const PRO = {
 };
 
 describe("ProfessionalCard - note", () => {
-  it("garde l’étoile et la moyenne sur une seule ligne (grille)", () => {
+  it("garde l'étoile et la moyenne sur une seule ligne (grille)", () => {
     const html = render(<ProfessionalCard mode="grid" item={PRO} />);
 
     expect(
       html,
-      "l’étoile et la moyenne doivent partager un conteneur `nowrap`",
+      "l'étoile et la moyenne doivent partager un conteneur `nowrap`",
     ).toMatch(
       /<span class="inline-flex items-center gap-1[^"]*whitespace-nowrap[^"]*"><svg[\s\S]*?avis<\/span>/,
     );
@@ -39,7 +39,7 @@ describe("ProfessionalCard - note", () => {
     expect(html).toContain("4.6 (12 avis)");
   });
 
-  it("annonce « Nouveau » quand le professionnel n’a aucun avis", () => {
+  it("annonce « Nouveau » quand le professionnel n'a aucun avis", () => {
     const html = render(
       <ProfessionalCard
         mode="grid"

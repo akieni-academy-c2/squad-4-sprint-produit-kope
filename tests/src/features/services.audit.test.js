@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import * as adminApi from "@/features/admin/services/admin.service.js";
 import * as authApi from "@/features/auth/services/auth.service.js";
 import * as prosApi from "@/features/professionals/services/professionals.service.js";
@@ -7,6 +7,23 @@ import * as reviewsApi from "@/features/reviews/services/reviews.service.js";
 import * as contactsApi from "@/features/contacts/services/contacts.service.js";
 import * as referenceApi from "@/features/reference/services/reference.service.js";
 import { searchProfessionals } from "@/features/search/hooks/useSearch.js";
+import { enableMockMode, resetMockMode } from "@/shared/lib/dataSource.js";
+
+/**
+ * Cet audit porte sur la couche service du client alimentée par les données de
+ * démonstration, pas sur une API réelle : il n'y a pas de serveur dans
+ * l'environnement de test. Le mode est donc activé explicitement. Il ne
+ * l'était pas, et la suite ne passait que parce qu'une erreur de réseau se
+ * faisait convertir en mocks - ce test ne prouve donc plus rien de ce qu'il
+ * prétendait couvrir.
+ */
+beforeEach(() => {
+  enableMockMode();
+});
+
+afterEach(() => {
+  resetMockMode();
+});
 
 const unique = (prefix) =>
   `${prefix} ${Date.now()}${Math.floor(Math.random() * 1000)}`;
@@ -130,7 +147,7 @@ describe("audit - actions utilisateur", () => {
       expect(detail.rating).toBeDefined();
     });
 
-    it("indique si l’utilisateur peut noter", async () => {
+    it("indique si l'utilisateur peut noter", async () => {
       await expect(prosApi.canReview(1)).resolves.toBe(true);
     });
 
@@ -167,7 +184,7 @@ describe("audit - actions utilisateur", () => {
   });
 
   describe("avis", () => {
-    it("liste les avis d’un professionnel avec le résumé", async () => {
+    it("liste les avis d'un professionnel avec le résumé", async () => {
       const data = await reviewsApi.listReviews(2, { pageSize: 2 });
       expect(data.items.length).toBeGreaterThan(0);
       expect(data.summary.count).toBeGreaterThan(0);
@@ -188,7 +205,7 @@ describe("audit - actions utilisateur", () => {
       expect(data).toHaveProperty("total");
     });
 
-    it("liste les avis d’un client", async () => {
+    it("liste les avis d'un client", async () => {
       const data = await reviewsApi.getClientReviews(902);
       expect(Array.isArray(data.items)).toBe(true);
     });

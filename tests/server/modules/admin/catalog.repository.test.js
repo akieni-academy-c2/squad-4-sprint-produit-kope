@@ -8,7 +8,7 @@ import {
 
 describe("factory catalogue admin", () => {
   describe("création", () => {
-    it("inclut la clé étrangère quand l’entité en a une", async () => {
+    it("inclut la clé étrangère quand l'entité en a une", async () => {
       const db = {
         query: vi.fn().mockResolvedValue({
           rows: [{ id: 1, name: "Plombier", categoryId: 3 }],
@@ -55,7 +55,7 @@ describe("factory catalogue admin", () => {
   });
 
   describe("mise à jour", () => {
-    it("renvoie null si la ligne n’existe pas", async () => {
+    it("renvoie null si la ligne n'existe pas", async () => {
       const db = { query: vi.fn().mockResolvedValue({ rows: [] }) };
 
       await expect(
@@ -102,8 +102,8 @@ describe("factory catalogue admin", () => {
     });
   });
 
-  describe("détection d’usage", () => {
-    it("interroge la table qui référence l’entité", async () => {
+  describe("détection d'usage", () => {
+    it("interroge la table qui référence l'entité", async () => {
       const db = { query: vi.fn().mockResolvedValue({ rows: [{ count: 2 }] }) };
 
       await expect(trades.inUse(4, db)).resolves.toBe(true);

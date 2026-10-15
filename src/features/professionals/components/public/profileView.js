@@ -3,7 +3,7 @@ import { toWhatsappUrl } from "@/shared/utils";
 export const CITY = "Brazzaville";
 
 export const ABOUT_HEADING = "À propos";
-export const ABOUT_FALLBACK = "Aucune présentation n’a encore été renseignée.";
+export const ABOUT_FALLBACK = "Aucune présentation n'a encore été renseignée.";
 
 /**
  * Vue de présentation du profil public : dérive de la fiche brute et de la note

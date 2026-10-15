@@ -4,7 +4,7 @@ const LABELS = {
   firstName: "le prénom",
   lastName: "le nom",
   phone: "le numéro",
-  email: "l’adresse e-mail",
+  email: "l'adresse e-mail",
   password: "le mot de passe",
   confirm: "la confirmation",
   consent: "le consentement",

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { createContactSchema } from "@server/modules/contacts/contacts.schemas.js";
 import * as contactsService from "@server/modules/contacts/contacts.service.js";
 import * as contactsRepository from "@server/modules/contacts/contacts.repository.js";
@@ -6,7 +6,7 @@ import * as authRepository from "@server/modules/auth/auth.repository.js";
 import { ApiError } from "@server/utils/ApiError.js";
 import { createContactSchema as createContactSchemaClient } from "@/shared/utils/validators.js";
 import { getMyContacts } from "@/features/contacts/services/contacts.service.js";
-import { resetMockMode } from "@/shared/lib/dataSource.js";
+import { enableMockMode, resetMockMode } from "@/shared/lib/dataSource.js";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -145,6 +145,10 @@ describe("contacts.service", () => {
 });
 
 describe("contacts.service (frontend)", () => {
+  beforeEach(() => {
+    enableMockMode();
+  });
+
   it("retourne une liste paginée en mode démo", async () => {
     const data = await getMyContacts();
     expect(data.items.length).toBeGreaterThan(0);

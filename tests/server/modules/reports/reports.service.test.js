@@ -288,7 +288,7 @@ describe("signalements de profils", () => {
       spy.mockRestore();
     });
 
-    it("ne compte pas les signalements d’un professionnel au seuil de blocage", async () => {
+    it("ne compte pas les signalements d'un professionnel au seuil de blocage", async () => {
       repository.targetRoleOf.mockImplementation(async (id) =>
         String(id) === "2" ? "professional" : "client",
       );
@@ -313,7 +313,7 @@ describe("signalements de profils", () => {
       suspend.mockRestore();
     });
 
-    it("accepte le signalement d’un professionnel sans le dévaloriser", async () => {
+    it("accepte le signalement d'un professionnel sans le dévaloriser", async () => {
       repository.targetRoleOf.mockImplementation(async (id) =>
         String(id) === "2" ? "professional" : "client",
       );
@@ -332,7 +332,7 @@ describe("signalements de profils", () => {
     });
   });
 
-  describe("signalement d’un correspondant", () => {
+  describe("signalement d'un correspondant", () => {
     it("exige une conversation réelle avec la cible", async () => {
       vi.spyOn(contactsRepository, "hasContactBetween").mockResolvedValue(
         false,
@@ -370,8 +370,8 @@ describe("signalements de profils", () => {
     });
   });
 
-  describe("signalement d’un avis", () => {
-    it("refuse un avis qui n’est pas sur la fiche du demandeur", async () => {
+  describe("signalement d'un avis", () => {
+    it("refuse un avis qui n'est pas sur la fiche du demandeur", async () => {
       vi.spyOn(repository, "findReceivedReview").mockResolvedValue(null);
 
       await expect(
@@ -391,7 +391,7 @@ describe("signalements de profils", () => {
       ).rejects.toMatchObject({ status: 409 });
     });
 
-    it("n’applique aucun effet automatique", async () => {
+    it("n'applique aucun effet automatique", async () => {
       vi.spyOn(repository, "findReceivedReview").mockResolvedValue({
         id: 42,
         clientId: 3,

@@ -31,13 +31,13 @@ describe("utilitaires du catalogue admin", () => {
     expect(tintFor("Bâtiment")).not.toEqual(tintFor("Électricité"));
   });
 
-  it("formate le compte d’utilisation", () => {
+  it("formate le compte d'utilisation", () => {
     expect(usedBy(1)).toBe("Utilisé par 1 pro");
     expect(usedBy(3)).toBe("Utilisé par 3 pros");
   });
 
   describe("aperçu du déplacement", () => {
-    it("liste normalement quand rien n’est déplacé", () => {
+    it("liste normalement quand rien n'est déplacé", () => {
       const entries = displayEntries(cards([1, 2]), null, null, 1);
       expect(states(entries)).toEqual(["1:normal", "2:normal"]);
     });
@@ -62,7 +62,7 @@ describe("utilitaires du catalogue admin", () => {
       expect(entries.find((e) => e.item.id === 2).state).toBe("gap");
     });
 
-    it("insère un clone « preview » à la position d’arrivée", () => {
+    it("insère un clone « preview » à la position d'arrivée", () => {
       const entries = displayEntries(
         cards([1, 2, 3]),
         { id: 3 },
@@ -78,7 +78,7 @@ describe("utilitaires du catalogue admin", () => {
       expect(keys(entries)).toEqual(["preview-3", 1, 2, 3]);
     });
 
-    it("n’insère rien si la preview concerne un autre groupe", () => {
+    it("n'insère rien si la preview concerne un autre groupe", () => {
       const entries = displayEntries(
         cards([1, 2]),
         { id: 2 },
@@ -100,8 +100,8 @@ describe("utilitaires du catalogue admin", () => {
     });
   });
 
-  describe("conversion d’index", () => {
-    it("laisse l’index intact quand l’élément déplacé n’est pas dans la liste", () => {
+  describe("conversion d'index", () => {
+    it("laisse l'index intact quand l'élément déplacé n'est pas dans la liste", () => {
       expect(destinationIndex(cards([1, 2]), 0, { id: 9 })).toBe(0);
     });
 

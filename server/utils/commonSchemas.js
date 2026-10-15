@@ -53,7 +53,7 @@ export const emailSchema = z
   .toLowerCase()
   .nullish()
   .transform((value) => value ?? "")
-  .refine((value) => value.length <= 254, "L’adresse e-mail est trop longue")
+  .refine((value) => value.length <= 254, "L'adresse e-mail est trop longue")
   .refine(
     (value) => !value || z.email().safeParse(value).success,
     "Adresse e-mail invalide",

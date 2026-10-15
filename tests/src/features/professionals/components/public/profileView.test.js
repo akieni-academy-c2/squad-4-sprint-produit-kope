@@ -39,7 +39,7 @@ describe("getProfileView", () => {
     );
   });
 
-  it("préfère une zone réelle pour le fil d’Ariane", () => {
+  it("préfère une zone réelle pour le fil d'Ariane", () => {
     const view = getProfileView(
       { ...profile, trade: { name: "Plombier" } },
       null,

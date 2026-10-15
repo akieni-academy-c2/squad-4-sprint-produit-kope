@@ -17,7 +17,7 @@ const panelMarkup = (props) =>
   );
 
 describe("panneau de dialogue", () => {
-  it("applique la variante qu’il reçoit", () => {
+  it("applique la variante qu'il reçoit", () => {
     const html = panelMarkup({ variants: dialogPanel, initial: "initial" });
 
     expect(html).toContain("opacity:0");
@@ -41,7 +41,7 @@ describe("panneau de dialogue", () => {
     );
   });
 
-  it("n’a pas de bandeau quand le dialogue n’a pas d’en-tête", () => {
+  it("n'a pas de bandeau quand le dialogue n'a pas d'en-tête", () => {
     const html = panelMarkup({ variants: dialogPanel });
 
     expect(html).toContain("absolute right-4 top-4");
@@ -62,7 +62,7 @@ describe("panneau de dialogue", () => {
   });
 });
 
-describe("bouton d’icône", () => {
+describe("bouton d'icône", () => {
   const icon = (props) =>
     renderToStaticMarkup(<IconButton icon={Star} label="Noter" {...props} />);
 

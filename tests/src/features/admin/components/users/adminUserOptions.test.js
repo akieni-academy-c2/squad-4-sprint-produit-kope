@@ -96,7 +96,7 @@ describe("getUserName", () => {
     );
   });
 
-  it("retombe sur l’identifiant si aucun nom", () => {
+  it("retombe sur l'identifiant si aucun nom", () => {
     expect(getUserName({ id: 3 })).toBe("#3");
   });
 });
@@ -127,7 +127,7 @@ describe("options de statut de blocage", () => {
     expect(BLOCKED_OPTIONS.map((o) => o.value)).toEqual(["", "false", "true"]);
   });
 
-  it("convertit la valeur du filtre en booléen pour l’API", () => {
+  it("convertit la valeur du filtre en booléen pour l'API", () => {
     const toBlocked = (value) => (value === "" ? undefined : value === "true");
     expect(BLOCKED_OPTIONS.map((o) => toBlocked(o.value))).toEqual([
       undefined,

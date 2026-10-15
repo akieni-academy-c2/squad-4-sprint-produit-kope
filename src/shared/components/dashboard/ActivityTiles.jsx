@@ -79,7 +79,7 @@ export function ContactTile({ contact, onClick, actionLabel }) {
       </span>
       <span className="mt-auto flex flex-col items-center gap-0.5 pt-1">
         <span className="text-[11px] font-semibold text-primary-700">
-          {contact.outgoing ? "Vous l’avez contacté" : "Vous a contacté"}
+          {contact.outgoing ? "Vous l'avez contacté" : "Vous a contacté"}
         </span>
         <span className="text-[11px] leading-tight text-gray-400">
           {formatDateFr(contact.createdAt)}

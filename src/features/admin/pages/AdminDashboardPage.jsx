@@ -73,7 +73,7 @@ export function AdminDashboardPage() {
       basePath={ROUTES.ADMIN}
       rootId="overview"
       filteredSections={FILTERED_SECTIONS}
-      navAriaLabel="Sections d’administration"
+      navAriaLabel="Sections d'administration"
       className="container-kop page-padding pb-24 lg:pb-8"
       onNavigate={(id, filters) => {
         openSection(id, filters);

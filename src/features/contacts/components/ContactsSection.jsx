@@ -38,7 +38,7 @@ const SORT_OPTIONS = [
 const ORIGIN_OPTIONS = [
   { value: "all", label: "Tous les contacts" },
   { value: "outgoing", label: "Contactés par moi" },
-  { value: "incoming", label: "Qui m’ont contacté" },
+  { value: "incoming", label: "Qui m'ont contacté" },
 ];
 
 const CHANNEL_OPTIONS = [
@@ -325,7 +325,7 @@ export function ContactsSection({ rightContainer = null }) {
         open={reporting != null}
         onClose={() => setReporting(null)}
         title="Signaler ce contact"
-        description={`Votre signalement concerne ${reporting?.displayName || "ce contact"} et sera transmis à l’administration.`}
+        description={`Votre signalement concerne ${reporting?.displayName || "ce contact"} et sera transmis à l'administration.`}
         reasonOptions={REPORT_REASON_OPTIONS}
         notice="Le signalement est possible uniquement pour un contact avec qui vous avez déjà échangé."
         submit={async (payload) => {

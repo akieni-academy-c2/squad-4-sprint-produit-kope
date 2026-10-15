@@ -223,6 +223,7 @@ export function RegisterClientForm({ bare = false } = {}) {
                 identityButton
               )}
             </Button>
+
           </>
         )}
 
@@ -271,14 +272,14 @@ export function RegisterClientForm({ bare = false } = {}) {
                 id="rc-consent"
                 label={
                   <span className="text-sm leading-5 text-gray-700">
-                    J’accepte les{" "}
+                    J'accepte les{" "}
                     <a
                       href={ROUTES.TERMS}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-semibold text-primary-700 hover:underline"
                     >
-                      conditions d’utilisation de KOP
+                      conditions d' utilisation de KOP
                     </a>{" "}
                     (version {TERMS_VERSION}).
                   </span>
@@ -312,9 +313,11 @@ export function RegisterClientForm({ bare = false } = {}) {
                 size="lg"
                 className="flex-1"
               >
-                {securityReady ? "Créer mon compte" : securityButton}
+              Créer mon compte
               </Button>
             </div>
+            
+            <p className= {`bg-yellow-500/40 ${securityReady ? "hidden":"block"} transition-all duration-300 text-sm px-2 py-1 rounded-md rounded-tl-none!`}>{securityButton}</p>
           </>
         )}
       </form>

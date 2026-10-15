@@ -29,7 +29,7 @@ describe("getProIdentity", () => {
     ).toBe("Ada Lovelace");
   });
 
-  it("retombe sur l’identifiant si aucun nom", () => {
+  it("retombe sur l'identifiant si aucun nom", () => {
     expect(getProIdentity({ id: 5 }).name).toBe("#5");
   });
 

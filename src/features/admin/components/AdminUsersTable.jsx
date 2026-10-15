@@ -242,7 +242,7 @@ export function AdminUsersTable({
         description={
           confirm?.blocked
             ? "Son compte ne pourra plus se connecter et ses sessions seront fermées immédiatement."
-            : "L’utilisateur pourra de nouveau se connecter à la plateforme."
+            : "L'utilisateur pourra de nouveau se connecter à la plateforme."
         }
         confirmLabel={confirm?.blocked ? "Bloquer" : "Débloquer"}
       />

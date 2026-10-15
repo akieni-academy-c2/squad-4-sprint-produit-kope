@@ -7,7 +7,7 @@ import { TERMS_SECTIONS, TERMS_VERSION } from "@/shared/content/terms.js";
 import { SUPPORT_EMAIL } from "@/shared/constants/support.js";
 
 export function TermsPage() {
-  usePageTitle("Conditions d’utilisation - KOP");
+  usePageTitle("Conditions d'utilisation - KOP");
 
   useEffect(() => {
     const id = window.location.hash.slice(1);
@@ -22,14 +22,14 @@ export function TermsPage() {
           href={ROUTES.HOME}
           className="text-sm text-primary-700 hover:underline"
         >
-          ← Retour à l’accueil
+          ← Retour à l'accueil
         </Link>
         <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-          Conditions d’utilisation
+          Conditions d'utilisation
         </h1>
         <p className="mt-2 text-sm text-gray-500">
-          Version du {TERMS_VERSION}. C’est cette version qui est enregistrée à
-          l’acceptation.
+          Version du {TERMS_VERSION}. C'est cette version qui est enregistrée à
+          l'acceptation.
         </p>
       </header>
 

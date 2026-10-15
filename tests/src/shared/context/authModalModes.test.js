@@ -5,13 +5,13 @@ import {
   AUTH_MODAL_DEFAULT_LABEL,
 } from "@/shared/context/authModalModes.js";
 
-describe("modale d’authentification", () => {
-  it("chaque mode ouvert dispose d’un titre annoncé", () => {
+describe("modale d'authentification", () => {
+  it("chaque mode ouvert dispose d'un titre annoncé", () => {
     for (const mode of Object.values(AUTH_MODAL_MODES))
       expect(AUTH_MODAL_LABELS[mode], `mode ${mode}`).toBeTruthy();
   });
 
-  it("aucune entrée de titre ne désigne un mode qui n’existe pas", () => {
+  it("aucune entrée de titre ne désigne un mode qui n'existe pas", () => {
     const modes = new Set(Object.values(AUTH_MODAL_MODES));
     for (const key of Object.keys(AUTH_MODAL_LABELS))
       expect(modes.has(key), key).toBe(true);

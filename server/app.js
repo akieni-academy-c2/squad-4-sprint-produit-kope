@@ -3,6 +3,7 @@ import { env, isProduction } from "./config/env.js";
 import { sessionMiddleware } from "./config/session.js";
 import routes from "./routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { requestLogger } from "./middlewares/requestLogger.js";
 import { securityHeaders, csrfGuard } from "./middlewares/securityHeaders.js";
 
 const uploadDir = env.UPLOAD_DIR.replace(/[\\/]+$/, "");
@@ -28,7 +29,7 @@ app.use(
     redirect: false,
   }),
 );
-app.use("/api", sessionMiddleware, csrfGuard(), routes);
+app.use("/api", requestLogger, sessionMiddleware, csrfGuard(), routes);
 app.use("/api", (req, res) =>
   res.status(404).json({ message: "Route introuvable" }),
 );

@@ -52,7 +52,7 @@ function animatedProperties(variant) {
 }
 
 describe("ressorts", () => {
-  it("n’est jamais sous-amorti - un objet qui dépasse sa cible", () => {
+  it("n'est jamais sous-amorti - un objet qui dépasse sa cible", () => {
     for (const [name, spring] of Object.entries(SPRING))
       expect(spring.damping, `${name} rebondit`).toBeGreaterThanOrEqual(
         criticalDamping(spring),
@@ -87,12 +87,12 @@ describe("échelle des durées", () => {
       ).toBeGreaterThanOrEqual(PERCEPTIBLE);
   });
 
-  it("garde la contrainte hors de l’échelle", () => {
+  it("garde la contrainte hors de l'échelle", () => {
     expect(Object.values(DURATION)).not.toContain(PERCEPTIBLE);
   });
 });
 
-describe("sortie plus courte que l’entrée", () => {
+describe("sortie plus courte que l'entrée", () => {
   it("raccourcit toujours", () => {
     for (const seconds of Object.values(DURATION))
       expect(exitOf(seconds)).toBeLessThan(seconds);
@@ -114,7 +114,7 @@ describe("amplitude", () => {
   });
 });
 
-describe("cascade d’un groupe", () => {
+describe("cascade d'un groupe", () => {
   const stepOf = (count) =>
     staggerParent(count).animate?.transition?.staggerChildren;
   const totalOf = (count) => {
@@ -124,7 +124,7 @@ describe("cascade d’un groupe", () => {
       : step * (Math.min(Math.max(count, 0), MAX_STAGGERED) - 1);
   };
 
-  it("ne fait jamais attendre plus d’un demi-clignement entre deux éléments", () => {
+  it("ne fait jamais attendre plus d'un demi-clignement entre deux éléments", () => {
     for (const count of [2, 3, 4, 8, 12, 24, 200])
       expect(stepOf(count), `${count} éléments`).toBeLessThanOrEqual(0.05);
   });
@@ -134,7 +134,7 @@ describe("cascade d’un groupe", () => {
       expect(totalOf(count), `${count} éléments`).toBeLessThanOrEqual(0.34);
   });
 
-  it("n’allonge jamais au-delà du palier", () => {
+  it("n'allonge jamais au-delà du palier", () => {
     expect(totalOf(200)).toBeCloseTo(totalOf(12), 5);
     expect(stepOf(200)).toBeCloseTo(stepOf(12), 5);
   });
@@ -144,7 +144,7 @@ describe("cascade d’un groupe", () => {
     expect(staggerParent(0)).toEqual({ animate: {} });
   });
 
-  it("envoie l’enfant comme la même entrée que le groupe", () => {
+  it("envoie l'enfant comme la même entrée que le groupe", () => {
     expect(staggerChild.animate).toHaveProperty("opacity", 1);
     expect(staggerChild.initial.opacity).toBe(0);
   });
@@ -167,12 +167,12 @@ describe("propriétés animées", () => {
   }
 });
 
-describe("sortie plus courte que l’entrée, au niveau des variantes", () => {
+describe("sortie plus courte que l'entrée, au niveau des variantes", () => {
   const entryTime = (variant) => variant.animate.transition.duration;
   const exitTime = (variant) => variant.exit.transition.duration;
 
   for (const [name, variant] of Object.entries(variants))
-    it(`${name} sort plus vite qu’il n’entre`, () => {
+    it(`${name} sort plus vite qu'il n'entre`, () => {
       if (typeof entryTime(variant) !== "number") return;
       expect(exitTime(variant)).toBeLessThan(entryTime(variant));
     });

@@ -29,14 +29,26 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 
 export const isProduction = nodeEnv === "production";
 
+/**
+ * Lit un booléen d'environnement. Renvoie `undefined` quand la variable est
+ * absente ou illisible, ce qui laisse l'appelant choisir seul.
+ * @param {string|undefined} raw valeur brute
+ * @returns {boolean|undefined} true, false, ou rien si non renseigné
+ */
+function parseBoolean(raw) {
+  if (raw == null) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (value === "true" || value === "1") return true;
+  if (value === "false" || value === "0") return false;
+  return undefined;
+}
+
 export const env = {
   NODE_ENV: nodeEnv,
   PORT: Number(process.env.PORT) || 3000,
   DATABASE_URL: process.env.DATABASE_URL,
   SESSION_SECRET: process.env.SESSION_SECRET,
-  COOKIE_SECURE: process.env.COOKIE_SECURE
-    ? process.env.COOKIE_SECURE === "true"
-    : isProduction,
+  COOKIE_SECURE: parseBoolean(process.env.COOKIE_SECURE) ?? "auto",
   UPLOAD_DIR: path.resolve(process.env.UPLOAD_DIR ?? "uploads"),
   MAX_FILE_SIZE_BYTES:
     Number(process.env.MAX_FILE_SIZE_BYTES) || 5 * 1024 * 1024,

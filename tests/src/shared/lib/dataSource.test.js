@@ -48,7 +48,7 @@ describe("dataSource - mode démonstration", () => {
   });
 });
 
-describe("dataSource.callApi en démo", () => {
+describe("dataSource.callApi - aucune bascule automatique", () => {
   it("ne bascule pas sur erreur métier 409", async () => {
     resetMockMode();
     const apiFn = vi.fn(async () => {
@@ -60,26 +60,45 @@ describe("dataSource.callApi en démo", () => {
     expect(mockFn).not.toHaveBeenCalled();
   });
 
-  it("bascule sur erreur réseau quand la démo est sortie", async () => {
+  /**
+   * Ces deux cas illustrent le défaut du repli automatique : un serveur en
+   * panne renvoyait des données fictives, l'interface paraissait vivante, et
+   * l'utilisateur ignorait que rien n'était enregistré.
+   */
+  it("remonte une erreur réseau au lieu de basculer sur les mocks", async () => {
     resetMockMode();
     const apiFn = vi.fn(async () => {
       throw new TypeError("fetch failed");
     });
     const mockFn = vi.fn(async () => "mock-ok");
 
-    expect(await callApi(apiFn, mockFn)).toBe("mock-ok");
-    expect(isMockMode()).toBe(true);
+    await expect(callApi(apiFn, mockFn)).rejects.toThrow("fetch failed");
+    expect(mockFn).not.toHaveBeenCalled();
+    expect(isMockMode()).toBe(false);
   });
 
-  it("bascule sur erreur 5xx quand la démo est sortie", async () => {
+  it("remonte une erreur 5xx au lieu de basculer sur les mocks", async () => {
     resetMockMode();
     const apiFn = vi.fn(async () => {
       throw Object.assign(new Error("down"), { status: 503 });
     });
     const mockFn = vi.fn(async () => "mock-ok");
 
-    expect(await callApi(apiFn, mockFn)).toBe("mock-ok");
-    expect(isMockMode()).toBe(true);
+    await expect(callApi(apiFn, mockFn)).rejects.toThrow("down");
+    expect(mockFn).not.toHaveBeenCalled();
+    expect(isMockMode()).toBe(false);
+  });
+
+  it("laisse une panne rester visible même après un premier échec", async () => {
+    resetMockMode();
+    const apiFn = vi.fn(async () => {
+      throw Object.assign(new Error("down"), { status: 500 });
+    });
+    const mockFn = vi.fn(async () => "mock-ok");
+
+    await expect(callApi(apiFn, mockFn)).rejects.toThrow("down");
+    await expect(callApi(apiFn, mockFn)).rejects.toThrow("down");
+    expect(isMockMode()).toBe(false);
   });
 });
 

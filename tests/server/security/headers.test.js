@@ -62,7 +62,7 @@ const sessionCookie = (sid) => `sid=s:${sign(sid, env.SESSION_SECRET)}`;
 const post = (path, headers = {}) =>
   fetch(`${baseUrl}${path}`, { method: "POST", headers, body: "{}" });
 
-describe("en-têtes de sécurité de l’API", () => {
+describe("en-têtes de sécurité de l'API", () => {
   it("pose nosniff et refuse le cadrage", async () => {
     const res = await fetch(`${baseUrl}/api/health`);
     expect(res.headers.get("x-content-type-options")).toBe("nosniff");
@@ -74,7 +74,7 @@ describe("en-têtes de sécurité de l’API", () => {
     expect(res.headers.get("x-powered-by")).toBeNull();
   });
 
-  it("ne laisse pas le JSON d’API être mis en cache", async () => {
+  it("ne laisse pas le JSON d'API être mis en cache", async () => {
     const res = await fetch(`${baseUrl}/api/health`);
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
@@ -89,7 +89,7 @@ describe("protection CSRF par origine", () => {
     expect(res.status).not.toBe(403);
   });
 
-  it("refuse une requête intersite, même accompagnée d’une session valide", async () => {
+  it("refuse une requête intersite, même accompagnée d'une session valide", async () => {
     const res = await post("/api/auth/login", {
       Cookie: sessionCookie("session-admin"),
       Origin: "https://attaquant.example",

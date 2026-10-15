@@ -59,7 +59,7 @@ describe("pagination", () => {
       });
     });
 
-    it("se rabat sur paginate si aucun compteur n’est fourni", async () => {
+    it("se rabat sur paginate si aucun compteur n'est fourni", async () => {
       const result = await paginateSafely([], { page: 5, pageSize: 20 });
 
       expect(result.total).toBe(0);

@@ -4,8 +4,8 @@ import { sectionFromPathname, sectionHref } from "@/shared/lib/constants.js";
 const SECTIONS = ["apercu", "avis", "contacts", "signalements", "profil"];
 const ROOT = "apercu";
 
-describe("section d’un tableau de bord déduite du chemin", () => {
-  it("reconnaît la section d’une URL profonde", () => {
+describe("section d'un tableau de bord déduite du chemin", () => {
+  it("reconnaît la section d'une URL profonde", () => {
     expect(sectionFromPathname("/dashboard/client/avis", SECTIONS)).toBe(
       "avis",
     );
@@ -14,12 +14,12 @@ describe("section d’un tableau de bord déduite du chemin", () => {
     );
   });
 
-  it("reconnaît la racine comme l’onglet d’accueil", () => {
+  it("reconnaît la racine comme l'onglet d'accueil", () => {
     expect(sectionFromPathname("/dashboard/client", SECTIONS)).toBe("");
     expect(sectionFromPathname("/dashboard/client/", SECTIONS)).toBe("");
   });
 
-  it("retombe sur l’accueil sur une route inconnue", () => {
+  it("retombe sur l'accueil sur une route inconnue", () => {
     expect(sectionFromPathname("/dashboard/client/inconnu", SECTIONS)).toBe("");
     expect(
       sectionFromPathname("/dashboard/client/avis/modifier", SECTIONS),
@@ -32,7 +32,7 @@ describe("section d’un tableau de bord déduite du chemin", () => {
     ).toBe("");
   });
 
-  it("compose le chemin d’une section, la racine pour l’accueil", () => {
+  it("compose le chemin d'une section, la racine pour l'accueil", () => {
     expect(sectionHref("/dashboard/client", "avis", ROOT)).toBe(
       "/dashboard/client/avis",
     );
@@ -41,7 +41,7 @@ describe("section d’un tableau de bord déduite du chemin", () => {
     );
   });
 
-  it("fait l’aller-retour entre section et racine", () => {
+  it("fait l'aller-retour entre section et racine", () => {
     const base = "/dashboard/client";
     const href = sectionHref(base, "contacts", ROOT);
 
@@ -55,7 +55,7 @@ describe("section d’un tableau de bord déduite du chemin", () => {
 const isUnder = (pathname, base) =>
   pathname === base || (Boolean(base) && pathname.startsWith(`${base}/`));
 
-describe("reconnaissance d’un tableau de bord et de ses onglets", () => {
+describe("reconnaissance d'un tableau de bord et de ses onglets", () => {
   it("reconnaît la racine comme ses sous-sections", () => {
     expect(isUnder("/admin", "/admin")).toBe(true);
     expect(isUnder("/admin/users", "/admin")).toBe(true);

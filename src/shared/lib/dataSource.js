@@ -10,8 +10,6 @@ const isTrue = (value) =>
 
 const isDemoOn = (value) => value === "1" || isTrue(value);
 
-const isDev = import.meta.env?.DEV === true;
-
 /**
  * Ce que vaut la démo selon la variable de build : elle ne l'active jamais,
  * elle décide seulement si elle reste accessible. Variable absente, elle l'est ;
@@ -28,14 +26,6 @@ export function mocksFromBuild(raw) {
 const buildMocks = mocksFromBuild(import.meta.env?.VITE_USE_MOCKS);
 
 const allowedByBuild = buildMocks.allowed;
-
-/**
- * Le repli automatique sur les mocks ne vaut qu'en développement, où l'on
- * travaille sans backend. En production il masquerait une panne réelle - ou une
- * migration non appliquée - derrière des données fictives. La démo y reste un
- * choix du visiteur, jamais une conséquence d'une erreur.
- */
-const autoFallbackAllowed = isDev;
 
 let demoAllowed = allowedByBuild;
 let mockMode = false;
@@ -132,27 +122,18 @@ export function useMockMode() {
   return useSyncExternalStore(subscribeMockMode, isMockMode, () => false);
 }
 
+/**
+ * Choisit entre l'API et les mocks, et rien d'autre. La démo est un mode
+ * demandé : sélecteur de rôle, `?demo=1` ou choix mémorisé, jamais parce qu'une
+ * requête a échoué. Un repli automatique sur une erreur réseau ou un 5xx
+ * donnait une interface pleine de données fictives pendant que le serveur
+ * refusait encore la session : l'application parait fonctionnelle alors que
+ * rien n'était enregistré. Une panne doit se voir, donc elle remonte.
+ * @param {() => Promise<unknown>} apiFn appel réel
+ * @param {() => Promise<unknown>} mockFn données de démonstration
+ * @returns {Promise<unknown>} le résultat de l'un des deux, jamais l'autre
+ */
 export async function callApi(apiFn, mockFn) {
   if (mockMode) return mockFn();
-  try {
-    return await apiFn();
-  } catch (err) {
-    if (!autoFallbackAllowed || !isUnavailable(err)) throw err;
-    console.error("[dataSource] API indisponible, repli sur les mocks", err);
-    enableMockMode();
-    return mockFn();
-  }
-}
-
-function isUnavailable(err) {
-  if (!err) return false;
-  if (err instanceof TypeError) return true;
-  if (typeof err.status === "number" && err.status >= 500) return true;
-  if (
-    err.code === "ECONNREFUSED" ||
-    err.code === "ENOTFOUND" ||
-    err.code === "ETIMEDOUT"
-  )
-    return true;
-  return false;
+  return apiFn();
 }

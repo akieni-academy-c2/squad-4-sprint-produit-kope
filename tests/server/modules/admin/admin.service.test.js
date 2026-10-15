@@ -227,7 +227,7 @@ describe("admin schemas", () => {
     ).toBe(true);
   });
 
-  it("reorderSchema exige une liste d’identifiants", () => {
+  it("reorderSchema exige une liste d'identifiants", () => {
     expect(reorderSchema.safeParse({ ids: [1, 2, 3] }).success).toBe(true);
     expect(reorderSchema.safeParse({ ids: [] }).success).toBe(false);
     expect(reorderSchema.safeParse({ ids: ["2"] }).data.ids).toEqual([2]);
@@ -478,7 +478,7 @@ describe("admin stats - file de modération", () => {
     expect(sql).toContain("FROM users WHERE suspended_at IS NOT NULL");
   });
 
-  it("expose les nouveaux compteurs dans la vue d’ensemble", async () => {
+  it("expose les nouveaux compteurs dans la vue d'ensemble", async () => {
     vi.spyOn(adminRepository, "countStats").mockResolvedValue({
       users: 5,
       clients: 3,

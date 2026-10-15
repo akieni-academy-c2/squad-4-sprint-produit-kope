@@ -33,7 +33,7 @@ import { PublicationStatus } from "../components/PublicationStatus.jsx";
 const NAV_ITEMS = [
   {
     id: "overview",
-    label: "Vue d’ensemble",
+    label: "Vue d'ensemble",
     shortLabel: "Aperçu",
     icon: LayoutDashboard,
   },
@@ -104,7 +104,7 @@ export function ProProfilePage() {
       basePath={ROUTES.DASHBOARD_PRO}
       rootId="overview"
       filteredSections={WITH_FILTERS}
-      navAriaLabel="Navigation de l’espace pro"
+      navAriaLabel="Navigation de l'espace pro"
       sidebar={({ items, active, onChange }) => (
         <ProSidebar
           user={user}
