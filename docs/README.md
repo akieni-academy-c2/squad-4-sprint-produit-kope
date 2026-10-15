@@ -3,12 +3,12 @@
 Quatre documents décrivent la base KOP et le produit qui l'utilise. Ils
 répondent à quatre questions différentes, et aucun ne contient tout.
 
-| Document | Question à laquelle il répond |
-| :--- | :--- |
-| [CADRE.md](CADRE.md) | Que fait l'application, et que peuvent mesurer les données ? |
-| [schema.md](data-science/schema.md) | Quelles tables, colonnes, types et index existent ? |
+| Document                                            | Question à laquelle il répond                                                        |
+| :-------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| [CADRE.md](CADRE.md)                                | Que fait l'application, et que peuvent mesurer les données ?                         |
+| [schema.md](data-science/schema.md)                 | Quelles tables, colonnes, types et index existent ?                                  |
 | [schema-diagram.md](data-science/schema-diagram.md) | Comment les tables se relient-elles, et quelles règles gouvernent les suppressions ? |
-| [dictionnaire.md](data-science/dictionnaire.md) | Que signifient les règles métier, et **où** sont-elles appliquées ? |
+| [dictionnaire.md](data-science/dictionnaire.md)     | Que signifient les règles métier, et **où** sont-elles appliquées ?                  |
 
 Commencez par [CADRE.md](CADRE.md) : il est écrit pour être lu avant les autres,
 et il indique ce que les données **ne** permettent pas de faire.

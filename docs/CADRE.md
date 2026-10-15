@@ -28,11 +28,11 @@ Formulés pour être vérifiables. La colonne « Mesurable par » indique la tab
 d'observation, et si la mesure est possible **aujourd'hui** avec les données
 présentes.
 
-| Objectif | Intention | Mesurable par | Possible aujourd'hui ? |
-| :--- | :--- | :--- | :--- |
-| Rendre visible l'artisan qui travaille | Un artisan complété doit apparaître dans l'annuaire | `published_professionals` rapportée à `professionals` | **oui** |
-| Réduire le temps de mise en relation | Un client inscrit doit atteindre un artisan rapidement | `contacts.created_at` et `users.created_at` | **non**, trop peu de contacts |
-| Fiabiliser la réputation par les avis | La note doit construire un signal de confiance exploitable | `reviews`, agrégé sur les artisans publiés | **non**, `reviews` est vide |
+| Objectif                               | Intention                                                  | Mesurable par                                         | Possible aujourd'hui ?        |
+| :------------------------------------- | :--------------------------------------------------------- | :---------------------------------------------------- | :---------------------------- |
+| Rendre visible l'artisan qui travaille | Un artisan complété doit apparaître dans l'annuaire        | `published_professionals` rapportée à `professionals` | **oui**                       |
+| Réduire le temps de mise en relation   | Un client inscrit doit atteindre un artisan rapidement     | `contacts.created_at` et `users.created_at`           | **non**, trop peu de contacts |
+| Fiabiliser la réputation par les avis  | La note doit construire un signal de confiance exploitable | `reviews`, agrégé sur les artisans publiés            | **non**, `reviews` est vide   |
 
 Cette distinction est le premier fait à retenir : **deux objectifs sur trois ne
 sont pas mesurables en l'état**. Ce n'est pas un défaut des données, c'est le
@@ -46,25 +46,25 @@ pas la roadmap : c'est ce que le code fait aujourd'hui.
 
 ### Côté client
 
-| Fonctionnalité | Point d'entrée |
-| :--- | :--- |
-| Créer un compte client | `POST /auth/register/client` |
-| Se connecter | `POST /auth/login` |
-| Rechercher un artisan par métier et par zone | `GET /professionals` |
-| Consulter une fiche et ses coordonnées | `GET /professionals/:id` |
-| Contacter un artisan | `POST /contacts` |
-| Noter et laisser un avis | `POST /professionals/:id/reviews` |
-| Signaler un compte ou un avis | `POST /professionals/:id/reports` |
+| Fonctionnalité                               | Point d'entrée                    |
+| :------------------------------------------- | :-------------------------------- |
+| Créer un compte client                       | `POST /auth/register/client`      |
+| Se connecter                                 | `POST /auth/login`                |
+| Rechercher un artisan par métier et par zone | `GET /professionals`              |
+| Consulter une fiche et ses coordonnées       | `GET /professionals/:id`          |
+| Contacter un artisan                         | `POST /contacts`                  |
+| Noter et laisser un avis                     | `POST /professionals/:id/reviews` |
+| Signaler un compte ou un avis                | `POST /professionals/:id/reports` |
 
 ### Côté artisan
 
-| Fonctionnalité | Point d'entrée |
-| :--- | :--- |
+| Fonctionnalité                                                      | Point d'entrée                                                       |
+| :------------------------------------------------------------------ | :------------------------------------------------------------------- |
 | Créer un compte artisan, ou devenir artisan depuis un compte client | `POST /auth/register/professional`, `POST /auth/become-professional` |
-| Renseigner métier, zones et description | `PUT /me/profile` |
-| Publier des photos de réalisations | `POST /me/photos` |
-| Basculer sa disponibilité | `PATCH /me/availability` |
-| Consulter les avis reçus | `GET /professionals/:id/reviews` |
+| Renseigner métier, zones et description                             | `PUT /me/profile`                                                    |
+| Publier des photos de réalisations                                  | `POST /me/photos`                                                    |
+| Basculer sa disponibilité                                           | `PATCH /me/availability`                                             |
+| Consulter les avis reçus                                            | `GET /professionals/:id/reviews`                                     |
 
 ### Côté administration
 
@@ -77,21 +77,21 @@ signalements. Tout est sous `/admin`.
 C'est la table à utiliser en premier. Elle relie l'action de l'utilisateur à ce
 qu'elle écrit en base, et à ce qu'on peut en déduire.
 
-| Fonctionnalité | Écrit dans | Règle appliquée | Ce qu'on peut mesurer |
-| :--- | :--- | :--- | :--- |
-| Inscription client | `users` (`role = 'client'`) | aucune | inscriptions dans le temps |
-| Inscription artisan | `users` + `professionals` | une ligne par compte au plus | nouveaux artisans, taux de complétion |
-| Devenir artisan | `users.role` + `professionals` | conversion d'un compte existant | taux de conversion client → artisan |
-| Compléter le profil | `professionals` + `professional_zones` | une zone = une ligne | **taux de publication** : voir ci-dessous |
-| Publier une photo | `photos` | `NOT NULL` exigé par la vue | artworks par artisan |
-| Basculer la disponibilité | `professionals.is_available` | aucune | proportion d'artisans « disponibles » |
-| Rechercher | rien | lit `published_professionals` | **rien directement** : voir §5 |
-| Contacter un artisan | `contacts` | canal et statut contraints | taux de contact par artisan, délai de mise en relation |
-| Noter un avis | `reviews` | un avis max par (client, artisan) | note moyenne, écart, récence |
-| Modifier / supprimer un avis | `reviews` | l'auteur peut revenir dessus | taux de retrait d'avis |
-| Signaler un compte | `account_reports` | un signalement max par (cible, auteur) | Accounts signalés, taux de récurrence |
-| Signaler un avis | `review_reports` | **table distincte** | avis signalés, taux de retrait |
-| Modérer | `is_hidden`, `blocked_at`, `suspended_at` | contrôles d'accès des requêtes | charge de modération |
+| Fonctionnalité               | Écrit dans                                | Règle appliquée                        | Ce qu'on peut mesurer                                  |
+| :--------------------------- | :---------------------------------------- | :------------------------------------- | :----------------------------------------------------- |
+| Inscription client           | `users` (`role = 'client'`)               | aucune                                 | inscriptions dans le temps                             |
+| Inscription artisan          | `users` + `professionals`                 | une ligne par compte au plus           | nouveaux artisans, taux de complétion                  |
+| Devenir artisan              | `users.role` + `professionals`            | conversion d'un compte existant        | taux de conversion client → artisan                    |
+| Compléter le profil          | `professionals` + `professional_zones`    | une zone = une ligne                   | **taux de publication** : voir ci-dessous              |
+| Publier une photo            | `photos`                                  | `NOT NULL` exigé par la vue            | artworks par artisan                                   |
+| Basculer la disponibilité    | `professionals.is_available`              | aucune                                 | proportion d'artisans « disponibles »                  |
+| Rechercher                   | rien                                      | lit `published_professionals`          | **rien directement** : voir §5                         |
+| Contacter un artisan         | `contacts`                                | canal et statut contraints             | taux de contact par artisan, délai de mise en relation |
+| Noter un avis                | `reviews`                                 | un avis max par (client, artisan)      | note moyenne, écart, récence                           |
+| Modifier / supprimer un avis | `reviews`                                 | l'auteur peut revenir dessus           | taux de retrait d'avis                                 |
+| Signaler un compte           | `account_reports`                         | un signalement max par (cible, auteur) | Accounts signalés, taux de récurrence                  |
+| Signaler un avis             | `review_reports`                          | **table distincte**                    | avis signalés, taux de retrait                         |
+| Modérer                      | `is_hidden`, `blocked_at`, `suspended_at` | contrôles d'accès des requêtes         | charge de modération                                   |
 
 **La mesure centrale du projet : le taux de publication.** Un artisan n'existe
 dans l'annuaire que s'il satisfy les neuf conditions de la vue
@@ -125,9 +125,9 @@ techniques ; voici les limites métier.
 
 ## Renvoi
 
-| Besoin | Document |
-| :--- | :--- |
-| Colonnes, types, index, volumes | [schema.md](data-science/schema.md) |
+| Besoin                                       | Document                                            |
+| :------------------------------------------- | :-------------------------------------------------- |
+| Colonnes, types, index, volumes              | [schema.md](data-science/schema.md)                 |
 | Relations, suppressions, invariants, limites | [schema-diagram.md](data-science/schema-diagram.md) |
-| Règles métier et lieu d'application | [dictionnaire.md](data-science/dictionnaire.md) |
-| Glossaire et ordre de lecture | [README.md](README.md) |
+| Règles métier et lieu d'application          | [dictionnaire.md](data-science/dictionnaire.md)     |
+| Glossaire et ordre de lecture                | [README.md](README.md)                              |
