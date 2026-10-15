@@ -1,6 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { repoPath } from "@test/support/repoRoot.js";
+
+/**
+ * La vue published_professionals est redefinee par plusieurs migrations successives.
+ * Seule la derniere compte : citer une version perimee resterait du SQL valide,
+ * donc passerait tous les controles, tout en decrivant une regle qui n'est plus
+ * appliquee. Ce test compare le SQL cite au SQL de la derniere migration qui
+ * redefinit la vue.
+ */
+const VIEW =
+  /CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+published_professionals\s+AS[\s\S]*?;/i;
+
+function currentViewSql() {
+  const dir = repoPath("server/db/migrations");
+  const latest = readdirSync(dir)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .filter((f) => VIEW.test(readFileSync(join(dir, f), "utf8")))
+    .at(-1);
+  return readFileSync(join(dir, latest), "utf8").match(VIEW)[0];
+}
+
+/** Le SQL cite est relu dans le bloc ```sql, jamais dans la prose. */
+function citedViewSql() {
+  const block = doc.match(/```sql\n([\s\S]*?)```/);
+  return block?.[1] ?? "";
+}
 
 const doc = readFileSync(
   repoPath("docs/data-science/schema-diagram.md"),
@@ -130,5 +157,16 @@ describe("Diagramme relationnel", () => {
 
     expect(rows).toHaveLength(relations.length);
     for (const row of rows) expect(row, row).toMatch(/[a-z_]+\.[a-z_]+/);
+  });
+
+  it("cite la definition courante de published_professionals", () => {
+    expect(citedViewSql(), "le document ne cite pas la vue").toContain(
+      "published_professionals",
+    );
+    const expected = currentViewSql();
+    expect(
+      citedViewSql().replace(/\s+/g, " ").trim(),
+      "le SQL cite n'est plus celui de la derniere migration",
+    ).toBe(expected.replace(/\s+/g, " ").trim());
   });
 });

@@ -6,11 +6,12 @@ référentiel de [schema.md](schema.md) (colonnes, types, index) et de
 
 Le diagramme est écrit en **Mermaid**, qui s'affiche nativement sur GitHub,
 GitLab, VS Code et Notion. Une version texte est fournie plus bas, lisible dans
-n'importe quel éditeur.
+n'importe quel éditeur. L'entrée du dossier est [docs/README.md](../README.md),
+qui définit aussi le glossaire de ces documents.
 
 ```mermaid
 erDiagram
-    USERS ||--o| PROFESSIONALS : "possede au plus un profil"
+    USERS ||--o| PROFESSIONALS : "possède au plus un profil"
     USERS {
         bigint id PK
         user_role role "client | professional | admin"
@@ -18,7 +19,7 @@ erDiagram
         text password_hash
         text first_name
         text last_name
-        text email "normalise en minuscules"
+        text email "normalisé en minuscules"
         text avatar_url
         text terms_version
         timestamptz consented_at
@@ -29,13 +30,13 @@ erDiagram
 
     PROFESSIONALS {
         bigint user_id PK, FK "1 profil par compte au plus"
-        text display_name UK "unicite insensible a la casse"
+        text display_name UK "unicité insensible à la casse"
         smallint trade_id FK
         smallint city_id FK "nullable"
-        text description "30 a 500 caracteres"
-        smallint years_experience "0 a 60"
+        text description "30 à 500 caractères"
+        smallint years_experience "0 à 60"
         text whatsapp
-        boolean is_available "disponibilite, pas publication"
+        boolean is_available "disponibilité, pas publication"
         boolean is_hidden "masquage volontaire"
         timestamptz updated_at
     }
@@ -88,7 +89,7 @@ erDiagram
         bigint id PK
         bigint client_id FK
         bigint professional_id FK
-        smallint rating "1 a 5"
+        smallint rating "1 à 5"
         varchar comment
         boolean is_hidden "exclu de la moyenne"
         timestamptz created_at
@@ -110,7 +111,7 @@ erDiagram
         bigint professional_id FK "cible, nom trompeur"
         bigint reporter_id FK
         text target_role "client | professional"
-        text reason "motif fermee"
+        text reason "motif fermé"
         text message
         text status "pending | resolved | dismissed"
         timestamptz resolved_at
@@ -128,21 +129,21 @@ erDiagram
         timestamptz created_at
     }
 
-    USERS ||--o{ REVIEWS : "redige, au plus une fois"
-    PROFESSIONALS ||--o{ REVIEWS : "recoit"
+    USERS ||--o{ REVIEWS : "rédige, au plus une fois"
+    PROFESSIONALS ||--o{ REVIEWS : "reçoit"
     USERS ||--o{ CONTACTS : "envoie"
-    USERS ||--o{ CONTACTS : "recoit"
+    USERS ||--o{ CONTACTS : "reçoit"
     USERS ||--o{ ACCOUNT_REPORTS : "signale"
-    USERS ||--o{ ACCOUNT_REPORTS : "est signale"
+    USERS ||--o{ ACCOUNT_REPORTS : "est signalé"
     USERS ||--o{ REVIEW_REPORTS : "signale"
-    REVIEWS ||--o{ REVIEW_REPORTS : "est signale"
-    TRADES ||--o{ PROFESSIONALS : "metier"
+    REVIEWS ||--o{ REVIEW_REPORTS : "est signalé"
+    TRADES ||--o{ PROFESSIONALS : "métier"
     TRADE_CATEGORIES ||--o{ TRADES : "regroupe"
     CITIES ||--o{ ZONES : "contient"
     CITIES ||--o{ PROFESSIONALS : "ville, nullable"
     PROFESSIONALS ||--o{ PROFESSIONAL_ZONES : "intervient dans"
     ZONES ||--o{ PROFESSIONAL_ZONES : "couverte par"
-    PROFESSIONALS ||--o{ PHOTOS : "realise"
+    PROFESSIONALS ||--o{ PHOTOS : "réalise"
 ```
 
 ## Version texte
@@ -185,10 +186,61 @@ Trois relations méritent une note :
   `professional_id`. Ce ne sont pas deux tables : un avis appartient à un client
   _et_ à un artisan, et ces deux comptes sont nécessairement distincts.
 
+## La vue `published_professionals`
+
+Une vue n'est pas une table : elle ne stocke rien et n'a pas sa place dans un
+diagramme de classes. Elle est donc absente du diagramme ci-dessus, et décrite
+ici à part.
+
+C'est pourtant l'objet le plus important du modèle, parce que **la règle de
+publication y est écrite** en une seule fois et que tout le reste de
+l'application passe par elle. Le disque ne contient aucun profil « public » : la
+publication est une propriété calculée, recalculée à chaque lecture.
+
+**Attention en la citant.** La vue est redéfinie par quatre migrations successives,
+et seule la dernière compte. Une recherche de `CREATE VIEW published_professionals`
+dans `server/db/migrations` renvoie quatre définitions très différentes : celles de
+`1759500000000_init.sql` et de `1759500000003_update_rg04_publication.sql` ne
+filtrent ni le rôle, ni les sanctions, et citent ces fichiers donnerait une vue
+qui n'existe plus. La définition effective est celle de
+`1759500000016_published_view_role.sql` :
+
+```sql
+CREATE OR REPLACE VIEW published_professionals AS
+SELECT p.user_id,
+       p.display_name,
+       p.trade_id,
+       p.description,
+       p.years_experience,
+       p.whatsapp,
+       p.is_available,
+       p.updated_at
+  FROM professionals p
+  JOIN users u ON u.id = p.user_id
+  JOIN trades t ON t.id = p.trade_id
+ WHERE NOT p.is_hidden
+   AND u.role = 'professional'
+   AND u.blocked_at IS NULL
+   AND u.suspended_at IS NULL
+   AND char_length(btrim(p.display_name)) > 0
+   AND char_length(btrim(t.name)) > 0
+   AND (EXISTS (SELECT 1 FROM professional_zones z WHERE z.professional_id = p.user_id))
+   AND char_length(btrim(u.phone)) > 0
+   AND char_length(btrim(p.description)) >= 30
+   AND (EXISTS (SELECT 1 FROM photos ph WHERE ph.professional_id = p.user_id));
+```
+
+Les neuf conditions de publication, et l'endroit qui les applique, sont
+détaillés dans [dictionnaire.md](dictionnaire.md).
+
+Son grain est plus étroit que celui de `professionals` : une ligne de la vue
+correspond à un artisan publiable, pas à un artisan. Les deux tables ne se comptent
+donc pas de la même façon, et l'écart est mesurable sur les données actuelles.
+
 ## Grain
 
-Une ligne de, et le grain exact. Sans cette phrase, un `count(*)` n'a pas de sens
-interprétable.
+Une ligne de table, et le grain exact. Sans cette phrase, un `count(*)` n'a pas
+de sens interprétable.
 
 | Table                     | Grain - une ligne par…                             |
 | :------------------------ | :------------------------------------------------- |
@@ -216,17 +268,18 @@ clé, `NO ACTION` se comporte comme `RESTRICT` - la suppression est refusée, el
 n'est pas différée. La colonne « Suppression » de `schema.md` affiche donc
 `aucune`, mais la réalité est un blocage.
 
-| Relation                             | Déclaré  | Comportement réel, vérifié                                            |
-| :----------------------------------- | :------- | :-------------------------------------------------------------------- |
-| `users → professionals`              | CASCADE  | le profil, ses zones et ses photos partent                            |
-| `users → contacts`                   | CASCADE  | les prises de contact partent                                         |
-| `users → account_reports`            | CASCADE  | les signalements dont il est l'auteur partent                         |     | `reviews → professionals` | aucune | **REFUSÉ** - `23503`, un artisan ayant des avis ne peut pas être supprimé |
-| `professionals → photos`             | CASCADE  | part avec le profil                                                   |
-| `professionals → professional_zones` | CASCADE  | part avec le profil                                                   |
-| `zones → professional_zones`         | aucune   | **REFUSÉ** - `23503`, un quartier référencé ne peut pas être supprimé |
-| `trades → professionals`             | aucune   | **REFUSÉ** - `23503`, un métier référencé ne peut pas être supprimé   |
-| `cities → zones`                     | SET NULL | la zone survit, devient orpheline                                     |
-| `cities → professionals`             | SET NULL | le profil survit sans ville                                           |
+| Relation                             | Déclaré  | Comportement réel, vérifié                                                |
+| :----------------------------------- | :------- | :------------------------------------------------------------------------ |
+| `users → professionals`              | CASCADE  | le profil, ses zones et ses photos partent                                |
+| `users → contacts`                   | CASCADE  | les prises de contact partent                                             |
+| `users → account_reports`            | CASCADE  | les signalements dont il est l'auteur partent                             |
+| `reviews → professionals`            | aucune   | **REFUSÉ** - `23503`, un artisan ayant des avis ne peut pas être supprimé |
+| `professionals → photos`             | CASCADE  | part avec le profil                                                       |
+| `professionals → professional_zones` | CASCADE  | part avec le profil                                                       |
+| `zones → professional_zones`         | aucune   | **REFUSÉ** - `23503`, un quartier référencé ne peut pas être supprimé     |
+| `trades → professionals`             | aucune   | **REFUSÉ** - `23503`, un métier référencé ne peut pas être supprimé       |
+| `cities → zones`                     | SET NULL | la zone survit, devient orpheline                                         |
+| `cities → professionals`             | SET NULL | le profil survit sans ville                                               |
 
 Ce que cela change pour une analyse :
 

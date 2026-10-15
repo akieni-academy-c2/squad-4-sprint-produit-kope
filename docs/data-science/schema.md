@@ -3,6 +3,11 @@
 > Instantané de la base vivante. Le script `schema:doc` ayant été supprimé, ce
 > fichier ne se régénère plus. Toute évolution du schéma passe par une
 > migration, puis se reporte ici à la main.
+>
+> Pour les relations entre tables et le comportement des suppressions, voir
+> [schema-diagram.md](schema-diagram.md). Pour le sens métier des règles et
+> l'endroit où elles sont appliquées, voir [dictionnaire.md](dictionnaire.md).
+> L'entrée du dossier est [docs/README.md](../README.md).
 
 12 tables métier, 1 vue, 3 types énumérés, 4 tables techniques sans valeur d'analyse.
 

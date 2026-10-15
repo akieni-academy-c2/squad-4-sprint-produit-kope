@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   CITY,
   getProfileView,
-  initialsOf,
 } from "@/features/professionals/components/public/profileView.js";
 
 const profile = {
@@ -13,19 +12,6 @@ const profile = {
   tags: ["Plomberie", "Électricité"],
   zones: [{ name: "Mfilou" }, { name: CITY }, { name: "Makélékélé" }, null],
 };
-
-describe("initialsOf", () => {
-  it("prend les deux premièresinitiales", () => {
-    expect(initialsOf("Jean-Pierre Mbarga")).toBe("JM");
-    expect(initialsOf("  marie  claire ")).toBe("MC");
-  });
-
-  it("ne plante pas sur une entrée vide", () => {
-    expect(initialsOf("")).toBe("??");
-    expect(initialsOf(null)).toBe("??");
-    expect(initialsOf(undefined)).toBe("??");
-  });
-});
 
 describe("getProfileView", () => {
   it("extrait le prénom et le métier", () => {

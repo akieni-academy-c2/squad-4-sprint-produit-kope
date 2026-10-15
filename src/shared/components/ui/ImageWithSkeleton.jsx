@@ -6,6 +6,15 @@ const LOADING = "loading";
 const LOADED = "loaded";
 const FAILED = "failed";
 
+/**
+ * Image avec placeholders. `priority` marque l'image comme candidate LCP : le
+ * navigateur la découvre alors avant même l'analyse du HTML, et React émet le
+ * preload qui va avec.
+ *
+ * Un échec de chargement affiche un bloc neutre plutôt que rien : sans lui, une
+ * image morte resterait à `opacity-0` au-dessus d'un cadre vide, invisible pour
+ * l'internaute comme pour un lecteur d'écran.
+ */
 export function ImageWithSkeleton({
   src,
   alt,
@@ -14,6 +23,7 @@ export function ImageWithSkeleton({
   frameClassName,
   skeletonClassName,
   eager = false,
+  priority = false,
   srcSet,
   sizes,
   ...rest
@@ -41,6 +51,16 @@ export function ImageWithSkeleton({
         />
       )}
 
+      {status === FAILED && (
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0 h-full w-full rounded-none bg-gray-200",
+            skeletonClassName,
+          )}
+        />
+      )}
+
       {src && (
         <img
           ref={attachImage}
@@ -48,7 +68,8 @@ export function ImageWithSkeleton({
           srcSet={srcSet}
           sizes={sizes}
           alt={alt}
-          loading={eager ? "eager" : "lazy"}
+          loading={priority || eager ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
           decoding="async"
           onLoad={() => setStatus(LOADED)}
           onError={() => setStatus(FAILED)}

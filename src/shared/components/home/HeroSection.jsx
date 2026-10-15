@@ -76,7 +76,7 @@ export function HeroSection() {
                 srcSet={HOME_IMAGES.hero.srcSet}
                 sizes={HOME_IMAGES.hero.sizes}
                 alt="Artisanne KOP"
-                eager
+                priority
                 ratio="h-85 sm:h-100"
                 skeletonClassName="bg-accent-500/30"
               />

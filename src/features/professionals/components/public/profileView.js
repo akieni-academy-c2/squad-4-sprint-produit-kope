@@ -6,22 +6,6 @@ export const ABOUT_HEADING = "À propos";
 export const ABOUT_FALLBACK = "Aucune présentation n’a encore été renseignée.";
 
 /**
- * Initiales de l'avatar de repli : deux lettres au plus, `??` si le nom est vide.
- * @param {string} displayName
- * @returns {string}
- */
-export function initialsOf(displayName) {
-  return (
-    (displayName || "")
-      .trim()
-      .split(/\s+/)
-      .map((w) => w[0]?.toUpperCase() ?? "")
-      .join("")
-      .slice(0, 2) || "??"
-  );
-}
-
-/**
  * Vue de présentation du profil public : dérive de la fiche brute et de la note
  * tous les libellés affichés. `mainZone` écarte volontairement la ville, sinon le
  * fil d'Ariane afficherait « à Brazzaville » pour un professionnel dont la seule

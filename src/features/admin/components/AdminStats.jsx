@@ -306,6 +306,16 @@ export function AdminStats({ onNavigate }) {
     }
   }, []);
 
+  /**
+   * `load` est asynchrone : l'effet n'appelle pas `setState` lui-même, c'est la
+   * promesse qui écrira plus tard. La règle ne voit pas cette frontière.
+   *
+   * Pas de garde anti-course ici, contrairement à `useSearch` : la requête ne
+   * part qu'au montage ou sur un clic explicite de l'administrateur, jamais à
+   * chaque frappe. Deux requêtes ne peuvent donc pas se concurrencer. Si le
+   * tableau devenait filtrable au clavier, il faudrait un jeton comme dans
+   * `useAsyncData`.
+   */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load();

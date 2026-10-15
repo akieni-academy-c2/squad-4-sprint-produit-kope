@@ -5,11 +5,7 @@ import { Separator } from "@/shared/components/ui/Separator.jsx";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery.js";
 import { formatDateFrShort } from "@/shared/utils";
 import { ReportTrigger } from "../ReportDialog.jsx";
-import {
-  ABOUT_FALLBACK,
-  ABOUT_HEADING,
-  CITY,
-} from "./profileView.js";
+import { ABOUT_FALLBACK, ABOUT_HEADING, CITY } from "./profileView.js";
 import { TagList } from "./TagList.jsx";
 import { STICKY_TOP } from "@/shared/lib/constants.js";
 import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";

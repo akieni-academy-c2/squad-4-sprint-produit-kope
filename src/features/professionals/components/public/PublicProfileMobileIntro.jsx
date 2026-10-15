@@ -6,11 +6,7 @@ import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery.js";
 import { ROUTES } from "@/shared/lib/constants.js";
 import { TagList } from "./TagList.jsx";
-import {
-  ABOUT_FALLBACK,
-  ABOUT_HEADING,
-  CITY,
-} from "./profileView.js";
+import { ABOUT_FALLBACK, ABOUT_HEADING, CITY } from "./profileView.js";
 
 export function PublicProfileMobileIntro({ profile, view, breadcrumbTrade }) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");

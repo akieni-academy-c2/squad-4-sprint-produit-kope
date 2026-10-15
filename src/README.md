@@ -46,3 +46,16 @@ const data = await api.get("/professionals");
 ## Styling Convention
 
 Ce projet utilise **Tailwind CSS v4**. Privilégiez les classes utilitaires directement dans vos éléments JSX et découpez en composants réutilisables dans `src/components/` lorsque des motifs d'interface se répètent.
+
+## Conventions JavaScript
+
+**Comparaisons.** Utilisez `===`. La seule exception admise est `x == null`,
+qui teste « absent ou non défini » en une expression - c'est utile pour les
+saisies de formulaire, où un champ vide arrive en `""` et un champ non touché en
+`undefined`. Cette exception est volontaire et assumee ici ; un `==` sur une
+autre valeur est un défaut.
+
+**Repli de valeur.** `??` quand le repli signifie « absent ». `||` est reserve
+aux cas où une valeur falsy legitimate doit aussi tomber : un `|| []` sur un
+tableau vide fait ce qu'on veut, mais `|| "Inconnu"` transformerait un `0` - un
+compteur, une note - en chaîne.

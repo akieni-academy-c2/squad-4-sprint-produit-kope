@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   MessageCircle,
@@ -51,6 +51,16 @@ const TRADE_FALLBACK = "Artisan";
 
 export function ProfessionalPublicPage() {
   const { id } = useParams();
+
+  return <ProfileBody key={id} id={id} />;
+}
+
+/**
+ * Tout l'état d'interface vit ici. La clé posée par le parent fait remonter ce
+ * composant à chaque changement de professionnel : les panneaux ouverts se
+ * referment, et `reviewSubmittedFor` avec eux, sans effet de synchronisation.
+ */
+function ProfileBody({ id }) {
   const { user } = useAuthContext();
   const { open: openAuthModal } = useAuthModal();
   const [reviewSubmittedFor, setReviewSubmittedFor] = useState(null);
@@ -69,15 +79,6 @@ export function ProfessionalPublicPage() {
     () => listReviews(id, { page: 1, pageSize: 3 }),
     [id],
   );
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOpenIndex(null);
-    setReviewsOpen(false);
-    setReviewFormOpen(false);
-    setTabContactOpen(false);
-    setReportOpen(false);
-  }, [id]);
 
   usePageTitle(
     detail.data

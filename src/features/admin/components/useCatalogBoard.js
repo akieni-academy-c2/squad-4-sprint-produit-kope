@@ -64,6 +64,15 @@ export function useCatalogBoard({
     }
   }, [listGroups, listItems]);
 
+  /**
+   * `reload` est asynchrone : l'effet n'appelle pas `setState` lui-même, c'est
+   * `Promise.all` qui écrira plus tard. La règle ne voit pas cette frontière.
+   *
+   * Aucun jeton anti-course ici, contrairement à `useSearch` : les déclenchements
+   * sont le montage et les clics d'un administrateur après création ou
+   * suppression, jamais une frappe. La recherche filtre `items` en mémoire plus
+   * bas, elle ne relance aucune requête.
+   */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     reload();

@@ -1411,6 +1411,11 @@ export function getDemoUser() {
 }
 
 export function setDemoUser(user) {
+  /**
+   * Le stockage peut être indisponible - navigation privée, quota épuisé - et la
+   * session de démo n'a alors qu'à être perdue au rechargement. Retenir l'échec
+   * ici évite qu'une simple lecture bloque toute la démo.
+   */
   try {
     if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
     else localStorage.removeItem(SESSION_KEY);

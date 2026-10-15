@@ -1,9 +1,10 @@
 # Dictionnaire des données - KOP
 
-Document d'accompagnement de [schema.md](schema.md). Il explique ce que chaque
-table représente et, surtout, **les règles que le code applique** - parce que
-beaucoup de contraintes métier ne sont pas dans le schéma : elles sont dans une
-vue ou dans le service.
+Document d'accompagnement de [schema.md](schema.md) et de
+[schema-diagram.md](schema-diagram.md). Il explique ce que chaque table
+représente et, surtout, **les règles que le code applique** - parce que beaucoup
+de contraintes métier ne sont pas dans le schéma : elles sont dans une vue ou
+dans le service.
 
 KOP met en relation des particuliers et des artisans du bâtiment à Brazzaville.
 Un artisan publie un profil (métier, zones, photos, description), un client le

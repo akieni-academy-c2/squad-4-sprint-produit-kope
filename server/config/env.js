@@ -1,4 +1,11 @@
 import path from "node:path";
+
+/**
+ * `process.loadEnvFile` leve quand aucun fichier `.env` n'est present. C'est
+ * le cas normal en production sur Vercel, où les variables viennent de la
+ * plateforme et non d'un fichier : l'absence n'est donc pas une erreur, et les
+ * variables requises sont vérifiées juste après.
+ */
 try {
   process.loadEnvFile();
 } catch {}
