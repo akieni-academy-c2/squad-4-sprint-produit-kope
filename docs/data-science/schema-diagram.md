@@ -7,7 +7,7 @@ référentiel de [schema.md](schema.md) (colonnes, types, index) et de
 Le diagramme est écrit en **Mermaid**, qui s'affiche nativement sur GitHub,
 GitLab, VS Code et Notion. Une version texte est fournie plus bas, lisible dans
 n'importe quel éditeur. L'entrée du dossier est [docs/README.md](../README.md),
-qui définit aussi le glossaire de ces documents.
+ Pour le contexte du produit et ce que les données permettent de mesurer, voir [CADRE.md](../CADRE.md).
 
 ```mermaid
 erDiagram

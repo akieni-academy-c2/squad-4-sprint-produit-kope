@@ -4,7 +4,7 @@ Document d'accompagnement de [schema.md](schema.md) et de
 [schema-diagram.md](schema-diagram.md). Il explique ce que chaque table
 représente et, surtout, **les règles que le code applique** - parce que beaucoup
 de contraintes métier ne sont pas dans le schéma : elles sont dans une vue ou
-dans le service.
+ Pour le contexte du produit et ce que les données permettent de mesurer, voir [CADRE.md](../CADRE.md).
 
 KOP met en relation des particuliers et des artisans du bâtiment à Brazzaville.
 Un artisan publie un profil (métier, zones, photos, description), un client le
@@ -98,6 +98,20 @@ suspendu (`suspended_at`). Ces seuils sont configurables
 
 Un compte bloqué ou suspendu **reste dans les tables** : il n'est pas supprimé.
 Toute mesure d'activité doit filtrer explicitement sur ces deux colonnes.
+
+Deux détails de comportement qui ne se devinent pas, et qui faussent tout
+comptage de sanctions :
+
+- **La suspension implique le blocage.** Le service qui applique la sanction
+  écrit `suspended_at` puis `blocked_at` : un compte suspendu a donc toujours
+  les deux colonnes renseignées. Une requête « bloqués mais non suspendus »
+  renvoie zéro par construction, et l'ensemble des comptes non suspendus est
+  strictement contenu dans celui des comptes non bloqués.
+- **Le décompte ignore le statut du signalement.** Le recomptage ne filtre pas
+  sur `account_reports.status` : un signalement `dismissed`, donc rejeté par
+  l'administration, compte exactement comme un signalement `pending`. Le seuil
+  se dépasse donc aussi vite avec des signalements traités qu'avec des
+  signalements en attente.
 
 ## Contacts
 

@@ -8,6 +8,7 @@
 > [schema-diagram.md](schema-diagram.md). Pour le sens métier des règles et
 > l'endroit où elles sont appliquées, voir [dictionnaire.md](dictionnaire.md).
 > L'entrée du dossier est [docs/README.md](../README.md).
+> Pour le contexte du produit et ce que les données permettent de mesurer, voir [CADRE.md](../CADRE.md).
 
 12 tables métier, 1 vue, 3 types énumérés, 4 tables techniques sans valeur d'analyse.
 
