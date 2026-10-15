@@ -1,7 +1,17 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
 export async function searchPublished(
-  { tradeId, zoneId, cityId, keyword, available, minRating, minExperience, limit, offset },
+  {
+    tradeId,
+    zoneId,
+    cityId,
+    keyword,
+    available,
+    minRating,
+    minExperience,
+    limit,
+    offset,
+  },
   db = pool,
 ) {
   const { rows } = await db.query(
@@ -59,7 +69,6 @@ export async function searchPublished(
   );
   return rows;
 }
-
 
 export async function countPublished(
   { tradeId, zoneId, cityId, keyword, available, minExperience, minRating },

@@ -1,6 +1,4 @@
-import * as repository from './reference.repository.js';
-
-
+import * as repository from "./reference.repository.js";
 
 export const listTrades = () => repository.listTrades();
 

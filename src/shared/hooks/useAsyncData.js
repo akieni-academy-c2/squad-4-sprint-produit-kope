@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
-
+/**
+ * La liste de dépendances est fournie par l'appelant : c'est le contrat du
+ * hook, pas une liste que le lint pourrait déduire. La conserver telle quelle
+ * évite de recharger quand l'appelant passe un tableau littéral à chaque rendu.
+ */
 export function useAsyncData(loader, deps = []) {
   const [data, setData] = useState(undefined);
   const [loading, setLoading] = useState(true);
@@ -25,7 +29,9 @@ export function useAsyncData(loader, deps = []) {
     if (!silent) setLoading(true);
     setError(null);
     try {
-      const result = await loaderRef.current({ signal: localController.signal });
+      const result = await loaderRef.current({
+        signal: localController.signal,
+      });
       if (isStale()) return result;
       setData(result);
       return result;
@@ -39,11 +45,11 @@ export function useAsyncData(loader, deps = []) {
     }
   }, []);
 
-const mutate = useCallback((update) => {
-  setData((prev) => (typeof update === 'function' ? update(prev) : update));
-}, []);
+  const mutate = useCallback((update) => {
+    setData((prev) => (typeof update === "function" ? update(prev) : update));
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load().catch(() => {});
     return () => controller.current?.abort();

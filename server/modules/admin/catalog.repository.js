@@ -1,13 +1,16 @@
-import { pool } from '../../db/pool.js';
-
+import { pool } from "../../db/pool.js";
 
 function makeCatalog({ table, alias, fk = null, inUseSql }) {
-  const insertColumns = fk ? `name, ${fk.column}, sort_order` : 'name, sort_order';
+  const insertColumns = fk
+    ? `name, ${fk.column}, sort_order`
+    : "name, sort_order";
   const insertValues = fk
-    ? '$1, $2, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM ' + table + ')'
-    : '$1, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM ' + table + ')';
-  const insertReturning = fk ? `id, name, ${fk.column} AS "${fk.label}"` : 'id, name';
-  const updateSet = fk ? `name = $2, ${fk.column} = $3` : 'name = $2';
+    ? "$1, $2, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM " + table + ")"
+    : "$1, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM " + table + ")";
+  const insertReturning = fk
+    ? `id, name, ${fk.column} AS "${fk.label}"`
+    : "id, name";
+  const updateSet = fk ? `name = $2, ${fk.column} = $3` : "name = $2";
 
   return {
     async create(name, fkId, db = pool) {
@@ -29,7 +32,10 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
     },
 
     async remove(id, db = pool) {
-      const { rowCount } = await db.query(`DELETE FROM ${table} WHERE id = $1`, [id]);
+      const { rowCount } = await db.query(
+        `DELETE FROM ${table} WHERE id = $1`,
+        [id],
+      );
       return rowCount > 0;
     },
 
@@ -50,27 +56,29 @@ function makeCatalog({ table, alias, fk = null, inUseSql }) {
 }
 
 export const tradeCategories = makeCatalog({
-  table: 'trade_categories',
-  alias: 'c',
-  inUseSql: 'SELECT COUNT(*)::int AS count FROM trades WHERE category_id = $1',
+  table: "trade_categories",
+  alias: "c",
+  inUseSql: "SELECT COUNT(*)::int AS count FROM trades WHERE category_id = $1",
 });
 
 export const trades = makeCatalog({
-  table: 'trades',
-  alias: 't',
-  fk: { column: 'category_id', label: 'categoryId' },
-  inUseSql: 'SELECT COUNT(*)::int AS count FROM professionals WHERE trade_id = $1',
+  table: "trades",
+  alias: "t",
+  fk: { column: "category_id", label: "categoryId" },
+  inUseSql:
+    "SELECT COUNT(*)::int AS count FROM professionals WHERE trade_id = $1",
 });
 
 export const cities = makeCatalog({
-  table: 'cities',
-  alias: 'c',
-  inUseSql: 'SELECT COUNT(*)::int AS count FROM zones WHERE city_id = $1',
+  table: "cities",
+  alias: "c",
+  inUseSql: "SELECT COUNT(*)::int AS count FROM zones WHERE city_id = $1",
 });
 
 export const zones = makeCatalog({
-  table: 'zones',
-  alias: 'z',
-  fk: { column: 'city_id', label: 'cityId' },
-  inUseSql: 'SELECT COUNT(*)::int AS count FROM professional_zones WHERE zone_id = $1',
+  table: "zones",
+  alias: "z",
+  fk: { column: "city_id", label: "cityId" },
+  inUseSql:
+    "SELECT COUNT(*)::int AS count FROM professional_zones WHERE zone_id = $1",
 });

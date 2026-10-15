@@ -38,22 +38,22 @@ Les fonctionnalités hors MVP (paiement, fil social, messagerie avancée) sont d
 
 ### Product et analyse
 
-| Rôle | Membre | Responsabilités |
-|---|---|---|
-| Product Manager | Divin Penzamoy | Vision produit, priorisation, périmètre du MVP, validation du produit livré |
-| Business Analyst | Raymond Jacquinot Fulbert Mavoungou | SPEC et FRD, User Stories, critères d'acceptation |
-| Business Analyst | Biency Pea Engambe | Backlog, tests fonctionnels et recette |
+| Rôle             | Membre                              | Responsabilités                                                             |
+| ---------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| Product Manager  | Divin Penzamoy                      | Vision produit, priorisation, périmètre du MVP, validation du produit livré |
+| Business Analyst | Raymond Jacquinot Fulbert Mavoungou | SPEC et FRD, User Stories, critères d'acceptation                           |
+| Business Analyst | Biency Pea Engambe                  | Backlog, tests fonctionnels et recette                                      |
 
 ### Développement
 
-| Rôle | Membre | User Stories / périmètre |
-|---|---|---|
-| Développeur Full Stack | Joseph Miere Onka 
-| Développeur Full Stack | Prosper Kwon Gee 
-| Développeur Full Stack | Jizreel Salem Mouyedi Mbemba 
-| Développeur Full Stack | Force Espoir Loemba Packa 
-| Développeur Full Stack | Jude Airich Koy 
-| Développeur Full Stack | Ndende Christ 
+| Rôle                   | Membre                       | User Stories / périmètre |
+| ---------------------- | ---------------------------- | ------------------------ |
+| Développeur Full Stack | Joseph Miere Onka            |
+| Développeur Full Stack | Prosper Kwon Gee             |
+| Développeur Full Stack | Jizreel Salem Mouyedi Mbemba |
+| Développeur Full Stack | Force Espoir Loemba Packa    |
+| Développeur Full Stack | Jude Airich Koy              |
+| Développeur Full Stack | Ndende Christ                |
 
 Le détail des User Stories et de leurs critères d'acceptation se trouve dans `docs/ba/`.
 
@@ -122,7 +122,11 @@ Chaque module du serveur suit le même découpage : `routes` → `controller` �
 ## Prérequis
 
 - **Node.js :** `^20.19.0` ou `>=22.12.0` (versions compatibles avec Vite 8)
-- **Gestionnaire de paquets :** `npm` ou `bun` (un fichier `bun.lock` est présent)
+- **Gestionnaire de paquets :** `npm` ou `bun`. Les deux sont verrouillés
+  (`package-lock.json` et `bun.lock`), choisissez-en un et gardez-le : mélanger
+  les deux fait diverger les versions installées. `pnpm` fonctionne aussi, mais
+  le dépôt ne contient pas de `pnpm-lock.yaml`, donc rien n'y épingle les
+  versions résolues.
 - **Base de données :** PostgreSQL (local, Docker ou service cloud)
 
 ## Démarrage rapide
@@ -167,18 +171,22 @@ Le serveur démarre sur `http://localhost:3000`, avec le serveur de développeme
 
 ## Scripts npm
 
-| Commande | Description |
-| :--- | :--- |
-| `npm run dev` | Démarre le serveur backend et Vite HMR via Nodemon (`server/index.js`) |
-| `npm run build` | Compile l'application React avec Vite pour la production |
-| `npm run start` | Exécute l'application compilée en environnement de production |
-| `npm run test` | Exécute la suite de tests unitaires et d'intégration via Vitest |
-| `npx vitest run` | Variante CI : une seule passe, sans watch |
-| `npm run lint` | Lance la vérification ESLint sur tout le projet |
-| `npm run format` | Applique le formatage Prettier |
-| `npm run prepare` | Initialise les hooks Husky pour la qualité de code |
-| `npm run migrate:up` | Applique les migrations de base de données |
-| `npm run seed:admin` | Crée le compte administrateur initial |
+Les commandes sont listées avec `npm`. Avec `bun`, remplacez le préfixe :
+`npm run dev` devient `bun run dev`, `npm test` devient `bun test`. Avec `pnpm`,
+la forme est la même qu'avec `npm`.
+
+| Commande             | Description                                                            |
+| :------------------- | :--------------------------------------------------------------------- |
+| `npm run dev`        | Démarre le serveur backend et Vite HMR via Nodemon (`server/index.js`) |
+| `npm run build`      | Compile l'application React avec Vite pour la production               |
+| `npm run start`      | Exécute l'application compilée en environnement de production          |
+| `npm run test`       | Exécute la suite de tests unitaires et d'intégration via Vitest        |
+| `npx vitest run`     | Variante CI : une seule passe, sans watch                              |
+| `npm run lint`       | Lance la vérification ESLint sur tout le projet                        |
+| `npm run format`     | Applique le formatage Prettier                                         |
+| `npm run prepare`    | Initialise les hooks Husky pour la qualité de code                     |
+| `npm run migrate:up` | Applique les migrations de base de données                             |
+| `npm run seed:admin` | Crée le compte administrateur initial                                  |
 
 ## Déploiement sur Vercel
 
@@ -205,11 +213,14 @@ curl https://<domaine>/api/health
 **2. `VITE_USE_MOCKS` est figé au build.** La poser dans les variables
 d'environnement du projet Vercel n'a d'effet qu'**après un redéploiement**.
 
-En production, la démonstration est **toujours manuelle** : aucune erreur réseau
-ou aucun 5xx ne déclenche de repli automatique sur les mocks. Une panne, ou une
-migration non appliquée, reste visible au lieu de se déguiser en données
-fictives. Le visiteur entre en démo de lui-même, par le sélecteur de rôle de la
-barre de navigation, ou par l'URL - le plus simple à partager aux testeurs :
+La démonstration est **toujours manuelle**, en développement comme en production :
+aucune erreur réseau et aucun 5xx ne déclenchent de repli automatique sur les
+mocks. Une panne, ou une migration non appliquée, reste visible au lieu de se
+déguiser en données fictives - ce qui rendait l'application inutilisable à
+déboguer, puisqu'un écran plein de données fictives masquait un serveur qui, lui,
+refusait la session. Le visiteur entre en démo de lui-même, par le sélecteur de
+rôle de la barre de navigation, ou par l'URL - le plus simple à partager aux
+testeurs :
 
 ```
 https://<domaine>/?demo=1     entre en démo
@@ -221,13 +232,49 @@ le seul moyen d'activer la démo sur un déploiement déjà en ligne, sans rebui
 
 Variables attendues côté Vercel :
 
-| Variable | Rôle |
-| :--- | :--- |
-| `DATABASE_URL` | Connexion PostgreSQL de production |
-| `SESSION_SECRET` | 32 caractères minimum, sinon le serveur refuse de démarrer |
-| `VITE_USE_MOCKS` | `true` pour proposer le mode démonstration à tous les visiteurs |
-| `CLOUDINARY_*` | Obligatoire : le système de fichiers de Vercel est en lecture seule |
-| `SITE_URL` | Domaine public, pour les balises `canonical` et `og:url` |
+| Variable         | Rôle                                                                |
+| :--------------- | :------------------------------------------------------------------ |
+| `DATABASE_URL`   | Connexion PostgreSQL de production                                  |
+| `SESSION_SECRET` | 32 caractères minimum, sinon le serveur refuse de démarrer          |
+| `VITE_USE_MOCKS` | `true` pour proposer le mode démonstration à tous les visiteurs     |
+| `CLOUDINARY_*`   | Obligatoire : le système de fichiers de Vercel est en lecture seule |
+| `SITE_URL`       | Domaine public, pour les balises `canonical` et `og:url`            |
+
+## Lire les journaux du serveur
+
+Chaque requête `/api` produit une ligne dans le terminal qui lance le serveur,
+colorée selon le statut - vert, cyan, jaune, rouge :
+
+```
+[POST] /api/auth/login 200 4004.2ms
+[GET]  /api/admin/stats 401 11.0ms
+```
+
+Le verbe et le statut portent la couleur, le chemin et la durée restent neutres,
+pour que le statut reste lisible d'un coup d'œil. Les 5xx vont sur la sortie
+d'erreur, les 4xx sur celle d'avertissement, ce qui permet de les filtrer
+séparément. La ligne `[error]` qui suit porte la cause réelle ; sans elle, le
+statut seul ne dit pas pourquoi la requête a échoué.
+
+La couleur n'apparaît que sur un terminal. Redirigée vers un fichier, elle est
+désactivée d'elle-même, et `NO_COLOR=1` la coupe explicitement.
+
+Deux choses ne sont volontairement pas journalisées : la chaîne de requête, qui
+porterait des numéros et des recherches, et `/api/health`, interrogé en boucle
+par une sonde de supervision.
+
+**Piège en production locale, et comment il est levé.** Une version antérieure
+déduisait `COOKIE_SECURE` de `NODE_ENV`, donc `true` sous `npm run start`. Or
+`express-session` n'envoie pas un cookie `Secure` sur une connexion non chiffrée :
+le serveur répond `200` à `POST /api/auth/login`, puis **toutes** les requêtes
+suivantes répondent **401**, en quelques millisecondes, parce que le cookie
+n'est jamais renvoyé.
+
+Le réglage suit désormais le protocole réel de la requête (`secure: "auto"`) :
+le cookie est marqué `Secure` sur une connexion TLS, et envoyé normalement sur
+du HTTP simple. Un `npm run start` local fonctionne donc sans configuration, et un
+déploiement HTTPS reste protégé. Forcer `COOKIE_SECURE` n'est plus nécessaire
+que derrière un proxy qui ne transmet pas `X-Forwarded-Proto`.
 
 ## La page d'accueil ne lit rien en base
 

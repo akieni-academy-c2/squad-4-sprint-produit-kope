@@ -27,15 +27,15 @@ et le type-check pointent sur `motion`. Même version, même API.
 **Ce qui peut être interrompu, ou qui a une sortie, passe par Motion.
 Tout le reste est du CSS.**
 
-| | interruption | sortie | CSS suffit ? |
-|---|---|---|---|
-| feuille, dialogue | oui | oui | non |
-| onglet d'un tableau de bord | - | oui | non |
-| message éphémère | - | oui | non |
-| parallaxe du héros | non | - | non, `useScroll` |
-| icône d'action (28 px) | non | non | **non**, `whileTap` |
-| bouton de texte (44 px) | non | non | **oui**, `:active` |
-| survol, couleur, opacité | non | non | **oui** |
+|                             | interruption | sortie | CSS suffit ?        |
+| --------------------------- | ------------ | ------ | ------------------- |
+| feuille, dialogue           | oui          | oui    | non                 |
+| onglet d'un tableau de bord | -            | oui    | non                 |
+| message éphémère            | -            | oui    | non                 |
+| parallaxe du héros          | non          | -      | non, `useScroll`    |
+| icône d'action (28 px)      | non          | non    | **non**, `whileTap` |
+| bouton de texte (44 px)     | non          | non    | **oui**, `:active`  |
+| survol, couleur, opacité    | non          | non    | **oui**             |
 
 Un bouton ne peut pas être interrompu : au relâchement le doigt est déjà parti,
 et personne ne voit la vitesse de retour. Le remplacer par une instance

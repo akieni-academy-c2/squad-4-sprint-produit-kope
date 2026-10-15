@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
+import { useCallback, useEffect, useState } from "react";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
 import {
   groupKeyOf,
   groupItems,
   displayEntries as buildEntries,
   destinationIndex as entryDestination,
-} from './catalog/catalogUtils.js';
+} from "./catalog/catalogUtils.js";
 
 export function useCatalogBoard({
-  groupByKey = 'groupId',
-  groupNoun = 'groupe',
-  itemNoun = 'élément',
+  groupByKey = "groupId",
+  groupNoun = "groupe",
+  itemNoun = "élément",
   listGroups,
   listItems,
   createGroup,
@@ -30,9 +30,9 @@ export function useCatalogBoard({
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  const [query, setQuery] = useState('');
-  const [search, setSearch] = useState('');
-  const [groupFilter, setGroupFilter] = useState('');
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [groupFilter, setGroupFilter] = useState("");
 
   const [drag, setDrag] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -42,16 +42,19 @@ export function useCatalogBoard({
   const [addingTo, setAddingTo] = useState(null);
   const [drafts, setDrafts] = useState({});
   const [editingGroupId, setEditingGroupId] = useState(null);
-  const [groupName, setGroupName] = useState('');
+  const [groupName, setGroupName] = useState("");
   const [editingItemId, setEditingItemId] = useState(null);
-  const [itemName, setItemName] = useState('');
+  const [itemName, setItemName] = useState("");
   const [confirm, setConfirm] = useState(null);
 
   const reload = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [groupsRes, itemsRes] = await Promise.all([listGroups(), listItems()]);
+      const [groupsRes, itemsRes] = await Promise.all([
+        listGroups(),
+        listItems(),
+      ]);
       setGroups(groupsRes?.items ?? groupsRes ?? []);
       setItems(itemsRes?.items ?? itemsRes ?? []);
     } catch (err) {
@@ -61,6 +64,15 @@ export function useCatalogBoard({
     }
   }, [listGroups, listItems]);
 
+  /**
+   * `reload` est asynchrone : l'effet n'appelle pas `setState` lui-même, c'est
+   * `Promise.all` qui écrira plus tard. La règle ne voit pas cette frontière.
+   *
+   * Aucun jeton anti-course ici, contrairement à `useSearch` : les déclenchements
+   * sont le montage et les clics d'un administrateur après création ou
+   * suppression, jamais une frappe. La recherche filtre `items` en mémoire plus
+   * bas, elle ne relance aucune requête.
+   */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     reload();
@@ -72,11 +84,14 @@ export function useCatalogBoard({
   const grouped = groupItems(visibleItems, groups, groupByKey);
 
   const canReorder = !search && !groupFilter;
-  const draggingItem = drag?.kind === 'item' ? items.find((i) => i.id === drag.id) : null;
+  const draggingItem =
+    drag?.kind === "item" ? items.find((i) => i.id === drag.id) : null;
 
   const cardsOf = (key) => grouped.get(key) ?? [];
-  const displayEntries = (key) => buildEntries(cardsOf(key), draggingItem, preview, key);
-  const destinationIndex = (key, entryIndex) => entryDestination(cardsOf(key), entryIndex, draggingItem);
+  const displayEntries = (key) =>
+    buildEntries(cardsOf(key), draggingItem, preview, key);
+  const destinationIndex = (key, entryIndex) =>
+    entryDestination(cardsOf(key), entryIndex, draggingItem);
 
   const showPreview = (key, entryIndex) => {
     if (!canReorder || !draggingItem) return;
@@ -93,7 +108,7 @@ export function useCatalogBoard({
   };
 
   const failAndReload = (err) => {
-    toast({ message: err?.message || 'Erreur.', type: 'error' });
+    toast({ message: err?.message || "Erreur.", type: "error" });
     reload();
   };
 
@@ -103,13 +118,13 @@ export function useCatalogBoard({
   };
 
   const resetFilters = () => {
-    setQuery('');
-    setSearch('');
-    setGroupFilter('');
+    setQuery("");
+    setSearch("");
+    setGroupFilter("");
   };
 
   const submitNewGroup = async () => {
-    const name = String(newGroup || '').trim();
+    const name = String(newGroup || "").trim();
     if (!name) return;
     setSaving(true);
     try {
@@ -124,7 +139,7 @@ export function useCatalogBoard({
   };
 
   const commitGroupRename = async (groupId) => {
-    const name = String(groupName || '').trim();
+    const name = String(groupName || "").trim();
     setEditingGroupId(null);
     if (!name) return;
     try {
@@ -136,12 +151,12 @@ export function useCatalogBoard({
   };
 
   const submitNewItem = async (groupId) => {
-    const name = String(drafts[groupId] || '').trim();
+    const name = String(drafts[groupId] || "").trim();
     if (!name) return;
     setSaving(true);
     try {
       await createItem({ name, [groupByKey]: groupId });
-      setDrafts((prev) => ({ ...prev, [groupId]: '' }));
+      setDrafts((prev) => ({ ...prev, [groupId]: "" }));
       setAddingTo(null);
       reload();
     } catch (err) {
@@ -152,7 +167,7 @@ export function useCatalogBoard({
   };
 
   const commitItemRename = async (itemId) => {
-    const name = String(itemName || '').trim();
+    const name = String(itemName || "").trim();
     setEditingItemId(null);
     if (!name) return;
     const item = items.find((i) => i.id === itemId);
@@ -168,10 +183,17 @@ export function useCatalogBoard({
   const dropItem = (itemId, targetKey, index) => {
     const moved = items.find((i) => i.id === itemId);
     if (!moved) return;
-    const bucket = items.filter((i) => i.id !== itemId && groupKeyOf(i[groupByKey]) === targetKey);
-    const position = Math.max(0, Math.min(index ?? bucket.length, bucket.length));
+    const bucket = items.filter(
+      (i) => i.id !== itemId && groupKeyOf(i[groupByKey]) === targetKey,
+    );
+    const position = Math.max(
+      0,
+      Math.min(index ?? bucket.length, bucket.length),
+    );
     bucket.splice(position, 0, { ...moved, [groupByKey]: targetKey });
-    const rest = items.filter((i) => i.id !== itemId && groupKeyOf(i[groupByKey]) !== targetKey);
+    const rest = items.filter(
+      (i) => i.id !== itemId && groupKeyOf(i[groupByKey]) !== targetKey,
+    );
     setItems([...rest, ...bucket]);
     updateItem(itemId, { name: moved.name, [groupByKey]: targetKey })
       .then(() => reorderItems(bucket.map((i) => i.id)))
@@ -191,11 +213,19 @@ export function useCatalogBoard({
 
   const handleDrop = (targetKey, entryIndex) => {
     if (!drag) return;
-    if (drag.kind === 'group') {
-      const groupIndex = groups.findIndex((g) => groupKeyOf(g.id) === targetKey);
+    if (drag.kind === "group") {
+      const groupIndex = groups.findIndex(
+        (g) => groupKeyOf(g.id) === targetKey,
+      );
       dropGroup(drag.id, groupIndex < 0 ? groups.length : groupIndex);
-    } else if (preview && preview.key === targetKey) dropItem(drag.id, targetKey, preview.index);
-    else dropItem(drag.id, targetKey, destinationIndex(targetKey, entryIndex ?? cardsOf(targetKey).length));
+    } else if (preview && preview.key === targetKey)
+      dropItem(drag.id, targetKey, preview.index);
+    else
+      dropItem(
+        drag.id,
+        targetKey,
+        destinationIndex(targetKey, entryIndex ?? cardsOf(targetKey).length),
+      );
 
     resetDrag();
   };
@@ -204,23 +234,26 @@ export function useCatalogBoard({
     if (!confirm) return;
     setSaving(true);
     try {
-      if (confirm.kind === 'group') await removeGroup(confirm.target.id);
+      if (confirm.kind === "group") await removeGroup(confirm.target.id);
       else await removeItem(confirm.target.id);
       toast({
-        message: confirm.kind === 'group' ? `${groupNoun} supprimé.` : `${itemNoun} supprimé.`,
-        type: 'success',
+        message:
+          confirm.kind === "group"
+            ? `${groupNoun} supprimé.`
+            : `${itemNoun} supprimé.`,
+        type: "success",
       });
       setConfirm(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     } finally {
       setSaving(false);
     }
   };
 
   const itemHandlers = {
-    startDrag: (id) => setDrag({ kind: 'item', id }),
+    startDrag: (id) => setDrag({ kind: "item", id }),
     resetDrag,
     showPreview,
     handleDrop,
@@ -236,7 +269,7 @@ export function useCatalogBoard({
 
   const groupHandlers = {
     ...itemHandlers,
-    startGroupDrag: (id) => setDrag({ kind: 'group', id }),
+    startGroupDrag: (id) => setDrag({ kind: "group", id }),
     setOverKey,
     setGroupName,
     commitGroupRename,
@@ -245,10 +278,11 @@ export function useCatalogBoard({
       setEditingGroupId(group.id);
       setGroupName(group.name);
     },
-    setDraft: (groupId, value) => setDrafts((prev) => ({ ...prev, [groupId]: value })),
+    setDraft: (groupId, value) =>
+      setDrafts((prev) => ({ ...prev, [groupId]: value })),
     submitNewItem,
     cancelNewItem: (groupId) => {
-      setDrafts((prev) => ({ ...prev, [groupId]: '' }));
+      setDrafts((prev) => ({ ...prev, [groupId]: "" }));
       setAddingTo(null);
     },
     startAdding: (groupId) => setAddingTo(groupId),

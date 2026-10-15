@@ -1,5 +1,5 @@
-import { ApiError } from '../utils/ApiError.js';
-import { currentUser, loadActiveUser } from './identity.js';
+import { ApiError } from "../utils/ApiError.js";
+import { currentUser, loadActiveUser } from "./identity.js";
 
 export async function requireAuth(req, res, next) {
   try {

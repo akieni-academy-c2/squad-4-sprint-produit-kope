@@ -1,44 +1,71 @@
-import { api } from '@/shared/lib/api.js';
-import { callApi } from '@/shared/lib/dataSource.js';
-import { mockReviewsFor, mockMyReviews, mockUpdateMyReview, mockSetMyReviewHidden, mockDeleteMyReview } from '@/shared/mocks/appMock.js';
+import { api } from "@/shared/lib/api.js";
+import { callApi } from "@/shared/lib/dataSource.js";
+import {
+  mockReviewsFor,
+  mockMyReviews,
+  mockUpdateMyReview,
+  mockSetMyReviewHidden,
+  mockDeleteMyReview,
+} from "@/shared/mocks/appMock.js";
 
 export function listReviews(professionalId, { page = 1, pageSize = 10 } = {}) {
   return callApi(
-    () => api.get(`/professionals/${professionalId}/reviews`, { page, pageSize }),
+    () =>
+      api.get(`/professionals/${professionalId}/reviews`, { page, pageSize }),
     async () => {
       const all = mockReviewsFor(professionalId).filter((r) => !r.isHidden);
       const items = all.slice((page - 1) * pageSize, page * pageSize);
       const average = all.length
-        ? Math.round((all.reduce((s, r) => s + r.rating, 0) / all.length) * 10) / 10
+        ? Math.round(
+            (all.reduce((s, r) => s + r.rating, 0) / all.length) * 10,
+          ) / 10
         : 0;
-      return { summary: { average, count: all.length }, items, total: all.length, page, pageSize, totalPages: 1 };
+      return {
+        summary: { average, count: all.length },
+        items,
+        total: all.length,
+        page,
+        pageSize,
+        totalPages: 1,
+      };
     },
   );
 }
 
 export function createReview(professionalId, payload) {
   return callApi(
-    () => api.postJson(`/professionals/${professionalId}/reviews`, payload).then((r) => r.review),
+    () =>
+      api
+        .postJson(`/professionals/${professionalId}/reviews`, payload)
+        .then((r) => r.review),
     async () => ({
       id: Date.now(),
       rating: payload.rating,
-      comment: payload.comment ?? '',
+      comment: payload.comment ?? "",
       createdAt: new Date().toISOString(),
-      client: { firstName: 'Vous', lastName: '' },
+      client: { firstName: "Vous", lastName: "" },
     }),
   );
 }
 
-export function getMyReviews({ page = 1, pageSize = 20, q, rating, professionalId, visibility, sort } = {}) {
+export function getMyReviews({
+  page = 1,
+  pageSize = 20,
+  q,
+  rating,
+  professionalId,
+  visibility,
+  sort,
+} = {}) {
   return callApi(
     () =>
-      api.get('/reviews/mine', {
+      api.get("/reviews/mine", {
         page,
         pageSize,
         ...(q ? { q } : {}),
         ...(rating ? { rating } : {}),
         ...(professionalId ? { professionalId } : {}),
-        ...(visibility && visibility !== 'all' ? { visibility } : {}),
+        ...(visibility && visibility !== "all" ? { visibility } : {}),
         ...(sort ? { sort } : {}),
       }),
     async () => mockMyReviews({ page, pageSize, q, rating, visibility, sort }),
@@ -54,7 +81,10 @@ export function updateReview(reviewId, payload) {
 
 export function setReviewVisibility(reviewId, isHidden) {
   return callApi(
-    () => api.patchJson(`/reviews/${reviewId}/visibility`, { isHidden }).then((r) => r.review),
+    () =>
+      api
+        .patchJson(`/reviews/${reviewId}/visibility`, { isHidden })
+        .then((r) => r.review),
     async () => mockSetMyReviewHidden(reviewId, isHidden),
   );
 }

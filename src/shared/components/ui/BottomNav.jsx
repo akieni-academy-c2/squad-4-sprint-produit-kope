@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Menu } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { Sheet } from './Sheet.jsx';
-
+import { useState } from "react";
+import { Menu } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { Sheet } from "./Sheet.jsx";
 
 const MAX_CELLS = 5;
 
@@ -27,24 +26,28 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
         className="fixed inset-x-0 bottom-0   z-40 border-t border-gray-200 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(0,0,0,0.06)] backdrop-blur-sm lg:hidden"
       >
         <ul className="flex">
-          {visibleItems.map(({ id, label, shortLabel, icon: Icon, isAction }) => (
-            <li key={id} className="min-w-0 flex-1">
-              <button
-                type="button"
-                aria-current={!isAction && active === id ? 'page' : undefined}
-                onClick={() => onChange(id)}
-                className={cn(
-                  'flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition',
-                  !isAction && active === id
-                    ? 'bg-primary-50 text-primary-500'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',
-                )}
-              >
-                <Icon size={20} aria-hidden />
-                <span className="w-full truncate text-center">{shortLabel || label}</span>
-              </button>
-            </li>
-          ))}
+          {visibleItems.map(
+            ({ id, label, shortLabel, icon: Icon, isAction }) => (
+              <li key={id} className="min-w-0 flex-1">
+                <button
+                  type="button"
+                  aria-current={!isAction && active === id ? "page" : undefined}
+                  onClick={() => onChange(id)}
+                  className={cn(
+                    "flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition",
+                    !isAction && active === id
+                      ? "bg-primary-50 text-primary-500"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
+                  )}
+                >
+                  <Icon size={20} aria-hidden />
+                  <span className="w-full truncate text-center">
+                    {shortLabel || label}
+                  </span>
+                </button>
+              </li>
+            ),
+          )}
           {hasOverflow && (
             <li className="min-w-0 flex-1">
               <button
@@ -53,10 +56,10 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen(true)}
                 className={cn(
-                  'flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition',
+                  "flex w-full cursor-pointer flex-col items-center gap-1 px-0.5 py-2.5 text-[10px] font-semibold transition",
                   overflowActive
-                    ? 'bg-primary-50 text-primary-500'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',
+                    ? "bg-primary-50 text-primary-500"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
                 )}
               >
                 <Menu size={20} aria-hidden />
@@ -77,16 +80,20 @@ export function BottomNav({ items, active, onChange, ariaLabel }) {
               <li key={id}>
                 <button
                   type="button"
-                  aria-current={!isAction && active === id ? 'page' : undefined}
+                  aria-current={!isAction && active === id ? "page" : undefined}
                   onClick={() => select(id)}
                   className={cn(
-                    'flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition',
+                    "flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition",
                     !isAction && active === id
-                      ? 'bg-primary-50 text-primary-500'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900',
+                      ? "bg-primary-50 text-primary-500"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
                   )}
                 >
-                  <Icon size={18} aria-hidden className="shrink-0 text-gray-400" />
+                  <Icon
+                    size={18}
+                    aria-hidden
+                    className="shrink-0 text-gray-400"
+                  />
                   {label}
                 </button>
               </li>

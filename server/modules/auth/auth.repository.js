@@ -1,10 +1,14 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
 export async function updateRole(userId, role, db = pool) {
-  await db.query('UPDATE users SET role = $2 WHERE id = $1', [userId, role]);
+  await db.query("UPDATE users SET role = $2 WHERE id = $1", [userId, role]);
 }
 
-export async function updateAccount(userId, { firstName, lastName, phone, email }, db = pool) {
+export async function updateAccount(
+  userId,
+  { firstName, lastName, phone, email },
+  db = pool,
+) {
   const { rows } = await db.query(
     `UPDATE users
         SET first_name = COALESCE($2, first_name),
@@ -20,11 +24,17 @@ export async function updateAccount(userId, { firstName, lastName, phone, email 
 }
 
 export async function updatePasswordHash(userId, passwordHash, db = pool) {
-  await db.query('UPDATE users SET password_hash = $2 WHERE id = $1', [userId, passwordHash]);
+  await db.query("UPDATE users SET password_hash = $2 WHERE id = $1", [
+    userId,
+    passwordHash,
+  ]);
 }
 
 export async function getPasswordHash(userId, db = pool) {
-  const { rows } = await db.query('SELECT password_hash AS "passwordHash" FROM users WHERE id = $1', [userId]);
+  const { rows } = await db.query(
+    'SELECT password_hash AS "passwordHash" FROM users WHERE id = $1',
+    [userId],
+  );
   return rows[0]?.passwordHash ?? null;
 }
 
@@ -39,7 +49,6 @@ export async function findByPhone(phone, db = pool) {
   );
   return rows[0] ?? null;
 }
-
 
 export async function getAccountState(id, db = pool) {
   const { rows } = await db.query(
@@ -65,11 +74,21 @@ export async function findById(id, db = pool) {
 }
 
 export async function updateAvatarUrl(userId, avatarUrl, db = pool) {
-  await db.query('UPDATE users SET avatar_url = $2 WHERE id = $1', [userId, avatarUrl]);
+  await db.query("UPDATE users SET avatar_url = $2 WHERE id = $1", [
+    userId,
+    avatarUrl,
+  ]);
 }
 
 export async function createUser(
-  { role, phone, passwordHash, firstName = null, lastName = null, termsVersion = null },
+  {
+    role,
+    phone,
+    passwordHash,
+    firstName = null,
+    lastName = null,
+    termsVersion = null,
+  },
   db = pool,
 ) {
   const { rows } = await db.query(

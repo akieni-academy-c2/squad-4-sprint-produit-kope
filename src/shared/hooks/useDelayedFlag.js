@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect, useState } from "react";
 
 export function useDelayedFlag(value, delayMs = 200) {
   const [elapsed, setElapsed] = useState(false);

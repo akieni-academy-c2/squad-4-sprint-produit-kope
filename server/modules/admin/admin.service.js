@@ -1,10 +1,9 @@
-import bcrypt from 'bcryptjs';
-import { ApiError } from '../../utils/ApiError.js';
-import { offsetOf, paginateSafely } from '../../utils/pagination.js';
-import * as repository from './admin.repository.js';
-import * as catalogRepository from './catalog.repository.js';
-import { env } from '../../config/env.js';
-
+import bcrypt from "bcryptjs";
+import { ApiError } from "../../utils/ApiError.js";
+import { offsetOf, paginateSafely } from "../../utils/pagination.js";
+import * as repository from "./admin.repository.js";
+import * as catalogRepository from "./catalog.repository.js";
+import { env } from "../../config/env.js";
 
 export async function listProfessionals(query) {
   const rows = await repository.listProfessionals({
@@ -16,7 +15,11 @@ export async function listProfessionals(query) {
     city: query.city,
   });
   return paginateSafely(rows, query, () =>
-    repository.countProfessionals({ q: query.q, status: query.status, city: query.city }),
+    repository.countProfessionals({
+      q: query.q,
+      status: query.status,
+      city: query.city,
+    }),
   );
 }
 
@@ -27,7 +30,9 @@ export async function listReviews(query) {
     hidden: query.hidden,
     q: query.q,
   });
-  return paginateSafely(rows, query, () => repository.countReviews({ hidden: query.hidden, q: query.q }));
+  return paginateSafely(rows, query, () =>
+    repository.countReviews({ hidden: query.hidden, q: query.q }),
+  );
 }
 
 export async function listUsers(query) {
@@ -41,27 +46,43 @@ export async function listUsers(query) {
 }
 
 export async function setUserBlocked(actorId, id, blocked) {
-  if (Number(actorId) === Number(id)) throw ApiError.badRequest('Vous ne pouvez pas bloquer votre propre compte');
+  if (Number(actorId) === Number(id))
+    throw ApiError.badRequest("Vous ne pouvez pas bloquer votre propre compte");
 
   const target = blocked ? await repository.findUserById(id) : null;
-  if (blocked && !target) throw ApiError.notFound('Utilisateur introuvable');
-  if (blocked && target.role === 'admin' && (await repository.countActiveAdmins(id)) === 0)
-    throw ApiError.badRequest('Impossible de bloquer le dernier administrateur actif');
+  if (blocked && !target) throw ApiError.notFound("Utilisateur introuvable");
+  if (
+    blocked &&
+    target.role === "admin" &&
+    (await repository.countActiveAdmins(id)) === 0
+  )
+    throw ApiError.badRequest(
+      "Impossible de bloquer le dernier administrateur actif",
+    );
 
   const updated = await repository.setUserBlocked(id, blocked);
-  if (!updated) throw ApiError.notFound('Utilisateur introuvable');
+  if (!updated) throw ApiError.notFound("Utilisateur introuvable");
   return updated;
 }
 export async function setUserSuspended(actorId, id, suspended) {
-  if (Number(actorId) === Number(id)) throw ApiError.badRequest('Vous ne pouvez pas suspendre votre propre compte');
+  if (Number(actorId) === Number(id))
+    throw ApiError.badRequest(
+      "Vous ne pouvez pas suspendre votre propre compte",
+    );
 
   const target = await repository.findUserById(id);
-  if (!target) throw ApiError.notFound('Utilisateur introuvable');
-  if (suspended && target.role === 'admin' && (await repository.countActiveAdmins(id)) === 0)
-    throw ApiError.badRequest('Impossible de suspendre le dernier administrateur actif');
+  if (!target) throw ApiError.notFound("Utilisateur introuvable");
+  if (
+    suspended &&
+    target.role === "admin" &&
+    (await repository.countActiveAdmins(id)) === 0
+  )
+    throw ApiError.badRequest(
+      "Impossible de suspendre le dernier administrateur actif",
+    );
 
   const updated = await repository.setUserSuspended(id, suspended);
-  if (!updated) throw ApiError.notFound('Utilisateur introuvable');
+  if (!updated) throw ApiError.notFound("Utilisateur introuvable");
   await repository.setUserBlocked(id, suspended);
   return updated;
 }
@@ -69,9 +90,15 @@ export async function setUserSuspended(actorId, id, suspended) {
 export async function createAdmin({ firstName, lastName, phone, password }) {
   const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
   try {
-    return await repository.createAdminUser({ firstName, lastName, phone, passwordHash });
+    return await repository.createAdminUser({
+      firstName,
+      lastName,
+      phone,
+      passwordHash,
+    });
   } catch (err) {
-    if (err?.code === '23505') throw ApiError.conflict('Ce numéro est déjà utilisé');
+    if (err?.code === "23505")
+      throw ApiError.conflict("Ce numéro est déjà utilisé");
     throw err;
   }
 }
@@ -100,21 +127,28 @@ export async function getStats() {
 
 export async function setProfessionalHidden(id, hidden) {
   const updated = await repository.setProfessionalHidden(id, hidden);
-  if (!updated) throw ApiError.notFound('Profil introuvable');
+  if (!updated) throw ApiError.notFound("Profil introuvable");
   return { id, hidden };
 }
 
 export async function setReviewHidden(id, hidden) {
   const updated = await repository.setReviewHidden(id, hidden);
-  if (!updated) throw ApiError.notFound('Avis introuvable');
+  if (!updated) throw ApiError.notFound("Avis introuvable");
   return { id, hidden };
 }
 
-
-function makeCatalogService({ catalog, list, entity, duplicate, fkLabel, usedByProfessionals, usedByChildren }) {
+function makeCatalogService({
+  catalog,
+  list,
+  entity,
+  duplicate,
+  fkLabel,
+  usedByProfessionals,
+  usedByChildren,
+}) {
   const translate = (err) => {
-    if (err?.code === '23505') throw ApiError.conflict(duplicate);
-    if (err?.code === '23503') throw ApiError.badRequest(fkLabel);
+    if (err?.code === "23505") throw ApiError.conflict(duplicate);
+    if (err?.code === "23503") throw ApiError.badRequest(fkLabel);
     throw err;
   };
 
@@ -139,7 +173,8 @@ function makeCatalogService({ catalog, list, entity, duplicate, fkLabel, usedByP
     },
 
     async remove(id) {
-      if (await catalog.inUse(id)) throw ApiError.badRequest(usedByProfessionals || usedByChildren);
+      if (await catalog.inUse(id))
+        throw ApiError.badRequest(usedByProfessionals || usedByChildren);
       const deleted = await catalog.remove(id);
       if (!deleted) throw ApiError.notFound(`${entity} introuvable`);
       return { id };
@@ -157,35 +192,37 @@ function makeCatalogService({ catalog, list, entity, duplicate, fkLabel, usedByP
 const tradeCategoryService = makeCatalogService({
   catalog: catalogRepository.tradeCategories,
   list: () => repository.listTradeCategories(),
-  entity: 'Catégorie',
-  duplicate: 'Cette catégorie existe déjà',
-  usedByChildren: 'Déplacez les métiers de cette catégorie avant de la supprimer',
+  entity: "Catégorie",
+  duplicate: "Cette catégorie existe déjà",
+  usedByChildren:
+    "Déplacez les métiers de cette catégorie avant de la supprimer",
 });
 
 const tradeService = makeCatalogService({
   catalog: catalogRepository.trades,
   list: () => repository.listTrades(),
-  entity: 'Métier',
-  duplicate: 'Ce métier existe déjà',
-  fkLabel: 'Catégorie inconnue',
-  usedByProfessionals: 'Ce métier est utilisé par des professionnels',
+  entity: "Métier",
+  duplicate: "Ce métier existe déjà",
+  fkLabel: "Catégorie inconnue",
+  usedByProfessionals: "Ce métier est utilisé par des professionnels",
 });
 
 const cityService = makeCatalogService({
   catalog: catalogRepository.cities,
   list: () => repository.listCities(),
-  entity: 'Ville',
-  duplicate: 'Cette ville existe déjà',
-  usedByChildren: 'Déplacez les arrondissements de cette ville avant de la supprimer',
+  entity: "Ville",
+  duplicate: "Cette ville existe déjà",
+  usedByChildren:
+    "Déplacez les arrondissements de cette ville avant de la supprimer",
 });
 
 const zoneService = makeCatalogService({
   catalog: catalogRepository.zones,
   list: () => repository.listZones(),
-  entity: 'Zone',
-  duplicate: 'Cette zone existe déjà',
-  fkLabel: 'Ville inconnue',
-  usedByProfessionals: 'Cette zone est utilisée par des professionnels',
+  entity: "Zone",
+  duplicate: "Cette zone existe déjà",
+  fkLabel: "Ville inconnue",
+  usedByProfessionals: "Cette zone est utilisée par des professionnels",
 });
 
 export const listTradeCategories = tradeCategoryService.list;

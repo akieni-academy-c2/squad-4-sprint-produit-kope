@@ -2,7 +2,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/shared/utils";
 import { FormField } from "./FormField.jsx";
-import { toOption, useListboxNavigation, useScrollActiveIntoView } from "./listbox.js";
+import {
+  toOption,
+  useListboxNavigation,
+  useScrollActiveIntoView,
+} from "./listbox.js";
 
 const controlClasses = (error) =>
   cn(
@@ -11,10 +15,11 @@ const controlClasses = (error) =>
     error ? "is-invalid border-danger-500" : "border-gray-300",
   );
 
-
 const describedBy = (id, { hint, error }) => {
-  const ids = [error ? `${id}-error` : null, hint ? `${id}-help` : null].filter(Boolean);
-  return ids.length ? ids.join(' ') : undefined;
+  const ids = [error ? `${id}-error` : null, hint ? `${id}-help` : null].filter(
+    Boolean,
+  );
+  return ids.length ? ids.join(" ") : undefined;
 };
 
 export function MultiSelect({
@@ -67,12 +72,17 @@ export function MultiSelect({
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open, onBlur]);
 
-
-  useScrollActiveIntoView({ open, activeIndex, optionId: `${id}-opt-${activeIndex}` });
+  useScrollActiveIntoView({
+    open,
+    activeIndex,
+    optionId: `${id}-opt-${activeIndex}`,
+  });
 
   const emit = (nextValues) => {
     const next = new Set(nextValues);
-    onChange?.(normalizedOptions.filter((o) => next.has(o.value)).map((o) => o.value));
+    onChange?.(
+      normalizedOptions.filter((o) => next.has(o.value)).map((o) => o.value),
+    );
   };
 
   const toggle = (optionValue) => {
@@ -81,7 +91,9 @@ export function MultiSelect({
   };
 
   const openList = () => {
-    const firstSelected = normalizedOptions.findIndex((o) => selected.has(o.value));
+    const firstSelected = normalizedOptions.findIndex((o) =>
+      selected.has(o.value),
+    );
     setActiveIndex(firstSelected >= 0 ? firstSelected : 0);
     const rect = triggerRef.current?.getBoundingClientRect();
     if (rect) {
@@ -89,7 +101,12 @@ export function MultiSelect({
       const spaceAbove = rect.top - 16;
       const above = spaceAbove > spaceBelow && spaceBelow < 280;
       setPlaceAbove(above);
-      setMaxH(Math.max(160, Math.min(256, Math.floor(above ? spaceAbove : spaceBelow))));
+      setMaxH(
+        Math.max(
+          160,
+          Math.min(256, Math.floor(above ? spaceAbove : spaceBelow)),
+        ),
+      );
     }
     setOpen(true);
   };

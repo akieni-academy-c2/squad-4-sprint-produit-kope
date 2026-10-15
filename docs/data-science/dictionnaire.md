@@ -1,9 +1,10 @@
-# Dictionnaire des données — KOP
+# Dictionnaire des données - KOP
 
-Document d'accompagnement de [schema.md](schema.md). Il explique ce que chaque
-table représente et, surtout, **les règles que le code applique** — parce que
-beaucoup de contraintes métier ne sont pas dans le schéma : elles sont dans une
-vue ou dans le service.
+Document d'accompagnement de [schema.md](schema.md) et de
+[schema-diagram.md](schema-diagram.md). Il explique ce que chaque table
+représente et, surtout, **les règles que le code applique** - parce que beaucoup
+de contraintes métier ne sont pas dans le schéma : elles sont dans une vue ou
+Pour le contexte du produit et ce que les données permettent de mesurer, voir [CADRE.md](../CADRE.md).
 
 KOP met en relation des particuliers et des artisans du bâtiment à Brazzaville.
 Un artisan publie un profil (métier, zones, photos, description), un client le
@@ -15,7 +16,7 @@ trouve, le contacte, et peut laisser un avis.
 
 **Les volumes actuels sont ceux d'un environnement de développement, pas de la
 production.** Au moment de l'extraction : 4 profils, 10 comptes, **0 avis**, 0
-signalement. Un modèle statistique construit dessus n'aurait aucun sens — ces
+signalement. Un modèle statistique construit dessus n'aurait aucun sens - ces
 données servent à valider la chaîne, pas à entraîner un modèle. Pour des volumes
 réels, il faut interroger la base de production, qui répond au même schéma.
 
@@ -40,17 +41,17 @@ d'apparaître dans l'annuaire public, automatiquement.
 Un profil n'est visible publiquement que s'il satisfait **toutes** ces conditions.
 Cette logique vit dans la vue `published_professionals`, pas dans les tables.
 
-| Condition | Colonne / test |
-| :--- | :--- |
-| Le profil n'est pas masqué | `professionals.is_hidden = false` |
-| Le compte est bien un artisan | `users.role = 'professional'` |
-| Le compte n'est ni bloqué ni suspendu | `blocked_at IS NULL AND suspended_at IS NULL` |
-| Un nom affiché est renseigné | `display_name` non vide |
-| Un métier est choisi | joint sur `trades` |
-| Au moins une zone d'intervention | ≥ 1 ligne dans `professional_zones` |
-| Un téléphone est renseigné | `users.phone` non vide |
-| Une description d'au moins 30 caractères | `char_length(description) >= 30` |
-| Au moins une photo de réalisation | ≥ 1 ligne dans `photos` |
+| Condition                                | Colonne / test                                |
+| :--------------------------------------- | :-------------------------------------------- |
+| Le profil n'est pas masqué               | `professionals.is_hidden = false`             |
+| Le compte est bien un artisan            | `users.role = 'professional'`                 |
+| Le compte n'est ni bloqué ni suspendu    | `blocked_at IS NULL AND suspended_at IS NULL` |
+| Un nom affiché est renseigné             | `display_name` non vide                       |
+| Un métier est choisi                     | joint sur `trades`                            |
+| Au moins une zone d'intervention         | ≥ 1 ligne dans `professional_zones`           |
+| Un téléphone est renseigné               | `users.phone` non vide                        |
+| Une description d'au moins 30 caractères | `char_length(description) >= 30`              |
+| Au moins une photo de réalisation        | ≥ 1 ligne dans `photos`                       |
 
 **Conséquence pour l'analyse :** compter les artisans avec `SELECT count(*) FROM
 professionals` est faux. Il faut passer par la vue, qui exclut les profils
@@ -63,13 +64,13 @@ l'une des conditions ci-dessus.
 
 ## Avis
 
-| Règle | Où |
-| :--- | :--- |
-| Note entière de 1 à 5 | `CHECK (rating BETWEEN 1 AND 5)` |
-| Un seul avis par client et par artisan | `UNIQUE (client_id, professional_id)` |
-| On ne s'avise pas soi-même | `client_id <> professional_id`, contrôlé côté service |
-| Un administrateur ne pose pas d'avis | `reviews.service.js` |
-| Un avis masqué sort de la moyenne | `reviews.is_hidden = true` |
+| Règle                                  | Où                                                    |
+| :------------------------------------- | :---------------------------------------------------- |
+| Note entière de 1 à 5                  | `CHECK (rating BETWEEN 1 AND 5)`                      |
+| Un seul avis par client et par artisan | `UNIQUE (client_id, professional_id)`                 |
+| On ne s'avise pas soi-même             | `client_id <> professional_id`, contrôlé côté service |
+| Un administrateur ne pose pas d'avis   | `reviews.service.js`                                  |
+| Un avis masqué sort de la moyenne      | `reviews.is_hidden = true`                            |
 
 **Il n'existe aucune colonne de note moyenne en base.** La moyenne est recalculée
 à chaque lecture (`AVG(rating)`, arrondi à une décimale) sur les seuls avis non
@@ -82,12 +83,12 @@ colonne qui n'existe pas.
 (`target_role = 'professional'`), un artisan ou un client signale un compte
 (`target_role = 'client'`).
 
-| Règle | Détail |
-| :--- | :--- |
-| Un seul signalement par cible et par auteur | `UNIQUE (professional_id, reporter_id)` |
-| Pas d'auto-signalement | `CHECK (professional_id <> reporter_id)` |
-| Motifs fermés | `fake_profile`, `harassment`, `spam`, `inappropriate`, `fraud`, `other` |
-| Cycle de traitement | `pending` → `resolved` ou `dismissed` |
+| Règle                                       | Détail                                                                  |
+| :------------------------------------------ | :---------------------------------------------------------------------- |
+| Un seul signalement par cible et par auteur | `UNIQUE (professional_id, reporter_id)`                                 |
+| Pas d'auto-signalement                      | `CHECK (professional_id <> reporter_id)`                                |
+| Motifs fermés                               | `fake_profile`, `harassment`, `spam`, `inappropriate`, `fraud`, `other` |
+| Cycle de traitement                         | `pending` → `resolved` ou `dismissed`                                   |
 
 **Sanctions automatiques :** à chaque signalement, le compte est recompte. Seuls
 les signalements **émis par un client** sont comptabilisables. Au-delà de
@@ -97,6 +98,20 @@ suspendu (`suspended_at`). Ces seuils sont configurables
 
 Un compte bloqué ou suspendu **reste dans les tables** : il n'est pas supprimé.
 Toute mesure d'activité doit filtrer explicitement sur ces deux colonnes.
+
+Deux détails de comportement qui ne se devinent pas, et qui faussent tout
+comptage de sanctions :
+
+- **La suspension implique le blocage.** Le service qui applique la sanction
+  écrit `suspended_at` puis `blocked_at` : un compte suspendu a donc toujours
+  les deux colonnes renseignées. Une requête « bloqués mais non suspendus »
+  renvoie zéro par construction, et l'ensemble des comptes non suspendus est
+  strictement contenu dans celui des comptes non bloqués.
+- **Le décompte ignore le statut du signalement.** Le recomptage ne filtre pas
+  sur `account_reports.status` : un signalement `dismissed`, donc rejeté par
+  l'administration, compte exactement comme un signalement `pending`. Le seuil
+  se dépasse donc aussi vite avec des signalements traités qu'avec des
+  signalements en attente.
 
 ## Contacts
 
@@ -112,20 +127,20 @@ Journal des prises de contact entre deux comptes.
 
 ## Table par table
 
-| Table | Rôle | Points d'attention |
-| :--- | :--- | :--- |
-| `users` | Comptes, tous rôles confondus | `phone` est l'identifiant de connexion, pas l'email. `blocked_at` / `suspended_at` à filtrer |
-| `professionals` | Profil artisan, 1 par compte | `is_hidden` est un masquage volontaire, distinct d'une suspension |
-| `professional_zones` | Zones d'intervention (n-à-n) | Jointure obligatoire pour remonter au nom de la zone |
-| `photos` | Réalisations, avec vignette | `file_path` et `thumb_path` sont des chemins relatifs |
-| `reviews` | Notes et avis | Un seul par client et par artisan ; moyenne à recalculer |
-| `contacts` | Prises de contact | `message` nullable sauf canal `message` |
-| `account_reports` | Signalements | `professional_id` porte la cible, quel que soit son rôle |
-| `review_reports` | Signalements d'avis | Cible un avis, pas un compte |
-| `trades` | Métiers (référentiel) | 4 métier : Plombier, Électricien, Maçon, Menuisier |
-| `trade_categories` | Catégories regroupant les métiers | Référentiel, non encore rattaché aux métiers en base |
-| `zones` | Quartiers de Brazzaville | 9 quartiers, chacun rattaché à une ville |
-| `cities` | Villes | 6 villes, une seule sert actuellement |
+| Table                | Rôle                              | Points d'attention                                                                           |
+| :------------------- | :-------------------------------- | :------------------------------------------------------------------------------------------- |
+| `users`              | Comptes, tous rôles confondus     | `phone` est l'identifiant de connexion, pas l'email. `blocked_at` / `suspended_at` à filtrer |
+| `professionals`      | Profil artisan, 1 par compte      | `is_hidden` est un masquage volontaire, distinct d'une suspension                            |
+| `professional_zones` | Zones d'intervention (n-à-n)      | Jointure obligatoire pour remonter au nom de la zone                                         |
+| `photos`             | Réalisations, avec vignette       | `file_path` et `thumb_path` sont des chemins relatifs                                        |
+| `reviews`            | Notes et avis                     | Un seul par client et par artisan ; moyenne à recalculer                                     |
+| `contacts`           | Prises de contact                 | `message` nullable sauf canal `message`                                                      |
+| `account_reports`    | Signalements                      | `professional_id` porte la cible, quel que soit son rôle                                     |
+| `review_reports`     | Signalements d'avis               | Cible un avis, pas un compte                                                                 |
+| `trades`             | Métiers (référentiel)             | 4 métier : Plombier, Électricien, Maçon, Menuisier                                           |
+| `trade_categories`   | Catégories regroupant les métiers | Référentiel, non encore rattaché aux métiers en base                                         |
+| `zones`              | Quartiers de Brazzaville          | 9 quartiers, chacun rattaché à une ville                                                     |
+| `cities`             | Villes                            | 6 villes, une seule sert actuellement                                                        |
 
 ## Jointures utiles
 

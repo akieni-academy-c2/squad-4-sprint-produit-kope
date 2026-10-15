@@ -1,6 +1,9 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
-export async function create({ clientId, professionalId, rating, comment }, db = pool) {
+export async function create(
+  { clientId, professionalId, rating, comment },
+  db = pool,
+) {
   const { rows } = await db.query(
     `INSERT INTO reviews (client_id, professional_id, rating, comment)
      VALUES ($1, $2, $3, $4)
@@ -12,7 +15,7 @@ export async function create({ clientId, professionalId, rating, comment }, db =
 
 export async function exists(clientId, professionalId, db = pool) {
   const { rowCount } = await db.query(
-    'SELECT 1 FROM reviews WHERE client_id = $1 AND professional_id = $2',
+    "SELECT 1 FROM reviews WHERE client_id = $1 AND professional_id = $2",
     [clientId, professionalId],
   );
   return rowCount > 0;
@@ -28,7 +31,11 @@ export async function getSummary(professionalId, db = pool) {
   return rows[0];
 }
 
-export async function listByProfessional(professionalId, { limit, offset }, db = pool) {
+export async function listByProfessional(
+  professionalId,
+  { limit, offset },
+  db = pool,
+) {
   const { rows } = await db.query(
     `SELECT r.id, r.rating, r.comment, r.created_at AS "createdAt",
             r.client_id AS "clientId",
@@ -51,25 +58,37 @@ export async function listByProfessional(professionalId, { limit, offset }, db =
 
 export async function countByProfessional(professionalId, db = pool) {
   const { rows } = await db.query(
-    'SELECT COUNT(*)::int AS count FROM reviews WHERE professional_id = $1 AND NOT is_hidden',
+    "SELECT COUNT(*)::int AS count FROM reviews WHERE professional_id = $1 AND NOT is_hidden",
     [professionalId],
   );
   return Number(rows[0]?.count ?? 0);
 }
 
 const ORDER_BY = {
-  recent: 'r.created_at DESC, r.id DESC',
-  oldest: 'r.created_at ASC, r.id ASC',
-  rating_desc: 'r.rating DESC, r.created_at DESC',
-  rating_asc: 'r.rating ASC, r.created_at DESC',
+  recent: "r.created_at DESC, r.id DESC",
+  oldest: "r.created_at ASC, r.id ASC",
+  rating_desc: "r.rating DESC, r.created_at DESC",
+  rating_asc: "r.rating ASC, r.created_at DESC",
 };
 
-export async function listByClient(clientId, { limit = 20, offset = 0, q = '', rating, professionalId, visibility = 'all', sort = 'recent' } = {}, db = pool) {
-  const conditions = ['r.client_id = $1'];
+export async function listByClient(
+  clientId,
+  {
+    limit = 20,
+    offset = 0,
+    q = "",
+    rating,
+    professionalId,
+    visibility = "all",
+    sort = "recent",
+  } = {},
+  db = pool,
+) {
+  const conditions = ["r.client_id = $1"];
   const values = [clientId];
 
-  if (visibility === 'hidden') conditions.push('r.is_hidden');
-  if (visibility === 'visible') conditions.push('NOT r.is_hidden');
+  if (visibility === "hidden") conditions.push("r.is_hidden");
+  if (visibility === "visible") conditions.push("NOT r.is_hidden");
   if (rating != null) {
     values.push(rating);
     conditions.push(`r.rating = $${values.length}`);
@@ -80,7 +99,9 @@ export async function listByClient(clientId, { limit = 20, offset = 0, q = '', r
   }
   if (q) {
     values.push(`%${q}%`);
-    conditions.push(`(p.display_name ILIKE $${values.length} OR r.comment ILIKE $${values.length})`);
+    conditions.push(
+      `(p.display_name ILIKE $${values.length} OR r.comment ILIKE $${values.length})`,
+    );
   }
 
   values.push(limit, offset);
@@ -99,7 +120,7 @@ export async function listByClient(clientId, { limit = 20, offset = 0, q = '', r
        JOIN professionals p ON p.user_id = r.professional_id
        JOIN users pu ON pu.id = r.professional_id
        JOIN trades t ON t.id = p.trade_id
-      WHERE ${conditions.join(' AND ')}
+      WHERE ${conditions.join(" AND ")}
       ORDER BY ${ORDER_BY[sort] ?? ORDER_BY.recent}
       LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
     values,
@@ -109,7 +130,7 @@ export async function listByClient(clientId, { limit = 20, offset = 0, q = '', r
 
 export async function countByClient(clientId, db = pool) {
   const { rows } = await db.query(
-    'SELECT COUNT(*)::int AS count FROM reviews WHERE client_id = $1',
+    "SELECT COUNT(*)::int AS count FROM reviews WHERE client_id = $1",
     [clientId],
   );
   return Number(rows[0]?.count ?? 0);
@@ -127,7 +148,12 @@ export async function findOwnedById(reviewId, clientId, db = pool) {
   return rows[0] ?? null;
 }
 
-export async function updateOwned(reviewId, clientId, { rating, comment }, db = pool) {
+export async function updateOwned(
+  reviewId,
+  clientId,
+  { rating, comment },
+  db = pool,
+) {
   const { rows } = await db.query(
     `UPDATE reviews
         SET rating = $3, comment = $4, updated_at = now()
@@ -151,7 +177,7 @@ export async function setHiddenOwned(reviewId, clientId, isHidden, db = pool) {
 
 export async function deleteOwned(reviewId, clientId, db = pool) {
   const { rowCount } = await db.query(
-    'DELETE FROM reviews WHERE id = $1 AND client_id = $2',
+    "DELETE FROM reviews WHERE id = $1 AND client_id = $2",
     [reviewId, clientId],
   );
   return rowCount > 0;

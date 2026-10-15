@@ -43,18 +43,16 @@ Pour éviter tout couplage fort et dépendance circulaire :
 Express 5 capture automatiquement les promesses rejetées. Lancez simplement une instance `ApiError` depuis vos services :
 
 ```javascript
-import { ApiError } from '../utils/ApiError.js';
+import { ApiError } from "../utils/ApiError.js";
 
 // Exemples
-throw ApiError.notFound('Professionnel introuvable');
-throw ApiError.unauthorized('Session expirée');
-throw ApiError.badRequest('Données invalides');
+throw ApiError.notFound("Professionnel introuvable");
+throw ApiError.unauthorized("Session expirée");
+throw ApiError.badRequest("Données invalides");
 ```
 
 Le middleware `errorHandler.js` intercepte ces erreurs centralisées et formate une réponse JSON standardisée.
 
-
 ```sh
 npm run migrate:up
 ```
-

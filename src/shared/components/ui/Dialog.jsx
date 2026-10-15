@@ -1,19 +1,27 @@
-import { isValidElement, cloneElement, useId, useContext, createContext, Children } from 'react';
-import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'motion/react';
-import { X } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { dialogPanel, overlayBackdrop } from '@/shared/motion/variants.js';
-import { useOverlay } from './useOverlay.js';
-
+import {
+  isValidElement,
+  cloneElement,
+  useId,
+  useContext,
+  createContext,
+  Children,
+} from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { dialogPanel, overlayBackdrop } from "@/shared/motion/variants.js";
+import { useOverlay } from "./useOverlay.js";
 
 const DialogLabelContext = createContext(null);
 
-
 export function Dialog({ open, onOpenChange, children }) {
-  const { panelRef } = useOverlay({ open, onClose: () => onOpenChange?.(false) });
+  const { panelRef } = useOverlay({
+    open,
+    onClose: () => onOpenChange?.(false),
+  });
 
-  if (typeof document === 'undefined') return null;
+  if (typeof document === "undefined") return null;
 
   let body = children;
   if (isValidElement(children))
@@ -41,7 +49,6 @@ export function Dialog({ open, onOpenChange, children }) {
   );
 }
 
-
 export function DialogContent({
   className,
   children,
@@ -53,7 +60,9 @@ export function DialogContent({
   const labelId = useId();
 
   const childArray = Children.toArray(children);
-  const headerIndex = childArray.findIndex((child) => child.type === DialogHeader);
+  const headerIndex = childArray.findIndex(
+    (child) => child.type === DialogHeader,
+  );
   const header = headerIndex >= 0 ? childArray.splice(headerIndex, 1)[0] : null;
 
   return (
@@ -67,7 +76,7 @@ export function DialogContent({
       aria-modal="true"
       aria-labelledby={labelId}
       className={cn(
-        'relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) sm:max-h-none sm:rounded-3xl',
+        "relative flex max-h-[90dvh] flex-col overflow-hidden rounded-t-3xl bg-white p-2 shadow-(--shadow-pop) sm:max-h-none sm:rounded-3xl",
         className,
       )}
       onClick={(e) => e.stopPropagation()}
@@ -75,7 +84,9 @@ export function DialogContent({
       <DialogLabelContext.Provider value={labelId}>
         {header ? (
           <div className="mb-3 flex shrink-0 items-start gap-3">
-            {cloneElement(header, { className: cn(header.props.className, 'mb-0 min-w-0 flex-1') })}
+            {cloneElement(header, {
+              className: cn(header.props.className, "mb-0 min-w-0 flex-1"),
+            })}
             <button
               type="button"
               aria-label="Fermer"
@@ -96,11 +107,10 @@ export function DialogContent({
           </button>
         )}
 
-
         <div
           className={cn(
-            'min-h-0 flex-1 overflow-y-auto overscroll-contain',
-            !header && 'pr-11',
+            "min-h-0 flex-1 overflow-y-auto overscroll-contain",
+            !header && "pr-11",
           )}
         >
           {childArray}
@@ -117,7 +127,7 @@ export function DialogContent({
 }
 
 export function DialogHeader({ className, children }) {
-  return <div className={cn('mb-4 space-y-1', className)}>{children}</div>;
+  return <div className={cn("mb-4 space-y-1", className)}>{children}</div>;
 }
 
 export function DialogTitle({ className, children }) {
@@ -126,7 +136,10 @@ export function DialogTitle({ className, children }) {
   return (
     <h2
       id={labelId ?? undefined}
-      className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900', className)}
+      className={cn(
+        "text-lg font-semibold leading-none tracking-tight text-gray-900",
+        className,
+      )}
     >
       {children}
     </h2>
@@ -134,12 +147,17 @@ export function DialogTitle({ className, children }) {
 }
 
 export function DialogDescription({ className, children }) {
-  return <p className={cn('text-sm text-gray-500', className)}>{children}</p>;
+  return <p className={cn("text-sm text-gray-500", className)}>{children}</p>;
 }
 
 export function DialogFooter({ className, children }) {
   return (
-    <div className={cn('mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}>
+    <div
+      className={cn(
+        "mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        className,
+      )}
+    >
       {children}
     </div>
   );

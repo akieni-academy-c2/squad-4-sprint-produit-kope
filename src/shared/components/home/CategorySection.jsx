@@ -1,10 +1,10 @@
-import { Link } from '@/shared/components/ui/Link.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { SectionHeader } from '@/shared/components/sections/SectionHeader.jsx';
-import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
-import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
-import { ROUTES } from '@/shared/lib/constants.js';
-import { HIGHLIGHTED_TRADES } from '@/shared/content/highlightedTrades.js';
+import { Link } from "@/shared/components/ui/Link.jsx";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { SectionHeader } from "@/shared/components/sections/SectionHeader.jsx";
+import { FloatingCaption } from "@/shared/components/ui/FloatingCaption.jsx";
+import { ImageWithSkeleton } from "@/shared/components/ui/ImageWithSkeleton.jsx";
+import { ROUTES } from "@/shared/lib/constants.js";
+import { HIGHLIGHTED_TRADES } from "@/shared/content/highlightedTrades.js";
 
 export function CategorySection() {
   return (
@@ -16,7 +16,11 @@ export function CategorySection() {
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {HIGHLIGHTED_TRADES.map((c) => (
-          <Link key={c.id} href={`${ROUTES.SEARCH}?trade=${encodeURIComponent(c.tradeId)}`} className="group">
+          <Link
+            key={c.id}
+            href={`${ROUTES.SEARCH}?trade=${encodeURIComponent(c.tradeId)}`}
+            className="group"
+          >
             <Card className="overflow-hidden h-full flex flex-col transition">
               <div className="relative">
                 <ImageWithSkeleton
@@ -27,12 +31,17 @@ export function CategorySection() {
                   ratio="aspect-4/5.5"
                   className="transition duration-500 group-hover:scale-[1.04]"
                 />
-                <FloatingCaption title={c.name} subtitle={c.sub} icon={c.icon} wide />
+                <FloatingCaption
+                  title={c.name}
+                  subtitle={c.sub}
+                  icon={c.icon}
+                  wide
+                />
               </div>
             </Card>
           </Link>
         ))}
       </div>
     </section>
-  )
+  );
 }

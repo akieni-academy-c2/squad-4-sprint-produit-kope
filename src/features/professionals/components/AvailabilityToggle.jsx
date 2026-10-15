@@ -1,7 +1,7 @@
-import { Clock } from 'lucide-react';
-import { Badge } from '@/shared/components/ui/Badge.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { cn } from '@/shared/utils';
+import { Clock } from "lucide-react";
+import { Badge } from "@/shared/components/ui/Badge.jsx";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { cn } from "@/shared/utils";
 
 export function AvailabilityToggle({ isAvailable = true, onChange, loading }) {
   const on = Boolean(isAvailable);
@@ -13,17 +13,22 @@ export function AvailabilityToggle({ isAvailable = true, onChange, loading }) {
             <Clock size={18} aria-hidden />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-gray-900">Disponibilité</p>
-            <p className="truncate text-xs text-gray-500">Statut visible sur votre fiche et en recherche</p>
+            <p className="truncate text-sm font-bold text-gray-900">
+              Disponibilité
+            </p>
+            <p className="truncate text-xs text-gray-500">
+              Statut visible sur votre fiche et en recherche
+            </p>
           </div>
         </div>
-        <Badge variant={on ? 'success' : 'warning'} size="md">
-          {on ? 'Disponible' : 'Indisponible'}
+        <Badge variant={on ? "success" : "warning"} size="md">
+          {on ? "Disponible" : "Indisponible"}
         </Badge>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 p-5">
         <p className="text-sm leading-6 text-gray-600">
-          Les clients voient immédiatement votre statut et peuvent vous contacter.
+          Les clients voient immédiatement votre statut et peuvent vous
+          contacter.
         </p>
         <button
           type="button"
@@ -33,15 +38,15 @@ export function AvailabilityToggle({ isAvailable = true, onChange, loading }) {
           disabled={loading}
           onClick={() => onChange?.(!on)}
           className={cn(
-            'relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-ring disabled:opacity-50',
-            on ? 'bg-emerald-500' : 'bg-gray-300',
+            "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-ring disabled:opacity-50",
+            on ? "bg-emerald-500" : "bg-gray-300",
           )}
         >
           <span
             aria-hidden
             className={cn(
-              'inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform',
-              on ? 'translate-x-6' : 'translate-x-1',
+              "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+              on ? "translate-x-6" : "translate-x-1",
             )}
           />
         </button>

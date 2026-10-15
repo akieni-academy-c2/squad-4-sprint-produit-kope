@@ -1,12 +1,15 @@
-import { Calendar, Check, Flag, X } from 'lucide-react';
-import { ActionGroup, Button, UserAvatar } from '@/shared/components/ui';
-import { reportReasonLabel, reportStatusLabel } from '@/shared/constants/reports.js';
-import { formatDateFr, fullNameInitials } from '@/shared/utils';
+import { Calendar, Check, Flag, X } from "lucide-react";
+import { ActionGroup, Button, UserAvatar } from "@/shared/components/ui";
+import {
+  reportReasonLabel,
+  reportStatusLabel,
+} from "@/shared/constants/reports.js";
+import { formatDateFr, fullNameInitials } from "@/shared/utils";
 
 const STATUS_BADGES = {
-  pending: 'bg-amber-100 text-amber-800',
-  resolved: 'bg-mint-100 text-primary-700',
-  dismissed: 'bg-gray-100 text-gray-600',
+  pending: "bg-amber-100 text-amber-800",
+  resolved: "bg-mint-100 text-primary-700",
+  dismissed: "bg-gray-100 text-gray-600",
 };
 
 export function ReportRow({ report, onResolve, onDismiss }) {
@@ -17,7 +20,9 @@ export function ReportRow({ report, onResolve, onDismiss }) {
           <Flag size={11} aria-hidden />
           {reportReasonLabel(report.reason)}
         </span>
-        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_BADGES[report.status]}`}>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_BADGES[report.status]}`}
+        >
           {reportStatusLabel(report.status)}
         </span>
       </div>
@@ -30,9 +35,16 @@ export function ReportRow({ report, onResolve, onDismiss }) {
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
-          <UserAvatar user={report.reporter} className="h-5 w-5" iconSize={11} />
+          <UserAvatar
+            user={report.reporter}
+            className="h-5 w-5"
+            iconSize={11}
+          />
           <span className="text-xs text-gray-500">
-            {fullNameInitials(report.reporter?.firstName, report.reporter?.lastName) || 'Client'}
+            {fullNameInitials(
+              report.reporter?.firstName,
+              report.reporter?.lastName,
+            ) || "Client"}
           </span>
           <span className="flex items-center gap-1 text-xs text-gray-400">
             <Calendar size={11} aria-hidden />
@@ -40,9 +52,16 @@ export function ReportRow({ report, onResolve, onDismiss }) {
           </span>
         </div>
 
-        {report.status === 'pending' && (
-          <ActionGroup label={`Actions sur le signalement de ${report.professionalName ?? 'ce profil'}`}>
-            <Button size="icon-sm" variant="ghost" onClick={() => onDismiss(report)} aria-label="Rejeter le signalement">
+        {report.status === "pending" && (
+          <ActionGroup
+            label={`Actions sur le signalement de ${report.professionalName ?? "ce profil"}`}
+          >
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => onDismiss(report)}
+              aria-label="Rejeter le signalement"
+            >
               <X className="size-3.5 text-rose-600" />
             </Button>
             <Button

@@ -1,26 +1,42 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import pg from 'pg';
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { listUsers, countUsers, listTrades, listZones, listCities, listTradeCategories, listProfessionals, countProfessionals } from '../server/modules/admin/admin.repository.js';
-import { getAccountState } from '../server/modules/auth/auth.repository.js';
-import { consumeRateLimitSlot, purgeRateLimits } from '../server/utils/rateLimitStore.js';
-import { HOME_ZONES } from '../src/shared/content/homeZones.js';
-import { HIGHLIGHTED_TRADES } from '../src/shared/content/highlightedTrades.js';
-
-
+import fs from "node:fs";
+import path from "node:path";
+import pg from "pg";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import {
+  listUsers,
+  countUsers,
+  listTrades,
+  listZones,
+  listCities,
+  listTradeCategories,
+  listProfessionals,
+  countProfessionals,
+} from "../server/modules/admin/admin.repository.js";
+import { getAccountState } from "../server/modules/auth/auth.repository.js";
+import {
+  consumeRateLimitSlot,
+  purgeRateLimits,
+} from "../server/utils/rateLimitStore.js";
+import { HOME_ZONES } from "../src/shared/content/homeZones.js";
+import { HIGHLIGHTED_TRADES } from "../src/shared/content/highlightedTrades.js";
 
 function readDotEnv() {
-  const file = path.resolve('.env');
+  const file = path.resolve(".env");
   if (!fs.existsSync(file)) return {};
   return Object.fromEntries(
     fs
-      .readFileSync(file, 'utf8')
+      .readFileSync(file, "utf8")
       .split(/\r?\n/)
-      .filter((l) => l.trim() && !l.trim().startsWith('#') && l.includes('='))
+      .filter((l) => l.trim() && !l.trim().startsWith("#") && l.includes("="))
       .map((l) => {
-        const i = l.indexOf('=');
-        return [l.slice(0, i).trim(), l.slice(i + 1).trim().replace(/^["']|["']$/g, '')];
+        const i = l.indexOf("=");
+        return [
+          l.slice(0, i).trim(),
+          l
+            .slice(i + 1)
+            .trim()
+            .replace(/^["']|["']$/g, ""),
+        ];
       }),
   );
 }
@@ -29,11 +45,9 @@ const url = readDotEnv().DATABASE_URL || process.env.KOPE_TEST_DATABASE_URL;
 const enabled = Boolean(url);
 let pool;
 let reachable = false;
-let unreachable = 'raison inconnue';
-
+let unreachable = "raison inconnue";
 
 const RATE_WINDOW_MS = 15 * 60_000;
-
 
 function itDb(name, fn) {
   it(name, async (ctx) => {
@@ -43,16 +57,20 @@ function itDb(name, fn) {
      * une raison de passer. Sans cela, un pooler lent faisait passer 21 tests
      * en `skipped` et la suite annonçait vert sans rien avoir vérifié.
      */
-    if (!reachable) throw new Error(`Base configurée mais injoignable : ${unreachable}`);
+    if (!reachable)
+      throw new Error(`Base configurée mais injoignable : ${unreachable}`);
     return fn(ctx);
   });
 }
 
-describe.skipIf(!enabled)('SQL reel', () => {
+describe.skipIf(!enabled)("SQL reel", () => {
   beforeAll(async () => {
-    pool = new pg.Pool({ connectionString: url, connectionTimeoutMillis: 3000 });
+    pool = new pg.Pool({
+      connectionString: url,
+      connectionTimeoutMillis: 3000,
+    });
     try {
-      await pool.query('SELECT 1');
+      await pool.query("SELECT 1");
       reachable = true;
     } catch {
       /**
@@ -62,9 +80,12 @@ describe.skipIf(!enabled)('SQL reel', () => {
        * conclure que la base est injoignable.
        */
       pool.end().catch(() => {});
-      pool = new pg.Pool({ connectionString: url, connectionTimeoutMillis: 20_000 });
+      pool = new pg.Pool({
+        connectionString: url,
+        connectionTimeoutMillis: 20_000,
+      });
       try {
-        await pool.query('SELECT 1');
+        await pool.query("SELECT 1");
         reachable = true;
       } catch (retryErr) {
         unreachable = retryErr.code || retryErr.message;
@@ -76,130 +97,201 @@ describe.skipIf(!enabled)('SQL reel', () => {
 
   afterAll(async () => {
     if (pool && reachable)
-      await pool.query("DELETE FROM rate_limits WHERE key LIKE 'test:%'").catch(() => {});
+      await pool
+        .query("DELETE FROM rate_limits WHERE key LIKE 'test:%'")
+        .catch(() => {});
     await pool?.end().catch(() => {});
   });
 
-  describe('users.role est un enum', () => {
-    itDb('filtre par rôle sans erreur de type', async () => {
-      const rows = await listUsers({ limit: 5, offset: 0, role: 'client', q: null }, pool);
-      expect(rows.every((r) => r.role === 'client')).toBe(true);
+  describe("users.role est un enum", () => {
+    itDb("filtre par rôle sans erreur de type", async () => {
+      const rows = await listUsers(
+        { limit: 5, offset: 0, role: "client", q: null },
+        pool,
+      );
+      expect(rows.every((r) => r.role === "client")).toBe(true);
     });
 
-    itDb('sans filtre de rôle, renvoie tous les comptes', async () => {
-      const rows = await listUsers({ limit: 50, offset: 0, role: null, q: null }, pool);
+    itDb("sans filtre de rôle, renvoie tous les comptes", async () => {
+      const rows = await listUsers(
+        { limit: 50, offset: 0, role: null, q: null },
+        pool,
+      );
       expect(Array.isArray(rows)).toBe(true);
     });
 
-    itDb('compte les utilisateurs par rôle', async () => {
-      const total = await countUsers({ role: 'admin', q: null }, pool);
-      expect(typeof total).toBe('number');
+    itDb("compte les utilisateurs par rôle", async () => {
+      const total = await countUsers({ role: "admin", q: null }, pool);
+      expect(typeof total).toBe("number");
       expect(total).toBeGreaterThanOrEqual(0);
     });
 
-    itDb('la recherche plein texte ne casse pas le filtre de rôle', async () => {
-      const rows = await listUsers({ limit: 5, offset: 0, role: 'professional', q: 'zzz' }, pool);
-      expect(rows).toEqual([]);
-    });
+    itDb(
+      "la recherche plein texte ne casse pas le filtre de rôle",
+      async () => {
+        const rows = await listUsers(
+          { limit: 5, offset: 0, role: "professional", q: "zzz" },
+          pool,
+        );
+        expect(rows).toEqual([]);
+      },
+    );
   });
 
-  describe('getAccountState', () => {
-    itDb('renvoie rôle, blocage et suspension', async () => {
-      const { rows } = await pool.query('SELECT id FROM users LIMIT 1');
+  describe("getAccountState", () => {
+    itDb("renvoie rôle, blocage et suspension", async () => {
+      const { rows } = await pool.query("SELECT id FROM users LIMIT 1");
       if (!rows.length) return;
       const state = await getAccountState(rows[0].id, pool);
-      expect(state).toHaveProperty('role');
-      expect(state).toHaveProperty('blockedAt');
-      expect(state).toHaveProperty('suspendedAt');
+      expect(state).toHaveProperty("role");
+      expect(state).toHaveProperty("blockedAt");
+      expect(state).toHaveProperty("suspendedAt");
     });
 
-    itDb('renvoie null pour un identifiant inexistant', async () => {
+    itDb("renvoie null pour un identifiant inexistant", async () => {
       await expect(getAccountState(999999999, pool)).resolves.toBeNull();
     });
   });
 
   describe("l'accueil statique ne dérive pas du référentiel", () => {
-    itDb('chaque quartier de l\'accueil existe et porte le bon identifiant', async () => {
-      const { rows } = await pool.query('SELECT id, name FROM zones WHERE city_id IS NOT NULL');
-      const byId = new Map(rows.map((row) => [row.id, row.name]));
+    itDb(
+      "chaque quartier de l'accueil existe et porte le bon identifiant",
+      async () => {
+        const { rows } = await pool.query(
+          "SELECT id, name FROM zones WHERE city_id IS NOT NULL",
+        );
+        const byId = new Map(rows.map((row) => [row.id, row.name]));
 
-      for (const zone of HOME_ZONES)
-        expect(byId.get(zone.id), `zone ${zone.id} (${zone.name})`).toBe(zone.name);
-    });
+        for (const zone of HOME_ZONES)
+          expect(byId.get(zone.id), `zone ${zone.id} (${zone.name})`).toBe(
+            zone.name,
+          );
+      },
+    );
 
-    itDb('aucun quartier de l\'accueil ne renvoie vers un identifiant inconnu', async () => {
-      const { rows } = await pool.query('SELECT id FROM zones');
-      const known = new Set(rows.map((row) => row.id));
+    itDb(
+      "aucun quartier de l'accueil ne renvoie vers un identifiant inconnu",
+      async () => {
+        const { rows } = await pool.query("SELECT id FROM zones");
+        const known = new Set(rows.map((row) => row.id));
 
-      for (const zone of HOME_ZONES)
-        expect(known.has(zone.id), `zone ${zone.name} (#${zone.id})`).toBe(true);
-    });
+        for (const zone of HOME_ZONES)
+          expect(known.has(zone.id), `zone ${zone.name} (#${zone.id})`).toBe(
+            true,
+          );
+      },
+    );
 
-    itDb('chaque métier mis en avant existe et porte le bon identifiant', async () => {
-      const { rows } = await pool.query('SELECT id, name FROM trades');
-      const byId = new Map(rows.map((row) => [row.id, row.name]));
+    itDb(
+      "chaque métier mis en avant existe et porte le bon identifiant",
+      async () => {
+        const { rows } = await pool.query("SELECT id, name FROM trades");
+        const byId = new Map(rows.map((row) => [row.id, row.name]));
 
-      for (const trade of HIGHLIGHTED_TRADES)
-        expect(byId.get(trade.tradeId), `métier ${trade.tradeId} (${trade.name})`).toBeDefined();
-    });
+        for (const trade of HIGHLIGHTED_TRADES)
+          expect(
+            byId.get(trade.tradeId),
+            `métier ${trade.tradeId} (${trade.name})`,
+          ).toBeDefined();
+      },
+    );
   });
 
-  describe('répertoires du catalogue', () => {
-    itDb('liste les métiers', async () => {
+  describe("répertoires du catalogue", () => {
+    itDb("liste les métiers", async () => {
       const rows = await listTrades(pool);
       expect(Array.isArray(rows)).toBe(true);
-      rows.forEach((r) => expect(r).toHaveProperty('professionals'));
+      rows.forEach((r) => expect(r).toHaveProperty("professionals"));
     });
 
-    itDb('liste les zones', async () => {
+    itDb("liste les zones", async () => {
       const rows = await listZones(pool);
       expect(Array.isArray(rows)).toBe(true);
-      rows.forEach((r) => expect(r).toHaveProperty('professionals'));
+      rows.forEach((r) => expect(r).toHaveProperty("professionals"));
     });
 
-    itDb('liste les villes', async () => {
+    itDb("liste les villes", async () => {
       await expect(listCities(pool)).resolves.toBeInstanceOf(Array);
     });
 
-    itDb('liste les catégories de métiers', async () => {
+    itDb("liste les catégories de métiers", async () => {
       await expect(listTradeCategories(pool)).resolves.toBeInstanceOf(Array);
     });
   });
 
-  describe('filtre par ville', () => {
-    itDb('filtre réellement sur la ville', async () => {
-      const all = await listProfessionals({ limit: 100, offset: 0, q: null, status: null, sort: null, city: null }, pool);
+  describe("filtre par ville", () => {
+    itDb("filtre réellement sur la ville", async () => {
+      const all = await listProfessionals(
+        {
+          limit: 100,
+          offset: 0,
+          q: null,
+          status: null,
+          sort: null,
+          city: null,
+        },
+        pool,
+      );
       const rows = await listProfessionals(
-        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Brazzaville' },
+        {
+          limit: 100,
+          offset: 0,
+          q: null,
+          status: null,
+          sort: null,
+          city: "Brazzaville",
+        },
         pool,
       );
       expect(rows.length).toBeGreaterThan(0);
       expect(rows.length).toBeLessThanOrEqual(all.length);
     });
 
-    itDb('une ville inconnue ne renvoie rien', async () => {
+    itDb("une ville inconnue ne renvoie rien", async () => {
       const rows = await listProfessionals(
-        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Ville-Inexistante' },
+        {
+          limit: 100,
+          offset: 0,
+          q: null,
+          status: null,
+          sort: null,
+          city: "Ville-Inexistante",
+        },
         pool,
       );
       expect(rows).toEqual([]);
-      expect(await countProfessionals({ q: null, status: null, city: 'Ville-Inexistante' }, pool)).toBe(0);
+      expect(
+        await countProfessionals(
+          { q: null, status: null, city: "Ville-Inexistante" },
+          pool,
+        ),
+      ).toBe(0);
     });
 
-    itDb('la liste et le compte concordent', async () => {
-      const city = 'Brazzaville';
+    itDb("la liste et le compte concordent", async () => {
+      const city = "Brazzaville";
       const rows = await listProfessionals(
         { limit: 100, offset: 0, q: null, status: null, sort: null, city },
         pool,
       );
-      const count = await countProfessionals({ q: null, status: null, city }, pool);
+      const count = await countProfessionals(
+        { q: null, status: null, city },
+        pool,
+      );
       const total = Number(rows[0]?.total ?? 0);
       expect(total).toBe(count);
     });
 
-    itDb('chaque professionnel rendu appartient bien à la ville', async () => {
+    itDb("chaque professionnel rendu appartient bien à la ville", async () => {
       const rows = await listProfessionals(
-        { limit: 100, offset: 0, q: null, status: null, sort: null, city: 'Brazzaville' },
+        {
+          limit: 100,
+          offset: 0,
+          q: null,
+          status: null,
+          sort: null,
+          city: "Brazzaville",
+        },
         pool,
       );
       const ids = rows.map((r) => r.id);
@@ -209,21 +301,21 @@ describe.skipIf(!enabled)('SQL reel', () => {
            JOIN zones z ON z.id = pz.zone_id
            JOIN cities c ON c.id = z.city_id
           WHERE c.name = $1 AND p.user_id = ANY($2::bigint[])`,
-        ['Brazzaville', ids.map(Number)],
+        ["Brazzaville", ids.map(Number)],
       );
       expect(check.length).toBe(ids.length);
     });
   });
 
-  describe('rate limiter partagé', () => {
-    itDb('compte de façon partagée entre deux instances', async () => {
+  describe("rate limiter partagé", () => {
+    itDb("compte de façon partagée entre deux instances", async () => {
       const key = `test:rl:${Date.now()}`;
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(1);
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(2);
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(3);
     });
 
-    itDb('redémarre le compteur une fois la fenêtre dépassée', async () => {
+    itDb("redémarre le compteur une fois la fenêtre dépassée", async () => {
       const key = `test:rl-exp:${Date.now()}`;
       await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
       await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
@@ -234,16 +326,22 @@ describe.skipIf(!enabled)('SQL reel', () => {
       expect(await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool)).toBe(1);
     });
 
-    itDb('purge les compteurs expirés', async () => {
+    itDb("purge les compteurs expirés", async () => {
       const key = `test:rl-purge:${Date.now()}`;
       await consumeRateLimitSlot(key, RATE_WINDOW_MS, pool);
-      await pool.query("UPDATE rate_limits SET window_start = now() - interval '2 hours' WHERE key = $1", [key]);
+      await pool.query(
+        "UPDATE rate_limits SET window_start = now() - interval '2 hours' WHERE key = $1",
+        [key],
+      );
       expect(await purgeRateLimits(pool)).toBeGreaterThan(0);
-      const { rows } = await pool.query('SELECT key FROM rate_limits WHERE key = $1', [key]);
+      const { rows } = await pool.query(
+        "SELECT key FROM rate_limits WHERE key = $1",
+        [key],
+      );
       expect(rows).toEqual([]);
     });
 
-    itDb('isole les clés entre elles', async () => {
+    itDb("isole les clés entre elles", async () => {
       const a = `test:rl-a:${Date.now()}`;
       const b = `test:rl-b:${Date.now()}`;
       await consumeRateLimitSlot(a, RATE_WINDOW_MS, pool);
@@ -252,17 +350,20 @@ describe.skipIf(!enabled)('SQL reel', () => {
     });
   });
 
-  describe('published_professionals reste cohérent', () => {
-    itDb('ne publie aucun profil dont le compte n est plus professionnel', async () => {
-      const { rows } = await pool.query(
-        `SELECT v.user_id FROM published_professionals v
+  describe("published_professionals reste cohérent", () => {
+    itDb(
+      "ne publie aucun profil dont le compte n est plus professionnel",
+      async () => {
+        const { rows } = await pool.query(
+          `SELECT v.user_id FROM published_professionals v
            JOIN users u ON u.id = v.user_id
           WHERE u.role <> 'professional'`,
-      );
-      expect(rows).toEqual([]);
-    });
+        );
+        expect(rows).toEqual([]);
+      },
+    );
 
-    itDb('ne publie aucun profil de compte bloque ou suspendu', async () => {
+    itDb("ne publie aucun profil de compte bloque ou suspendu", async () => {
       const { rows } = await pool.query(
         `SELECT v.user_id FROM published_professionals v
            JOIN users u ON u.id = v.user_id
@@ -271,12 +372,15 @@ describe.skipIf(!enabled)('SQL reel', () => {
       expect(rows).toEqual([]);
     });
 
-    itDb('le nombre de publies ne depasse pas celui des professionnels', async () => {
-      const { rows } = await pool.query(
-        `SELECT (SELECT COUNT(*)::int FROM users WHERE role = 'professional') AS pros,
+    itDb(
+      "le nombre de publies ne depasse pas celui des professionnels",
+      async () => {
+        const { rows } = await pool.query(
+          `SELECT (SELECT COUNT(*)::int FROM users WHERE role = 'professional') AS pros,
                 (SELECT COUNT(*)::int FROM published_professionals) AS publies`,
-      );
-      expect(rows[0].publies).toBeLessThanOrEqual(rows[0].pros);
-    });
+        );
+        expect(rows[0].publies).toBeLessThanOrEqual(rows[0].pros);
+      },
+    );
   });
 });

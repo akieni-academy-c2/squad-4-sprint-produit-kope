@@ -1,5 +1,5 @@
-import { api } from '@/shared/lib/api.js';
-import { callApi } from '@/shared/lib/dataSource.js';
+import { api } from "@/shared/lib/api.js";
+import { callApi } from "@/shared/lib/dataSource.js";
 import {
   DEMO_AVATAR_MARKER,
   MOCK_PROS,
@@ -7,17 +7,23 @@ import {
   getDemoUser,
   setDemoAvatarFile,
   setDemoUser,
-} from '@/shared/mocks/appMock.js';
-import { ROUTES, ROLES } from '@/shared/lib/constants.js';
-import { TERMS_VERSION } from '@/shared/content/terms.js';
+} from "@/shared/mocks/appMock.js";
+import { ROUTES, ROLES } from "@/shared/lib/constants.js";
+import { TERMS_VERSION } from "@/shared/content/terms.js";
 
 export function registerClient(payload) {
   return callApi(
-    () => api.postJson('/auth/register/client', { ...payload, termsVersion: TERMS_VERSION }).then((r) => r?.user),
+    () =>
+      api
+        .postJson("/auth/register/client", {
+          ...payload,
+          termsVersion: TERMS_VERSION,
+        })
+        .then((r) => r?.user),
     async () => {
       const user = {
         id: Date.now() % 100000,
-        role: 'client',
+        role: "client",
         phone: payload.phone,
         firstName: payload.firstName,
         lastName: payload.lastName,
@@ -30,11 +36,17 @@ export function registerClient(payload) {
 
 export function registerProfessional(payload) {
   return callApi(
-    () => api.postJson('/auth/register/professional', { ...payload, termsVersion: TERMS_VERSION }).then((r) => r?.user),
+    () =>
+      api
+        .postJson("/auth/register/professional", {
+          ...payload,
+          termsVersion: TERMS_VERSION,
+        })
+        .then((r) => r?.user),
     async () => {
       const user = {
         id: Date.now() % 100000,
-        role: 'professional',
+        role: "professional",
         phone: payload.phone,
         displayName: payload.displayName,
       };
@@ -46,14 +58,14 @@ export function registerProfessional(payload) {
 
 export function login(payload) {
   return callApi(
-    () => api.postJson('/auth/login', payload).then((r) => r?.user),
+    () => api.postJson("/auth/login", payload).then((r) => r?.user),
     async () => {
       const user = {
         id: Date.now() % 100000,
-        role: 'client',
+        role: "client",
         phone: payload.phone,
-        firstName: 'Démo',
-        lastName: 'Utilisateur',
+        firstName: "Démo",
+        lastName: "Utilisateur",
       };
       setDemoUser(user);
       return user;
@@ -65,13 +77,14 @@ export function logout() {
   return callApi(
     async () => {
       try {
-        await api.postJson('/auth/logout', {});
+        await api.postJson("/auth/logout", {});
       } finally {
         setDemoUser(null);
       }
       return {};
     },
-    async () => { setDemoUser(null);
+    async () => {
+      setDemoUser(null);
       return {};
     },
   );
@@ -82,7 +95,7 @@ export function getCurrentUser() {
   if (demoUser) return Promise.resolve(demoUser);
 
   return callApi(
-    () => api.get('/auth/me').then((r) => r?.user),
+    () => api.get("/auth/me").then((r) => r?.user),
     async () => getDemoUser(),
   );
 }
@@ -91,34 +104,39 @@ export function demoRoles() {
   return [
     {
       role: ROLES.ADMIN,
-      label: 'Administrateur',
-      user: { id: 901, role: ROLES.ADMIN, firstName: 'Admin', lastName: 'Démo' },
+      label: "Administrateur",
+      user: {
+        id: 901,
+        role: ROLES.ADMIN,
+        firstName: "Admin",
+        lastName: "Démo",
+      },
       href: ROUTES.ADMIN,
     },
     {
       role: ROLES.PRO,
-      label: 'Professionnel',
+      label: "Professionnel",
       user: {
         id: MOCK_PROS[0]?.id ?? 1,
         role: ROLES.PRO,
-        displayName: MOCK_PROS[0]?.displayName ?? 'Professionnel Démo',
-        phone: MOCK_PROS[0]?.phone ?? '+242061000001',
-        firstName: MOCK_PROS[0]?.firstName ?? '',
-        lastName: MOCK_PROS[0]?.lastName ?? '',
-        email: '',
+        displayName: MOCK_PROS[0]?.displayName ?? "Professionnel Démo",
+        phone: MOCK_PROS[0]?.phone ?? "+242061000001",
+        firstName: MOCK_PROS[0]?.firstName ?? "",
+        lastName: MOCK_PROS[0]?.lastName ?? "",
+        email: "",
       },
       href: ROUTES.DASHBOARD_PRO,
     },
     {
       role: ROLES.CLIENT,
-      label: 'Client',
+      label: "Client",
       user: {
         id: 902,
         role: ROLES.CLIENT,
-        firstName: 'Client',
-        lastName: 'Démo',
-        phone: '+242065000002',
-        email: '',
+        firstName: "Client",
+        lastName: "Démo",
+        phone: "+242065000002",
+        email: "",
         createdAt: new Date(Date.now() - 84 * 86400000).toISOString(),
       },
       href: ROUTES.DASHBOARD_CLIENT,
@@ -137,11 +155,12 @@ export function leaveDemo() {
 
 export function becomeProfessional(payload) {
   return callApi(
-    () => api.postJson('/auth/become-professional', payload).then((r) => r?.user),
+    () =>
+      api.postJson("/auth/become-professional", payload).then((r) => r?.user),
     async () => {
       const user = {
         ...(getDemoUser() || { id: Date.now() % 100000 }),
-        role: 'professional',
+        role: "professional",
         displayName: payload.displayName,
       };
       setDemoUser(user);
@@ -152,7 +171,7 @@ export function becomeProfessional(payload) {
 
 export function updateAccount(payload) {
   return callApi(
-    () => api.putJson('/auth/me', payload).then((r) => r?.user),
+    () => api.putJson("/auth/me", payload).then((r) => r?.user),
     async () => {
       const demo = getDemoUser();
       if (demo) setDemoUser({ ...demo, ...payload });
@@ -163,38 +182,35 @@ export function updateAccount(payload) {
 
 export function changePassword(payload) {
   return callApi(
-    () => api.putJson('/auth/password', payload),
+    () => api.putJson("/auth/password", payload),
     async () => ({}),
   );
 }
 
 export function uploadAvatar(file, onProgress) {
   const fd = new FormData();
-  fd.append('avatar', file);
+  fd.append("avatar", file);
   return callApi(
     () =>
       new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/auth/avatar');
+        xhr.open("POST", "/api/auth/avatar");
         xhr.withCredentials = true;
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable && onProgress)
             onProgress(Math.round((e.loaded / e.total) * 100));
-
         };
         xhr.onload = () => {
           try {
             const payload = JSON.parse(xhr.responseText);
             if (xhr.status >= 200 && xhr.status < 300)
               resolve(payload?.avatarUrl ?? null);
-             else
-              reject(new Error(payload?.message || `Erreur ${xhr.status}`));
-
+            else reject(new Error(payload?.message || `Erreur ${xhr.status}`));
           } catch {
-            reject(new Error('Réponse invalide'));
+            reject(new Error("Réponse invalide"));
           }
         };
-        xhr.onerror = () => reject(new TypeError('Échec réseau'));
+        xhr.onerror = () => reject(new TypeError("Échec réseau"));
         xhr.send(fd);
       }),
     async () => {

@@ -1,7 +1,13 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
-export async function listProfessionals({ limit, offset, q, status, sort, city }, db = pool) {
-  const orderBy = sort === 'recent' ? 'u.created_at DESC, p.user_id DESC' : 'p.display_name, p.user_id';
+export async function listProfessionals(
+  { limit, offset, q, status, sort, city },
+  db = pool,
+) {
+  const orderBy =
+    sort === "recent"
+      ? "u.created_at DESC, p.user_id DESC"
+      : "p.display_name, p.user_id";
   const { rows } = await db.query(
     `SELECT p.user_id AS id,
             p.display_name AS "displayName",
@@ -64,7 +70,10 @@ export async function countProfessionals({ q, status, city }, db = pool) {
 }
 
 export async function setProfessionalHidden(id, hidden, db = pool) {
-  const { rowCount } = await db.query('UPDATE professionals SET is_hidden = $2 WHERE user_id = $1', [id, hidden]);
+  const { rowCount } = await db.query(
+    "UPDATE professionals SET is_hidden = $2 WHERE user_id = $1",
+    [id, hidden],
+  );
   return rowCount > 0;
 }
 
@@ -91,7 +100,7 @@ export async function listReviews({ limit, offset, hidden, q }, db = pool) {
              OR r.comment ILIKE '%' || $2 || '%')
       ORDER BY r.created_at DESC, r.id DESC
       LIMIT $3 OFFSET $4`,
-    [typeof hidden === 'boolean' ? hidden : null, q ?? null, limit, offset],
+    [typeof hidden === "boolean" ? hidden : null, q ?? null, limit, offset],
   );
   return rows;
 }
@@ -108,17 +117,23 @@ export async function countReviews({ hidden, q }, db = pool) {
              OR u.last_name ILIKE '%' || $2 || '%'
              OR p.display_name ILIKE '%' || $2 || '%'
              OR r.comment ILIKE '%' || $2 || '%')`,
-    [typeof hidden === 'boolean' ? hidden : null, q ?? null],
+    [typeof hidden === "boolean" ? hidden : null, q ?? null],
   );
   return Number(rows[0]?.count ?? 0);
 }
 
 export async function setReviewHidden(id, hidden, db = pool) {
-  const { rowCount } = await db.query('UPDATE reviews SET is_hidden = $2 WHERE id = $1', [id, hidden]);
+  const { rowCount } = await db.query(
+    "UPDATE reviews SET is_hidden = $2 WHERE id = $1",
+    [id, hidden],
+  );
   return rowCount > 0;
 }
 
-export async function listUsers({ limit, offset, role, q, blocked }, db = pool) {
+export async function listUsers(
+  { limit, offset, role, q, blocked },
+  db = pool,
+) {
   const { rows } = await db.query(
     `SELECT u.id, u.role, u.phone,
             u.first_name AS "firstName",
@@ -199,7 +214,10 @@ export async function listRecentProfessionals(limit = 5, db = pool) {
 }
 
 export async function findUserById(id, db = pool) {
-  const { rows } = await db.query('SELECT id, role, blocked_at AS "blockedAt" FROM users WHERE id = $1', [id]);
+  const { rows } = await db.query(
+    'SELECT id, role, blocked_at AS "blockedAt" FROM users WHERE id = $1',
+    [id],
+  );
   return rows[0] ?? null;
 }
 
@@ -237,7 +255,10 @@ export async function countActiveAdmins(excludeId, db = pool) {
   return rows[0].count;
 }
 
-export async function createAdminUser({ firstName, lastName, phone, passwordHash }, db = pool) {
+export async function createAdminUser(
+  { firstName, lastName, phone, passwordHash },
+  db = pool,
+) {
   const { rows } = await db.query(
     `INSERT INTO users (role, phone, password_hash, first_name, last_name, consented_at)
      VALUES ('admin', $1, $2, $3, $4, now())

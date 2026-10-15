@@ -1,4 +1,4 @@
-import { AdminCatalogBoard } from './AdminCatalogBoard.jsx';
+import { AdminCatalogBoard } from "./AdminCatalogBoard.jsx";
 import {
   createTrade,
   createTradeCategory,
@@ -10,7 +10,7 @@ import {
   reorderTrades,
   updateTrade,
   updateTradeCategory,
-} from '../services/admin.service.js';
+} from "../services/admin.service.js";
 
 export function AdminTradesBoard({ rightContainer = null }) {
   return (

@@ -1,40 +1,56 @@
-import { useCallback, useState } from 'react';
-import { CustomSelect, DataState, Pagination, SearchInput } from '@/shared/components/ui';
-import { AdminFilterGroup, AdminFilterPanel, AdminSectionLayout } from './AdminSectionLayout.jsx';
-import { AdminConfirmModal } from './AdminConfirmModal.jsx';
-import { AdminUserRow } from './users/AdminUserRow.jsx';
-import { CreateAdminForm } from './users/CreateAdminForm.jsx';
+import { useCallback, useState } from "react";
+import {
+  CustomSelect,
+  DataState,
+  Pagination,
+  SearchInput,
+} from "@/shared/components/ui";
+import {
+  AdminFilterGroup,
+  AdminFilterPanel,
+  AdminSectionLayout,
+} from "./AdminSectionLayout.jsx";
+import { AdminConfirmModal } from "./AdminConfirmModal.jsx";
+import { AdminUserRow } from "./users/AdminUserRow.jsx";
+import { CreateAdminForm } from "./users/CreateAdminForm.jsx";
 import {
   BLOCKED_OPTIONS,
   EMPTY_ADMIN,
   ROLE_OPTIONS,
   toAdminPayload,
   validateAdminDraft,
-} from './users/adminUserOptions.js';
-import { useAdminPage } from '../hooks/useAdminPage.js';
-import { useAdminFilters } from '../hooks/useAdminFilters.js';
-import { useAdminList } from '../hooks/useAdminList.js';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { createAdmin, listUsers, setUserBlocked } from '../services/admin.service.js';
+} from "./users/adminUserOptions.js";
+import { useAdminPage } from "../hooks/useAdminPage.js";
+import { useAdminFilters } from "../hooks/useAdminFilters.js";
+import { useAdminList } from "../hooks/useAdminList.js";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import {
+  createAdmin,
+  listUsers,
+  setUserBlocked,
+} from "../services/admin.service.js";
 
 const PAGE_SIZE = 100;
 
-export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) {
+export function AdminUsersTable({
+  rightContainer = null,
+  initialFilters = {},
+}) {
   const { user: currentUser } = useAuthContext();
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
   const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
-    query: '',
-    role: '',
-    blocked: '',
+    query: "",
+    role: "",
+    blocked: "",
     ...initialFilters,
   });
 
   const [confirm, setConfirm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(null);
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
 
   const fetchList = useCallback(
     () =>
@@ -43,7 +59,8 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
         pageSize: PAGE_SIZE,
         role: applied.role,
         query: applied.query,
-        blocked: applied.blocked === '' ? undefined : applied.blocked === 'true',
+        blocked:
+          applied.blocked === "" ? undefined : applied.blocked === "true",
       }),
     [page, applied.role, applied.query, applied.blocked],
   );
@@ -68,13 +85,15 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
     try {
       await setUserBlocked(currentUser?.id, confirm.target.id, confirm.blocked);
       toast({
-        message: confirm.blocked ? 'Utilisateur bloqué.' : 'Utilisateur débloqué.',
-        type: 'success',
+        message: confirm.blocked
+          ? "Utilisateur bloqué."
+          : "Utilisateur débloqué.",
+        type: "success",
       });
       setConfirm(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     } finally {
       setSaving(false);
     }
@@ -88,15 +107,15 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
       setFormError(invalid);
       return;
     }
-    setFormError('');
+    setFormError("");
     setSaving(true);
     try {
       await createAdmin(toAdminPayload(creating));
-      toast({ message: 'Administrateur créé.', type: 'success' });
+      toast({ message: "Administrateur créé.", type: "success" });
       setCreating(null);
       reload();
     } catch (err) {
-      setFormError(err?.message || 'Erreur.');
+      setFormError(err?.message || "Erreur.");
     } finally {
       setSaving(false);
     }
@@ -104,7 +123,7 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
 
   const closeCreateForm = () => {
     setCreating(null);
-    setFormError('');
+    setFormError("");
   };
 
   const renderFilters = (searchId) => (
@@ -114,8 +133,8 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
           <SearchInput
             id={searchId}
             value={draft.query}
-            onChange={(e) => set('query', e.target.value)}
-            onClear={() => set('query', '')}
+            onChange={(e) => set("query", e.target.value)}
+            onClear={() => set("query", "")}
             placeholder="Nom ou téléphone..."
             aria-label="Rechercher un utilisateur"
           />
@@ -125,7 +144,7 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
           <CustomSelect
             value={draft.role}
             onChange={(v) => {
-              set('role', v, { immediate: true });
+              set("role", v, { immediate: true });
               setPage(1);
             }}
             options={ROLE_OPTIONS}
@@ -138,7 +157,7 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
           <CustomSelect
             value={draft.blocked}
             onChange={(v) => {
-              set('blocked', v, { immediate: true });
+              set("blocked", v, { immediate: true });
               setPage(1);
             }}
             options={BLOCKED_OPTIONS}
@@ -166,7 +185,9 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
                 key={user.id}
                 user={user}
                 isSelf={currentUser?.id === user.id}
-                onToggleBlock={(target, blocked) => setConfirm({ target, blocked })}
+                onToggleBlock={(target, blocked) =>
+                  setConfirm({ target, blocked })
+                }
               />
             ))}
           </ul>
@@ -185,7 +206,9 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
           draft={creating}
           error={formError}
           saving={saving}
-          onChange={(key, value) => setCreating((prev) => ({ ...prev, [key]: value }))}
+          onChange={(key, value) =>
+            setCreating((prev) => ({ ...prev, [key]: value }))
+          }
           onSubmit={submitAdmin}
           onOpen={() => setCreating(EMPTY_ADMIN)}
           onCancel={closeCreateForm}
@@ -211,13 +234,17 @@ export function AdminUsersTable({ rightContainer = null, initialFilters = {} }) 
         onConfirm={applyBlock}
         saving={saving}
         danger={confirm?.blocked}
-        title={confirm?.blocked ? 'Bloquer cet utilisateur ?' : 'Débloquer cet utilisateur ?'}
+        title={
+          confirm?.blocked
+            ? "Bloquer cet utilisateur ?"
+            : "Débloquer cet utilisateur ?"
+        }
         description={
           confirm?.blocked
-            ? 'Son compte ne pourra plus se connecter et ses sessions seront fermées immédiatement.'
-            : 'L’utilisateur pourra de nouveau se connecter à la plateforme.'
+            ? "Son compte ne pourra plus se connecter et ses sessions seront fermées immédiatement."
+            : "L'utilisateur pourra de nouveau se connecter à la plateforme."
         }
-        confirmLabel={confirm?.blocked ? 'Bloquer' : 'Débloquer'}
+        confirmLabel={confirm?.blocked ? "Bloquer" : "Débloquer"}
       />
     </AdminSectionLayout>
   );

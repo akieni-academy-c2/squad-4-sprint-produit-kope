@@ -1,5 +1,4 @@
-import { Badge } from '@/shared/components/ui/Badge.jsx';
-
+import { Badge } from "@/shared/components/ui/Badge.jsx";
 
 export function TagList({ tags }) {
   if (!tags?.length) return null;

@@ -1,6 +1,6 @@
-import { offsetOf, paginateSafely } from '../../utils/pagination.js';
-import { uploadUrl } from '../../utils/uploads.js';
-import * as repository from './search.repository.js';
+import { offsetOf, paginateSafely } from "../../utils/pagination.js";
+import { uploadUrl } from "../../utils/uploads.js";
+import * as repository from "./search.repository.js";
 const PAGE_SIZE = 10;
 function toCard(row) {
   return {
@@ -15,7 +15,16 @@ function toCard(row) {
     avatarUrl: row.avatarUrl ?? null,
   };
 }
-export async function search({ trade, zone, city, q, available, minRating, minExperience, page }) {
+export async function search({
+  trade,
+  zone,
+  city,
+  q,
+  available,
+  minRating,
+  minExperience,
+  page,
+}) {
   const pagination = { page, pageSize: PAGE_SIZE };
   const filters = {
     tradeId: trade ?? null,
@@ -31,6 +40,8 @@ export async function search({ trade, zone, city, q, available, minRating, minEx
     limit: PAGE_SIZE,
     offset: offsetOf(pagination),
   });
-  const result = await paginateSafely(rows, pagination, () => repository.countPublished(filters));
+  const result = await paginateSafely(rows, pagination, () =>
+    repository.countPublished(filters),
+  );
   return { ...result, items: result.items.map(toCard) };
 }

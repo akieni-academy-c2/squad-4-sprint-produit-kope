@@ -1,6 +1,6 @@
-import { StarRating } from '@/shared/components/ui/StarRating.jsx';
-import { formatDateFr } from '@/shared/utils';
-import { ReviewAuthor } from './ReviewAuthor.jsx';
+import { StarRating } from "@/shared/components/ui/StarRating.jsx";
+import { formatDateFr } from "@/shared/utils";
+import { ReviewAuthor } from "./ReviewAuthor.jsx";
 
 export function ReviewCardHeader({ review }) {
   return (

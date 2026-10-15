@@ -1,12 +1,14 @@
-import bcrypt from 'bcryptjs';
-import { env } from '../../config/env.js';
-import { pool } from '../pool.js';
-import { normalizePhone } from '../../utils/phone.js';
+import bcrypt from "bcryptjs";
+import { env } from "../../config/env.js";
+import { pool } from "../pool.js";
+import { normalizePhone } from "../../utils/phone.js";
 
 async function main() {
-  const phone = normalizePhone(env.ADMIN_PHONE ?? '');
+  const phone = normalizePhone(env.ADMIN_PHONE ?? "");
   if (!phone || !env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 8)
-    throw new Error('ADMIN_PHONE (numéro valide) et ADMIN_PASSWORD (8 caractères min.) sont requis dans .env');
+    throw new Error(
+      "ADMIN_PHONE (numéro valide) et ADMIN_PASSWORD (8 caractères min.) sont requis dans .env",
+    );
 
   const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, env.BCRYPT_ROUNDS);
 

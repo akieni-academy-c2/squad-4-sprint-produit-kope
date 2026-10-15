@@ -1,30 +1,39 @@
-import { ApiError } from '../../utils/ApiError.js';
-import { offsetOf, paginate, paginateSafely } from '../../utils/pagination.js';
-import * as repository from './reviews.repository.js';
-import * as professionalsRepository from '../professionals/professionals.repository.js';
-
+import { ApiError } from "../../utils/ApiError.js";
+import { offsetOf, paginate, paginateSafely } from "../../utils/pagination.js";
+import * as repository from "./reviews.repository.js";
+import * as professionalsRepository from "../professionals/professionals.repository.js";
 
 export function getSummary(professionalId) {
   return repository.getSummary(professionalId);
 }
 
 export async function canReview(viewer, professionalId) {
-  if (!viewer || viewer.role === 'admin') return false;
+  if (!viewer || viewer.role === "admin") return false;
   if (String(viewer.id) === String(professionalId)) return false;
   return !(await repository.exists(viewer.id, professionalId));
 }
 
-export async function createReview(clientId, professionalId, { rating, comment }) {
+export async function createReview(
+  clientId,
+  professionalId,
+  { rating, comment },
+) {
   if (!(await professionalsRepository.existsPublished(professionalId)))
-    throw ApiError.notFound('Profil introuvable');
-  if (String(clientId) === String(professionalId))
-    throw ApiError.forbidden();
-
+    throw ApiError.notFound("Profil introuvable");
+  if (String(clientId) === String(professionalId)) throw ApiError.forbidden();
 
   try {
-    return await repository.create({ clientId, professionalId, rating, comment });
+    return await repository.create({
+      clientId,
+      professionalId,
+      rating,
+      comment,
+    });
   } catch (err) {
-    if (err.code === '23505') throw ApiError.conflict('Vous avez déjà laissé un avis à ce professionnel');
+    if (err.code === "23505")
+      throw ApiError.conflict(
+        "Vous avez déjà laissé un avis à ce professionnel",
+      );
     throw err;
   }
 }
@@ -42,10 +51,9 @@ export async function mine(clientId, query) {
   return paginateSafely(rows, query, () => repository.countByClient(clientId));
 }
 
-
 async function ownedReview(reviewId, clientId) {
   const review = await repository.findOwnedById(reviewId, clientId);
-  if (!review) throw ApiError.notFound('Avis introuvable');
+  if (!review) throw ApiError.notFound("Avis introuvable");
   return review;
 }
 
@@ -65,18 +73,27 @@ export async function deleteReview(reviewId, clientId) {
 }
 
 export async function byClient(clientId, pagination) {
-  const rows = await repository.listByClient(clientId, { limit: pagination.pageSize, offset: offsetOf(pagination) });
+  const rows = await repository.listByClient(clientId, {
+    limit: pagination.pageSize,
+    offset: offsetOf(pagination),
+  });
   return paginate(rows, pagination);
 }
 
 export async function listReviews(viewer, professionalId, pagination) {
-  const isOwner = viewer?.role === 'professional' && viewer.id === professionalId;
-  if (!isOwner && !(await professionalsRepository.existsPublished(professionalId)))
-    throw ApiError.notFound('Profil introuvable');
-
+  const isOwner =
+    viewer?.role === "professional" && viewer.id === professionalId;
+  if (
+    !isOwner &&
+    !(await professionalsRepository.existsPublished(professionalId))
+  )
+    throw ApiError.notFound("Profil introuvable");
 
   const [rows, summary] = await Promise.all([
-    repository.listByProfessional(professionalId, { limit: pagination.pageSize, offset: offsetOf(pagination) }),
+    repository.listByProfessional(professionalId, {
+      limit: pagination.pageSize,
+      offset: offsetOf(pagination),
+    }),
     repository.getSummary(professionalId),
   ]);
 

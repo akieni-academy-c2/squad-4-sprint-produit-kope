@@ -1,17 +1,37 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { X, CheckCircle2, XCircle, Info, AlertTriangle } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { toast as toastMotion } from '@/shared/motion/variants.js';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { X, CheckCircle2, XCircle, Info, AlertTriangle } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { toast as toastMotion } from "@/shared/motion/variants.js";
 
 const NotificationContext = createContext(null);
 let uid = 0;
 
 const TYPE_ICONS = {
-  success: <CheckCircle2 size={16} aria-hidden className="mt-0.5 shrink-0 text-emerald-600" />,
-  error: <XCircle size={16} aria-hidden className="mt-0.5 shrink-0 text-rose-600" />,
+  success: (
+    <CheckCircle2
+      size={16}
+      aria-hidden
+      className="mt-0.5 shrink-0 text-emerald-600"
+    />
+  ),
+  error: (
+    <XCircle size={16} aria-hidden className="mt-0.5 shrink-0 text-rose-600" />
+  ),
   info: <Info size={16} aria-hidden className="mt-0.5 shrink-0 text-sky-600" />,
-  warning: <AlertTriangle size={16} aria-hidden className="mt-0.5 shrink-0 text-amber-600" />,
+  warning: (
+    <AlertTriangle
+      size={16}
+      aria-hidden
+      className="mt-0.5 shrink-0 text-amber-600"
+    />
+  ),
 };
 
 export function NotificationProvider({ children }) {
@@ -22,11 +42,10 @@ export function NotificationProvider({ children }) {
   }, []);
 
   const toast = useCallback(
-    ({ message, type = 'info', duration = 3500 }) => {
+    ({ message, type = "info", duration = 3500 }) => {
       const id = ++uid;
       setToasts((list) => [...list, { id, message, type }]);
-      if (duration > 0)
-        setTimeout(() => remove(id), duration);
+      if (duration > 0) setTimeout(() => remove(id), duration);
 
       return id;
     },
@@ -53,7 +72,7 @@ export function NotificationProvider({ children }) {
               animate="animate"
               exit="exit"
               className={cn(
-                'pointer-events-auto w-full max-w-sm rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-md',
+                "pointer-events-auto w-full max-w-sm rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-md",
               )}
             >
               <div className="flex items-start justify-between gap-3">
@@ -81,6 +100,9 @@ export function NotificationProvider({ children }) {
 // eslint-disable-next-line react-refresh/only-export-components
 export function useNotification() {
   const ctx = useContext(NotificationContext);
-  if (!ctx) throw new Error('useNotification must be used inside <NotificationProvider>');
+  if (!ctx)
+    throw new Error(
+      "useNotification must be used inside <NotificationProvider>",
+    );
   return ctx;
 }

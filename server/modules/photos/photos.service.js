@@ -1,11 +1,11 @@
-import { withTransaction } from '../../db/pool.js';
-import { ApiError } from '../../utils/ApiError.js';
-import { uploadUrl } from '../../utils/uploads.js';
-import * as repository from './photos.repository.js';
-import * as storage from './photos.storage.js';
+import { withTransaction } from "../../db/pool.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { uploadUrl } from "../../utils/uploads.js";
+import * as repository from "./photos.repository.js";
+import * as storage from "./photos.storage.js";
 
 const MAX_PHOTOS = 10;
-const LIMIT_MESSAGE = 'Limite de 10 photos atteinte';
+const LIMIT_MESSAGE = "Limite de 10 photos atteinte";
 
 function toDto(photo) {
   return {
@@ -26,7 +26,9 @@ export async function listPhotos(professionalId) {
 
 export async function addPhoto(professionalId, file, { title, description }) {
   if (!file)
-    throw ApiError.badRequest('Aucune photo reçue', { photo: 'Choisissez une photo' });
+    throw ApiError.badRequest("Aucune photo reçue", {
+      photo: "Choisissez une photo",
+    });
 
   const processed = await storage.processImage(file.buffer);
   const paths = storage.newPaths(professionalId);
@@ -34,7 +36,7 @@ export async function addPhoto(professionalId, file, { title, description }) {
   try {
     await storage.save(paths, processed);
   } catch (err) {
-      console.error('[photos] enregistrement impossible', err);
+    console.error("[photos] enregistrement impossible", err);
     throw new ApiError(503, "Le service d'enregistrement est indisponible");
   }
 
@@ -45,7 +47,13 @@ export async function addPhoto(professionalId, file, { title, description }) {
         throw ApiError.badRequest(LIMIT_MESSAGE, { photo: LIMIT_MESSAGE });
 
       return repository.create(
-        { professionalId, filePath: paths.filePath, thumbPath: paths.thumbPath, title, description },
+        {
+          professionalId,
+          filePath: paths.filePath,
+          thumbPath: paths.thumbPath,
+          title,
+          description,
+        },
         tx,
       );
     });
@@ -53,24 +61,41 @@ export async function addPhoto(professionalId, file, { title, description }) {
     return toDto(photo);
   } catch (error) {
     await storage.remove(paths).catch((cleanupError) => {
-      console.error('[photos] fichier orphelin après échec', paths, cleanupError);
+      console.error(
+        "[photos] fichier orphelin après échec",
+        paths,
+        cleanupError,
+      );
     });
     throw error;
   }
 }
 
-export async function updatePhoto(professionalId, photoId, { title, description }) {
-  const updated = await repository.update(photoId, professionalId, { title, description });
-  if (!updated) throw ApiError.notFound('Photo introuvable');
+export async function updatePhoto(
+  professionalId,
+  photoId,
+  { title, description },
+) {
+  const updated = await repository.update(photoId, professionalId, {
+    title,
+    description,
+  });
+  if (!updated) throw ApiError.notFound("Photo introuvable");
   return toDto(updated);
 }
 export async function removePhoto(professionalId, photoId) {
-  const removed = await withTransaction((tx) => repository.remove(photoId, professionalId, tx));
-  if (!removed) throw ApiError.notFound('Photo introuvable');
+  const removed = await withTransaction((tx) =>
+    repository.remove(photoId, professionalId, tx),
+  );
+  if (!removed) throw ApiError.notFound("Photo introuvable");
 
   try {
     await storage.remove(removed);
   } catch (err) {
-    console.error('[photos] ligne supprimée, fichier non supprimé', removed, err);
+    console.error(
+      "[photos] ligne supprimée, fichier non supprimé",
+      removed,
+      err,
+    );
   }
 }

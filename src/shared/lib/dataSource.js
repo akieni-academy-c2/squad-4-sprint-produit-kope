@@ -1,46 +1,34 @@
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from "react";
 
-const DEMO_PARAM = 'demo';
-const DEMO_STORAGE_KEY = 'kop:demo';
+const DEMO_PARAM = "demo";
+const DEMO_STORAGE_KEY = "kop:demo";
 
 const isTrue = (value) =>
-  String(value ?? '')
+  String(value ?? "")
     .trim()
-    .toLowerCase() === 'true';
+    .toLowerCase() === "true";
 
-const isDemoOn = (value) => value === '1' || isTrue(value);
-
-const isDev = import.meta.env?.DEV === true;
+const isDemoOn = (value) => value === "1" || isTrue(value);
 
 /**
- * Ce que vaut la démo selon la variable de build : absente, elle est active
- * d'emblée ; posée, elle fait autorité et rien ne la contredit. Variable figée
- * dans le bundle, `?demo=` reste le seul levier à l'exécution.
+ * Ce que vaut la démo selon la variable de build : elle ne l'active jamais,
+ * elle décide seulement si elle reste accessible. Variable absente, elle l'est ;
+ * `true` l'autorise explicitement, `false` l'interdit. Le passage en démo
+ * revient toujours au visiteur : sélecteur de rôle, `?demo=1`, choix mémorisé.
  * @param {string|undefined} raw valeur brute de `VITE_USE_MOCKS`
- * @returns {{allowed: boolean, active: boolean}}
+ * @returns {{allowed: boolean}}
  */
 export function mocksFromBuild(raw) {
-  const isSet = raw != null && String(raw).trim() !== '';
-  const on = isSet ? isTrue(raw) : true;
-  return { allowed: on, active: on };
+  const isSet = raw != null && String(raw).trim() !== "";
+  return { allowed: !isSet || isTrue(raw) };
 }
 
 const buildMocks = mocksFromBuild(import.meta.env?.VITE_USE_MOCKS);
 
 const allowedByBuild = buildMocks.allowed;
 
-const activeByDefault = buildMocks.active;
-
-/**
- * Le repli automatique sur les mocks ne vaut qu'en développement, où l'on
- * travaille sans backend. En production il masquerait une panne réelle - ou une
- * migration non appliquée - derrière des données fictives. La démo y reste un
- * choix du visiteur, jamais une conséquence d'une erreur.
- */
-const autoFallbackAllowed = isDev;
-
 let demoAllowed = allowedByBuild;
-let mockMode = activeByDefault;
+let mockMode = false;
 const listeners = new Set();
 
 function notify() {
@@ -59,7 +47,7 @@ function rememberDemo(on) {
 
 function rememberedDemo() {
   try {
-    return window.localStorage.getItem(DEMO_STORAGE_KEY) === 'true';
+    return window.localStorage.getItem(DEMO_STORAGE_KEY) === "true";
   } catch {
     return false;
   }
@@ -77,53 +65,48 @@ export function enableMockMode() {
   if (mockMode) return;
   if (!demoAllowed) return;
   mockMode = true;
+  rememberDemo(true);
   notify();
 }
 
 export function resetMockMode() {
-  if (!allowedByBuild) rememberDemo(false);
+  rememberDemo(false);
   mockMode = false;
   notify();
 }
 
 /**
  * Traduit le paramètre d'URL, le choix mémorisé et le build en une décision.
- * Un `?demo=` explicite l'emporte toujours, y compris pour sortir d'une démo
- * autorisée par le build. Sinon le build décide : il autorise, et n'active que
- * s'il l'a toujours fait. Rien n'est mémorisé quand le build a la main.
+ * Le build tranche seul : s'il retire la démo, ni `?demo=1` ni un choix
+ * mémorisé ne peuvent la rendre accessible, sinon le paramètre décide et le
+ * choix mémorisé sert de repli.
  */
 export function decideDemoMode({
   requested,
   remembered = false,
   allowedByBuild = false,
-  activeByDefault = false,
 }) {
-  if (requested != null) {
-    const on = isDemoOn(requested);
-    return { allowed: allowedByBuild || on, active: on, remember: !allowedByBuild };
-  }
-  if (allowedByBuild) return { allowed: true, active: activeByDefault, remember: false };
-  return { allowed: remembered, active: remembered, remember: false };
+  if (!allowedByBuild) return { allowed: false, active: false };
+  if (requested != null) return { allowed: true, active: isDemoOn(requested) };
+  return { allowed: true, active: remembered };
 }
 
 /**
  * Applique le choix de démo avant le premier rendu.
- * `?demo=1` l'active et la mémorise, `?demo=0` la désactive.
- * Sans paramètre, on retombe sur le choix mémorisé, sinon sur le build.
+ * `?demo=1` l'active, `?demo=0` la désactive, faute de paramètre le choix
+ * mémorisé tranche. Un build qui retire la démo l'emporte sur tout le reste.
  * À appeler une seule fois : après, seul le sélecteur de rôle décide.
  */
 export function initMockMode() {
-  if (typeof window === 'undefined') return mockMode;
+  if (typeof window === "undefined") return mockMode;
 
   const decision = decideDemoMode({
     requested: new URLSearchParams(window.location.search).get(DEMO_PARAM),
     remembered: rememberedDemo(),
     allowedByBuild,
-    activeByDefault,
   });
 
   demoAllowed = decision.allowed;
-  if (decision.remember) rememberDemo(decision.active);
   if (decision.active) enableMockMode();
   else resetMockMode();
 
@@ -139,22 +122,18 @@ export function useMockMode() {
   return useSyncExternalStore(subscribeMockMode, isMockMode, () => false);
 }
 
+/**
+ * Choisit entre l'API et les mocks, et rien d'autre. La démo est un mode
+ * demandé : sélecteur de rôle, `?demo=1` ou choix mémorisé, jamais parce qu'une
+ * requête a échoué. Un repli automatique sur une erreur réseau ou un 5xx
+ * donnait une interface pleine de données fictives pendant que le serveur
+ * refusait encore la session : l'application parait fonctionnelle alors que
+ * rien n'était enregistré. Une panne doit se voir, donc elle remonte.
+ * @param {() => Promise<unknown>} apiFn appel réel
+ * @param {() => Promise<unknown>} mockFn données de démonstration
+ * @returns {Promise<unknown>} le résultat de l'un des deux, jamais l'autre
+ */
 export async function callApi(apiFn, mockFn) {
   if (mockMode) return mockFn();
-  try {
-    return await apiFn();
-  } catch (err) {
-    if (!autoFallbackAllowed || !isUnavailable(err)) throw err;
-    console.error('[dataSource] API indisponible, repli sur les mocks', err);
-    enableMockMode();
-    return mockFn();
-  }
-}
-
-function isUnavailable(err) {
-  if (!err) return false;
-  if (err instanceof TypeError) return true;
-  if (typeof err.status === 'number' && err.status >= 500) return true;
-  if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND' || err.code === 'ETIMEDOUT') return true;
-  return false;
+  return apiFn();
 }

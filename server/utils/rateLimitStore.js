@@ -1,10 +1,12 @@
-
-import { pool } from '../db/pool.js';
+import { pool } from "../db/pool.js";
 
 const DEFAULT_WINDOW_MS = 15 * 60_000;
 
-
-export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db = pool) {
+export async function consumeRateLimitSlot(
+  key,
+  windowMs = DEFAULT_WINDOW_MS,
+  db = pool,
+) {
   const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
 
   const { rows } = await db.query(
@@ -22,7 +24,7 @@ export async function consumeRateLimitSlot(key, windowMs = DEFAULT_WINDOW_MS, db
       RETURNING count`,
     [key, windowSeconds],
   );
-return rows[0]?.count ?? 1;
+  return rows[0]?.count ?? 1;
 }
 
 export async function purgeRateLimits(db = pool) {
@@ -34,7 +36,7 @@ export async function purgeRateLimits(db = pool) {
 
 export async function rateLimitTableExists(db = pool) {
   try {
-    await db.query('SELECT 1 FROM rate_limits LIMIT 1');
+    await db.query("SELECT 1 FROM rate_limits LIMIT 1");
     return true;
   } catch {
     return false;

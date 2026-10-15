@@ -1,26 +1,33 @@
 # Schéma de la base KOP
 
-> Document généré par `npm run schema:doc` à partir de la base vivante.
-> Ne pas éditer à la main : toute modification passe par une migration.
+> Instantané de la base vivante. Le script `schema:doc` ayant été supprimé, ce
+> fichier ne se régénère plus. Toute évolution du schéma passe par une
+> migration, puis se reporte ici à la main.
+>
+> Pour les relations entre tables et le comportement des suppressions, voir
+> [schema-diagram.md](schema-diagram.md). Pour le sens métier des règles et
+> l'endroit où elles sont appliquées, voir [dictionnaire.md](dictionnaire.md).
+> L'entrée du dossier est [docs/README.md](../README.md).
+> Pour le contexte du produit et ce que les données permettent de mesurer, voir [CADRE.md](../CADRE.md).
 
 12 tables métier, 1 vue, 3 types énumérés, 4 tables techniques sans valeur d'analyse.
 
 ## Volume actuel
 
-| Table métier | Lignes |
-| :--- | ---: |
-| `account_reports` | 0 |
-| `cities` | 6 |
-| `contacts` | 1 |
-| `photos` | 7 |
-| `professional_zones` | 11 |
-| `professionals` | 4 |
-| `review_reports` | 0 |
-| `reviews` | 0 |
-| `trade_categories` | 5 |
-| `trades` | 4 |
-| `users` | 10 |
-| `zones` | 9 |
+| Table métier         | Lignes |
+| :------------------- | -----: |
+| `account_reports`    |      0 |
+| `cities`             |      6 |
+| `contacts`           |      1 |
+| `photos`             |      7 |
+| `professional_zones` |     11 |
+| `professionals`      |      4 |
+| `review_reports`     |      0 |
+| `reviews`            |      0 |
+| `trade_categories`   |      5 |
+| `trades`             |      4 |
+| `users`              |     10 |
+| `zones`              |      9 |
 
 Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with_neon`, `rate_limits`, `session`.
 
@@ -34,19 +41,19 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `account_reports`
 
-*0 ligne(s)*
+_0 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `reporter_id` | `bigint` | non | — |
-| `reason` | `text` | non | — |
-| `message` | `text` | oui | — |
-| `status` | `text` | non | `'pending'::text` |
-| `resolved_at` | `timestamp with time zone` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
-| `target_role` | `text` | non | `'professional'::text` |
+| Colonne           | Type                       | Null | Défaut                 |
+| :---------------- | :------------------------- | :--- | :--------------------- |
+| **`id`**          | `bigint`                   | non  | -                      |
+| `professional_id` | `bigint`                   | non  | -                      |
+| `reporter_id`     | `bigint`                   | non  | -                      |
+| `reason`          | `text`                     | non  | -                      |
+| `message`         | `text`                     | oui  | -                      |
+| `status`          | `text`                     | non  | `'pending'::text`      |
+| `resolved_at`     | `timestamp with time zone` | oui  | -                      |
+| `created_at`      | `timestamp with time zone` | non  | `now()`                |
+| `target_role`     | `text`                     | non  | `'professional'::text` |
 
 - Clé primaire : `id`
 - Unicité : `professional_id`, `reporter_id`
@@ -70,13 +77,13 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `cities`
 
-*6 ligne(s)*
+_6 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
-| `sort_order` | `integer` | non | `0` |
+| Colonne      | Type       | Null | Défaut |
+| :----------- | :--------- | :--- | :----- |
+| **`id`**     | `smallint` | non  | -      |
+| `name`       | `text`     | non  | -      |
+| `sort_order` | `integer`  | non  | `0`    |
 
 - Clé primaire : `id`
 - Unicité : `name`
@@ -90,17 +97,17 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `contacts`
 
-*1 ligne(s)*
+_1 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `sender_id` | `bigint` | non | — |
-| `recipient_id` | `bigint` | non | — |
-| `message` | `text` | oui | — |
-| `status` | `contact_status` | non | `'new'::contact_status` |
-| `created_at` | `timestamp with time zone` | non | `now()` |
-| `channel` | `contact_channel` | non | `'message'::contact_channel` |
+| Colonne        | Type                       | Null | Défaut                       |
+| :------------- | :------------------------- | :--- | :--------------------------- |
+| **`id`**       | `bigint`                   | non  | -                            |
+| `sender_id`    | `bigint`                   | non  | -                            |
+| `recipient_id` | `bigint`                   | non  | -                            |
+| `message`      | `text`                     | oui  | -                            |
+| `status`       | `contact_status`           | non  | `'new'::contact_status`      |
+| `created_at`   | `timestamp with time zone` | non  | `now()`                      |
+| `channel`      | `contact_channel`          | non  | `'message'::contact_channel` |
 
 - Clé primaire : `id`
 - `recipient_id` → `users.id` (suppression : CASCADE)
@@ -118,18 +125,18 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `photos`
 
-*7 ligne(s)*
+_7 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `file_path` | `text` | non | — |
-| `thumb_path` | `text` | non | — |
-| `caption` | `character varying(100)` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
-| `title` | `character varying(100)` | oui | — |
-| `description` | `character varying(500)` | oui | — |
+| Colonne           | Type                       | Null | Défaut  |
+| :---------------- | :------------------------- | :--- | :------ |
+| **`id`**          | `bigint`                   | non  | -       |
+| `professional_id` | `bigint`                   | non  | -       |
+| `file_path`       | `text`                     | non  | -       |
+| `thumb_path`      | `text`                     | non  | -       |
+| `caption`         | `character varying(100)`   | oui  | -       |
+| `created_at`      | `timestamp with time zone` | non  | `now()` |
+| `title`           | `character varying(100)`   | oui  | -       |
+| `description`     | `character varying(500)`   | oui  | -       |
 
 - Clé primaire : `id`
 - `professional_id` → `professionals.user_id` (suppression : CASCADE)
@@ -143,12 +150,12 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `professional_zones`
 
-*11 ligne(s)*
+_11 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`professional_id`** | `bigint` | non | — |
-| **`zone_id`** | `smallint` | non | — |
+| Colonne               | Type       | Null | Défaut |
+| :-------------------- | :--------- | :--- | :----- |
+| **`professional_id`** | `bigint`   | non  | -      |
+| **`zone_id`**         | `smallint` | non  | -      |
 
 - Clé primaire : `professional_id`, `zone_id`
 - `professional_id` → `professionals.user_id` (suppression : CASCADE)
@@ -163,20 +170,20 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `professionals`
 
-*4 ligne(s)*
+_4 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`user_id`** | `bigint` | non | — |
-| `display_name` | `text` | non | — |
-| `trade_id` | `smallint` | non | — |
-| `description` | `text` | oui | — |
-| `years_experience` | `smallint` | oui | — |
-| `whatsapp` | `text` | oui | — |
-| `is_available` | `boolean` | non | `true` |
-| `is_hidden` | `boolean` | non | `false` |
-| `updated_at` | `timestamp with time zone` | non | `now()` |
-| `city_id` | `smallint` | oui | — |
+| Colonne            | Type                       | Null | Défaut  |
+| :----------------- | :------------------------- | :--- | :------ |
+| **`user_id`**      | `bigint`                   | non  | -       |
+| `display_name`     | `text`                     | non  | -       |
+| `trade_id`         | `smallint`                 | non  | -       |
+| `description`      | `text`                     | oui  | -       |
+| `years_experience` | `smallint`                 | oui  | -       |
+| `whatsapp`         | `text`                     | oui  | -       |
+| `is_available`     | `boolean`                  | non  | `true`  |
+| `is_hidden`        | `boolean`                  | non  | `false` |
+| `updated_at`       | `timestamp with time zone` | non  | `now()` |
+| `city_id`          | `smallint`                 | oui  | -       |
 
 - Clé primaire : `user_id`
 - `city_id` → `cities.id` (suppression : SET NULL)
@@ -197,18 +204,18 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `review_reports`
 
-*0 ligne(s)*
+_0 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `review_id` | `bigint` | non | — |
-| `reporter_id` | `bigint` | non | — |
-| `reason` | `text` | non | — |
-| `message` | `text` | oui | — |
-| `status` | `text` | non | `'pending'::text` |
-| `resolved_at` | `timestamp with time zone` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
+| Colonne       | Type                       | Null | Défaut            |
+| :------------ | :------------------------- | :--- | :---------------- |
+| **`id`**      | `bigint`                   | non  | -                 |
+| `review_id`   | `bigint`                   | non  | -                 |
+| `reporter_id` | `bigint`                   | non  | -                 |
+| `reason`      | `text`                     | non  | -                 |
+| `message`     | `text`                     | oui  | -                 |
+| `status`      | `text`                     | non  | `'pending'::text` |
+| `resolved_at` | `timestamp with time zone` | oui  | -                 |
+| `created_at`  | `timestamp with time zone` | non  | `now()`           |
 
 - Clé primaire : `id`
 - Unicité : `review_id`, `reporter_id`
@@ -229,18 +236,18 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `reviews`
 
-*0 ligne(s)*
+_0 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `client_id` | `bigint` | non | — |
-| `professional_id` | `bigint` | non | — |
-| `rating` | `smallint` | non | — |
-| `comment` | `character varying(300)` | oui | — |
-| `is_hidden` | `boolean` | non | `false` |
-| `created_at` | `timestamp with time zone` | non | `now()` |
-| `updated_at` | `timestamp with time zone` | non | `now()` |
+| Colonne           | Type                       | Null | Défaut  |
+| :---------------- | :------------------------- | :--- | :------ |
+| **`id`**          | `bigint`                   | non  | -       |
+| `client_id`       | `bigint`                   | non  | -       |
+| `professional_id` | `bigint`                   | non  | -       |
+| `rating`          | `smallint`                 | non  | -       |
+| `comment`         | `character varying(300)`   | oui  | -       |
+| `is_hidden`       | `boolean`                  | non  | `false` |
+| `created_at`      | `timestamp with time zone` | non  | `now()` |
+| `updated_at`      | `timestamp with time zone` | non  | `now()` |
 
 - Clé primaire : `id`
 - Unicité : `client_id`, `professional_id`
@@ -262,13 +269,13 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `trade_categories`
 
-*5 ligne(s)*
+_5 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
-| `sort_order` | `integer` | non | `0` |
+| Colonne      | Type       | Null | Défaut |
+| :----------- | :--------- | :--- | :----- |
+| **`id`**     | `smallint` | non  | -      |
+| `name`       | `text`     | non  | -      |
+| `sort_order` | `integer`  | non  | `0`    |
 
 - Clé primaire : `id`
 - Unicité : `name`
@@ -282,15 +289,15 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `trades`
 
-*4 ligne(s)*
+_4 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
-| `sort_order` | `integer` | non | `0` |
-| `category_id` | `smallint` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
+| Colonne       | Type                       | Null | Défaut  |
+| :------------ | :------------------------- | :--- | :------ |
+| **`id`**      | `smallint`                 | non  | -       |
+| `name`        | `text`                     | non  | -       |
+| `sort_order`  | `integer`                  | non  | `0`     |
+| `category_id` | `smallint`                 | oui  | -       |
+| `created_at`  | `timestamp with time zone` | non  | `now()` |
 
 - Clé primaire : `id`
 - Unicité : `name`
@@ -307,23 +314,23 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `users`
 
-*10 ligne(s)*
+_10 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `bigint` | non | — |
-| `role` | `user_role` | non | — |
-| `phone` | `text` | non | — |
-| `password_hash` | `text` | non | — |
-| `first_name` | `text` | oui | — |
-| `last_name` | `text` | oui | — |
-| `consented_at` | `timestamp with time zone` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
-| `avatar_url` | `text` | oui | — |
-| `blocked_at` | `timestamp with time zone` | oui | — |
-| `suspended_at` | `timestamp with time zone` | oui | — |
-| `email` | `text` | oui | — |
-| `terms_version` | `text` | oui | — |
+| Colonne         | Type                       | Null | Défaut  |
+| :-------------- | :------------------------- | :--- | :------ |
+| **`id`**        | `bigint`                   | non  | -       |
+| `role`          | `user_role`                | non  | -       |
+| `phone`         | `text`                     | non  | -       |
+| `password_hash` | `text`                     | non  | -       |
+| `first_name`    | `text`                     | oui  | -       |
+| `last_name`     | `text`                     | oui  | -       |
+| `consented_at`  | `timestamp with time zone` | oui  | -       |
+| `created_at`    | `timestamp with time zone` | non  | `now()` |
+| `avatar_url`    | `text`                     | oui  | -       |
+| `blocked_at`    | `timestamp with time zone` | oui  | -       |
+| `suspended_at`  | `timestamp with time zone` | oui  | -       |
+| `email`         | `text`                     | oui  | -       |
+| `terms_version` | `text`                     | oui  | -       |
 
 - Clé primaire : `id`
 - Unicité : `phone`
@@ -346,15 +353,15 @@ Tables techniques, à ignorer pour toute analyse : `pgmigrations`, `playing_with
 
 ### `zones`
 
-*9 ligne(s)*
+_9 ligne(s)_
 
-| Colonne | Type | Null | Défaut |
-| :--- | :--- | :--- | :--- |
-| **`id`** | `smallint` | non | — |
-| `name` | `text` | non | — |
-| `sort_order` | `integer` | non | `0` |
-| `city_id` | `smallint` | oui | — |
-| `created_at` | `timestamp with time zone` | non | `now()` |
+| Colonne      | Type                       | Null | Défaut  |
+| :----------- | :------------------------- | :--- | :------ |
+| **`id`**     | `smallint`                 | non  | -       |
+| `name`       | `text`                     | non  | -       |
+| `sort_order` | `integer`                  | non  | `0`     |
+| `city_id`    | `smallint`                 | oui  | -       |
+| `created_at` | `timestamp with time zone` | non  | `now()` |
 
 - Clé primaire : `id`
 - Unicité : `name`

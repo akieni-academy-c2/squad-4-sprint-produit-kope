@@ -1,49 +1,61 @@
-import { useState } from 'react';
-import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
-import { CustomSelect } from '@/shared/components/ui/CustomSelect.jsx';
-import { SearchInput } from '@/shared/components/ui/SearchInput.jsx';
-import { DataState } from '@/shared/components/ui/DataState.jsx';
-import { EmptyState } from '@/shared/components/ui/EmptyState.jsx';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { ReviewForm } from './ReviewForm.jsx';
-import { ReviewCard } from './ReviewCard.jsx';
-import { AccountSectionLayout } from '@/pages/dashboard/components/AccountSectionLayout.jsx';
-import { AdminFilterGroup, AdminFilterPanel } from '@/features/admin/components/AdminSectionLayout.jsx';
-import { deleteReview, getMyReviews, setReviewVisibility } from '../services/reviews.service.js';
-import { Pagination } from '@/shared/components/ui/Pagination.jsx';
+import { useState } from "react";
+import { useAsyncData } from "@/shared/hooks/useAsyncData.js";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/Dialog.jsx";
+import { CustomSelect } from "@/shared/components/ui/CustomSelect.jsx";
+import { SearchInput } from "@/shared/components/ui/SearchInput.jsx";
+import { DataState } from "@/shared/components/ui/DataState.jsx";
+import { EmptyState } from "@/shared/components/ui/EmptyState.jsx";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import { ReviewForm } from "./ReviewForm.jsx";
+import { ReviewCard } from "./ReviewCard.jsx";
+import { AccountSectionLayout } from "@/pages/dashboard/components/AccountSectionLayout.jsx";
+import {
+  AdminFilterGroup,
+  AdminFilterPanel,
+} from "@/features/admin/components/AdminSectionLayout.jsx";
+import {
+  deleteReview,
+  getMyReviews,
+  setReviewVisibility,
+} from "../services/reviews.service.js";
+import { Pagination } from "@/shared/components/ui/Pagination.jsx";
 
 const PAGE_SIZE = 10;
 
 const VISIBILITY_OPTIONS = [
-  { value: 'all', label: 'Tous mes avis' },
-  { value: 'visible', label: 'Visibles seulement' },
-  { value: 'hidden', label: 'Masqués seulement' },
+  { value: "all", label: "Tous mes avis" },
+  { value: "visible", label: "Visibles seulement" },
+  { value: "hidden", label: "Masqués seulement" },
 ];
 
 const RATING_OPTIONS = [
-  { value: '', label: 'Toutes les notes' },
-  { value: '5', label: '5 étoiles' },
-  { value: '4', label: '4 étoiles' },
-  { value: '3', label: '3 étoiles' },
-  { value: '2', label: '2 étoiles' },
-  { value: '1', label: '1 étoile' },
+  { value: "", label: "Toutes les notes" },
+  { value: "5", label: "5 étoiles" },
+  { value: "4", label: "4 étoiles" },
+  { value: "3", label: "3 étoiles" },
+  { value: "2", label: "2 étoiles" },
+  { value: "1", label: "1 étoile" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'recent', label: 'Du plus récent' },
-  { value: 'oldest', label: 'Du plus ancien' },
-  { value: 'rating_desc', label: 'Meilleures notes' },
-  { value: 'rating_asc', label: 'Notes les plus basses' },
+  { value: "recent", label: "Du plus récent" },
+  { value: "oldest", label: "Du plus ancien" },
+  { value: "rating_desc", label: "Meilleures notes" },
+  { value: "rating_asc", label: "Notes les plus basses" },
 ];
-
 
 export function MyReviewsSection({ rightContainer = null }) {
   const { toast } = useNotification();
-  const [q, setQ] = useState('');
-  const [rating, setRating] = useState('');
-  const [visibility, setVisibility] = useState('all');
-  const [sort, setSort] = useState('recent');
+  const [q, setQ] = useState("");
+  const [rating, setRating] = useState("");
+  const [visibility, setVisibility] = useState("all");
+  const [sort, setSort] = useState("recent");
   const [page, setPage] = useState(1);
   const [reload, setReload] = useState(0);
   const [editingId, setEditingId] = useState(null);
@@ -72,13 +84,15 @@ export function MyReviewsSection({ rightContainer = null }) {
 
   const refresh = () => setReload((n) => n + 1);
 
-  const dirty = Boolean(q || rating || visibility !== 'all' || sort !== 'recent');
+  const dirty = Boolean(
+    q || rating || visibility !== "all" || sort !== "recent",
+  );
 
   const resetFilters = () => {
-    setQ('');
-    setRating('');
-    setVisibility('all');
-    setSort('recent');
+    setQ("");
+    setRating("");
+    setVisibility("all");
+    setSort("recent");
     setPage(1);
   };
 
@@ -87,12 +101,14 @@ export function MyReviewsSection({ rightContainer = null }) {
     try {
       await setReviewVisibility(review.id, !review.isHidden);
       toast({
-        message: review.isHidden ? 'Avis réaffiché.' : 'Avis masqué de la fiche publique.',
-        type: 'success',
+        message: review.isHidden
+          ? "Avis réaffiché."
+          : "Avis masqué de la fiche publique.",
+        type: "success",
       });
       refresh();
     } catch (err) {
-      toast({ message: err?.message || 'Action impossible.', type: 'error' });
+      toast({ message: err?.message || "Action impossible.", type: "error" });
     } finally {
       setPendingId(null);
     }
@@ -102,10 +118,13 @@ export function MyReviewsSection({ rightContainer = null }) {
     setPendingId(review.id);
     try {
       await deleteReview(review.id);
-      toast({ message: 'Avis supprimé.', type: 'success' });
+      toast({ message: "Avis supprimé.", type: "success" });
       refresh();
     } catch (err) {
-      toast({ message: err?.message || 'Suppression impossible.', type: 'error' });
+      toast({
+        message: err?.message || "Suppression impossible.",
+        type: "error",
+      });
     } finally {
       setPendingId(null);
     }
@@ -119,7 +138,7 @@ export function MyReviewsSection({ rightContainer = null }) {
             id={searchId}
             value={q}
             onChange={(e) => changeFilter(setQ)(e.target.value)}
-            onClear={() => changeFilter(setQ)('')}
+            onClear={() => changeFilter(setQ)("")}
             placeholder="Professionnel ou texte..."
             aria-label="Rechercher dans mes avis"
           />
@@ -161,7 +180,9 @@ export function MyReviewsSection({ rightContainer = null }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">Mes avis</h2>
+        <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
+          Mes avis
+        </h2>
         <p className="mt-1 text-sm text-gray-600">
           Modifiez, masquez ou retirez un avis.
         </p>
@@ -173,53 +194,62 @@ export function MyReviewsSection({ rightContainer = null }) {
         searchId="my-reviews-search"
         filters={filters}
       >
-
-        <DataState loading={loading} error={error} errorPrefix="Impossible de charger vos avis">
+        <DataState
+          loading={loading}
+          error={error}
+          errorPrefix="Impossible de charger vos avis"
+        >
           {items.length === 0 ? (
             <EmptyState
               title="Aucun avis"
               description={
                 dirty
-                  ? 'Aucun avis ne correspond à ces filtres.'
-                  : 'Les avis que vous laissez aux professionnels apparaîtront ici.'
+                  ? "Aucun avis ne correspond à ces filtres."
+                  : "Les avis que vous laissez aux professionnels apparaîtront ici."
               }
             />
           ) : (
             <>
-            <ul className="space-y-3">
-              {items.map((review) => (
-                <li key={review.id}>
-                  <ReviewCard
-                    id={review.id}
-                    name={review.professionalName}
-                    avatarUrl={review.professionalAvatarUrl}
-                    tradeName={review.professionalTrade}
-                    rating={review.rating}
-                    comment={review.comment}
-                    createdAt={review.createdAt}
-                    isHidden={review.isHidden}
-                    pending={pendingId === review.id}
-                    onEdit={() => setEditingId(review.id)}
-                    onToggleHidden={() => toggleHidden(review)}
-                    onDelete={() => remove(review)}
-                  />
-                </li>
-              ))}
-            </ul>
-            <Pagination
-              page={data?.page ?? 1}
-              pageSize={PAGE_SIZE}
-              total={total}
-              onPageChange={setPage}
-              variant="summary"
-            />
+              <ul className="space-y-3">
+                {items.map((review) => (
+                  <li key={review.id}>
+                    <ReviewCard
+                      id={review.id}
+                      name={review.professionalName}
+                      avatarUrl={review.professionalAvatarUrl}
+                      tradeName={review.professionalTrade}
+                      rating={review.rating}
+                      comment={review.comment}
+                      createdAt={review.createdAt}
+                      isHidden={review.isHidden}
+                      pending={pendingId === review.id}
+                      onEdit={() => setEditingId(review.id)}
+                      onToggleHidden={() => toggleHidden(review)}
+                      onDelete={() => remove(review)}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <Pagination
+                page={data?.page ?? 1}
+                pageSize={PAGE_SIZE}
+                total={total}
+                onPageChange={setPage}
+                variant="summary"
+              />
             </>
           )}
         </DataState>
       </AccountSectionLayout>
 
-      <Dialog open={editingId != null} onOpenChange={(o) => !o && setEditingId(null)}>
-        <DialogContent className="max-w-2xl p-5" onClose={() => setEditingId(null)}>
+      <Dialog
+        open={editingId != null}
+        onOpenChange={(o) => !o && setEditingId(null)}
+      >
+        <DialogContent
+          className="max-w-2xl p-5"
+          onClose={() => setEditingId(null)}
+        >
           <DialogHeader>
             <DialogTitle>Modifier mon avis</DialogTitle>
             <DialogDescription>{editing?.professionalName}</DialogDescription>

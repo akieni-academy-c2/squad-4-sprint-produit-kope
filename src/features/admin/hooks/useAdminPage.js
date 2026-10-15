@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export function useAdminPage(initial = 1) {

@@ -1,8 +1,12 @@
-import { requiredUserId } from '../../middlewares/identity.js';
-import * as service from './photos.service.js';
+import { requiredUserId } from "../../middlewares/identity.js";
+import * as service from "./photos.service.js";
 
 export async function add(req, res) {
-  const photo = await service.addPhoto(requiredUserId(req), req.file, req.validated.body);
+  const photo = await service.addPhoto(
+    requiredUserId(req),
+    req.file,
+    req.validated.body,
+  );
   res.status(201).json({ photo });
 }
 

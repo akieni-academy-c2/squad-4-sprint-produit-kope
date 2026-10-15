@@ -1,16 +1,27 @@
-import { Link } from '@/shared/components/ui/Link.jsx';
-import { Check } from 'lucide-react';
-import { Button, Tooltip, UserAvatar } from '@/shared/components/ui';
-import { ROUTES } from '@/shared/lib/constants.js';
-import { ReportRow } from './ReportRow.jsx';
+import { Link } from "@/shared/components/ui/Link.jsx";
+import { Check } from "lucide-react";
+import { Button, Tooltip, UserAvatar } from "@/shared/components/ui";
+import { ROUTES } from "@/shared/lib/constants.js";
+import { ReportRow } from "./ReportRow.jsx";
 
-export function ReportGroup({ group, onResolveReport, onDismissReport, onUnblock, onUnsuspend }) {
-  const { professionalId, professionalName, professionalSuspendedAt, professionalBlockedAt } = group;
+export function ReportGroup({
+  group,
+  onResolveReport,
+  onDismissReport,
+  onUnblock,
+  onUnsuspend,
+}) {
+  const {
+    professionalId,
+    professionalName,
+    professionalSuspendedAt,
+    professionalBlockedAt,
+  } = group;
 
   return (
     <li
       className={`overflow-hidden rounded-lg border bg-white ${
-        group.pendingCount > 0 ? 'border-amber-200' : 'border-gray-200'
+        group.pendingCount > 0 ? "border-amber-200" : "border-gray-200"
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50/70 px-4 py-2.5">
@@ -67,7 +78,7 @@ export function ReportGroup({ group, onResolveReport, onDismissReport, onUnblock
             </Tooltip>
           )}
           <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-gray-600 ring-1 ring-gray-200">
-            {group.reportCount} signalement{group.reportCount > 1 ? 's' : ''}
+            {group.reportCount} signalement{group.reportCount > 1 ? "s" : ""}
           </span>
           {group.pendingCount > 0 && (
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
@@ -79,7 +90,12 @@ export function ReportGroup({ group, onResolveReport, onDismissReport, onUnblock
 
       <ul className="space-y-2 p-3">
         {(group.reports || []).map((report) => (
-          <ReportRow key={report.id} report={report} onResolve={onResolveReport} onDismiss={onDismissReport} />
+          <ReportRow
+            key={report.id}
+            report={report}
+            onResolve={onResolveReport}
+            onDismiss={onDismissReport}
+          />
         ))}
       </ul>
     </li>

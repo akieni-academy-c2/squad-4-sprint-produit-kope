@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-import { api } from '@/shared/lib/api.js';
-import { callApi } from '@/shared/lib/dataSource.js';
-import { searchMock } from '@/shared/mocks/appMock.js';
-import { cached } from '@/shared/lib/cache.js';
-import { PAGE_SIZE } from '@/shared/lib/constants.js';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "@/shared/lib/api.js";
+import { callApi } from "@/shared/lib/dataSource.js";
+import { searchMock } from "@/shared/mocks/appMock.js";
+import { cached } from "@/shared/lib/cache.js";
+import { PAGE_SIZE } from "@/shared/lib/constants.js";
 
 const SESSION_NONCE = Math.floor(Math.random() * 1e9);
 
@@ -29,9 +29,12 @@ function shuffle(items, seed) {
 }
 
 function hashQuery(parts) {
-  const seed = Object.values(parts).map((v) => String(v ?? '')).join('|');
+  const seed = Object.values(parts)
+    .map((v) => String(v ?? ""))
+    .join("|");
   let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < seed.length; i += 1)
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   return hash;
 }
 
@@ -46,36 +49,44 @@ export async function searchProfessionals({
   minRating,
   minExperience,
   page,
+  signal,
 }) {
   const params = {};
   if (trade) params.trade = String(trade);
   if (zone) params.zone = String(zone);
   if (city) params.city = String(city);
   if (q) params.q = q;
-  if (available != null && available !== '') params.available = String(available);
+  if (available != null && available !== "")
+    params.available = String(available);
   if (minRating) params.minRating = String(minRating);
   if (minExperience) params.minExperience = String(minExperience);
   if (page) params.page = String(page);
 
   const cacheKey = [
-    trade ?? '',
-    zone ?? '',
-    city ?? '',
-    q ?? '',
-    available ?? '',
-    minRating ?? '',
-    minExperience ?? '',
+    trade ?? "",
+    zone ?? "",
+    city ?? "",
+    q ?? "",
+    available ?? "",
+    minRating ?? "",
+    minExperience ?? "",
     page ?? 1,
-  ].join(':');
+  ].join(":");
 
   return callApi(
-    () => cached(`search:${cacheKey}`, 30_000, () => api.get('/professionals', params)),
+    () =>
+      cached(`search:${cacheKey}`, 30_000, () =>
+        api.get("/professionals", params, { signal }),
+      ),
     async () =>
       searchMock({
         trade,
         zone,
         q,
-        available: available === '' || available == null ? undefined : available === true || available === 'true',
+        available:
+          available === "" || available == null
+            ? undefined
+            : available === true || available === "true",
         minRating,
         minExperience,
         page: page || 1,
@@ -84,12 +95,37 @@ export async function searchProfessionals({
   );
 }
 
-export function useSearch({ trade, zone, city, q, available, minRating, minExperience, page, sort }) {
+export function useSearch({
+  trade,
+  zone,
+  city,
+  q,
+  available,
+  minRating,
+  minExperience,
+  page,
+  sort,
+}) {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const requestId = useRef(0);
+  const controller = useRef(null);
+
+  /**
+   * Chaque frappe relance `run`, donc deux recherches partent souvent de front.
+   * Le jeton d'identifiant départage les réponses : seule la dernière arrivée
+   * écrase l'état. Sans cela, la plus lente gagne et l'utilisateur voit les
+   * résultats d'un texte qu'il a déjà effacé.
+   */
   const run = useCallback(async () => {
+    controller.current?.abort();
+    const local = new AbortController();
+    controller.current = local;
+    const id = ++requestId.current;
+    const isStale = () => id !== requestId.current;
+
     setLoading(true);
     setError(null);
     try {
@@ -102,27 +138,53 @@ export function useSearch({ trade, zone, city, q, available, minRating, minExper
         minRating,
         minExperience,
         page: page || 1,
+        signal: local.signal,
       });
+      if (isStale()) return null;
       const items = data?.items ?? [];
-      if (sort === 'rating')
-        setResults({ ...data, items: [...items].sort((a, b) => ratingOf(b) - ratingOf(a)) });
-      else if (sort === 'experience')
-        setResults({ ...data, items: [...items].sort((a, b) => Number(b.yearsExperience ?? 0) - Number(a.yearsExperience ?? 0)) });
+      if (sort === "rating")
+        setResults({
+          ...data,
+          items: [...items].sort((a, b) => ratingOf(b) - ratingOf(a)),
+        });
+      else if (sort === "experience")
+        setResults({
+          ...data,
+          items: [...items].sort(
+            (a, b) =>
+              Number(b.yearsExperience ?? 0) - Number(a.yearsExperience ?? 0),
+          ),
+        });
       else {
-        const seed = SESSION_NONCE + hashQuery({ trade, zone, city, q, available, minRating, minExperience, page });
+        const seed =
+          SESSION_NONCE +
+          hashQuery({
+            trade,
+            zone,
+            city,
+            q,
+            available,
+            minRating,
+            minExperience,
+            page,
+          });
         setResults({ ...data, items: shuffle(items, seed) });
       }
+      return data;
     } catch (err) {
+      if (isStale() || local.signal.aborted) return null;
       setResults(null);
       setError(err);
+      return null;
     } finally {
-      setLoading(false);
+      if (!isStale()) setLoading(false);
     }
   }, [trade, zone, city, q, available, minRating, minExperience, page, sort]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     run();
+    return () => controller.current?.abort();
   }, [run]);
 
   return { results, loading, error, refresh: run };

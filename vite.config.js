@@ -1,16 +1,20 @@
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import sharp from 'sharp'
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import sharp from "sharp";
 
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { PRIMARY_AUTHOR, CONTRIBUTORS, PROJECT } from './src/shared/data/credits.js'
+import path from "path";
+import { fileURLToPath } from "url";
+import {
+  PRIMARY_AUTHOR,
+  CONTRIBUTORS,
+  PROJECT,
+} from "./src/shared/data/credits.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const RASTER = /\.(?:png|jpe?g)$/i
+const RASTER = /\.(?:png|jpe?g)$/i;
 
 /**
  * Les photos du dépôt pèsent 4 000 à 7 000 px de large pour être affichées
@@ -18,96 +22,119 @@ const RASTER = /\.(?:png|jpe?g)$/i
  * d'accueil demandait 28 Mo. Deux largeurs suffisent à couvrir un mobile et
  * un grand écran, en WebP.
  */
-const VARIANTS = [640, 1280]
-const QUALITY = { 640: 72, 1280: 78 }
+const VARIANTS = [640, 1280];
+const QUALITY = { 640: 72, 1280: 78 };
 
 /**
- * Réencode les images matricielles importées en WebP, en exportant l'URL
- * (la plus grande variante) et un `srcSet` pour le navigateur. Le contrat
- * d'import reste une chaîne : aucun appelant n'a à changer.
+ * Réencode les images matricielles importées en WebP, en exportant l'URL (la
+ * plus grande variante) et un `srcSet`. Le contrat d'import reste une chaîne.
  *
- * `emitFile` renvoie un identifiant de référence (`DUq8YoikZLXEejpNZ1KQvg`),
- * pas un chemin, et le nom final n'est connu qu'une fois le bundle produit.
- * Utilisé tel quel comme URL, il donne un `src` vers un fichier inexistant. Le
- * code généré transite donc par un jeton, remplacé en `generateBundle`.
+ * `emitFile` renvoie un identifiant de référence (`DUq8YoikZLCEejpNZ1KQvg`), pas
+ * un chemin, connu qu'après le bundle : le code transite par un jeton.
+ *
+ * `getFileName` renvoie un chemin relatif à `outDir` (`assets/x.webp`), donc
+ * relatif au document courant : sur `/professionals/42` il demanderait
+ * `/professionals/assets/x.webp`. Il faut le préfixe `base`.
  */
 export function imageOptimizer() {
-  const pending = new Map()
+  const pending = new Map();
+  let assetBase = "/";
 
   return {
-    name: 'kop-image-optimizer',
+    name: "kop-image-optimizer",
     /**
      * Doit précéder `vite:asset`, qui transformerait le PNG en simple URL.
      */
-    enforce: 'pre',
-    apply: 'build',
+    enforce: "pre",
+    apply: "build",
+    configResolved(config) {
+      assetBase = config.base;
+    },
+    /**
+     * `vite build --watch` réutilise l'instance entre les rebuilds : sans cette
+     * remise à zéro, `pending` cumule les jetons morts et `generateBundle` les
+     * rescane sur chaque chunk. Le jeton est dérivé de `pending.size`, donc la
+     * table doit repartir de zéro pour que les deux builds ne se marchent pas
+     * dessus.
+     */
+    buildStart() {
+      pending.clear();
+    },
     async load(id) {
-      const [file] = id.split('?')
-      if (!RASTER.test(file)) return null
+      const [file] = id.split("?");
+      if (!RASTER.test(file)) return null;
 
-      const metadata = await sharp(file).metadata()
-      const base = path.basename(file, path.extname(file))
-      const widths = VARIANTS.filter((width) => width < metadata.width)
-      if (widths.length === 0) widths.push(metadata.width)
+      const metadata = await sharp(file).metadata();
+      const base = path.basename(file, path.extname(file));
+      const widths = VARIANTS.filter((width) => width < metadata.width);
+      if (widths.length === 0) widths.push(metadata.width);
 
-      const urls = []
+      const urls = [];
       for (const width of widths) {
         const source = await sharp(file)
           .resize({ width, withoutEnlargement: true })
           .webp({ quality: QUALITY[width] ?? 78, effort: 5 })
-          .toBuffer()
+          .toBuffer();
 
-        const refId = this.emitFile({ type: 'asset', name: `${base}-${width}.webp`, source })
-        const token = `__KOP_ASSET_${pending.size}__`
-        pending.set(token, refId)
-        urls.push({ width, token })
+        const refId = this.emitFile({
+          type: "asset",
+          name: `${base}-${width}.webp`,
+          source,
+        });
+        const token = `__KOP_ASSET_${pending.size}__`;
+        pending.set(token, refId);
+        urls.push({ width, token });
       }
 
-      const largest = urls[urls.length - 1]
+      const largest = urls[urls.length - 1];
 
       return [
         `export default ${JSON.stringify(largest.token)};`,
-        `export const srcSet = ${JSON.stringify(urls.map(({ token, width }) => `${token} ${width}w`).join(', '))};`,
-      ].join('\n')
+        `export const srcSet = ${JSON.stringify(urls.map(({ token, width }) => `${token} ${width}w`).join(", "))};`,
+      ].join("\n");
     },
     generateBundle(_options, bundle) {
-      if (pending.size === 0) return
+      if (pending.size === 0) return;
+
+      const prefix = assetBase.endsWith("/") ? assetBase : `${assetBase}/`;
 
       for (const item of Object.values(bundle)) {
-        if (item.type !== 'chunk') continue
+        if (item.type !== "chunk") continue;
         for (const [token, refId] of pending)
-          item.code = item.code.split(token).join(this.getFileName(refId))
+          item.code = item.code
+            .split(token)
+            .join(prefix + this.getFileName(refId));
       }
     },
-  }
+  };
 }
 
-const SITE_URL = (process.env.SITE_URL || '').replace(/\/+$/, '')
+const SITE_URL = (process.env.SITE_URL || "").replace(/\/+$/, "");
 
 const person = (author) => ({
-  '@type': 'Person',
+  "@type": "Person",
   name: author.name,
   jobTitle: author.jobTitle,
   ...(author.knowsAbout ? { knowsAbout: author.knowsAbout } : {}),
   ...(author.sameAs?.length ? { sameAs: author.sameAs } : {}),
-})
+});
 
 function creditsJsonLd() {
   return {
-    '@context': 'https://schema.org',
-    '@graph': [
+    "@context": "https://schema.org",
+    "@graph": [
       {
-        '@type': 'WebSite',
+        "@type": "WebSite",
         name: PROJECT.name,
         alternateName: PROJECT.alternateName,
         description: PROJECT.description,
         inLanguage: PROJECT.inLanguage,
         ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
         author: person(PRIMARY_AUTHOR),
-        publisher: { '@type': 'Organization', name: PROJECT.name },
+        publisher: { "@type": "Organization", name: PROJECT.name },
       },
       {
-        '@type': 'Organization',
+        "@type": "Organization",
         name: PROJECT.name,
         description: PROJECT.description,
         founder: person(PRIMARY_AUTHOR),
@@ -115,7 +142,7 @@ function creditsJsonLd() {
         ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
       },
       {
-        '@type': 'CreativeWork',
+        "@type": "CreativeWork",
         name: PROJECT.name,
         description: PROJECT.description,
         inLanguage: PROJECT.inLanguage,
@@ -123,21 +150,21 @@ function creditsJsonLd() {
         ...(SITE_URL ? { url: `${SITE_URL}/` } : {}),
       },
     ],
-  }
+  };
 }
 
 const SITEMAP_PATHS = [
-  { loc: '/', priority: '1.0', changefreq: 'weekly' },
-  { loc: '/search', priority: '0.9', changefreq: 'daily' },
-  { loc: '/how-it-works', priority: '0.5', changefreq: 'monthly' },
-]
+  { loc: "/", priority: "1.0", changefreq: "weekly" },
+  { loc: "/search", priority: "0.9", changefreq: "daily" },
+  { loc: "/how-it-works", priority: "0.5", changefreq: "monthly" },
+];
 
 function sitemap() {
   return {
-    name: 'kop-sitemap',
-    apply: 'build',
+    name: "kop-sitemap",
+    apply: "build",
     generateBundle() {
-      if (!SITE_URL) return
+      if (!SITE_URL) return;
 
       const urls = SITEMAP_PATHS.map(
         (entry) =>
@@ -146,32 +173,32 @@ function sitemap() {
           `    <changefreq>${entry.changefreq}</changefreq>\n` +
           `    <priority>${entry.priority}</priority>\n` +
           `  </url>`,
-      ).join('\n')
+      ).join("\n");
 
       this.emitFile({
-        type: 'asset',
-        fileName: 'sitemap.xml',
+        type: "asset",
+        fileName: "sitemap.xml",
         source:
           `<?xml version="1.0" encoding="UTF-8"?>\n` +
           `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
-      })
+      });
 
       this.emitFile({
-        type: 'asset',
-        fileName: 'robots.txt',
+        type: "asset",
+        fileName: "robots.txt",
         source:
           `User-agent: *\nAllow: /\n\n` +
           `Sitemap: ${SITE_URL}/sitemap.xml\n\n` +
           `Disallow: /admin\nDisallow: /dashboard\n` +
           `Disallow: /auth/me\nDisallow: /forbidden\n`,
-      })
+      });
     },
-  }
+  };
 }
 
 function headTags() {
   return {
-    name: 'kop-head-tags',
+    name: "kop-head-tags",
     transformIndexHtml(html) {
       const head = [
         ...(SITE_URL
@@ -189,19 +216,19 @@ function headTags() {
         `    <script type="application/ld+json">`,
         JSON.stringify(creditsJsonLd(), null, 2),
         `    </script>`,
-      ].join('\n')
+      ].join("\n");
 
       const cleaned = SITE_URL
         ? html
-            .replace(/^[ \t]*<meta name="twitter:image"[^>]*>\r?\n/gm, '')
-            .replace(/^[ \t]*<meta property="og:image"[^>]*>\r?\n/gm, '')
-            .replace(/^[ \t]*<meta property="og:image:width"[^>]*>\r?\n/gm, '')
-            .replace(/^[ \t]*<meta property="og:image:height"[^>]*>\r?\n/gm, '')
-        : html
+            .replace(/^[ \t]*<meta name="twitter:image"[^>]*>\r?\n/gm, "")
+            .replace(/^[ \t]*<meta property="og:image"[^>]*>\r?\n/gm, "")
+            .replace(/^[ \t]*<meta property="og:image:width"[^>]*>\r?\n/gm, "")
+            .replace(/^[ \t]*<meta property="og:image:height"[^>]*>\r?\n/gm, "")
+        : html;
 
-      return cleaned.replace('  </head>', `${head}\n  </head>`)
+      return cleaned.replace("  </head>", `${head}\n  </head>`);
     },
-  }
+  };
 }
 
 export default defineConfig({
@@ -214,8 +241,8 @@ export default defineConfig({
     sitemap(),
   ],
   build: {
-    outDir: path.resolve(__dirname, 'dist'),
+    outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
   },
-  resolve: { alias: { '@': path.resolve(import.meta.dirname, 'src') } },
-})
+  resolve: { alias: { "@": path.resolve(import.meta.dirname, "src") } },
+});

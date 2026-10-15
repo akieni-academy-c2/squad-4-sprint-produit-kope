@@ -1,4 +1,4 @@
-import * as service from './reference.service.js';
+import * as service from "./reference.service.js";
 
 export async function listTrades(req, res) {
   res.json({ trades: await service.listTrades() });

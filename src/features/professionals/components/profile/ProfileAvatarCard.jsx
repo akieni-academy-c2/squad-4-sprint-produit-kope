@@ -1,12 +1,21 @@
-import { Camera } from 'lucide-react';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
+import { Camera } from "lucide-react";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
 
 /**
  * Carte d'avatar. L'envoi est piloté par le parent : il fournit la progression
  * et neutralise le sélecteur pendant l'upload, le composant ne fait qu'afficher.
  */
-export function ProfileAvatarCard({ user, avatar, name, tradeName, editing, uploading, uploadProgress, onAvatarChange }) {
+export function ProfileAvatarCard({
+  user,
+  avatar,
+  name,
+  tradeName,
+  editing,
+  uploading,
+  uploadProgress,
+  onAvatarChange,
+}) {
   return (
     <Card className="overflow-hidden">
       <div className="flex items-center gap-5 bg-mint-50/40 p-6">
@@ -28,7 +37,9 @@ export function ProfileAvatarCard({ user, avatar, name, tradeName, editing, uplo
 
         <div className="min-w-0">
           <p className="text-lg font-semibold text-gray-900">{name}</p>
-          <p className="text-sm text-gray-500">{tradeName || 'Professionnel'}</p>
+          <p className="text-sm text-gray-500">
+            {tradeName || "Professionnel"}
+          </p>
           {uploading && (
             <div className="mt-2 w-40 overflow-hidden rounded-full bg-gray-200">
               <div

@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button } from './Button.jsx';
-import { Input } from './Input.jsx';
-import { Edit, Trash2 } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { ALLOWED_MIME, MAX_FILE_SIZE_BYTES } from '@/shared/lib/constants.js';
+import { useEffect, useRef, useState } from "react";
+import { Button } from "./Button.jsx";
+import { Input } from "./Input.jsx";
+import { Edit, Trash2 } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { ALLOWED_MIME, MAX_FILE_SIZE_BYTES } from "@/shared/lib/constants.js";
 
 function formatSize(n) {
   if (n < 1024) return `${n} o`;
@@ -12,14 +12,14 @@ function formatSize(n) {
 }
 
 export function FileUpload({
-  label = 'Choisir une photo',
-  hint = 'JPG ou PNG, 5 Mo maximum',
-  accept = ALLOWED_MIME.join(','),
+  label = "Choisir une photo",
+  hint = "JPG ou PNG, 5 Mo maximum",
+  accept = ALLOWED_MIME.join(","),
   capture,
   maxSize = MAX_FILE_SIZE_BYTES,
   value,
   onChange,
-  caption = '',
+  caption = "",
   onCaptionChange,
   captionMax = 100,
   error,
@@ -28,15 +28,15 @@ export function FileUpload({
 }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
-  const [fileError, setFileError] = useState('');
+  const [fileError, setFileError] = useState("");
 
   const pick = () => inputRef.current?.click();
 
   const applyFile = (file) => {
-    setFileError('');
+    setFileError("");
     if (!file) return;
     if (!ALLOWED_MIME.includes(file.type)) {
-      setFileError('Format non autorisé (seulement JPG ou PNG)');
+      setFileError("Format non autorisé (seulement JPG ou PNG)");
       return;
     }
     if (file.size > maxSize) {
@@ -46,17 +46,26 @@ export function FileUpload({
     onChange?.(file);
   };
 
-  const previewUrl = useMemo(
-    () => (typeof value === 'string' ? value : value ? URL.createObjectURL(value) : null),
-    [value],
-  );
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  useEffect(
-    () => () => {
-      if (previewUrl && typeof value !== 'string') URL.revokeObjectURL(previewUrl);
-    },
-    [previewUrl, value],
-  );
+  /**
+   * `URL.createObjectURL` alloue une ressource hors de React : elle se crée dans
+   * un effet, jamais pendant le rendu, que StrictMode invoque deux fois. Le
+   * `setState` se justifie ici - l'URL ne peut pas se déduire au rendu sans
+   * allouer une ressource à chaque passe - et le retour du callback libère
+   * l'URL au changement de fichier comme au démontage.
+   */
+  useEffect(() => {
+    let url = null;
+    if (typeof value !== "string" && value) url = URL.createObjectURL(value);
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreviewUrl(typeof value === "string" ? value : url);
+
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [value]);
 
   return (
     <div className="space-y-2">
@@ -80,10 +89,12 @@ export function FileUpload({
             />
             <div className="min-w-0 flex-1 ">
               <p className="truncate text-sm font-medium text-gray-800">
-                {value?.name || 'Aperçu'}
+                {value?.name || "Aperçu"}
               </p>
               {value?.size != null && (
-                <p className="text-xs text-gray-500">{formatSize(value.size)}</p>
+                <p className="text-xs text-gray-500">
+                  {formatSize(value.size)}
+                </p>
               )}
               <div className="mt-1 flex flex-col items-center  w-fit absolute top-0 right-0">
                 <Button
@@ -101,7 +112,7 @@ export function FileUpload({
                   variant="ghost"
                   onClick={() => {
                     onChange?.(null);
-                    setFileError('');
+                    setFileError("");
                   }}
                   disabled={disabled}
                   aria-label="Retirer le fichier"
@@ -129,17 +140,27 @@ export function FileUpload({
             if (!disabled) applyFile(e.dataTransfer.files?.[0]);
           }}
           className={cn(
-            'group flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed bg-white px-4 py-6 text-center shadow-sm transition focus-ring',
-            dragOver ? 'border-primary-500 bg-primary-50 shadow-md' : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-sm',
-            disabled && 'cursor-not-allowed opacity-60',
-            compact && 'py-4',
+            "group flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed bg-white px-4 py-6 text-center shadow-sm transition focus-ring",
+            dragOver
+              ? "border-primary-500 bg-primary-50 shadow-md"
+              : "border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-sm",
+            disabled && "cursor-not-allowed opacity-60",
+            compact && "py-4",
           )}
         >
           <div
             aria-hidden
             className="flex size-12 items-center justify-center rounded-full bg-primary-50 text-primary-600 ring-1 ring-primary-100 transition group-hover:bg-primary-100"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="17 8 12 3 7 8" />
               <line x1="12" y1="3" x2="12" y2="15" />
@@ -154,8 +175,10 @@ export function FileUpload({
       {onCaptionChange && value && (
         <Input
           placeholder="Légende (optionnelle, 100 caractères max)"
-          value={caption ?? ''}
-          onChange={(e) => onCaptionChange?.(e.target.value.slice(0, captionMax))}
+          value={caption ?? ""}
+          onChange={(e) =>
+            onCaptionChange?.(e.target.value.slice(0, captionMax))
+          }
           maxLength={captionMax}
           disabled={disabled}
         />

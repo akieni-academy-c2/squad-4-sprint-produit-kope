@@ -1,10 +1,10 @@
-import { Search, SlidersHorizontal } from 'lucide-react';
-import { cn } from '@/shared/utils';
+import { Search, SlidersHorizontal } from "lucide-react";
+import { cn } from "@/shared/utils";
 
 export function SearchActionBar({
   onSearchClick,
   onFiltersClick,
-  keyword = '',
+  keyword = "",
   filtersActive = false,
   total,
 }) {
@@ -21,11 +21,18 @@ export function SearchActionBar({
           className="flex h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white/90 px-4 text-left text-sm text-gray-500 backdrop-blur-sm transition hover:border-gray-300 hover:bg-white focus-ring"
         >
           <Search size={18} aria-hidden className="shrink-0 text-gray-400" />
-          <span className={cn('truncate', keyword ? 'text-gray-800' : 'text-gray-400')}>
-            {keyword || 'Recherche'}
+          <span
+            className={cn(
+              "truncate",
+              keyword ? "text-gray-800" : "text-gray-400",
+            )}
+          >
+            {keyword || "Recherche"}
           </span>
           {total > 0 && (
-            <span className="ml-auto shrink-0 text-xs font-semibold text-gray-400">{total}</span>
+            <span className="ml-auto shrink-0 text-xs font-semibold text-gray-400">
+              {total}
+            </span>
           )}
         </button>
 

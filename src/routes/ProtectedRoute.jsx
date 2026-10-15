@@ -1,7 +1,7 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
-import { ROUTES } from '@/shared/lib/constants.js';
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { Skeleton } from "@/shared/components/ui/Skeleton.jsx";
+import { ROUTES } from "@/shared/lib/constants.js";
 
 export function ProtectedRoute({ children }) {
   const { user, loading } = useAuthContext();
