@@ -18,11 +18,11 @@ tests/
 
 ## Trois alias, pas de `../`
 
-| alias | résout vers |
-|---|---|
-| `@/` | `src/` |
-| `@server/` | `server/` |
-| `@test/` | `tests/` |
+| alias      | résout vers |
+| ---------- | ----------- |
+| `@/`       | `src/`      |
+| `@server/` | `server/`   |
+| `@test/`   | `tests/`    |
 
 Un test n'écrit jamais de chemin relatif. C'est ce qui permet de le déplacer
 dans l'arborescence sans casser ses imports - et donc de le poser **à côté de
@@ -60,9 +60,9 @@ vaut que pour le graphe d'imports - il faut un chemin sur le disque. Ces tests
 utilisent `repoPath()` de `support/repoRoot.js` :
 
 ```js
-import { repoPath } from '@test/support/repoRoot.js';
+import { repoPath } from "@test/support/repoRoot.js";
 
-const css = readFileSync(repoPath('src/index.css'), 'utf8');
+const css = readFileSync(repoPath("src/index.css"), "utf8");
 ```
 
 `repoRoot.js` remonte depuis son propre emplacement jusqu'à la racine du dépôt.

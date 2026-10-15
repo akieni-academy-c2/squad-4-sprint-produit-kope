@@ -1,17 +1,16 @@
-import { Image as ImageIcon, MapPin, Phone, Star } from 'lucide-react';
-import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { KpiCard, StatGroup } from '@/shared/components/ui';
+import { Image as ImageIcon, MapPin, Phone, Star } from "lucide-react";
+import { useAsyncData } from "@/shared/hooks/useAsyncData.js";
+import { KpiCard, StatGroup } from "@/shared/components/ui";
 import {
   ContactTile,
   OverviewEmpty,
   ReviewTile,
   TileSkeleton,
-} from '@/shared/components/dashboard/ActivityTiles.jsx';
-import { getMyContacts } from '@/features/contacts/services/contacts.service.js';
-import { listReviews } from '@/features/reviews/services/reviews.service.js';
+} from "@/shared/components/dashboard/ActivityTiles.jsx";
+import { getMyContacts } from "@/features/contacts/services/contacts.service.js";
+import { listReviews } from "@/features/reviews/services/reviews.service.js";
 
 const RECENT_COUNT = 4;
-
 
 export function OverviewSection({ profile, onNavigate }) {
   const professionalId = profile?.id;
@@ -42,36 +41,42 @@ export function OverviewSection({ profile, onNavigate }) {
             value={profile?.photoCount ?? profile?.photos?.length ?? 0}
             hint="Photos de vos travaux"
             icon={<ImageIcon size={12} aria-hidden />}
-            onClick={() => onNavigate?.('photos')}
+            onClick={() => onNavigate?.("photos")}
           />
           <KpiCard
             label="Zones"
             value={profile?.zones?.length ?? 0}
-            hint={profile?.cityName || 'Ville non renseignée'}
+            hint={profile?.cityName || "Ville non renseignée"}
             icon={<MapPin size={12} aria-hidden />}
-            onClick={() => onNavigate?.('profil')}
+            onClick={() => onNavigate?.("profil")}
           />
           <KpiCard
             label="Contacts"
-            value={loading ? '-' : data?.contactsTotal ?? 0}
+            value={loading ? "-" : (data?.contactsTotal ?? 0)}
             hint="Clients et professionnels"
             icon={<Phone size={12} aria-hidden />}
-            onClick={() => onNavigate?.('contacts')}
+            onClick={() => onNavigate?.("contacts")}
           />
           <KpiCard
             label="Avis reçus"
-            value={loading ? '-' : data?.reviewsTotal ?? 0}
+            value={loading ? "-" : (data?.reviewsTotal ?? 0)}
             hint="Note moyenne et avis"
             icon={<Star size={12} aria-hidden />}
-            onClick={() => onNavigate?.('avis')}
+            onClick={() => onNavigate?.("avis")}
           />
         </div>
       </StatGroup>
 
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-        <StatGroup title="Derniers avis reçus" className="flex w-full min-w-0 flex-col">
+        <StatGroup
+          title="Derniers avis reçus"
+          className="flex w-full min-w-0 flex-col"
+        >
           {loading ? (
-            <div className="grid w-full min-w-0 grid-cols-2 content-start gap-2" aria-busy="true">
+            <div
+              className="grid w-full min-w-0 grid-cols-2 content-start gap-2"
+              aria-busy="true"
+            >
               {[0, 1].map((i) => (
                 <TileSkeleton key={i} />
               ))}
@@ -85,24 +90,32 @@ export function OverviewSection({ profile, onNavigate }) {
                   key={review.id}
                   name={
                     review.client?.displayName ||
-                    [review.client?.firstName, review.client?.lastName].filter(Boolean).join(' ') ||
-                    'Client'
+                    [review.client?.firstName, review.client?.lastName]
+                      .filter(Boolean)
+                      .join(" ") ||
+                    "Client"
                   }
                   avatarUrl={review.client?.avatarUrl}
                   subtitle={review.comment}
                   rating={review.rating}
                   createdAt={review.createdAt}
                   actionLabel={`Ouvrir mes avis - avis reçu`}
-                  onClick={() => onNavigate?.('avis')}
+                  onClick={() => onNavigate?.("avis")}
                 />
               ))}
             </ul>
           )}
         </StatGroup>
 
-        <StatGroup title="Derniers contacts" className="flex w-full min-w-0 flex-col">
+        <StatGroup
+          title="Derniers contacts"
+          className="flex w-full min-w-0 flex-col"
+        >
           {loading ? (
-            <div className="grid w-full min-w-0 grid-cols-2 content-start gap-2" aria-busy="true">
+            <div
+              className="grid w-full min-w-0 grid-cols-2 content-start gap-2"
+              aria-busy="true"
+            >
               {[0, 1].map((i) => (
                 <TileSkeleton key={i} />
               ))}
@@ -115,8 +128,8 @@ export function OverviewSection({ profile, onNavigate }) {
                 <ContactTile
                   key={contact.id}
                   contact={contact}
-                  actionLabel={`Ouvrir mes contacts - ${contact.displayName || 'Utilisateur'}`}
-                  onClick={() => onNavigate?.('contacts')}
+                  actionLabel={`Ouvrir mes contacts - ${contact.displayName || "Utilisateur"}`}
+                  onClick={() => onNavigate?.("contacts")}
                 />
               ))}
             </ul>

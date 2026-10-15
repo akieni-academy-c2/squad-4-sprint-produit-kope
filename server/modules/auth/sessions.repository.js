@@ -1,6 +1,10 @@
-import { pool } from '../../db/pool.js';
+import { pool } from "../../db/pool.js";
 
-export async function destroyUserSessions(userId, { exceptSessionId } = {}, db = pool) {
+export async function destroyUserSessions(
+  userId,
+  { exceptSessionId } = {},
+  db = pool,
+) {
   const { rowCount } = await db.query(
     `DELETE FROM session
       WHERE (sess->'user'->>'id') ~ '^\\d+$'

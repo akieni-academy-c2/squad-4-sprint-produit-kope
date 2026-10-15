@@ -1,19 +1,50 @@
-import bcrypt from 'bcryptjs';
-import { pool } from '../pool.js';
-import { env } from '../../config/env.js';
-import { normalizePhone } from '../../utils/phone.js';
+import bcrypt from "bcryptjs";
+import { pool } from "../pool.js";
+import { env } from "../../config/env.js";
+import { normalizePhone } from "../../utils/phone.js";
 
 const COUNT = Number(process.env.SEED_CLIENTS_COUNT) || 20;
-const PASSWORD = process.env.SEED_CLIENT_PASSWORD ?? 'Password123!';
+const PASSWORD = process.env.SEED_CLIENT_PASSWORD ?? "Password123!";
 
 const FIRST_NAMES = [
-  'Abel', 'Ange', 'Brice', 'Cédric', 'Diane', 'Emmanuella', 'Franck', 'Gina',
-  'Hervé', 'Inès', 'Joël', 'Kelly', 'Léa', 'Marcel', 'Nadia', 'Olivier',
-  'Prisca', 'Ruth', 'Stéphane', 'Tatiana',
+  "Abel",
+  "Ange",
+  "Brice",
+  "Cédric",
+  "Diane",
+  "Emmanuella",
+  "Franck",
+  "Gina",
+  "Hervé",
+  "Inès",
+  "Joël",
+  "Kelly",
+  "Léa",
+  "Marcel",
+  "Nadia",
+  "Olivier",
+  "Prisca",
+  "Ruth",
+  "Stéphane",
+  "Tatiana",
 ];
 const LAST_NAMES = [
-  'Bouanga', 'Itoua', 'Kengue', 'Loufoua', 'Makaya', 'Mballa', 'Nganga', 'Okamba',
-  'Babaka', 'Ekongo', 'Ibara', 'Matondo', 'Ngoma', 'Ondongo', 'Sassou', 'Tsoumou',
+  "Bouanga",
+  "Itoua",
+  "Kengue",
+  "Loufoua",
+  "Makaya",
+  "Mballa",
+  "Nganga",
+  "Okamba",
+  "Babaka",
+  "Ekongo",
+  "Ibara",
+  "Matondo",
+  "Ngoma",
+  "Ondongo",
+  "Sassou",
+  "Tsoumou",
 ];
 
 function randomPhone() {
@@ -23,13 +54,14 @@ function randomPhone() {
 
 async function main() {
   if (PASSWORD.length < 8)
-    throw new Error('SEED_CLIENT_PASSWORD doit faire au moins 8 caractères');
+    throw new Error("SEED_CLIENT_PASSWORD doit faire au moins 8 caractères");
 
   const passwordHash = await bcrypt.hash(PASSWORD, env.BCRYPT_ROUNDS);
   let created = 0;
 
   for (let i = 0; i < COUNT; i += 1) {
-    const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+    const firstName =
+      FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
     const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
     const phone = randomPhone();
     if (!phone) continue;

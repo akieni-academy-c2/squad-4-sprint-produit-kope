@@ -1,5 +1,5 @@
-import { api } from '@/shared/lib/api.js';
-import { callApi } from '@/shared/lib/dataSource.js';
+import { api } from "@/shared/lib/api.js";
+import { callApi } from "@/shared/lib/dataSource.js";
 import {
   mockAdminProfessionals,
   mockAdminStats,
@@ -31,12 +31,12 @@ import {
   mockUpdateTrade,
   mockUpdateTradeCategory,
   mockUpdateZone,
-} from '@/shared/mocks/appMock.js';
-import { MOCK_PROS } from '@/shared/mocks/appMock.js';
+} from "@/shared/mocks/appMock.js";
+import { MOCK_PROS } from "@/shared/mocks/appMock.js";
 
 export function getStats() {
   return callApi(
-    () => api.get('/admin/stats'),
+    () => api.get("/admin/stats"),
     async () => mockAdminStats(),
   );
 }
@@ -44,27 +44,31 @@ export function getStats() {
 export function listPros({
   page = 1,
   pageSize = 20,
-  query = '',
-  status = '',
-  sort = 'name',
-  city = '',
+  query = "",
+  status = "",
+  sort = "name",
+  city = "",
 } = {}) {
   return callApi(
     () => {
       const params = { page, pageSize };
       if (query) params.q = query;
       if (status) params.status = status;
-      if (sort && sort !== 'name') params.sort = sort;
+      if (sort && sort !== "name") params.sort = sort;
       if (city) params.city = city;
-      return api.get('/admin/professionals', params);
+      return api.get("/admin/professionals", params);
     },
-    async () => mockAdminProfessionals({ page, pageSize, query, status, sort, city }),
+    async () =>
+      mockAdminProfessionals({ page, pageSize, query, status, sort, city }),
   );
 }
 
 export function setProHidden(id, hidden) {
   return callApi(
-    () => api.patchJson(`/admin/professionals/${id}/visibility`, { hidden: Boolean(hidden) }),
+    () =>
+      api.patchJson(`/admin/professionals/${id}/visibility`, {
+        hidden: Boolean(hidden),
+      }),
     async () => {
       const pro = MOCK_PROS.find((p) => String(p.id) === String(id));
       if (pro) pro.isHidden = Boolean(hidden);
@@ -73,13 +77,18 @@ export function setProHidden(id, hidden) {
   );
 }
 
-export function listReviews({ page = 1, pageSize = 20, hidden, query = '' } = {}) {
+export function listReviews({
+  page = 1,
+  pageSize = 20,
+  hidden,
+  query = "",
+} = {}) {
   return callApi(
     () => {
       const params = { page, pageSize };
-      if (typeof hidden === 'boolean') params.hidden = String(hidden);
+      if (typeof hidden === "boolean") params.hidden = String(hidden);
       if (query) params.q = query;
-      return api.get('/admin/reviews', params);
+      return api.get("/admin/reviews", params);
     },
     async () => mockAdminReviews({ page, pageSize, hidden, query }),
   );
@@ -87,18 +96,26 @@ export function listReviews({ page = 1, pageSize = 20, hidden, query = '' } = {}
 
 export function setReviewHidden(reviewId, hidden) {
   return callApi(
-    () => api.patchJson(`/admin/reviews/${reviewId}/visibility`, { hidden: Boolean(hidden) }),
+    () =>
+      api.patchJson(`/admin/reviews/${reviewId}/visibility`, {
+        hidden: Boolean(hidden),
+      }),
     async () => mockSetReviewHidden(reviewId, hidden),
   );
 }
 
-export function listReports({ page = 1, pageSize = 20, status = '', query = '' } = {}) {
+export function listReports({
+  page = 1,
+  pageSize = 20,
+  status = "",
+  query = "",
+} = {}) {
   return callApi(
     () => {
       const params = { page, pageSize };
       if (status) params.status = status;
       if (query) params.q = query;
-      return api.get('/admin/reports', params);
+      return api.get("/admin/reports", params);
     },
     async () => mockAdminReports({ page, pageSize, status, query }),
   );
@@ -106,26 +123,38 @@ export function listReports({ page = 1, pageSize = 20, status = '', query = '' }
 
 export function setReportStatus(reportId, status) {
   return callApi(
-    () => api.patchJson(`/admin/reports/${reportId}`, { status }).then((r) => r.report),
+    () =>
+      api
+        .patchJson(`/admin/reports/${reportId}`, { status })
+        .then((r) => r.report),
     async () => mockResolveReport(reportId, status),
   );
 }
 
 export function setUserSuspended(actorId, id, suspended) {
   return callApi(
-    () => api.patchJson(`/admin/users/${id}/suspended`, { suspended: Boolean(suspended) }),
+    () =>
+      api.patchJson(`/admin/users/${id}/suspended`, {
+        suspended: Boolean(suspended),
+      }),
     async () => mockSetUserSuspended(actorId, id, suspended),
   );
 }
 
-export function listUsers({ page = 1, pageSize = 20, role = '', query = '', blocked } = {}) {
+export function listUsers({
+  page = 1,
+  pageSize = 20,
+  role = "",
+  query = "",
+  blocked,
+} = {}) {
   return callApi(
     () => {
       const params = { page, pageSize };
       if (role) params.role = role;
       if (query) params.q = query;
-      if (typeof blocked === 'boolean') params.blocked = String(blocked);
-      return api.get('/admin/users', params);
+      if (typeof blocked === "boolean") params.blocked = String(blocked);
+      return api.get("/admin/users", params);
     },
     async () => mockAdminUsers({ page, pageSize, role, query, blocked }),
   );
@@ -140,21 +169,21 @@ export function setUserBlocked(actorId, id, blocked) {
 
 export function createAdmin(payload) {
   return callApi(
-    () => api.postJson('/admin/users', payload),
+    () => api.postJson("/admin/users", payload),
     async () => mockCreateAdmin(payload),
   );
 }
 
 export function listTrades() {
   return callApi(
-    () => api.get('/admin/trades'),
+    () => api.get("/admin/trades"),
     async () => mockListTrades(),
   );
 }
 
 export function createTrade(payload) {
   return callApi(
-    () => api.postJson('/admin/trades', payload),
+    () => api.postJson("/admin/trades", payload),
     async () => mockCreateTrade(payload),
   );
 }
@@ -175,21 +204,21 @@ export function deleteTrade(id) {
 
 export function reorderTrades(ids) {
   return callApi(
-    () => api.postJson('/admin/trades/reorder', { ids }),
+    () => api.postJson("/admin/trades/reorder", { ids }),
     async () => mockReorderTrades(ids),
   );
 }
 
 export function listTradeCategories() {
   return callApi(
-    () => api.get('/admin/trade-categories'),
+    () => api.get("/admin/trade-categories"),
     async () => mockListTradeCategories(),
   );
 }
 
 export function createTradeCategory(payload) {
   return callApi(
-    () => api.postJson('/admin/trade-categories', payload),
+    () => api.postJson("/admin/trade-categories", payload),
     async () => mockCreateTradeCategory(payload),
   );
 }
@@ -210,21 +239,21 @@ export function deleteTradeCategory(id) {
 
 export function reorderTradeCategories(ids) {
   return callApi(
-    () => api.postJson('/admin/trade-categories/reorder', { ids }),
+    () => api.postJson("/admin/trade-categories/reorder", { ids }),
     async () => mockReorderTradeCategories(ids),
   );
 }
 
 export function listZones() {
   return callApi(
-    () => api.get('/admin/zones'),
+    () => api.get("/admin/zones"),
     async () => mockListZones(),
   );
 }
 
 export function createZone(payload) {
   return callApi(
-    () => api.postJson('/admin/zones', payload),
+    () => api.postJson("/admin/zones", payload),
     async () => mockCreateZone(payload),
   );
 }
@@ -245,21 +274,21 @@ export function deleteZone(id) {
 
 export function reorderZones(ids) {
   return callApi(
-    () => api.postJson('/admin/zones/reorder', { ids }),
+    () => api.postJson("/admin/zones/reorder", { ids }),
     async () => mockReorderZones(ids),
   );
 }
 
 export function listCities() {
   return callApi(
-    () => api.get('/admin/cities'),
+    () => api.get("/admin/cities"),
     async () => mockListCities(),
   );
 }
 
 export function createCity(payload) {
   return callApi(
-    () => api.postJson('/admin/cities', payload),
+    () => api.postJson("/admin/cities", payload),
     async () => mockCreateCity(payload),
   );
 }
@@ -280,7 +309,7 @@ export function deleteCity(id) {
 
 export function reorderCities(ids) {
   return callApi(
-    () => api.postJson('/admin/cities/reorder', { ids }),
+    () => api.postJson("/admin/cities/reorder", { ids }),
     async () => mockReorderCities(ids),
   );
 }

@@ -1,19 +1,27 @@
-import { formatPhoneDisplay, toNational } from '@/shared/utils/phoneField.js';
-import { cn } from '@/shared/utils';
+import { formatPhoneDisplay, toNational } from "@/shared/utils/phoneField.js";
+import { cn } from "@/shared/utils";
 
-
-export function PhoneInput({ id, value, onChange, error, success, disabled, className, ...rest }) {
+export function PhoneInput({
+  id,
+  value,
+  onChange,
+  error,
+  success,
+  disabled,
+  className,
+  ...rest
+}) {
   const emit = (raw) => onChange(toNational(raw));
 
   const shell = cn(
-    'flex w-full items-stretch overflow-hidden rounded-sm border bg-white transition-colors',
+    "flex w-full items-stretch overflow-hidden rounded-sm border bg-white transition-colors",
     error
-      ? 'is-invalid border-danger-500 bg-danger-50/30'
+      ? "is-invalid border-danger-500 bg-danger-50/30"
       : success
-        ? 'is-valid border-emerald-500 bg-emerald-50/30'
-        : 'border-gray-200 hover:border-gray-300',
-    'focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-500/12',
-    disabled && 'bg-gray-50 opacity-60',
+        ? "is-valid border-emerald-500 bg-emerald-50/30"
+        : "border-gray-200 hover:border-gray-300",
+    "focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-500/12",
+    disabled && "bg-gray-50 opacity-60",
     className,
   );
 
@@ -23,7 +31,9 @@ export function PhoneInput({ id, value, onChange, error, success, disabled, clas
         aria-hidden
         className="flex shrink-0 select-none items-center border-r border-gray-200 bg-gray-50"
       >
-        <span className="py-3 pl-3 pr-3 text-sm font-semibold text-gray-700">+242</span>
+        <span className="py-3 pl-3 pr-3 text-sm font-semibold text-gray-700">
+          +242
+        </span>
         <span className="h-4 w-px bg-gray-300" />
       </span>
 

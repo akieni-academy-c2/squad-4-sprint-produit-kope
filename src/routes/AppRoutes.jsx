@@ -1,23 +1,65 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
-import { RootLayout } from '@/shared/components/layout/RootLayout.jsx';
-import { HomeRoute } from './HomeRoute.jsx';
-import { RoleRoute } from './RoleRoute.jsx';
-import { ROLES, ROUTES } from '@/shared/lib/constants.js';
-import { Skeleton } from '@/shared/components/ui/Skeleton.jsx';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { RootLayout } from "@/shared/components/layout/RootLayout.jsx";
+import { HomeRoute } from "./HomeRoute.jsx";
+import { RoleRoute } from "./RoleRoute.jsx";
+import { ROLES, ROUTES } from "@/shared/lib/constants.js";
+import { Skeleton } from "@/shared/components/ui/Skeleton.jsx";
 
-const HomePage = lazy(() => import('@/pages/HomePage.jsx').then((m) => ({ default: m.HomePage })));
-const HowItWorksPage = lazy(() => import('@/pages/HowItWorksPage.jsx').then((m) => ({ default: m.HowItWorksPage })));
-const TermsPage = lazy(() => import('@/pages/TermsPage.jsx').then((m) => ({ default: m.TermsPage })));
-const NotFoundPage = lazy(() => import('@/pages/NotFoundPage.jsx').then((m) => ({ default: m.NotFoundPage })));
-const ForbiddenPage = lazy(() => import('@/pages/ForbiddenPage.jsx').then((m) => ({ default: m.ForbiddenPage })));
-const AuthModalRedirect = lazy(() => import('@/features/auth/pages/AuthModalRedirect.jsx').then((m) => ({ default: m.AuthModalRedirect })));
-const SearchPage = lazy(() => import('@/features/search/pages/SearchPage.jsx').then((m) => ({ default: m.SearchPage })));
-const ProfessionalPublicPage = lazy(() => import('@/features/professionals/pages/ProfessionalPublicPage.jsx').then((m) => ({ default: m.ProfessionalPublicPage })));
-const ClientDashboardPage = lazy(() => import('@/pages/dashboard/ClientDashboardPage.jsx').then((m) => ({ default: m.ClientDashboardPage })));
-const ProProfilePage = lazy(() => import('@/features/professionals/pages/ProProfilePage.jsx').then((m) => ({ default: m.ProProfilePage })));
-const AdminDashboardPage = lazy(() => import('@/features/admin/pages/AdminDashboardPage.jsx').then((m) => ({ default: m.AdminDashboardPage })));
-const RouteErrorPage = lazy(() => import('@/pages/RouteErrorPage.jsx').then((m) => ({ default: m.RouteErrorPage })));
+const HomePage = lazy(() =>
+  import("@/pages/HomePage.jsx").then((m) => ({ default: m.HomePage })),
+);
+const HowItWorksPage = lazy(() =>
+  import("@/pages/HowItWorksPage.jsx").then((m) => ({
+    default: m.HowItWorksPage,
+  })),
+);
+const TermsPage = lazy(() =>
+  import("@/pages/TermsPage.jsx").then((m) => ({ default: m.TermsPage })),
+);
+const NotFoundPage = lazy(() =>
+  import("@/pages/NotFoundPage.jsx").then((m) => ({ default: m.NotFoundPage })),
+);
+const ForbiddenPage = lazy(() =>
+  import("@/pages/ForbiddenPage.jsx").then((m) => ({
+    default: m.ForbiddenPage,
+  })),
+);
+const AuthModalRedirect = lazy(() =>
+  import("@/features/auth/pages/AuthModalRedirect.jsx").then((m) => ({
+    default: m.AuthModalRedirect,
+  })),
+);
+const SearchPage = lazy(() =>
+  import("@/features/search/pages/SearchPage.jsx").then((m) => ({
+    default: m.SearchPage,
+  })),
+);
+const ProfessionalPublicPage = lazy(() =>
+  import("@/features/professionals/pages/ProfessionalPublicPage.jsx").then(
+    (m) => ({ default: m.ProfessionalPublicPage }),
+  ),
+);
+const ClientDashboardPage = lazy(() =>
+  import("@/pages/dashboard/ClientDashboardPage.jsx").then((m) => ({
+    default: m.ClientDashboardPage,
+  })),
+);
+const ProProfilePage = lazy(() =>
+  import("@/features/professionals/pages/ProProfilePage.jsx").then((m) => ({
+    default: m.ProProfilePage,
+  })),
+);
+const AdminDashboardPage = lazy(() =>
+  import("@/features/admin/pages/AdminDashboardPage.jsx").then((m) => ({
+    default: m.AdminDashboardPage,
+  })),
+);
+const RouteErrorPage = lazy(() =>
+  import("@/pages/RouteErrorPage.jsx").then((m) => ({
+    default: m.RouteErrorPage,
+  })),
+);
 
 function PageSkeleton() {
   return (
@@ -46,21 +88,40 @@ function protectedPage(role, Component) {
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
-    errorElement: <Suspense fallback={<PageSkeleton />}><RouteErrorPage /></Suspense>,
+    errorElement: (
+      <Suspense fallback={<PageSkeleton />}>
+        <RouteErrorPage />
+      </Suspense>
+    ),
     children: [
       { index: true, element: <HomeRoute>{page(<HomePage />)}</HomeRoute> },
       { path: ROUTES.HOW_IT_WORKS, element: page(<HowItWorksPage />) },
       { path: ROUTES.SEARCH, element: page(<SearchPage />) },
       { path: ROUTES.TERMS, element: page(<TermsPage />) },
-      { path: '/professionals/:id', element: page(<ProfessionalPublicPage />) },
+      { path: "/professionals/:id", element: page(<ProfessionalPublicPage />) },
       { path: ROUTES.LOGIN, element: page(<AuthModalRedirect mode="login" />) },
-      { path: ROUTES.REGISTER_CLIENT, element: page(<AuthModalRedirect mode="register-client" />) },
-      { path: ROUTES.REGISTER_PRO, element: page(<AuthModalRedirect mode="register-pro" />) },
-      { path: `${ROUTES.DASHBOARD_CLIENT}/:section?`, element: protectedPage(ROLES.CLIENT, ClientDashboardPage) },
-      { path: `${ROUTES.DASHBOARD_PRO}/:section?`, element: protectedPage(ROLES.PRO, ProProfilePage) },
-      { path: `${ROUTES.ADMIN}/:section?`, element: protectedPage(ROLES.ADMIN, AdminDashboardPage) },
-      { path: '/forbidden', element: page(<ForbiddenPage />) },
-      { path: '*', element: page(<NotFoundPage />) },
+      {
+        path: ROUTES.REGISTER_CLIENT,
+        element: page(<AuthModalRedirect mode="register-client" />),
+      },
+      {
+        path: ROUTES.REGISTER_PRO,
+        element: page(<AuthModalRedirect mode="register-pro" />),
+      },
+      {
+        path: `${ROUTES.DASHBOARD_CLIENT}/:section?`,
+        element: protectedPage(ROLES.CLIENT, ClientDashboardPage),
+      },
+      {
+        path: `${ROUTES.DASHBOARD_PRO}/:section?`,
+        element: protectedPage(ROLES.PRO, ProProfilePage),
+      },
+      {
+        path: `${ROUTES.ADMIN}/:section?`,
+        element: protectedPage(ROLES.ADMIN, AdminDashboardPage),
+      },
+      { path: "/forbidden", element: page(<ForbiddenPage />) },
+      { path: "*", element: page(<NotFoundPage />) },
     ],
   },
 ]);

@@ -1,8 +1,10 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { env } from './env.js';
+import { v2 as cloudinary } from "cloudinary";
+import { env } from "./env.js";
 
 export const useCloud = Boolean(
-  env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET,
+  env.CLOUDINARY_CLOUD_NAME &&
+  env.CLOUDINARY_API_KEY &&
+  env.CLOUDINARY_API_SECRET,
 );
 
 if (useCloud)
@@ -13,9 +15,8 @@ if (useCloud)
     secure: true,
   });
 
-
 const publicId = (relativePath) =>
-  `${env.CLOUDINARY_FOLDER}/${relativePath.replace(/\.jpg$/, '')}`;
+  `${env.CLOUDINARY_FOLDER}/${relativePath.replace(/\.jpg$/, "")}`;
 
 export function uploadBuffer(buffer, relativePath) {
   const id = publicId(relativePath);
@@ -24,8 +25,8 @@ export function uploadBuffer(buffer, relativePath) {
       .upload_stream(
         {
           public_id: id,
-          asset_folder: id.split('/').slice(0, -1).join('/'),
-          resource_type: 'image',
+          asset_folder: id.split("/").slice(0, -1).join("/"),
+          resource_type: "image",
           overwrite: true,
         },
         (err, result) => (err ? reject(err) : resolve(result)),
@@ -36,7 +37,7 @@ export function uploadBuffer(buffer, relativePath) {
 
 export function destroyImage(relativePath) {
   return cloudinary.uploader.destroy(publicId(relativePath), {
-    resource_type: 'image',
+    resource_type: "image",
     invalidate: true,
   });
 }

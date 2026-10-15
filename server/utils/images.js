@@ -1,21 +1,20 @@
-import sharp from 'sharp';
-import { ApiError } from './ApiError.js';
+import sharp from "sharp";
+import { ApiError } from "./ApiError.js";
 
-const ALLOWED_FORMATS = ['jpeg', 'png'];
+const ALLOWED_FORMATS = ["jpeg", "png"];
 
 const INVALID_IMAGE = "Le fichier n'est pas une image JPG ou PNG valide";
 const IMAGE_TOO_LARGE = "L'image est trop grande pour être traitée";
-
 
 const MAX_INPUT_PIXELS = 40_000_000;
 
 const SHARP_OPTIONS = {
   limitInputPixels: MAX_INPUT_PIXELS,
-  failOn: 'warning',
+  failOn: "warning",
   sequentialRead: true,
 };
 
-export async function decodeImage(buffer, { field = 'photo' } = {}) {
+export async function decodeImage(buffer, { field = "photo" } = {}) {
   let format;
   try {
     ({ format } = await sharp(buffer, SHARP_OPTIONS).metadata());
@@ -32,5 +31,7 @@ export async function decodeImage(buffer, { field = 'photo' } = {}) {
 }
 
 function isPixelLimit(err) {
-  return typeof err?.message === 'string' && err.message.includes('pixel limit');
+  return (
+    typeof err?.message === "string" && err.message.includes("pixel limit")
+  );
 }

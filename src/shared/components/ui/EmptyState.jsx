@@ -1,4 +1,4 @@
-import { Inbox } from 'lucide-react';
+import { Inbox } from "lucide-react";
 
 export function EmptyState({ icon: Icon = Inbox, title, description, action }) {
   return (
@@ -7,7 +7,11 @@ export function EmptyState({ icon: Icon = Inbox, title, description, action }) {
         <Icon size={22} aria-hidden />
       </span>
       <p className="mt-4 text-sm font-bold text-gray-900">{title}</p>
-      {description && <p className="mt-1 max-w-sm text-[13px] leading-6 text-gray-500">{description}</p>}
+      {description && (
+        <p className="mt-1 max-w-sm text-[13px] leading-6 text-gray-500">
+          {description}
+        </p>
+      )}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

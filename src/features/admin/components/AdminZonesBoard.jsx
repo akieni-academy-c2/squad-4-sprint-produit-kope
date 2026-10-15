@@ -1,4 +1,4 @@
-import { AdminCatalogBoard } from './AdminCatalogBoard.jsx';
+import { AdminCatalogBoard } from "./AdminCatalogBoard.jsx";
 import {
   createCity,
   createZone,
@@ -10,7 +10,7 @@ import {
   reorderZones,
   updateCity,
   updateZone,
-} from '../services/admin.service.js';
+} from "../services/admin.service.js";
 
 export function AdminZonesBoard({ rightContainer = null }) {
   return (

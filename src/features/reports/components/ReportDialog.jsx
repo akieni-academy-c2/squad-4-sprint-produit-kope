@@ -1,32 +1,31 @@
-import { useState } from 'react';
-import { Flag } from 'lucide-react';
-import { Button, CustomSelect, FormField, Modal } from '@/shared/components/ui';
-import { ErrorState } from '@/shared/components/ui/ErrorState.jsx';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-
+import { useState } from "react";
+import { Flag } from "lucide-react";
+import { Button, CustomSelect, FormField, Modal } from "@/shared/components/ui";
+import { ErrorState } from "@/shared/components/ui/ErrorState.jsx";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
 
 export function ReportDialog({
   open,
   onClose,
-  title = 'Signaler',
-  description = 'Votre signalement est transmis à l’administration.',
+  title = "Signaler",
+  description = "Votre signalement est transmis à l’administration.",
   reasonOptions,
-  reasonLabel = 'Motif du signalement',
-  reasonHelp = 'Le motif aide l’administration à traiter le signalement.',
+  reasonLabel = "Motif du signalement",
+  reasonHelp = "Le motif aide l’administration à traiter le signalement.",
   notice,
   submit,
-  successMessage = 'Signalement envoyé. Merci.',
-  submitLabel = 'Envoyer le signalement',
+  successMessage = "Signalement envoyé. Merci.",
+  submitLabel = "Envoyer le signalement",
 }) {
   const { toast } = useNotification();
-  const [reason, setReason] = useState('');
-  const [message, setMessage] = useState('');
+  const [reason, setReason] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const close = () => {
-    setReason('');
-    setMessage('');
+    setReason("");
+    setMessage("");
     setError(null);
     onClose?.();
   };
@@ -34,17 +33,17 @@ export function ReportDialog({
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!reason) {
-      setError('Choisissez un motif.');
+      setError("Choisissez un motif.");
       return;
     }
     setSubmitting(true);
     setError(null);
     try {
       await submit({ reason, message: message.trim() || undefined });
-      toast({ message: successMessage, type: 'success' });
+      toast({ message: successMessage, type: "success" });
       close();
     } catch (err) {
-      setError(err?.message || 'Erreur lors de l’envoi du signalement.');
+      setError(err?.message || "Erreur lors de l’envoi du signalement.");
     } finally {
       setSubmitting(false);
     }
@@ -62,13 +61,18 @@ export function ReportDialog({
             Annuler
           </Button>
           <Button variant="danger" onClick={onSubmit} disabled={submitting}>
-            {submitting ? 'Envoi…' : submitLabel}
+            {submitting ? "Envoi…" : submitLabel}
           </Button>
         </>
       }
     >
       <form onSubmit={onSubmit} className="space-y-4">
-        <FormField id="report-reason" label={reasonLabel} required help={reasonHelp}>
+        <FormField
+          id="report-reason"
+          label={reasonLabel}
+          required
+          help={reasonHelp}
+        >
           <CustomSelect
             id="report-reason"
             value={reason}
@@ -106,7 +110,7 @@ export function ReportDialog({
   );
 }
 
-export function ReportTrigger({ onClick, label = 'Signaler', className = '' }) {
+export function ReportTrigger({ onClick, label = "Signaler", className = "" }) {
   return (
     <button
       type="button"

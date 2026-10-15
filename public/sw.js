@@ -11,11 +11,11 @@
  * index.html et la mise à jour est refusée (type MIME text/html).
  */
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   const unregister = () => self.registration.unregister();
 
   event.waitUntil(

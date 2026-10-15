@@ -1,15 +1,14 @@
-import { FIELD_STATUS } from '@/shared/hooks/useFieldStatus.js';
+import { FIELD_STATUS } from "@/shared/hooks/useFieldStatus.js";
 
 const LABELS = {
-  firstName: 'le prénom',
-  lastName: 'le nom',
-  phone: 'le numéro',
-  email: 'l’adresse e-mail',
-  password: 'le mot de passe',
-  confirm: 'la confirmation',
-  consent: 'le consentement',
+  firstName: "le prénom",
+  lastName: "le nom",
+  phone: "le numéro",
+  email: "l’adresse e-mail",
+  password: "le mot de passe",
+  confirm: "la confirmation",
+  consent: "le consentement",
 };
-
 
 export function firstMissingField(statuses, order = []) {
   for (const field of order)

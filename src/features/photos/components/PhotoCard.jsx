@@ -1,17 +1,19 @@
-import { Pencil, Trash } from 'lucide-react';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
-import { cn } from '@/shared/utils';
+import { Pencil, Trash } from "lucide-react";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { FloatingCaption } from "@/shared/components/ui/FloatingCaption.jsx";
+import { cn } from "@/shared/utils";
 
 export function PhotoCard({ photo, isDeleting, onEdit, onRequestDelete }) {
   const title = photo.title || photo.caption;
 
   return (
-    <Card className={cn('relative overflow-hidden', isDeleting && 'opacity-60')}>
+    <Card
+      className={cn("relative overflow-hidden", isDeleting && "opacity-60")}
+    >
       <div className="relative h-80 w-full overflow-hidden bg-gray-100">
         <img
           src={photo.thumbUrl || photo.url}
-          alt={title || ''}
+          alt={title || ""}
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
@@ -19,7 +21,7 @@ export function PhotoCard({ photo, isDeleting, onEdit, onRequestDelete }) {
         {(title || photo.description) && (
           <FloatingCaption
             wide
-            title={title || 'Photo de réalisation'}
+            title={title || "Photo de réalisation"}
             subtitle={photo.description}
             subtitleClassName="line-clamp-2"
             className="pointer-events-none"

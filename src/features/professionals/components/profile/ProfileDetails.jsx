@@ -1,9 +1,12 @@
-import { formatYearsExperience } from './profileForm.js';
-import { ProfileRow, ProfileSection } from './ProfileSection.jsx';
-import { formatPhoneFR } from '@/shared/utils';
+import { formatYearsExperience } from "./profileForm.js";
+import { ProfileRow, ProfileSection } from "./ProfileSection.jsx";
+import { formatPhoneFR } from "@/shared/utils";
 
 export function ProfileDetails({ profile, user }) {
-  const zoneNames = (profile?.zones || []).map((z) => z.name).filter(Boolean).join(', ');
+  const zoneNames = (profile?.zones || [])
+    .map((z) => z.name)
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <>
@@ -15,19 +18,29 @@ export function ProfileDetails({ profile, user }) {
         </dl>
       </ProfileSection>
 
-      <ProfileSection title="Contact" description="Vos coordonnées sont visibles des clients qui vous contactent.">
+      <ProfileSection
+        title="Contact"
+        description="Vos coordonnées sont visibles des clients qui vous contactent."
+      >
         <dl className="divide-y divide-gray-100">
           <ProfileRow label="Téléphone" value={formatPhoneFR(user?.phone)} />
           <ProfileRow label="E-mail" value={user?.email} />
-          <ProfileRow label="WhatsApp" value={formatPhoneFR(profile?.whatsapp)} />
+          <ProfileRow
+            label="WhatsApp"
+            value={formatPhoneFR(profile?.whatsapp)}
+          />
         </dl>
       </ProfileSection>
 
       <ProfileSection title="Description">
         {profile?.description ? (
-          <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
+          <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">
+            {profile.description}
+          </p>
         ) : (
-          <p className="text-sm text-gray-400">Aucune description pour le moment.</p>
+          <p className="text-sm text-gray-400">
+            Aucune description pour le moment.
+          </p>
         )}
       </ProfileSection>
 
@@ -36,7 +49,10 @@ export function ProfileDetails({ profile, user }) {
           <ProfileRow label="Métier" value={profile?.tradeName} />
           <ProfileRow label="Ville" value={profile?.cityName} />
           <ProfileRow label="Zones" value={zoneNames} />
-          <ProfileRow label="Expérience" value={formatYearsExperience(profile?.yearsExperience)} />
+          <ProfileRow
+            label="Expérience"
+            value={formatYearsExperience(profile?.yearsExperience)}
+          />
         </dl>
       </ProfileSection>
     </>

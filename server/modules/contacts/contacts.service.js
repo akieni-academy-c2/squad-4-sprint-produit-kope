@@ -1,17 +1,19 @@
-import { ApiError } from '../../utils/ApiError.js';
-import { offsetOf, paginateSafely } from '../../utils/pagination.js';
-import * as repository from './contacts.repository.js';
-import * as authRepository from '../auth/auth.repository.js';
+import { ApiError } from "../../utils/ApiError.js";
+import { offsetOf, paginateSafely } from "../../utils/pagination.js";
+import * as repository from "./contacts.repository.js";
+import * as authRepository from "../auth/auth.repository.js";
 
-
-export async function createContact(senderId, { toUserId, message, channel = 'message' }) {
+export async function createContact(
+  senderId,
+  { toUserId, message, channel = "message" },
+) {
   if (Number(senderId) === Number(toUserId))
-    throw ApiError.badRequest('Vous ne pouvez pas vous contacter vous-même', {
-      toUserId: 'Choisissez un autre interlocuteur',
+    throw ApiError.badRequest("Vous ne pouvez pas vous contacter vous-même", {
+      toUserId: "Choisissez un autre interlocuteur",
     });
 
   const recipient = await authRepository.findById(toUserId);
-  if (!recipient) throw ApiError.notFound('Utilisateur introuvable');
+  if (!recipient) throw ApiError.notFound("Utilisateur introuvable");
 
   try {
     return await repository.create({
@@ -21,9 +23,9 @@ export async function createContact(senderId, { toUserId, message, channel = 'me
       channel,
     });
   } catch (err) {
-    if (err.code === '23514')
-      throw ApiError.badRequest('Données invalides', {
-        message: 'Le message doit contenir entre 10 et 500 caractères',
+    if (err.code === "23514")
+      throw ApiError.badRequest("Données invalides", {
+        message: "Le message doit contenir entre 10 et 500 caractères",
       });
 
     throw err;
@@ -36,5 +38,7 @@ export async function listContacts(userId, pagination) {
     limit: pagination.pageSize,
     offset: offsetOf(pagination),
   });
-  return paginateSafely(rows, pagination, () => repository.countForUser(userId));
+  return paginateSafely(rows, pagination, () =>
+    repository.countForUser(userId),
+  );
 }

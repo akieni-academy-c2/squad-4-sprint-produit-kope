@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useAsyncData(loader, deps = []) {
   const [data, setData] = useState(undefined);
@@ -25,7 +24,9 @@ export function useAsyncData(loader, deps = []) {
     if (!silent) setLoading(true);
     setError(null);
     try {
-      const result = await loaderRef.current({ signal: localController.signal });
+      const result = await loaderRef.current({
+        signal: localController.signal,
+      });
       if (isStale()) return result;
       setData(result);
       return result;
@@ -39,11 +40,11 @@ export function useAsyncData(loader, deps = []) {
     }
   }, []);
 
-const mutate = useCallback((update) => {
-  setData((prev) => (typeof update === 'function' ? update(prev) : update));
-}, []);
+  const mutate = useCallback((update) => {
+    setData((prev) => (typeof update === "function" ? update(prev) : update));
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load().catch(() => {});
     return () => controller.current?.abort();

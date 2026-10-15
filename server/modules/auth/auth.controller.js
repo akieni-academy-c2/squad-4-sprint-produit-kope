@@ -1,7 +1,6 @@
-import { SESSION_COOKIE } from '../../config/session.js';
-import { currentUser } from '../../middlewares/identity.js';
-import * as service from './auth.service.js';
-
+import { SESSION_COOKIE } from "../../config/session.js";
+import { currentUser } from "../../middlewares/identity.js";
+import * as service from "./auth.service.js";
 
 function startSession(req, user) {
   return new Promise((resolve, reject) => {
@@ -26,7 +25,10 @@ export async function registerProfessional(req, res) {
 }
 
 export async function becomeProfessional(req, res) {
-  const user = await service.becomeProfessional(currentUser(req).id, req.validated.body);
+  const user = await service.becomeProfessional(
+    currentUser(req).id,
+    req.validated.body,
+  );
   req.session.user = { id: user.id, role: user.role };
   res.json({ user });
 }
@@ -45,7 +47,6 @@ export async function logout(req, res, next) {
   });
 }
 
-
 export async function me(req, res, next) {
   const identity = currentUser(req);
   if (!identity) return res.json({ user: null });
@@ -58,7 +59,10 @@ export async function me(req, res, next) {
 }
 
 export async function updateAccount(req, res) {
-  const user = await service.updateAccount(currentUser(req).id, req.validated.body);
+  const user = await service.updateAccount(
+    currentUser(req).id,
+    req.validated.body,
+  );
   res.json({ user });
 }
 
@@ -67,6 +71,10 @@ export async function uploadAvatar(req, res) {
 }
 
 export async function changePassword(req, res) {
-  await service.changePassword(currentUser(req).id, req.validated.body, req.sessionID);
+  await service.changePassword(
+    currentUser(req).id,
+    req.validated.body,
+    req.sessionID,
+  );
   res.status(204).end();
 }

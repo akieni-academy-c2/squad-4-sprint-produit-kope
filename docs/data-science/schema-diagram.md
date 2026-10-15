@@ -1,6 +1,6 @@
 # Schéma relationnel - KOP
 
-Diagramme de classes du modèle, style MERISE / *crow's foot*. Le complément
+Diagramme de classes du modèle, style MERISE / _crow's foot_. Le complément
 référentiel de [schema.md](schema.md) (colonnes, types, index) et de
 [dictionnaire.md](dictionnaire.md) (règles métier).
 
@@ -183,27 +183,28 @@ Trois relations méritent une note :
 - `CITIES → PROFESSIONALS` est un **0..1** : la colonne `city_id` est nullable.
 - `USERS → REVIEWS` apparaît deux fois, par `client_id` et par
   `professional_id`. Ce ne sont pas deux tables : un avis appartient à un client
-  *et* à un artisan, et ces deux comptes sont nécessairement distincts.
+  _et_ à un artisan, et ces deux comptes sont nécessairement distincts.
+
 ## Grain
 
 Une ligne de, et le grain exact. Sans cette phrase, un `count(*)` n'a pas de sens
 interprétable.
 
-| Table | Grain - une ligne par… |
-| :--- | :--- |
-| `users` | compte |
-| `professionals` | compte disposant d'un profil artisan |
-| `trades` | métier du référentiel |
-| `trade_categories` | catégorie de métiers |
-| `cities` | ville |
-| `zones` | quartier |
-| `professional_zones` | couple (artisan, quartier) |
-| `photos` | photo de réalisation |
-| `reviews` | avis - au plus un par (client, artisan) |
-| `contacts` | prise de contact, dans un sens donné |
-| `account_reports` | signalement - au plus un par (cible, auteur) |
-| `review_reports` | signalement d'avis - au plus un par (avis, auteur) |
-| `published_professionals` | artisan visible dans l'annuaire public |
+| Table                     | Grain - une ligne par…                             |
+| :------------------------ | :------------------------------------------------- |
+| `users`                   | compte                                             |
+| `professionals`           | compte disposant d'un profil artisan               |
+| `trades`                  | métier du référentiel                              |
+| `trade_categories`        | catégorie de métiers                               |
+| `cities`                  | ville                                              |
+| `zones`                   | quartier                                           |
+| `professional_zones`      | couple (artisan, quartier)                         |
+| `photos`                  | photo de réalisation                               |
+| `reviews`                 | avis - au plus un par (client, artisan)            |
+| `contacts`                | prise de contact, dans un sens donné               |
+| `account_reports`         | signalement - au plus un par (cible, auteur)       |
+| `review_reports`          | signalement d'avis - au plus un par (avis, auteur) |
+| `published_professionals` | artisan visible dans l'annuaire public             |
 
 ## Suppressions
 
@@ -215,17 +216,17 @@ clé, `NO ACTION` se comporte comme `RESTRICT` - la suppression est refusée, el
 n'est pas différée. La colonne « Suppression » de `schema.md` affiche donc
 `aucune`, mais la réalité est un blocage.
 
-| Relation | Déclaré | Comportement réel, vérifié |
-| :--- | :--- | :--- |
-| `users → professionals` | CASCADE | le profil, ses zones et ses photos partent |
-| `users → contacts` | CASCADE | les prises de contact partent |
-| `users → account_reports` | CASCADE | les signalements dont il est l'auteur partent || `reviews → professionals` | aucune | **REFUSÉ** - `23503`, un artisan ayant des avis ne peut pas être supprimé |
-| `professionals → photos` | CASCADE | part avec le profil |
-| `professionals → professional_zones` | CASCADE | part avec le profil |
-| `zones → professional_zones` | aucune | **REFUSÉ** - `23503`, un quartier référencé ne peut pas être supprimé |
-| `trades → professionals` | aucune | **REFUSÉ** - `23503`, un métier référencé ne peut pas être supprimé |
-| `cities → zones` | SET NULL | la zone survit, devient orpheline |
-| `cities → professionals` | SET NULL | le profil survit sans ville |
+| Relation                             | Déclaré  | Comportement réel, vérifié                                            |
+| :----------------------------------- | :------- | :-------------------------------------------------------------------- |
+| `users → professionals`              | CASCADE  | le profil, ses zones et ses photos partent                            |
+| `users → contacts`                   | CASCADE  | les prises de contact partent                                         |
+| `users → account_reports`            | CASCADE  | les signalements dont il est l'auteur partent                         |     | `reviews → professionals` | aucune | **REFUSÉ** - `23503`, un artisan ayant des avis ne peut pas être supprimé |
+| `professionals → photos`             | CASCADE  | part avec le profil                                                   |
+| `professionals → professional_zones` | CASCADE  | part avec le profil                                                   |
+| `zones → professional_zones`         | aucune   | **REFUSÉ** - `23503`, un quartier référencé ne peut pas être supprimé |
+| `trades → professionals`             | aucune   | **REFUSÉ** - `23503`, un métier référencé ne peut pas être supprimé   |
+| `cities → zones`                     | SET NULL | la zone survit, devient orpheline                                     |
+| `cities → professionals`             | SET NULL | le profil survit sans ville                                           |
 
 Ce que cela change pour une analyse :
 
@@ -241,7 +242,6 @@ Ce que cela change pour une analyse :
   référencés ont été tentées pendant cette extraction et refusées (`23503`). Les
   référentiels ne se modifient donc pas par accident.
 
-
 ## Invariants et où ils sont appliqués
 
 Une règle écrite **dans la base** vaut pour tous les écrivains : script,
@@ -249,21 +249,21 @@ migration, console d'administration, ou le code qu'on a oublié. Les règles
 ci-dessous n'existent que dans l'application si la colonne « Où » dit
 « service ».
 
-| Invariant | Où |
-| :--- | :--- |
-| Note entre 1 et 5 | base (`CHECK`) |
-| Description entre 30 et 500 caractères | base (`CHECK`) |
-| Expérience entre 0 et 60 ans | base (`CHECK`) |
-| Motif de signalement dans une liste fermée | base (`CHECK`) |
-| Un seul avis par (client, artisan) | base (`UNIQUE`) |
-| Un seul signalement par (cible, auteur) | base (`UNIQUE`) |
-| Pas d'auto-signalement | base (`CHECK`) |
-| Pas de contact avec soi-même | base (`CHECK`) |
-| Nom affiché unique, insensible à la casse | base (`index unique sur lower(btrim(...))`) |
-| Un artisan ne s'avise pas lui-même | service |
-| Un administrateur ne pose pas d'avis | service |
-| Un profil n'est public que si complet | vue `published_professionals` |
-| Blocage à 3 signalements, suspension à 5 | service, seuils configurables |
+| Invariant                                  | Où                                          |
+| :----------------------------------------- | :------------------------------------------ |
+| Note entre 1 et 5                          | base (`CHECK`)                              |
+| Description entre 30 et 500 caractères     | base (`CHECK`)                              |
+| Expérience entre 0 et 60 ans               | base (`CHECK`)                              |
+| Motif de signalement dans une liste fermée | base (`CHECK`)                              |
+| Un seul avis par (client, artisan)         | base (`UNIQUE`)                             |
+| Un seul signalement par (cible, auteur)    | base (`UNIQUE`)                             |
+| Pas d'auto-signalement                     | base (`CHECK`)                              |
+| Pas de contact avec soi-même               | base (`CHECK`)                              |
+| Nom affiché unique, insensible à la casse  | base (`index unique sur lower(btrim(...))`) |
+| Un artisan ne s'avise pas lui-même         | service                                     |
+| Un administrateur ne pose pas d'avis       | service                                     |
+| Un profil n'est public que si complet      | vue `published_professionals`               |
+| Blocage à 3 signalements, suspension à 5   | service, seuils configurables               |
 
 ## Limites pour l'analyse
 

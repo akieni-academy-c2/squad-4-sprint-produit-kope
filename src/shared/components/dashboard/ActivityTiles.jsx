@@ -1,7 +1,6 @@
-import { StarRating } from '@/shared/components/ui/StarRating.jsx';
-import { UserAvatar } from '@/shared/components/ui/UserAvatar.jsx';
-import { formatDateFr } from '@/shared/utils';
-
+import { StarRating } from "@/shared/components/ui/StarRating.jsx";
+import { UserAvatar } from "@/shared/components/ui/UserAvatar.jsx";
+import { formatDateFr } from "@/shared/utils";
 
 function ActivityTile({ onClick, label, children }) {
   return (
@@ -18,8 +17,15 @@ function ActivityTile({ onClick, label, children }) {
   );
 }
 
-
-export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onClick, actionLabel }) {
+export function ReviewTile({
+  name,
+  avatarUrl,
+  subtitle,
+  rating,
+  createdAt,
+  onClick,
+  actionLabel,
+}) {
   return (
     <ActivityTile onClick={onClick} label={actionLabel}>
       <UserAvatar
@@ -30,8 +36,14 @@ export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onCli
         fallbackClassName="bg-primary-100 text-primary-700"
       />
       <span className="w-full min-w-0">
-        <span className="block truncate text-sm font-semibold text-gray-900">{name}</span>
-        {subtitle && <span className="mt-0.5 block truncate text-xs text-gray-500">{subtitle}</span>}
+        <span className="block truncate text-sm font-semibold text-gray-900">
+          {name}
+        </span>
+        {subtitle && (
+          <span className="mt-0.5 block truncate text-xs text-gray-500">
+            {subtitle}
+          </span>
+        )}
       </span>
       <span className="mt-auto flex flex-col items-center gap-1 pt-1">
         <StarRating value={rating} size="sm" />
@@ -43,9 +55,8 @@ export function ReviewTile({ name, avatarUrl, subtitle, rating, createdAt, onCli
   );
 }
 
-
 export function ContactTile({ contact, onClick, actionLabel }) {
-  const name = contact.displayName || 'Utilisateur';
+  const name = contact.displayName || "Utilisateur";
 
   return (
     <ActivityTile onClick={onClick} label={actionLabel}>
@@ -58,14 +69,17 @@ export function ContactTile({ contact, onClick, actionLabel }) {
         fallbackClassName="bg-primary-100 text-primary-700"
       />
       <span className="w-full min-w-0">
-        <span className="block truncate text-sm font-semibold text-gray-900">{name}</span>
+        <span className="block truncate text-sm font-semibold text-gray-900">
+          {name}
+        </span>
         <span className="mt-0.5 block truncate text-xs text-gray-500">
-          {contact.tradeName ?? (contact.role === 'professional' ? 'Professionnel' : 'Client')}
+          {contact.tradeName ??
+            (contact.role === "professional" ? "Professionnel" : "Client")}
         </span>
       </span>
       <span className="mt-auto flex flex-col items-center gap-0.5 pt-1">
         <span className="text-[11px] font-semibold text-primary-700">
-          {contact.outgoing ? 'Vous l’avez contacté' : 'Vous a contacté'}
+          {contact.outgoing ? "Vous l’avez contacté" : "Vous a contacté"}
         </span>
         <span className="text-[11px] leading-tight text-gray-400">
           {formatDateFr(contact.createdAt)}
@@ -75,7 +89,6 @@ export function ContactTile({ contact, onClick, actionLabel }) {
   );
 }
 
-
 export function OverviewEmpty({ children }) {
   return (
     <p className="w-full min-w-0 rounded-[14px] border border-dashed border-gray-200 bg-[#f7faf8] p-6 text-center text-sm text-gray-500">
@@ -83,8 +96,6 @@ export function OverviewEmpty({ children }) {
     </p>
   );
 }
-
-
 
 export function TileSkeleton() {
   return (

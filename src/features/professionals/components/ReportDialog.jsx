@@ -1,6 +1,9 @@
-import { REPORT_REASON_OPTIONS } from '@/shared/constants/reports.js';
-import { reportProfessional } from '../services/professionals.service.js';
-import { ReportDialog, ReportTrigger } from '@/features/reports/components/ReportDialog.jsx';
+import { REPORT_REASON_OPTIONS } from "@/shared/constants/reports.js";
+import { reportProfessional } from "../services/professionals.service.js";
+import {
+  ReportDialog,
+  ReportTrigger,
+} from "@/features/reports/components/ReportDialog.jsx";
 
 export function ReportProfessionalDialog({ open, onClose, professionalId }) {
   return (

@@ -1,32 +1,42 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Check, ChevronDown } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { toOption, useListboxNavigation, useScrollActiveIntoView } from './listbox.js';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
+import { Check, ChevronDown } from "lucide-react";
+import { cn } from "@/shared/utils";
+import {
+  toOption,
+  useListboxNavigation,
+  useScrollActiveIntoView,
+} from "./listbox.js";
 
 const SIZES = {
-  sm: 'h-9 text-[13px]',
-  md: 'h-10 text-[14px]',
+  sm: "h-9 text-[13px]",
+  md: "h-10 text-[14px]",
 };
 
 const MARGIN = 8;
 const MENU_MAX_HEIGHT = 320;
 const MENU_FADE_MS = 150;
 
-
 export function CustomSelect({
   value,
   onChange,
   options = [],
-  placeholder = 'Sélectionner...',
+  placeholder = "Sélectionner...",
   className,
   triggerClassName,
   menuClassName,
   disabled,
   id,
   name,
-  size = 'md',
-  'aria-label': ariaLabel,
+  size = "md",
+  "aria-label": ariaLabel,
   ...rest
 }) {
   const [open, setOpen] = useState(false);
@@ -39,7 +49,9 @@ export function CustomSelect({
   const generatedId = useId();
   const triggerId = id || generatedId;
   const normalizedOptions = options.map(toOption);
-  const selected = normalizedOptions.find((o) => String(o.value) === String(value));
+  const selected = normalizedOptions.find(
+    (o) => String(o.value) === String(value),
+  );
   const menuId = `${triggerId}-list`;
 
   useScrollActiveIntoView({
@@ -81,7 +93,10 @@ export function CustomSelect({
     const available = Math.max(0, openUp ? above : below);
     const maxHeight = Math.max(0, Math.min(MENU_MAX_HEIGHT, available));
     const width = rect.width;
-    const left = Math.min(Math.max(margin, rect.left), Math.max(margin, window.innerWidth - width - margin));
+    const left = Math.min(
+      Math.max(margin, rect.left),
+      Math.max(margin, window.innerWidth - width - margin),
+    );
 
     setCoords({
       left,
@@ -89,7 +104,12 @@ export function CustomSelect({
       maxHeight,
       openUp,
       ...(openUp
-        ? { bottom: Math.min(window.innerHeight - rect.top + 4, window.innerHeight - margin) }
+        ? {
+            bottom: Math.min(
+              window.innerHeight - rect.top + 4,
+              window.innerHeight - margin,
+            ),
+          }
         : { top: rect.bottom + 4 }),
     });
   }, []);
@@ -98,13 +118,13 @@ export function CustomSelect({
     if (!open) return undefined;
     measure();
     const onViewportChange = () => measure();
-    window.addEventListener('scroll', onViewportChange, true);
-    window.addEventListener('resize', onViewportChange);
+    window.addEventListener("scroll", onViewportChange, true);
+    window.addEventListener("resize", onViewportChange);
     const observer = new ResizeObserver(() => measure());
     if (rootRef.current) observer.observe(rootRef.current);
     return () => {
-      window.removeEventListener('scroll', onViewportChange, true);
-      window.removeEventListener('resize', onViewportChange);
+      window.removeEventListener("scroll", onViewportChange, true);
+      window.removeEventListener("resize", onViewportChange);
       observer.disconnect();
     };
   }, [open, measure]);
@@ -129,18 +149,19 @@ export function CustomSelect({
       if (!inTrigger && !inMenu) setOpen(false);
     };
     const onKey = (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === "Escape") setOpen(false);
     };
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
   const menu =
-    mounted && coords && typeof document !== 'undefined'      ? createPortal(
+    mounted && coords && typeof document !== "undefined"
+      ? createPortal(
           <div
             ref={menuRef}
             id={menuId}
@@ -150,13 +171,17 @@ export function CustomSelect({
               left: coords.left,
               width: coords.width,
               maxHeight: coords.maxHeight,
-              ...(coords.openUp ? { bottom: coords.bottom } : { top: coords.top }),
+              ...(coords.openUp
+                ? { bottom: coords.bottom }
+                : { top: coords.top }),
             }}
             className={cn(
-              'fixed z-popover overflow-y-auto overscroll-contain rounded-md border border-gray-200 bg-white p-1 shadow-pop',
-              coords.openUp ? 'origin-bottom' : 'origin-top',
-              'transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none',
-              shown ? 'animate-scale-in motion-reduce:animate-none' : 'scale-[.97] opacity-0 pointer-events-none',
+              "fixed z-popover overflow-y-auto overscroll-contain rounded-md border border-gray-200 bg-white p-1 shadow-pop",
+              coords.openUp ? "origin-bottom" : "origin-top",
+              "transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none",
+              shown
+                ? "animate-scale-in motion-reduce:animate-none"
+                : "scale-[.97] opacity-0 pointer-events-none",
               menuClassName,
             )}
           >
@@ -175,13 +200,20 @@ export function CustomSelect({
                     onMouseMove={() => setActiveIndex(index)}
                     onClick={() => handleSelect(o.value)}
                     className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-left text-[14px] transition-colors',
-                      index === activeIndex && !isSel && 'bg-gray-100',
-                      isSel && 'bg-mint-50 text-primary-700',
-                      index !== activeIndex && !isSel && 'text-gray-700 hover:bg-gray-100',
+                      "flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-left text-[14px] transition-colors",
+                      index === activeIndex && !isSel && "bg-gray-100",
+                      isSel && "bg-mint-50 text-primary-700",
+                      index !== activeIndex &&
+                        !isSel &&
+                        "text-gray-700 hover:bg-gray-100",
                     )}
                   >
-                    <Check className={cn('h-4 w-4 shrink-0', isSel ? 'opacity-100' : 'opacity-0')} />
+                    <Check
+                      className={cn(
+                        "h-4 w-4 shrink-0",
+                        isSel ? "opacity-100" : "opacity-0",
+                      )}
+                    />
                     <span className="truncate">{o.label}</span>
                   </button>
                 );
@@ -194,7 +226,7 @@ export function CustomSelect({
 
   return (
     <>
-      <div ref={rootRef} className={cn('relative', className)}>
+      <div ref={rootRef} className={cn("relative", className)}>
         <button
           type="button"
           id={triggerId}
@@ -203,24 +235,33 @@ export function CustomSelect({
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={menuId}
-          aria-activedescendant={open && normalizedOptions.length ? `${triggerId}-opt-${activeIndex}` : undefined}
-          aria-label={typeof ariaLabel === 'string' ? ariaLabel : undefined}
+          aria-activedescendant={
+            open && normalizedOptions.length
+              ? `${triggerId}-opt-${activeIndex}`
+              : undefined
+          }
+          aria-label={typeof ariaLabel === "string" ? ariaLabel : undefined}
           {...rest}
           onClick={() => !disabled && setOpen((o) => !o)}
           onKeyDown={onKeyDown}
           className={cn(
-            'relative flex w-full items-center justify-between gap-2 rounded-sm border border-gray-200 bg-white px-3 text-left text-gray-900 transition-colors hover:border-gray-300 focus-ring disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400',
+            "relative flex w-full items-center justify-between gap-2 rounded-sm border border-gray-200 bg-white px-3 text-left text-gray-900 transition-colors hover:border-gray-300 focus-ring disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400",
             SIZES[size] || SIZES.md,
-            open && 'border-primary-500',
+            open && "border-primary-500",
             triggerClassName,
           )}
         >
-          <span className={cn('truncate', !selected && 'text-gray-400')}>
+          <span className={cn("truncate", !selected && "text-gray-400")}>
             {selected ? selected.label : placeholder}
           </span>
-          <ChevronDown className={cn('h-4 w-4 shrink-0 text-gray-500 transition-transform', open && 'rotate-180')} />
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-gray-500 transition-transform",
+              open && "rotate-180",
+            )}
+          />
         </button>
-        {name && <input type="hidden" name={name} value={value ?? ''} />}
+        {name && <input type="hidden" name={name} value={value ?? ""} />}
       </div>
       {menu}
     </>

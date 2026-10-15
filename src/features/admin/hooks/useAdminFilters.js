@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useAdminFilters(initial = {}) {
   const [draft, setDraft] = useState(initial);
   const [applied, setApplied] = useState(initial);
 
-  const dirty = Object.keys(initial).some((key) => String(draft[key] ?? '') !== String(initial[key] ?? ''));
+  const dirty = Object.keys(initial).some(
+    (key) => String(draft[key] ?? "") !== String(initial[key] ?? ""),
+  );
 
   const set = (key, value, { immediate = false } = {}) => {
     setDraft((prev) => ({ ...prev, [key]: value }));

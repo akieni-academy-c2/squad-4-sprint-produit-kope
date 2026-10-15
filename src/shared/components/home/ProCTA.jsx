@@ -1,8 +1,8 @@
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { ImageWithSkeleton } from '@/shared/components/ui/ImageWithSkeleton.jsx';
-import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
-import { HOME_IMAGES } from '@/shared/content/homeImages.js';
+import { Button } from "@/shared/components/ui/Button.jsx";
+import { ImageWithSkeleton } from "@/shared/components/ui/ImageWithSkeleton.jsx";
+import { useAuthModal } from "@/shared/context/AuthModalContext.jsx";
+import { AUTH_MODAL_MODES } from "@/shared/context/authModalModes.js";
+import { HOME_IMAGES } from "@/shared/content/homeImages.js";
 
 export function ProCTA({ imageLeft = false } = {}) {
   const { open: openModal } = useAuthModal();
@@ -11,14 +11,17 @@ export function ProCTA({ imageLeft = false } = {}) {
       <div className="container-kop">
         <div className=" text-white overflow-hidden relative">
           <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-            <div className={imageLeft ? 'lg:order-2' : ''}>
-              <p className="text-xs font-bold uppercase tracking-wider text-mint-200">Vous avez le savoir-faire</p>
+            <div className={imageLeft ? "lg:order-2" : ""}>
+              <p className="text-xs font-bold uppercase tracking-wider text-mint-200">
+                Vous avez le savoir-faire
+              </p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tighter sm:leading-15 sm:text-5xl text-white!">
                 Faites-vous connaître près de chez vous.
               </h2>
               <p className="mt-3 max-w-md text-sm leading-7 text-white/80">
-                Prenez votre métier, vos réalisations et vos zones d'intervention.
-                Rendez-vous visible aux clients de votre ville et recevez-les directement sur votre fiche publique.
+                Prenez votre métier, vos réalisations et vos zones
+                d'intervention. Rendez-vous visible aux clients de votre ville
+                et recevez-les directement sur votre fiche publique.
               </p>
               <div className="mt-7">
                 <Button
@@ -31,8 +34,10 @@ export function ProCTA({ imageLeft = false } = {}) {
                 </Button>
               </div>
             </div>
-            <div className={`relative max-w-115 ${imageLeft ? 'lg:order-1 lg:mr-auto' : 'lg:ml-auto'}`}>
-<ImageWithSkeleton
+            <div
+              className={`relative max-w-115 ${imageLeft ? "lg:order-1 lg:mr-auto" : "lg:ml-auto"}`}
+            >
+              <ImageWithSkeleton
                 src={HOME_IMAGES.cta.src}
                 srcSet={HOME_IMAGES.cta.srcSet}
                 sizes={HOME_IMAGES.cta.sizes}
@@ -45,5 +50,5 @@ export function ProCTA({ imageLeft = false } = {}) {
         </div>
       </div>
     </section>
-  )
+  );
 }

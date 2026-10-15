@@ -1,12 +1,16 @@
-import { Star, MessageSquarePlus } from 'lucide-react';
-import { StarRating } from '@/shared/components/ui/StarRating.jsx';
+import { Star, MessageSquarePlus } from "lucide-react";
+import { StarRating } from "@/shared/components/ui/StarRating.jsx";
 
 const CTA_CLASS =
-  'flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-primary-300 hover:bg-primary-50';
+  "flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-primary-300 hover:bg-primary-50";
 
-function LeaveReviewButton({ onClick, label, className = '' }) {
+function LeaveReviewButton({ onClick, label, className = "" }) {
   return (
-    <button type="button" onClick={onClick} className={`${CTA_CLASS} ${className}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${CTA_CLASS} ${className}`}
+    >
       <MessageSquarePlus size={16} aria-hidden />
       {label}
     </button>
@@ -38,13 +42,18 @@ export function RatingSummary({ rating, canReview = false, onLeaveReview }) {
             <div className="min-w-0 space-y-1">
               <StarRating value={avg} size="md" />
               <p className="text-xs text-gray-500">
-                Basé sur <span className="font-semibold text-gray-700">{count}</span> avis
+                Basé sur{" "}
+                <span className="font-semibold text-gray-700">{count}</span>{" "}
+                avis
               </p>
             </div>
           </div>
           {showCta && (
             <div className="border-t border-gray-100 p-3">
-              <LeaveReviewButton onClick={onLeaveReview} label="Donner mon avis" />
+              <LeaveReviewButton
+                onClick={onLeaveReview}
+                label="Donner mon avis"
+              />
             </div>
           )}
         </>
@@ -53,11 +62,19 @@ export function RatingSummary({ rating, canReview = false, onLeaveReview }) {
           <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-primary-50">
             <Star size={22} className="text-primary-400" aria-hidden />
           </div>
-          <p className="text-sm font-semibold text-gray-900">Pas encore d'avis</p>
+          <p className="text-sm font-semibold text-gray-900">
+            Pas encore d'avis
+          </p>
           <p className="mx-auto max-w-[26ch] text-sm leading-6 text-gray-500">
             Soyez le premier à donner votre avis sur ce professionnel.
           </p>
-          {showCta && <LeaveReviewButton onClick={onLeaveReview} label="Donner mon avis" className="mt-1" />}
+          {showCta && (
+            <LeaveReviewButton
+              onClick={onLeaveReview}
+              label="Donner mon avis"
+              className="mt-1"
+            />
+          )}
         </div>
       )}
     </div>

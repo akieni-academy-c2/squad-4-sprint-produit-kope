@@ -1,30 +1,37 @@
-import what1 from '@/shared/assets/what1.png';
-import what2 from '@/shared/assets/what2.png';
-import what3 from '@/shared/assets/what3.png';
-import user1 from '@/shared/assets/user1.png';
-import user2 from '@/shared/assets/user2.png';
-import hero from '@/shared/assets/hero.png';
-import { personas as PERSONA_DATA } from './personas.json';
+import what1 from "@/shared/assets/what1.png";
+import what2 from "@/shared/assets/what2.png";
+import what3 from "@/shared/assets/what3.png";
+import user1 from "@/shared/assets/user1.png";
+import user2 from "@/shared/assets/user2.png";
+import hero from "@/shared/assets/hero.png";
+import { personas as PERSONA_DATA } from "./personas.json";
 
 const IMAGES = [what1, what2, what3, user1, user2, hero];
-
 
 const PERSONAS = PERSONA_DATA ?? [];
 
 const WORK_PALETTES = [
-  ['#eef4f1', '#2d5c4a'], ['#f7f1e4', '#8b6b2f'], ['#fbeae3', '#a45e3a'],
-  ['#e8ecfa', '#3e4c8a'], ['#f1ecf6', '#5b3f7a'], ['#e9f3f6', '#276b7d'],
-  ['#f6ece9', '#8c4033'], ['#edf5e8', '#4a7327'], ['#fdf3e0', '#96601a'],
-  ['#eaf6f0', '#1f6b57'], ['#f5eef4', '#7a3566'], ['#eef1f7', '#334a72'],
+  ["#eef4f1", "#2d5c4a"],
+  ["#f7f1e4", "#8b6b2f"],
+  ["#fbeae3", "#a45e3a"],
+  ["#e8ecfa", "#3e4c8a"],
+  ["#f1ecf6", "#5b3f7a"],
+  ["#e9f3f6", "#276b7d"],
+  ["#f6ece9", "#8c4033"],
+  ["#edf5e8", "#4a7327"],
+  ["#fdf3e0", "#96601a"],
+  ["#eaf6f0", "#1f6b57"],
+  ["#f5eef4", "#7a3566"],
+  ["#eef1f7", "#334a72"],
 ];
 
-
 function workImage(proIndex, photoIndex, label) {
-  const [bg, fg] = WORK_PALETTES[(proIndex + photoIndex * 5) % WORK_PALETTES.length];
+  const [bg, fg] =
+    WORK_PALETTES[(proIndex + photoIndex * 5) % WORK_PALETTES.length];
   const a = 30 + ((proIndex * 17 + photoIndex * 29) % 40);
   const b = 90 + ((proIndex * 11 + photoIndex * 23) % 70);
   const c = 150 + ((proIndex * 7 + photoIndex * 19) % 90);
-  const text = String(label || '').slice(0, 22);
+  const text = String(label || "").slice(0, 22);
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'>` +
     `<rect width='400' height='300' fill='${bg}'/>` +
@@ -37,49 +44,90 @@ function workImage(proIndex, photoIndex, label) {
 }
 
 export const MOCK_TRADE_CATEGORIES = [
-  { id: 1, name: 'Bâtiment & gros œuvre' },
-  { id: 2, name: 'Électricité & plomberie' },
-  { id: 3, name: 'Bois & finitions' },
-  { id: 4, name: 'Services & entretien' },
-  { id: 5, name: 'Autre' },
+  { id: 1, name: "Bâtiment & gros œuvre" },
+  { id: 2, name: "Électricité & plomberie" },
+  { id: 3, name: "Bois & finitions" },
+  { id: 4, name: "Services & entretien" },
+  { id: 5, name: "Autre" },
 ];
 
 export const MOCK_TRADES = [
-  { id: 1, name: 'Plombier', categoryId: 2, createdAt: '2025-11-04T09:15:00.000Z' },
-  { id: 2, name: 'Électricien', categoryId: 2, createdAt: '2025-12-18T14:40:00.000Z' },
-  { id: 3, name: 'Maçon', categoryId: 1, createdAt: '2026-01-22T08:05:00.000Z' },
-  { id: 4, name: 'Menuisier', categoryId: 3, createdAt: '2026-02-09T17:30:00.000Z' },
+  {
+    id: 1,
+    name: "Plombier",
+    categoryId: 2,
+    createdAt: "2025-11-04T09:15:00.000Z",
+  },
+  {
+    id: 2,
+    name: "Électricien",
+    categoryId: 2,
+    createdAt: "2025-12-18T14:40:00.000Z",
+  },
+  {
+    id: 3,
+    name: "Maçon",
+    categoryId: 1,
+    createdAt: "2026-01-22T08:05:00.000Z",
+  },
+  {
+    id: 4,
+    name: "Menuisier",
+    categoryId: 3,
+    createdAt: "2026-02-09T17:30:00.000Z",
+  },
 ];
 
 export const MOCK_CITIES = [
-  { id: 1, name: 'Brazzaville' },
-  { id: 2, name: 'Pointe-Noire' },
-  { id: 3, name: 'Dolisie' },
-  { id: 4, name: 'Nkayi' },
+  { id: 1, name: "Brazzaville" },
+  { id: 2, name: "Pointe-Noire" },
+  { id: 3, name: "Dolisie" },
+  { id: 4, name: "Nkayi" },
 ];
 
 export const MOCK_ZONES = [
-  { id: 1, name: 'Makélékélé', cityId: 1, createdAt: '2025-10-02T08:00:00.000Z' },
-  { id: 2, name: 'Bacongo', cityId: 1, createdAt: '2025-10-02T08:05:00.000Z' },
-  { id: 3, name: 'Poto-Poto', cityId: 1, createdAt: '2025-10-02T08:10:00.000Z' },
-  { id: 4, name: 'Moungali', cityId: 1, createdAt: '2025-10-02T08:15:00.000Z' },
-  { id: 5, name: 'Ouenzé', cityId: 1, createdAt: '2025-10-02T08:20:00.000Z' },
-  { id: 6, name: 'Talangaï', cityId: 1, createdAt: '2025-10-02T08:25:00.000Z' },
-  { id: 7, name: 'Mfilou', cityId: 1, createdAt: '2025-10-02T08:30:00.000Z' },
-  { id: 8, name: 'Madibou', cityId: 1, createdAt: '2025-10-02T08:35:00.000Z' },
-  { id: 9, name: 'Djiri', cityId: 1, createdAt: '2025-10-02T08:40:00.000Z' },
-  { id: 10, name: 'Koundzi', cityId: 2, createdAt: '2026-01-12T10:00:00.000Z' },
-  { id: 11, name: 'Maya-Maya', cityId: 2, createdAt: '2026-01-12T10:10:00.000Z' },
+  {
+    id: 1,
+    name: "Makélékélé",
+    cityId: 1,
+    createdAt: "2025-10-02T08:00:00.000Z",
+  },
+  { id: 2, name: "Bacongo", cityId: 1, createdAt: "2025-10-02T08:05:00.000Z" },
+  {
+    id: 3,
+    name: "Poto-Poto",
+    cityId: 1,
+    createdAt: "2025-10-02T08:10:00.000Z",
+  },
+  { id: 4, name: "Moungali", cityId: 1, createdAt: "2025-10-02T08:15:00.000Z" },
+  { id: 5, name: "Ouenzé", cityId: 1, createdAt: "2025-10-02T08:20:00.000Z" },
+  { id: 6, name: "Talangaï", cityId: 1, createdAt: "2025-10-02T08:25:00.000Z" },
+  { id: 7, name: "Mfilou", cityId: 1, createdAt: "2025-10-02T08:30:00.000Z" },
+  { id: 8, name: "Madibou", cityId: 1, createdAt: "2025-10-02T08:35:00.000Z" },
+  { id: 9, name: "Djiri", cityId: 1, createdAt: "2025-10-02T08:40:00.000Z" },
+  { id: 10, name: "Koundzi", cityId: 2, createdAt: "2026-01-12T10:00:00.000Z" },
+  {
+    id: 11,
+    name: "Maya-Maya",
+    cityId: 2,
+    createdAt: "2026-01-12T10:10:00.000Z",
+  },
 ];
-
 
 const FALLBACK_NAMES = [
-  ['Julien', 'Morel'], ['Thomas', 'Rivière'], ['Sarah', 'Le Goff'],
-  ['Moussa', 'Okamba'], ['Amina', 'Itoua'], ['David', 'Malonga'],
-  ['Grace', 'Mpassi'], ['Patrick', 'Kengue'], ['Clarisse', 'Loufoua'],
-  ['Jean', 'Makaya'], ['Rod', 'Ngoma'], ['Ruth', 'Okou'],
+  ["Julien", "Morel"],
+  ["Thomas", "Rivière"],
+  ["Sarah", "Le Goff"],
+  ["Moussa", "Okamba"],
+  ["Amina", "Itoua"],
+  ["David", "Malonga"],
+  ["Grace", "Mpassi"],
+  ["Patrick", "Kengue"],
+  ["Clarisse", "Loufoua"],
+  ["Jean", "Makaya"],
+  ["Rod", "Ngoma"],
+  ["Ruth", "Okou"],
 ];
-
 
 const NAMES = PERSONAS.length
   ? PERSONAS.map((p) => [p.firstName, p.lastName])
@@ -92,28 +140,27 @@ function nameAt(offset) {
   return NAMES[((offset % NAMES.length) + NAMES.length) % NAMES.length];
 }
 
-
 const ROSTER = [
-  { tradeId: 1, gender: 'male' },
-  { tradeId: 2, gender: 'male' },
-  { tradeId: 3, gender: 'female' },
-  { tradeId: 4, gender: 'male' },
-  { tradeId: 1, gender: 'male' },
-  { tradeId: 2, gender: 'male' },
-  { tradeId: 3, gender: 'female' },
-  { tradeId: 4, gender: 'male' },
-  { tradeId: 1, gender: 'female' },
-  { tradeId: 2, gender: 'male' },
-  { tradeId: 3, gender: 'female' },
-  { tradeId: 4, gender: 'female' },
+  { tradeId: 1, gender: "male" },
+  { tradeId: 2, gender: "male" },
+  { tradeId: 3, gender: "female" },
+  { tradeId: 4, gender: "male" },
+  { tradeId: 1, gender: "male" },
+  { tradeId: 2, gender: "male" },
+  { tradeId: 3, gender: "female" },
+  { tradeId: 4, gender: "male" },
+  { tradeId: 1, gender: "female" },
+  { tradeId: 2, gender: "male" },
+  { tradeId: 3, gender: "female" },
+  { tradeId: 4, gender: "female" },
 ];
 
-const MALE_POOL = PERSONAS.filter((p) => p.gender !== 'female');
-const FEMALE_POOL = PERSONAS.filter((p) => p.gender === 'female').sort((a, b) => a.age - b.age);
-
+const MALE_POOL = PERSONAS.filter((p) => p.gender !== "female");
+const FEMALE_POOL = PERSONAS.filter((p) => p.gender === "female").sort(
+  (a, b) => a.age - b.age,
+);
 
 const CAREER_START = 18;
-
 
 function careerYears(age, seed) {
   const elapsed = Math.max(0, age - CAREER_START);
@@ -121,7 +168,6 @@ function careerYears(age, seed) {
 
   return Math.min(elapsed, Math.round(elapsed * share));
 }
-
 
 const PORTRAIT_SHARE = 2;
 
@@ -133,14 +179,20 @@ function portraitFor(persona, index) {
 
 function makePro(i) {
   const slot = ROSTER[i % ROSTER.length];
-  const wantsFemale = slot.gender === 'female';
+  const wantsFemale = slot.gender === "female";
   const pool = wantsFemale ? FEMALE_POOL : MALE_POOL;
-  const persona = pool.shift() ?? PERSONAS[i % Math.max(1, PERSONAS.length)] ?? null;
+  const persona =
+    pool.shift() ?? PERSONAS[i % Math.max(1, PERSONAS.length)] ?? null;
   const [firstName, lastName] = persona
     ? [persona.firstName, persona.lastName]
     : nameAt(i);
-  const trade = MOCK_TRADES.find((t) => t.id === slot.tradeId) ?? MOCK_TRADES[i % MOCK_TRADES.length];
-  const zoneIds = [(i % MOCK_ZONES.length) + 1, ((i + 3) % MOCK_ZONES.length) + 1];
+  const trade =
+    MOCK_TRADES.find((t) => t.id === slot.tradeId) ??
+    MOCK_TRADES[i % MOCK_TRADES.length];
+  const zoneIds = [
+    (i % MOCK_ZONES.length) + 1,
+    ((i + 3) % MOCK_ZONES.length) + 1,
+  ];
   const zones = MOCK_ZONES.filter((z) => zoneIds.includes(z.id));
   const ratingCount = (i * 3) % 14;
   const yearsExperience = careerYears(persona?.age ?? 40, i);
@@ -157,42 +209,58 @@ function makePro(i) {
     yearsExperience,
     isAvailable: i % 3 !== 0,
     isHidden: false,
-    city: persona.city || 'Brazzaville',
-    country: 'Congo',
+    city: persona.city || "Brazzaville",
+    country: "Congo",
     description:
-      'Artisan expérimenté basé à Brazzaville. Devis gratuit, travail soigné et garantie sur les interventions réalisées dans votre quartier.',
+      "Artisan expérimenté basé à Brazzaville. Devis gratuit, travail soigné et garantie sur les interventions réalisées dans votre quartier.",
     phone: persona.phone || `+24206${String(1000000 + i * 137913).slice(0, 7)}`,
     whatsapp: null,
     image: portraitFor(persona, i),
     avatarUrl: portraitFor(persona, i),
-    ratingAverage: ratingCount ? Math.round((3.5 + ((i * 7) % 15) / 10) * 10) / 10 : null,
+    ratingAverage: ratingCount
+      ? Math.round((3.5 + ((i * 7) % 15) / 10) * 10) / 10
+      : null,
     ratingCount,
     photos: [0, 1, 2].map((k) => ({
       id: i * 10 + k + 1,
       url: workImage(i, k, trade.name),
       thumbUrl: workImage(i, k, trade.name),
-      caption: k === 0 ? 'Chantier récent' : k === 1 ? 'Réalisation' : 'Prestation',
-      title: k === 0 ? 'Chantier récent' : k === 1 ? 'Réalisation' : 'Prestation',
+      caption:
+        k === 0 ? "Chantier récent" : k === 1 ? "Réalisation" : "Prestation",
+      title:
+        k === 0 ? "Chantier récent" : k === 1 ? "Réalisation" : "Prestation",
       description:
         k === 0
-          ? 'Intervention complète réalisée en une journée, avec nettoyage du chantier et contrôle final.'
+          ? "Intervention complète réalisée en une journée, avec nettoyage du chantier et contrôle final."
           : k === 1
-            ? 'Prestation réalisée dans les règles de l\'art, client satisfait et recommandation reçue.'
-            : 'Installation soignée et mise en service, avec conseils d\'entretien remis au client.',
+            ? "Prestation réalisée dans les règles de l'art, client satisfait et recommandation reçue."
+            : "Installation soignée et mise en service, avec conseils d'entretien remis au client.",
       createdAt: new Date(Date.now() - (i + k) * 86400000).toISOString(),
     })),
   };
 }
 
-export const MOCK_PROS = Array.from({ length: ROSTER.length }, (_, i) => makePro(i));
+export const MOCK_PROS = Array.from({ length: ROSTER.length }, (_, i) =>
+  makePro(i),
+);
 
 const REVIEWS_POOL = [
-  { rating: 5, comment: 'Un échange clair et une intervention soignée. Julien a pris le temps de m\'expliquer l\'origine de la fuite.' },
-  { rating: 5, comment: 'Très bon contact pour le remplacement de ma robinetterie. Travail propre et conseils utiles.' },
-  { rating: 4, comment: 'Punctuel, efficace et courtois. Je recommande.' },
-  { rating: 5, comment: 'Devis détaillé, respect des délais, résultat impeccable.' },
+  {
+    rating: 5,
+    comment:
+      "Un échange clair et une intervention soignée. Julien a pris le temps de m'expliquer l'origine de la fuite.",
+  },
+  {
+    rating: 5,
+    comment:
+      "Très bon contact pour le remplacement de ma robinetterie. Travail propre et conseils utiles.",
+  },
+  { rating: 4, comment: "Punctuel, efficace et courtois. Je recommande." },
+  {
+    rating: 5,
+    comment: "Devis détaillé, respect des délais, résultat impeccable.",
+  },
 ];
-
 
 const MOCK_HIDDEN_REVIEWS = new Set();
 
@@ -213,9 +281,11 @@ export function mockReviewsFor(proId) {
 
 export function mockSetReviewHidden(id, hidden) {
   const numeric = Number(id);
-  const belongsToKnownPro = MOCK_PROS.some((p) => Math.floor(numeric / 100) === p.id);
+  const belongsToKnownPro = MOCK_PROS.some(
+    (p) => Math.floor(numeric / 100) === p.id,
+  );
   if (!belongsToKnownPro || numeric % 100 >= REVIEWS_POOL.length)
-    throw new Error('Avis introuvable');
+    throw new Error("Avis introuvable");
 
   if (hidden) MOCK_HIDDEN_REVIEWS.add(numeric);
   else MOCK_HIDDEN_REVIEWS.delete(numeric);
@@ -235,24 +305,48 @@ function toSearchItem(p) {
   };
 }
 
-export function searchMock({ trade, zone, q, available, minRating, minExperience, page = 1, pageSize = 10 } = {}) {
+export function searchMock({
+  trade,
+  zone,
+  q,
+  available,
+  minRating,
+  minExperience,
+  page = 1,
+  pageSize = 10,
+} = {}) {
   let rows = MOCK_PROS.filter((p) => !p.isHidden);
   if (trade) rows = rows.filter((p) => String(p.tradeId) === String(trade));
-  if (zone) rows = rows.filter((p) => p.zones.some((z) => String(z.id) === String(zone)));
-  if (typeof available === 'boolean') rows = rows.filter((p) => p.isAvailable === available);
-  if (minExperience != null) rows = rows.filter((p) => (p.yearsExperience ?? 0) >= Number(minExperience));
-  if (minRating != null) rows = rows.filter((p) => (p.ratingAverage ?? 0) >= Number(minRating));
+  if (zone)
+    rows = rows.filter((p) =>
+      p.zones.some((z) => String(z.id) === String(zone)),
+    );
+  if (typeof available === "boolean")
+    rows = rows.filter((p) => p.isAvailable === available);
+  if (minExperience != null)
+    rows = rows.filter(
+      (p) => (p.yearsExperience ?? 0) >= Number(minExperience),
+    );
+  if (minRating != null)
+    rows = rows.filter((p) => (p.ratingAverage ?? 0) >= Number(minRating));
   if (q) {
     const qNorm = String(q).trim().toLowerCase();
-    rows = rows.filter((p) =>
-      p.displayName.toLowerCase().includes(qNorm) ||
-      p.trade.toLowerCase().includes(qNorm) ||
-      p.zones.some((z) => z.name.toLowerCase().includes(qNorm)),
+    rows = rows.filter(
+      (p) =>
+        p.displayName.toLowerCase().includes(qNorm) ||
+        p.trade.toLowerCase().includes(qNorm) ||
+        p.zones.some((z) => z.name.toLowerCase().includes(qNorm)),
     );
   }
-  rows = [...rows].sort((a, b) => Number(b.isAvailable) - Number(a.isAvailable) || (b.ratingAverage ?? 0) - (a.ratingAverage ?? 0));
+  rows = [...rows].sort(
+    (a, b) =>
+      Number(b.isAvailable) - Number(a.isAvailable) ||
+      (b.ratingAverage ?? 0) - (a.ratingAverage ?? 0),
+  );
   const total = rows.length;
-  const items = rows.slice((page - 1) * pageSize, page * pageSize).map(toSearchItem);
+  const items = rows
+    .slice((page - 1) * pageSize, page * pageSize)
+    .map(toSearchItem);
   return { items, total, page, pageSize };
 }
 
@@ -260,10 +354,10 @@ export function getProDetailMock(id) {
   const p = MOCK_PROS.find((x) => String(x.id) === String(id));
   if (!p) return null;
   const tagsByTrade = {
-    1: ['Recherche de fuites', 'Robinetterie', 'Salle de bains'],
-    2: ['Installation de tableaux', 'Mise en sécurité', 'Luminaires'],
-    3: ['Béton', 'Fondations', 'Ravalement'],
-    4: ['Menuiseries sur mesure', 'Rangements', 'Volets'],
+    1: ["Recherche de fuites", "Robinetterie", "Salle de bains"],
+    2: ["Installation de tableaux", "Mise en sécurité", "Luminaires"],
+    3: ["Béton", "Fondations", "Ravalement"],
+    4: ["Menuiseries sur mesure", "Rangements", "Volets"],
   };
   return {
     profile: {
@@ -278,7 +372,9 @@ export function getProDetailMock(id) {
       whatsapp: p.whatsapp ?? p.phone,
       zones: p.zones,
       tags: tagsByTrade[p.tradeId] ?? [],
-      createdAt: new Date(Date.now() - (p.id + 2) * 86400000 * 11).toISOString(),
+      createdAt: new Date(
+        Date.now() - (p.id + 2) * 86400000 * 11,
+      ).toISOString(),
       updatedAt: new Date(Date.now() - p.id * 86400000).toISOString(),
     },
     photos: p.photos,
@@ -286,88 +382,87 @@ export function getProDetailMock(id) {
   };
 }
 
-
-
 let MOCK_MY_CONTACTS = [
   {
     id: 9001,
-    channel: 'message',
-    message: 'Bonjour, je recherche un devis pour une rénovation de salle de bain.',
-    status: 'new',
+    channel: "message",
+    message:
+      "Bonjour, je recherche un devis pour une rénovation de salle de bain.",
+    status: "new",
     outgoing: false,
     createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
     userId: 42,
-    role: 'client',
-    phone: '+242061234567',
+    role: "client",
+    phone: "+242061234567",
     avatarUrl: null,
-    firstName: 'Abel',
-    lastName: 'Bouanga',
-    displayName: 'Abel Bouanga',
+    firstName: "Abel",
+    lastName: "Bouanga",
+    displayName: "Abel Bouanga",
     tradeName: null,
   },
   {
     id: 9002,
-    channel: 'call',
+    channel: "call",
     message: null,
-    status: 'seen',
+    status: "seen",
     outgoing: true,
     createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
     userId: 7,
-    role: 'professional',
-    phone: '+242069876543',
+    role: "professional",
+    phone: "+242069876543",
     avatarUrl: null,
     firstName: null,
     lastName: null,
-    displayName: 'Atelier Kengo',
-    tradeName: 'Menuiserie',
+    displayName: "Atelier Kengo",
+    tradeName: "Menuiserie",
   },
   {
     id: 9003,
-    channel: 'call',
+    channel: "call",
     message: null,
-    status: 'seen',
+    status: "seen",
     outgoing: true,
     createdAt: new Date(Date.now() - 21 * 86400000).toISOString(),
     userId: 8,
-    role: 'professional',
-    phone: '+242061112233',
+    role: "professional",
+    phone: "+242061112233",
     avatarUrl: null,
     firstName: null,
     lastName: null,
-    displayName: 'Dépannage Express',
-    tradeName: 'Plomberie',
+    displayName: "Dépannage Express",
+    tradeName: "Plomberie",
   },
   {
     id: 9004,
-    channel: 'whatsapp',
+    channel: "whatsapp",
     message: null,
-    status: 'seen',
+    status: "seen",
     outgoing: true,
     createdAt: new Date(Date.now() - 47 * 86400000).toISOString(),
     userId: 8,
-    role: 'professional',
-    phone: '+242061112233',
+    role: "professional",
+    phone: "+242061112233",
     avatarUrl: null,
     firstName: null,
     lastName: null,
-    displayName: 'Dépannage Express',
-    tradeName: 'Plomberie',
+    displayName: "Dépannage Express",
+    tradeName: "Plomberie",
   },
   {
     id: 9005,
-    channel: 'call',
+    channel: "call",
     message: null,
-    status: 'seen',
+    status: "seen",
     outgoing: true,
     createdAt: new Date(Date.now() - 63 * 86400000).toISOString(),
     userId: 9,
-    role: 'professional',
-    phone: '+242065554433',
+    role: "professional",
+    phone: "+242065554433",
     avatarUrl: null,
     firstName: null,
     lastName: null,
-    displayName: 'Atelier Kengo',
-    tradeName: 'Menuiserie',
+    displayName: "Atelier Kengo",
+    tradeName: "Menuiserie",
   },
 ];
 
@@ -375,16 +470,22 @@ export function mockMyContacts({ page = 1, pageSize = 20 } = {}) {
   return paginateMock(MOCK_MY_CONTACTS, page, pageSize);
 }
 
-
 export function mockLogContact(toUserId, channel) {
-  const counterpart = MOCK_MY_CONTACTS.find((c) => String(c.userId) === String(toUserId));
+  const counterpart = MOCK_MY_CONTACTS.find(
+    (c) => String(c.userId) === String(toUserId),
+  );
   MOCK_MY_CONTACTS = [
     {
-      ...(counterpart ?? { userId: toUserId, displayName: 'Contact', role: 'professional', tradeName: null }),
+      ...(counterpart ?? {
+        userId: toUserId,
+        displayName: "Contact",
+        role: "professional",
+        tradeName: null,
+      }),
       id: 9100 + MOCK_MY_CONTACTS.length,
       channel,
       message: null,
-      status: 'seen',
+      status: "seen",
       outgoing: true,
       createdAt: new Date().toISOString(),
     },
@@ -393,10 +494,9 @@ export function mockLogContact(toUserId, channel) {
   return null;
 }
 
-
 const MOCK_CLIENTS = Array.from({ length: 6 }, (_, i) => ({
   id: 100 + i,
-  role: 'client',
+  role: "client",
   firstName: FIRST[(i + 2) % FIRST.length],
   lastName: LAST[(i + 5) % LAST.length],
   displayName: null,
@@ -418,13 +518,22 @@ function paginateMock(items, page = 1, pageSize = 20) {
 }
 
 function proStatus(p) {
-  if (p.isHidden) return 'hidden';
+  if (p.isHidden) return "hidden";
   const complete = p.description && p.zones?.length && p.photos?.length;
-  return complete ? 'published' : 'incomplete';
+  return complete ? "published" : "incomplete";
 }
 
-export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', status, sort, city } = {}) {
-  const q = String(query || '').trim().toLowerCase();
+export function mockAdminProfessionals({
+  page = 1,
+  pageSize = 20,
+  query = "",
+  status,
+  sort,
+  city,
+} = {}) {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   let rows = MOCK_PROS.map((p) => ({
     id: p.id,
     displayName: p.displayName,
@@ -436,11 +545,17 @@ export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', st
     status: proStatus(p),
     createdAt: new Date(Date.now() - (p.id + 1) * 86400000).toISOString(),
   }));
-  if (q) rows = rows.filter((p) => p.displayName.toLowerCase().includes(q) || (p.trade || '').toLowerCase().includes(q) || p.phone.includes(q));
+  if (q)
+    rows = rows.filter(
+      (p) =>
+        p.displayName.toLowerCase().includes(q) ||
+        (p.trade || "").toLowerCase().includes(q) ||
+        p.phone.includes(q),
+    );
   if (status) rows = rows.filter((p) => p.status === status);
   if (city) rows = rows.filter((p) => p.city === city);
   rows = [...rows].sort((a, b) =>
-    sort === 'recent'
+    sort === "recent"
       ? new Date(b.createdAt) - new Date(a.createdAt)
       : a.displayName.localeCompare(b.displayName),
   );
@@ -448,9 +563,9 @@ export function mockAdminProfessionals({ page = 1, pageSize = 20, query = '', st
 }
 
 const MOCK_REPORTERS = [
-  { id: 901, firstName: 'Nadeige', lastName: 'B.', avatarUrl: null },
-  { id: 902, firstName: 'Herve', lastName: 'M.', avatarUrl: null },
-  { id: 903, firstName: 'Chantal', lastName: 'K.', avatarUrl: null },
+  { id: 901, firstName: "Nadeige", lastName: "B.", avatarUrl: null },
+  { id: 902, firstName: "Herve", lastName: "M.", avatarUrl: null },
+  { id: 903, firstName: "Chantal", lastName: "K.", avatarUrl: null },
 ];
 
 let MOCK_REPORTS = [
@@ -458,33 +573,34 @@ let MOCK_REPORTS = [
     id: 1,
     professionalId: MOCK_PROS[2].id,
     reporterId: MOCK_REPORTERS[0].id,
-    reason: 'fake_profile',
-    message: 'Les photos de cette fiche ne correspondent pas du tout au métier annoncé.',
-    status: 'pending',
+    reason: "fake_profile",
+    message:
+      "Les photos de cette fiche ne correspondent pas du tout au métier annoncé.",
+    status: "pending",
     resolvedAt: null,
-    createdAt: '2026-09-28T09:12:00.000Z',
+    createdAt: "2026-09-28T09:12:00.000Z",
     reporter: MOCK_REPORTERS[0],
   },
   {
     id: 2,
     professionalId: MOCK_PROS[5].id,
     reporterId: MOCK_REPORTERS[1].id,
-    reason: 'spam',
-    message: 'Envoie des messages promotionnels dès la prise de contact.',
-    status: 'pending',
+    reason: "spam",
+    message: "Envoie des messages promotionnels dès la prise de contact.",
+    status: "pending",
     resolvedAt: null,
-    createdAt: '2026-09-24T16:40:00.000Z',
+    createdAt: "2026-09-24T16:40:00.000Z",
     reporter: MOCK_REPORTERS[1],
   },
   {
     id: 3,
     professionalId: MOCK_PROS[1].id,
     reporterId: MOCK_REPORTERS[2].id,
-    reason: 'other',
-    message: 'Informations professionnelles incomplètes.',
-    status: 'resolved',
-    resolvedAt: '2026-09-20T11:05:00.000Z',
-    createdAt: '2026-09-18T08:30:00.000Z',
+    reason: "other",
+    message: "Informations professionnelles incomplètes.",
+    status: "resolved",
+    resolvedAt: "2026-09-20T11:05:00.000Z",
+    createdAt: "2026-09-18T08:30:00.000Z",
     reporter: MOCK_REPORTERS[2],
   },
 ];
@@ -500,8 +616,6 @@ const withProName = (r) => {
     professionalSuspendedAt: pro?.suspendedAt ?? null,
   };
 };
-
-
 
 let MOCK_MY_REVIEWS = [
   {
@@ -533,7 +647,8 @@ let MOCK_MY_REVIEWS = [
     professionalAvatarUrl: MOCK_PROS[2].avatarUrl ?? null,
     professionalTrade: MOCK_PROS[2].trade ?? null,
     rating: 3,
-    comment: 'Le travail est correct mais le rendez-vous a été repoussé deux fois.',
+    comment:
+      "Le travail est correct mais le rendez-vous a été repoussé deux fois.",
     isHidden: true,
     createdAt: new Date(Date.now() - 40 * 86400000).toISOString(),
   },
@@ -548,20 +663,33 @@ const MY_REVIEWS_VISIBILITY = {
 const MY_REVIEWS_SORT = {
   recent: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-  rating_desc: (a, b) => b.rating - a.rating || new Date(b.createdAt) - new Date(a.createdAt),
-  rating_asc: (a, b) => a.rating - b.rating || new Date(b.createdAt) - new Date(a.createdAt),
+  rating_desc: (a, b) =>
+    b.rating - a.rating || new Date(b.createdAt) - new Date(a.createdAt),
+  rating_asc: (a, b) =>
+    a.rating - b.rating || new Date(b.createdAt) - new Date(a.createdAt),
 };
 
-export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility = 'all', sort = 'recent' } = {}) {
-  const needle = String(q || '').trim().toLowerCase();
-  let rows = MOCK_MY_REVIEWS.filter(MY_REVIEWS_VISIBILITY[visibility] ?? MY_REVIEWS_VISIBILITY.all);
+export function mockMyReviews({
+  page = 1,
+  pageSize = 20,
+  q,
+  rating,
+  visibility = "all",
+  sort = "recent",
+} = {}) {
+  const needle = String(q || "")
+    .trim()
+    .toLowerCase();
+  let rows = MOCK_MY_REVIEWS.filter(
+    MY_REVIEWS_VISIBILITY[visibility] ?? MY_REVIEWS_VISIBILITY.all,
+  );
 
   if (rating) rows = rows.filter((r) => String(r.rating) === String(rating));
   if (needle)
     rows = rows.filter(
       (r) =>
         r.professionalName.toLowerCase().includes(needle) ||
-        (r.comment || '').toLowerCase().includes(needle),
+        (r.comment || "").toLowerCase().includes(needle),
     );
 
   rows = [...rows].sort(MY_REVIEWS_SORT[sort] ?? MY_REVIEWS_SORT.recent);
@@ -570,7 +698,7 @@ export function mockMyReviews({ page = 1, pageSize = 20, q, rating, visibility =
 
 export function mockUpdateMyReview(id, { rating, comment }) {
   const review = MOCK_MY_REVIEWS.find((r) => String(r.id) === String(id));
-  if (!review) throw new Error('Avis introuvable');
+  if (!review) throw new Error("Avis introuvable");
   review.rating = rating;
   review.comment = comment;
   return review;
@@ -578,7 +706,7 @@ export function mockUpdateMyReview(id, { rating, comment }) {
 
 export function mockSetMyReviewHidden(id, isHidden) {
   const review = MOCK_MY_REVIEWS.find((r) => String(r.id) === String(id));
-  if (!review) throw new Error('Avis introuvable');
+  if (!review) throw new Error("Avis introuvable");
   review.isHidden = Boolean(isHidden);
   return review;
 }
@@ -586,7 +714,7 @@ export function mockSetMyReviewHidden(id, isHidden) {
 export function mockDeleteMyReview(id) {
   const before = MOCK_MY_REVIEWS.length;
   MOCK_MY_REVIEWS = MOCK_MY_REVIEWS.filter((r) => String(r.id) !== String(id));
-  if (MOCK_MY_REVIEWS.length === before) throw new Error('Avis introuvable');
+  if (MOCK_MY_REVIEWS.length === before) throw new Error("Avis introuvable");
   return null;
 }
 
@@ -595,9 +723,16 @@ const MY_REPORTS_SORT = {
   oldest: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
 };
 
-
-export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'recent' } = {}) {
-  const needle = String(q || '').trim().toLowerCase();
+export function mockMyReports({
+  page = 1,
+  pageSize = 20,
+  q,
+  status,
+  sort = "recent",
+} = {}) {
+  const needle = String(q || "")
+    .trim()
+    .toLowerCase();
   let rows = MOCK_REPORTS.map(withProName);
 
   if (status) rows = rows.filter((r) => r.status === status);
@@ -605,7 +740,7 @@ export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'rece
     rows = rows.filter(
       (r) =>
         r.professionalName.toLowerCase().includes(needle) ||
-        (r.message || '').toLowerCase().includes(needle),
+        (r.message || "").toLowerCase().includes(needle),
     );
 
   rows = [...rows].sort(MY_REPORTS_SORT[sort] ?? MY_REPORTS_SORT.recent);
@@ -614,7 +749,8 @@ export function mockMyReports({ page = 1, pageSize = 20, q, status, sort = 'rece
 
 export function mockDeleteMyReport(id) {
   const target = MOCK_REPORTS.find((r) => String(r.id) === String(id));
-  if (!target || target.status !== 'pending') throw new Error('Signalement introuvable');
+  if (!target || target.status !== "pending")
+    throw new Error("Signalement introuvable");
   MOCK_REPORTS = MOCK_REPORTS.filter((r) => String(r.id) !== String(id));
   return null;
 }
@@ -622,12 +758,24 @@ export function mockDeleteMyReport(id) {
 const MOCK_AUTO_BLOCK_THRESHOLD = 3;
 const MOCK_AUTO_SUSPEND_THRESHOLD = 5;
 
-export function mockReportProfessional({ professionalId, reporterId = 901, reason, message = null }) {
+export function mockReportProfessional({
+  professionalId,
+  reporterId = 901,
+  reason,
+  message = null,
+}) {
   const pro = MOCK_PROS.find((p) => String(p.id) === String(professionalId));
-  if (!pro) throw new Error('Profil introuvable');
-  if (String(pro.id) === String(reporterId)) throw new Error('Vous ne pouvez pas signaler votre propre profil');
-  if (MOCK_REPORTS.some((r) => String(r.professionalId) === String(pro.id) && String(r.reporterId) === String(reporterId)))
-    throw new Error('Vous avez déjà signalé ce profil');
+  if (!pro) throw new Error("Profil introuvable");
+  if (String(pro.id) === String(reporterId))
+    throw new Error("Vous ne pouvez pas signaler votre propre profil");
+  if (
+    MOCK_REPORTS.some(
+      (r) =>
+        String(r.professionalId) === String(pro.id) &&
+        String(r.reporterId) === String(reporterId),
+    )
+  )
+    throw new Error("Vous avez déjà signalé ce profil");
 
   const created = {
     id: Math.max(0, ...MOCK_REPORTS.map((r) => r.id)) + 1,
@@ -635,49 +783,67 @@ export function mockReportProfessional({ professionalId, reporterId = 901, reaso
     reporterId: Number(reporterId),
     reason,
     message: message || null,
-    status: 'pending',
+    status: "pending",
     resolvedAt: null,
     createdAt: new Date().toISOString(),
-    reporter: MOCK_REPORTERS.find((u) => String(u.id) === String(reporterId)) ?? {
+    reporter: MOCK_REPORTERS.find(
+      (u) => String(u.id) === String(reporterId),
+    ) ?? {
       id: Number(reporterId),
-      firstName: 'Client',
-      lastName: '',
+      firstName: "Client",
+      lastName: "",
       avatarUrl: null,
     },
   };
   MOCK_REPORTS = [created, ...MOCK_REPORTS];
 
-  const reportCount = MOCK_REPORTS.filter((r) => String(r.professionalId) === String(pro.id)).length;
-  const autoBlocked = MOCK_AUTO_BLOCK_THRESHOLD > 0 && reportCount >= MOCK_AUTO_BLOCK_THRESHOLD;
-  const autoSuspended = MOCK_AUTO_SUSPEND_THRESHOLD > 0 && reportCount >= MOCK_AUTO_SUSPEND_THRESHOLD;
+  const reportCount = MOCK_REPORTS.filter(
+    (r) => String(r.professionalId) === String(pro.id),
+  ).length;
+  const autoBlocked =
+    MOCK_AUTO_BLOCK_THRESHOLD > 0 && reportCount >= MOCK_AUTO_BLOCK_THRESHOLD;
+  const autoSuspended =
+    MOCK_AUTO_SUSPEND_THRESHOLD > 0 &&
+    reportCount >= MOCK_AUTO_SUSPEND_THRESHOLD;
   if (autoBlocked) pro.blockedAt = pro.blockedAt || new Date().toISOString();
-  if (autoSuspended) pro.suspendedAt = pro.suspendedAt || new Date().toISOString();
+  if (autoSuspended)
+    pro.suspendedAt = pro.suspendedAt || new Date().toISOString();
 
   return { ...withProName(created), reportCount, autoBlocked, autoSuspended };
 }
 
-
 let MOCK_REVIEW_REPORTS = [];
 
-
-export function mockReportContact(userId, { reason, message = null }, reporterId = 901) {
+export function mockReportContact(
+  userId,
+  { reason, message = null },
+  reporterId = 901,
+) {
   const linked = MOCK_MY_CONTACTS.some(
     (c) =>
-      (String(c.userId) === String(userId) && String(c.reporterId) === String(reporterId)) ||
-      (String(c.userId) === String(reporterId) && String(c.reporterId) === String(userId)),
+      (String(c.userId) === String(userId) &&
+        String(c.reporterId) === String(reporterId)) ||
+      (String(c.userId) === String(reporterId) &&
+        String(c.reporterId) === String(userId)),
   );
-  if (!linked) throw new Error('Contact introuvable');
-  if (MOCK_REPORTS.some((r) => String(r.professionalId) === String(userId) && String(r.reporterId) === String(reporterId)))
-    throw new Error('Vous avez déjà signalé ce compte');
+  if (!linked) throw new Error("Contact introuvable");
+  if (
+    MOCK_REPORTS.some(
+      (r) =>
+        String(r.professionalId) === String(userId) &&
+        String(r.reporterId) === String(reporterId),
+    )
+  )
+    throw new Error("Vous avez déjà signalé ce compte");
 
   const created = {
     id: Math.max(0, ...MOCK_REPORTS.map((r) => r.id)) + 1,
     professionalId: Number(userId),
     reporterId: Number(reporterId),
-    targetRole: 'client',
+    targetRole: "client",
     reason,
     message: message || null,
-    status: 'pending',
+    status: "pending",
     resolvedAt: null,
     createdAt: new Date().toISOString(),
   };
@@ -685,10 +851,13 @@ export function mockReportContact(userId, { reason, message = null }, reporterId
   return withProName(created);
 }
 
-
-export function mockReportReview(reviewId, { reason, message = null }, reporterId = 901) {
+export function mockReportReview(
+  reviewId,
+  { reason, message = null },
+  reporterId = 901,
+) {
   if (MOCK_REVIEW_REPORTS.some((r) => String(r.reviewId) === String(reviewId)))
-    throw new Error('Vous avez déjà signalé cet avis');
+    throw new Error("Vous avez déjà signalé cet avis");
 
   const created = {
     id: MOCK_REVIEW_REPORTS.length + 1,
@@ -696,7 +865,7 @@ export function mockReportReview(reviewId, { reason, message = null }, reporterI
     reporterId: Number(reporterId),
     reason,
     message: message || null,
-    status: 'pending',
+    status: "pending",
     resolvedAt: null,
     createdAt: new Date().toISOString(),
   };
@@ -704,24 +873,47 @@ export function mockReportReview(reviewId, { reason, message = null }, reporterI
   return created;
 }
 
-export function mockAdminReports({ page = 1, pageSize = 20, status, query = '' } = {}) {
-  const q = String(query || '').trim().toLowerCase();
+export function mockAdminReports({
+  page = 1,
+  pageSize = 20,
+  status,
+  query = "",
+} = {}) {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   let rows = MOCK_REPORTS.map(withProName);
   if (status) rows = rows.filter((r) => r.status === status);
   if (q)
     rows = rows.filter((r) => {
-      const reporter = `${r.reporter?.firstName || ''} ${r.reporter?.lastName || ''}`.toLowerCase();
+      const reporter =
+        `${r.reporter?.firstName || ""} ${r.reporter?.lastName || ""}`.toLowerCase();
       return (
-        (r.professionalName || '').toLowerCase().includes(q) ||
-        String(r.message || '').toLowerCase().includes(q) ||
+        (r.professionalName || "").toLowerCase().includes(q) ||
+        String(r.message || "")
+          .toLowerCase()
+          .includes(q) ||
         reporter.includes(q)
       );
     });
 
-  const groups = [...rows.reduce((acc, r) => acc.set(String(r.professionalId), [...(acc.get(String(r.professionalId)) || []), r]), new Map()).entries()]
+  const groups = [
+    ...rows
+      .reduce(
+        (acc, r) =>
+          acc.set(String(r.professionalId), [
+            ...(acc.get(String(r.professionalId)) || []),
+            r,
+          ]),
+        new Map(),
+      )
+      .entries(),
+  ]
     .map(([professionalId, reports]) => {
-      const sorted = [...reports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      const pendingCount = sorted.filter((r) => r.status === 'pending').length;
+      const sorted = [...reports].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      );
+      const pendingCount = sorted.filter((r) => r.status === "pending").length;
       return {
         professionalId: Number(professionalId),
         professionalName: sorted[0].professionalName,
@@ -735,7 +927,9 @@ export function mockAdminReports({ page = 1, pageSize = 20, status, query = '' }
       };
     })
     .sort(
-      (a, b) => b.pendingCount - a.pendingCount || new Date(b.latestAt) - new Date(a.latestAt),
+      (a, b) =>
+        b.pendingCount - a.pendingCount ||
+        new Date(b.latestAt) - new Date(a.latestAt),
     );
 
   return paginateMock(groups, page, pageSize);
@@ -743,14 +937,21 @@ export function mockAdminReports({ page = 1, pageSize = 20, status, query = '' }
 
 export function mockResolveReport(id, status) {
   const report = MOCK_REPORTS.find((r) => String(r.id) === String(id));
-  if (!report) throw new Error('Signalement introuvable');
+  if (!report) throw new Error("Signalement introuvable");
   report.status = status;
   report.resolvedAt = new Date().toISOString();
   return withProName(report);
 }
 
-export function mockAdminReviews({ page = 1, pageSize = 20, hidden, query = '' } = {}) {
-  const q = String(query || '').trim().toLowerCase();
+export function mockAdminReviews({
+  page = 1,
+  pageSize = 20,
+  hidden,
+  query = "",
+} = {}) {
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   let all = MOCK_PROS.flatMap((p) =>
     mockReviewsFor(p.id).map((r) => ({
       ...r,
@@ -763,14 +964,18 @@ export function mockAdminReviews({ page = 1, pageSize = 20, hidden, query = '' }
       },
     })),
   );
-  if (typeof hidden === 'boolean') all = all.filter((r) => r.isHidden === hidden);
+  if (typeof hidden === "boolean")
+    all = all.filter((r) => r.isHidden === hidden);
   if (q) {
     const rows = all.filter((r) => {
-      const client = `${r.client?.firstName || ''} ${r.client?.lastName || ''}`.toLowerCase();
+      const client =
+        `${r.client?.firstName || ""} ${r.client?.lastName || ""}`.toLowerCase();
       return (
         client.includes(q) ||
-        (r.professional?.displayName || '').toLowerCase().includes(q) ||
-        String(r.comment || '').toLowerCase().includes(q)
+        (r.professional?.displayName || "").toLowerCase().includes(q) ||
+        String(r.comment || "")
+          .toLowerCase()
+          .includes(q)
       );
     });
     return paginateMock(rows, page, pageSize);
@@ -781,21 +986,27 @@ export function mockAdminReviews({ page = 1, pageSize = 20, hidden, query = '' }
 const MOCK_ADMINS = [
   {
     id: 901,
-    role: 'admin',
-    firstName: 'Admin',
-    lastName: 'Kopé',
+    role: "admin",
+    firstName: "Admin",
+    lastName: "Kopé",
     displayName: null,
-    phone: '+242060000000',
+    phone: "+242060000000",
     avatarUrl: null,
     createdAt: new Date(Date.now() - 365 * 86400000).toISOString(),
     blockedAt: null,
   },
 ];
 
-export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '', blocked } = {}) {
+export function mockAdminUsers({
+  page = 1,
+  pageSize = 20,
+  role,
+  query = "",
+  blocked,
+} = {}) {
   const pros = MOCK_PROS.map((p) => ({
     id: p.id,
-    role: 'professional',
+    role: "professional",
     firstName: null,
     lastName: null,
     displayName: p.displayName,
@@ -807,70 +1018,97 @@ export function mockAdminUsers({ page = 1, pageSize = 20, role, query = '', bloc
   let rows = [...pros, ...MOCK_CLIENTS, ...MOCK_ADMINS].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   );
-  const q = String(query || '').trim().toLowerCase();
+  const q = String(query || "")
+    .trim()
+    .toLowerCase();
   if (role) rows = rows.filter((u) => u.role === role);
-  if (typeof blocked === 'boolean') rows = rows.filter((u) => Boolean(u.blockedAt) === blocked);
+  if (typeof blocked === "boolean")
+    rows = rows.filter((u) => Boolean(u.blockedAt) === blocked);
   if (q)
     rows = rows.filter((u) =>
-      [u.firstName, u.lastName, u.displayName, u.phone].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)),
+      [u.firstName, u.lastName, u.displayName, u.phone]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q)),
     );
   return paginateMock(rows, page, pageSize);
 }
 
 function findMockUser(id) {
   const target = Number(id);
-  if (MOCK_ADMINS.some((u) => u.id === target)) return MOCK_ADMINS.find((u) => u.id === target);
+  if (MOCK_ADMINS.some((u) => u.id === target))
+    return MOCK_ADMINS.find((u) => u.id === target);
   const pro = MOCK_PROS.find((p) => p.id === target);
-  if (pro) return { ...pro, firstName: null, lastName: null, role: 'professional' };
+  if (pro)
+    return { ...pro, firstName: null, lastName: null, role: "professional" };
   const client = MOCK_CLIENTS.find((c) => c.id === target);
-  return client ? { ...client, role: 'client' } : null;
+  return client ? { ...client, role: "client" } : null;
 }
 
 export function mockSetUserBlocked(actorId, id, blocked) {
-  if (Number(actorId) === Number(id)) throw new Error('Vous ne pouvez pas bloquer votre propre compte');
+  if (Number(actorId) === Number(id))
+    throw new Error("Vous ne pouvez pas bloquer votre propre compte");
   const user = findMockUser(id);
-  if (!user) throw new Error('Utilisateur introuvable');
+  if (!user) throw new Error("Utilisateur introuvable");
 
-  const store = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : MOCK_PROS;
+  const store =
+    user.role === "admin"
+      ? MOCK_ADMINS
+      : user.role === "client"
+        ? MOCK_CLIENTS
+        : MOCK_PROS;
   const target = store.find((u) => u.id === Number(id));
-  if (!target) throw new Error('Utilisateur introuvable');
+  if (!target) throw new Error("Utilisateur introuvable");
 
-  if (blocked && user.role === 'admin') {
-    const others = MOCK_ADMINS.filter((a) => a.id !== Number(id) && !a.blockedAt);
-    if (others.length === 0) throw new Error('Impossible de bloquer le dernier administrateur actif');
+  if (blocked && user.role === "admin") {
+    const others = MOCK_ADMINS.filter(
+      (a) => a.id !== Number(id) && !a.blockedAt,
+    );
+    if (others.length === 0)
+      throw new Error("Impossible de bloquer le dernier administrateur actif");
   }
   target.blockedAt = blocked ? new Date().toISOString() : null;
   return { id: Number(id), role: user.role, blockedAt: target.blockedAt };
 }
 
 export function mockSetUserSuspended(actorId, id, suspended) {
-  if (Number(actorId) === Number(id)) throw new Error('Vous ne pouvez pas suspendre votre propre compte');
+  if (Number(actorId) === Number(id))
+    throw new Error("Vous ne pouvez pas suspendre votre propre compte");
   const user = findMockUser(id);
-  if (!user) throw new Error('Utilisateur introuvable');
+  if (!user) throw new Error("Utilisateur introuvable");
 
-  const store = user.role === 'admin' ? MOCK_ADMINS : user.role === 'client' ? MOCK_CLIENTS : MOCK_PROS;
+  const store =
+    user.role === "admin"
+      ? MOCK_ADMINS
+      : user.role === "client"
+        ? MOCK_CLIENTS
+        : MOCK_PROS;
   const target = store.find((u) => u.id === Number(id));
-  if (!target) throw new Error('Utilisateur introuvable');
+  if (!target) throw new Error("Utilisateur introuvable");
 
   target.suspendedAt = suspended ? new Date().toISOString() : null;
   target.blockedAt = suspended ? new Date().toISOString() : null;
-  return { id: Number(id), role: user.role, blockedAt: target.blockedAt, suspendedAt: target.suspendedAt };
+  return {
+    id: Number(id),
+    role: user.role,
+    blockedAt: target.blockedAt,
+    suspendedAt: target.suspendedAt,
+  };
 }
 
 export function mockCreateAdmin({ firstName, lastName, phone }) {
-  const clean = String(phone || '').trim();
+  const clean = String(phone || "").trim();
   const exists =
     MOCK_ADMINS.some((a) => a.phone === clean) ||
     MOCK_CLIENTS.some((c) => c.phone === clean) ||
     MOCK_PROS.some((p) => p.phone === clean);
-  if (exists) throw new Error('Ce numéro est déjà utilisé');
+  if (exists) throw new Error("Ce numéro est déjà utilisé");
 
   const id = Math.max(0, ...MOCK_ADMINS.map((a) => a.id)) + 500;
   const created = {
     id,
-    role: 'admin',
-    firstName: String(firstName || '').trim(),
-    lastName: String(lastName || '').trim(),
+    role: "admin",
+    firstName: String(firstName || "").trim(),
+    lastName: String(lastName || "").trim(),
     displayName: null,
     phone: clean,
     avatarUrl: null,
@@ -881,13 +1119,17 @@ export function mockCreateAdmin({ firstName, lastName, phone }) {
   return created;
 }
 
-export function mockAdminStats() {  const published = MOCK_PROS.filter((p) => proStatus(p) === 'published').length;
+export function mockAdminStats() {
+  const published = MOCK_PROS.filter(
+    (p) => proStatus(p) === "published",
+  ).length;
   const hidden = MOCK_PROS.filter((p) => p.isHidden).length;
   const incomplete = MOCK_PROS.length - published - hidden;
   const reviews = MOCK_PROS.flatMap((p) => mockReviewsFor(p.id));
   const ratings = reviews.filter((r) => !r.isHidden).map((r) => r.rating);
   const ratingAverage = ratings.length
-    ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
+    ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) /
+      10
     : 0;
   return {
     users: MOCK_PROS.length + MOCK_CLIENTS.length + 1,
@@ -900,9 +1142,13 @@ export function mockAdminStats() {  const published = MOCK_PROS.filter((p) => pr
     reviewsHidden: reviews.filter((r) => r.isHidden).length,
     ratingAverage,
     contacts: 2,
-    reportsPending: MOCK_REPORTS.filter((r) => r.status === 'pending').length,
-    usersBlocked: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS].flat().filter((u) => u.blockedAt).length,
-    usersSuspended: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS].flat().filter((u) => u.suspendedAt).length,
+    reportsPending: MOCK_REPORTS.filter((r) => r.status === "pending").length,
+    usersBlocked: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS]
+      .flat()
+      .filter((u) => u.blockedAt).length,
+    usersSuspended: [MOCK_PROS, MOCK_CLIENTS, MOCK_ADMINS]
+      .flat()
+      .filter((u) => u.suspendedAt).length,
     recentProfessionals: [...MOCK_PROS]
       .slice(-5)
       .reverse()
@@ -921,7 +1167,8 @@ export function mockListTrades() {
   return {
     items: MOCK_TRADES.map((t) => ({
       ...t,
-      category: MOCK_TRADE_CATEGORIES.find((c) => c.id === t.categoryId)?.name ?? null,
+      category:
+        MOCK_TRADE_CATEGORIES.find((c) => c.id === t.categoryId)?.name ?? null,
       professionals: MOCK_PROS.filter((p) => p.tradeId === t.id).length,
     })),
   };
@@ -938,9 +1185,13 @@ export function mockListTradeCategories() {
 
 export function mockCreateTradeCategory(payload) {
   const { name } = payload || {};
-  const clean = String(name || '').trim();
-  if (MOCK_TRADE_CATEGORIES.some((c) => c.name.toLowerCase() === clean.toLowerCase()))
-    throw new Error('Cette catégorie existe déjà');
+  const clean = String(name || "").trim();
+  if (
+    MOCK_TRADE_CATEGORIES.some(
+      (c) => c.name.toLowerCase() === clean.toLowerCase(),
+    )
+  )
+    throw new Error("Cette catégorie existe déjà");
   const id = Math.max(0, ...MOCK_TRADE_CATEGORIES.map((c) => c.id)) + 1;
   const item = { id, name: clean, trades: 0 };
   MOCK_TRADE_CATEGORIES.push({ id, name: clean });
@@ -950,7 +1201,7 @@ export function mockCreateTradeCategory(payload) {
 export function mockUpdateTradeCategory(id, payload) {
   const { name } = payload || {};
   const category = MOCK_TRADE_CATEGORIES.find((c) => c.id === Number(id));
-  if (!category) throw new Error('Catégorie introuvable');
+  if (!category) throw new Error("Catégorie introuvable");
   if (name != null) category.name = String(name).trim();
   return { id: category.id, name: category.name };
 }
@@ -958,37 +1209,53 @@ export function mockUpdateTradeCategory(id, payload) {
 export function mockDeleteTradeCategory(id) {
   const target = Number(id);
   if (MOCK_TRADES.some((t) => t.categoryId === target))
-    throw new Error('Déplacez les métiers de cette catégorie avant de la supprimer');
+    throw new Error(
+      "Déplacez les métiers de cette catégorie avant de la supprimer",
+    );
   const index = MOCK_TRADE_CATEGORIES.findIndex((c) => c.id === target);
-  if (index < 0) throw new Error('Catégorie introuvable');
+  if (index < 0) throw new Error("Catégorie introuvable");
   MOCK_TRADE_CATEGORIES.splice(index, 1);
   return { id: target };
 }
 
 export function mockReorderTradeCategories(ids) {
   const order = ids.map(Number);
-  MOCK_TRADE_CATEGORIES.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  MOCK_TRADE_CATEGORIES.sort(
+    (a, b) => order.indexOf(a.id) - order.indexOf(b.id),
+  );
   return { ids: order };
 }
 
 export function mockCreateTrade(payload) {
   const { name, categoryId = null } = payload || {};
-  const clean = String(name || '').trim();
+  const clean = String(name || "").trim();
   if (MOCK_TRADES.some((t) => t.name.toLowerCase() === clean.toLowerCase()))
-    throw new Error('Ce métier existe déjà');
+    throw new Error("Ce métier existe déjà");
   const id = Math.max(0, ...MOCK_TRADES.map((t) => t.id)) + 1;
   const createdAt = new Date().toISOString();
-  const item = { id, name: clean, categoryId: categoryId == null ? null : Number(categoryId), createdAt, professionals: 0 };
-  MOCK_TRADES.push({ id, name: item.name, categoryId: item.categoryId, createdAt });
+  const item = {
+    id,
+    name: clean,
+    categoryId: categoryId == null ? null : Number(categoryId),
+    createdAt,
+    professionals: 0,
+  };
+  MOCK_TRADES.push({
+    id,
+    name: item.name,
+    categoryId: item.categoryId,
+    createdAt,
+  });
   return item;
 }
 
 export function mockUpdateTrade(id, payload) {
   const { name, categoryId } = payload || {};
   const trade = MOCK_TRADES.find((t) => t.id === Number(id));
-  if (!trade) throw new Error('Métier introuvable');
+  if (!trade) throw new Error("Métier introuvable");
   if (name != null) trade.name = String(name).trim();
-  if (categoryId !== undefined) trade.categoryId = categoryId == null ? null : Number(categoryId);
+  if (categoryId !== undefined)
+    trade.categoryId = categoryId == null ? null : Number(categoryId);
   return { id: trade.id, name: trade.name, categoryId: trade.categoryId };
 }
 
@@ -1001,9 +1268,9 @@ export function mockReorderTrades(ids) {
 export function mockDeleteTrade(id) {
   const target = Number(id);
   if (MOCK_PROS.some((p) => p.tradeId === target))
-    throw new Error('Ce métier est utilisé par des professionnels');
+    throw new Error("Ce métier est utilisé par des professionnels");
   const index = MOCK_TRADES.findIndex((t) => t.id === target);
-  if (index < 0) throw new Error('Métier introuvable');
+  if (index < 0) throw new Error("Métier introuvable");
   MOCK_TRADES.splice(index, 1);
   return { id };
 }
@@ -1013,7 +1280,9 @@ export function mockListZones() {
     items: MOCK_ZONES.map((z) => ({
       ...z,
       city: MOCK_CITIES.find((c) => c.id === z.cityId)?.name ?? null,
-      professionals: MOCK_PROS.filter((p) => p.zones.some((z2) => z2.id === z.id)).length,
+      professionals: MOCK_PROS.filter((p) =>
+        p.zones.some((z2) => z2.id === z.id),
+      ).length,
     })),
   };
 }
@@ -1029,9 +1298,9 @@ export function mockListCities() {
 
 export function mockCreateCity(payload) {
   const { name } = payload || {};
-  const clean = String(name || '').trim();
+  const clean = String(name || "").trim();
   if (MOCK_CITIES.some((c) => c.name.toLowerCase() === clean.toLowerCase()))
-    throw new Error('Cette ville existe déjà');
+    throw new Error("Cette ville existe déjà");
   const id = Math.max(0, ...MOCK_CITIES.map((c) => c.id)) + 1;
   MOCK_CITIES.push({ id, name: clean });
   return { id, name: clean, zones: 0 };
@@ -1040,7 +1309,7 @@ export function mockCreateCity(payload) {
 export function mockUpdateCity(id, payload) {
   const { name } = payload || {};
   const city = MOCK_CITIES.find((c) => c.id === Number(id));
-  if (!city) throw new Error('Ville introuvable');
+  if (!city) throw new Error("Ville introuvable");
   if (name != null) city.name = String(name).trim();
   return { id: city.id, name: city.name };
 }
@@ -1048,9 +1317,11 @@ export function mockUpdateCity(id, payload) {
 export function mockDeleteCity(id) {
   const target = Number(id);
   if (MOCK_ZONES.some((z) => z.cityId === target))
-    throw new Error('Déplacez les arrondissements de cette ville avant de la supprimer');
+    throw new Error(
+      "Déplacez les arrondissements de cette ville avant de la supprimer",
+    );
   const index = MOCK_CITIES.findIndex((c) => c.id === target);
-  if (index < 0) throw new Error('Ville introuvable');
+  if (index < 0) throw new Error("Ville introuvable");
   MOCK_CITIES.splice(index, 1);
   return { id: target };
 }
@@ -1063,9 +1334,9 @@ export function mockReorderCities(ids) {
 
 export function mockCreateZone(payload) {
   const { name, cityId = null } = payload || {};
-  const clean = String(name || '').trim();
+  const clean = String(name || "").trim();
   if (MOCK_ZONES.some((z) => z.name.toLowerCase() === clean.toLowerCase()))
-    throw new Error('Cette zone existe déjà');
+    throw new Error("Cette zone existe déjà");
   const id = Math.max(0, ...MOCK_ZONES.map((z) => z.id)) + 1;
   const createdAt = new Date().toISOString();
   const item = {
@@ -1081,9 +1352,10 @@ export function mockCreateZone(payload) {
 export function mockUpdateZone(id, payload) {
   const { name, cityId } = payload || {};
   const zone = MOCK_ZONES.find((z) => z.id === Number(id));
-  if (!zone) throw new Error('Zone introuvable');
+  if (!zone) throw new Error("Zone introuvable");
   if (name != null) zone.name = String(name).trim();
-  if (cityId !== undefined) zone.cityId = cityId == null ? null : Number(cityId);
+  if (cityId !== undefined)
+    zone.cityId = cityId == null ? null : Number(cityId);
   return { id: zone.id, name: zone.name, cityId: zone.cityId };
 }
 
@@ -1096,24 +1368,22 @@ export function mockReorderZones(ids) {
 export function mockDeleteZone(id) {
   const numeric = Number(id);
   if (MOCK_PROS.some((p) => p.zones?.some((z) => z.id === numeric)))
-    throw new Error('Cette zone est utilisée par des professionnels');
+    throw new Error("Cette zone est utilisée par des professionnels");
   const index = MOCK_ZONES.findIndex((z) => z.id === numeric);
-  if (index < 0) throw new Error('Zone introuvable');
+  if (index < 0) throw new Error("Zone introuvable");
   MOCK_ZONES.splice(index, 1);
   return { id: numeric };
 }
 
+const SESSION_KEY = "kop_demo_user";
 
-const SESSION_KEY = 'kop_demo_user';
-
-export const DEMO_AVATAR_MARKER = 'kop:demo-avatar';
+export const DEMO_AVATAR_MARKER = "kop:demo-avatar";
 
 let demoAvatarFile = null;
 
 export function setDemoAvatarFile(file) {
   demoAvatarFile = file ?? null;
 }
-
 
 export function getDemoAvatarUrl() {
   return demoAvatarFile ? URL.createObjectURL(demoAvatarFile) : null;
@@ -1125,9 +1395,13 @@ export function getDemoUser() {
     if (!raw) return null;
     const user = JSON.parse(raw);
 
-    if (user?.avatarUrl === DEMO_AVATAR_MARKER) user.avatarUrl = getDemoAvatarUrl();
+    if (user?.avatarUrl === DEMO_AVATAR_MARKER)
+      user.avatarUrl = getDemoAvatarUrl();
 
-    if (typeof user?.avatarUrl === 'string' && user.avatarUrl.startsWith('blob:'))
+    if (
+      typeof user?.avatarUrl === "string" &&
+      user.avatarUrl.startsWith("blob:")
+    )
       user.avatarUrl = null;
 
     return user;
@@ -1140,7 +1414,5 @@ export function setDemoUser(user) {
   try {
     if (user) localStorage.setItem(SESSION_KEY, JSON.stringify(user));
     else localStorage.removeItem(SESSION_KEY);
-  } catch {
-
-  }
+  } catch {}
 }

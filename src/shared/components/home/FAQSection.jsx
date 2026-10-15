@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { cn } from '@/shared/utils';
-import { FAQ } from '@/shared/content/home.js';
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { cn } from "@/shared/utils";
+import { FAQ } from "@/shared/content/home.js";
 
 export function FAQSection() {
   const [openIdx, setOpenIdx] = useState(0);
@@ -9,7 +9,9 @@ export function FAQSection() {
     <section className="container-kop py-8 lg:py-16">
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="max-w-md">
-          <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Avant de vous lancer</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            Avant de vous lancer
+          </p>
           <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             On vous répond.
           </h2>
@@ -19,7 +21,10 @@ export function FAQSection() {
         </div>
         <div className="space-y-1 grid-cols-2 col-span-2">
           {FAQ.map(({ q, a }, i) => (
-            <div key={q} className=" border-b border-gray-300  overflow-hidden ">
+            <div
+              key={q}
+              className=" border-b border-gray-300  overflow-hidden "
+            >
               <button
                 type="button"
                 onClick={() => setOpenIdx(openIdx === i ? -1 : i)}
@@ -27,7 +32,12 @@ export function FAQSection() {
                 aria-expanded={openIdx === i}
               >
                 <span>{q}</span>
-                <span className={cn('text-primary-600 transition-transform text-lg leading-none', openIdx === i && 'rotate-45')}>
+                <span
+                  className={cn(
+                    "text-primary-600 transition-transform text-lg leading-none",
+                    openIdx === i && "rotate-45",
+                  )}
+                >
                   <Plus size={16} aria-hidden />
                 </span>
               </button>

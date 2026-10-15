@@ -1,36 +1,53 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { MessageCircle, MessageSquarePlus, Phone, Star, User } from 'lucide-react';
-import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
-import { getPublishedDetail, canReview } from '../services/professionals.service.js';
-import { ReviewForm, ReviewList } from '@/features/reviews/components/index.js';
-import { listReviews } from '@/features/reviews/services/reviews.service.js';
-import { ReportProfessionalDialog, ReportTrigger } from '../components/ReportDialog.jsx';
-import { DataState } from '@/shared/components/ui/DataState.jsx';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { PromoCard } from '@/shared/components/ui/PromoCard.jsx';
-import { BottomNav } from '@/shared/components/ui/BottomNav.jsx';
-import { ResponsiveSection } from '@/shared/components/ui/ResponsiveSection.jsx';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { ROLES, STICKY_BAND } from '@/shared/lib/constants.js';
-import { usePageTitle } from '@/shared/hooks/usePageTitle.js';
-import { PhotoLightbox } from '../components/public/PhotoLightbox.jsx';
-import { PublicProfileMobileIntro } from '../components/public/PublicProfileMobileIntro.jsx';
-import { PublicProfileSidebar } from '../components/public/PublicProfileSidebar.jsx';
-import { RealizationsSection } from '../components/public/RealizationsSection.jsx';
-import { ReviewsBlock } from '../components/public/ReviewsBlock.jsx';
-import { CITY, getProfileView } from '../components/public/profileView.js';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  MessageCircle,
+  MessageSquarePlus,
+  Phone,
+  Star,
+  User,
+} from "lucide-react";
+import { useAsyncData } from "@/shared/hooks/useAsyncData.js";
+import {
+  getPublishedDetail,
+  canReview,
+} from "../services/professionals.service.js";
+import { ReviewForm, ReviewList } from "@/features/reviews/components/index.js";
+import { listReviews } from "@/features/reviews/services/reviews.service.js";
+import {
+  ReportProfessionalDialog,
+  ReportTrigger,
+} from "../components/ReportDialog.jsx";
+import { DataState } from "@/shared/components/ui/DataState.jsx";
+import { Button } from "@/shared/components/ui/Button.jsx";
+import { PromoCard } from "@/shared/components/ui/PromoCard.jsx";
+import { BottomNav } from "@/shared/components/ui/BottomNav.jsx";
+import { ResponsiveSection } from "@/shared/components/ui/ResponsiveSection.jsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/Dialog.jsx";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { useAuthModal } from "@/shared/context/AuthModalContext.jsx";
+import { ROLES, STICKY_BAND } from "@/shared/lib/constants.js";
+import { usePageTitle } from "@/shared/hooks/usePageTitle.js";
+import { PhotoLightbox } from "../components/public/PhotoLightbox.jsx";
+import { PublicProfileMobileIntro } from "../components/public/PublicProfileMobileIntro.jsx";
+import { PublicProfileSidebar } from "../components/public/PublicProfileSidebar.jsx";
+import { RealizationsSection } from "../components/public/RealizationsSection.jsx";
+import { ReviewsBlock } from "../components/public/ReviewsBlock.jsx";
+import { CITY, getProfileView } from "../components/public/profileView.js";
 
 const NAV_SECTIONS = [
-  { id: 'profile', label: 'Profil', icon: User },
-  { id: 'avis', label: 'Avis', icon: Star, isAction: true },
-  { id: 'contact', label: 'Contact', icon: MessageCircle, isAction: true },
+  { id: "profile", label: "Profil", icon: User },
+  { id: "avis", label: "Avis", icon: Star, isAction: true },
+  { id: "contact", label: "Contact", icon: MessageCircle, isAction: true },
 ];
 
-
-const TRADE_FALLBACK = 'Artisan';
+const TRADE_FALLBACK = "Artisan";
 
 export function ProfessionalPublicPage() {
   const { id } = useParams();
@@ -44,8 +61,14 @@ export function ProfessionalPublicPage() {
   const [reportOpen, setReportOpen] = useState(false);
 
   const detail = useAsyncData(() => getPublishedDetail(id), [id]);
-  const canReviewState = useAsyncData(() => (user ? canReview(id) : false), [id, user?.id]);
-  const compactReviews = useAsyncData(() => listReviews(id, { page: 1, pageSize: 3 }), [id]);
+  const canReviewState = useAsyncData(
+    () => (user ? canReview(id) : false),
+    [id, user?.id],
+  );
+  const compactReviews = useAsyncData(
+    () => listReviews(id, { page: 1, pageSize: 3 }),
+    [id],
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -57,13 +80,19 @@ export function ProfessionalPublicPage() {
   }, [id]);
 
   usePageTitle(
-    detail.data ? `${detail.data.profile?.trade?.name || TRADE_FALLBACK} à ${CITY}` : 'Professionnel',
+    detail.data
+      ? `${detail.data.profile?.trade?.name || TRADE_FALLBACK} à ${CITY}`
+      : "Professionnel",
   );
 
   if (detail.loading || detail.error)
     return (
       <div className="container-kop page-padding">
-        <DataState loading={detail.loading} error={detail.error} errorPrefix="Fiche introuvable">
+        <DataState
+          loading={detail.loading}
+          error={detail.error}
+          errorPrefix="Fiche introuvable"
+        >
           {null}
         </DataState>
       </div>
@@ -71,19 +100,23 @@ export function ProfessionalPublicPage() {
 
   const { profile, photos, rating } = detail.data;
   const view = getProfileView(profile, rating);
-  const { tradeName, firstName, localisation, breadcrumbTrade, whatsappUrl } = view;
+  const { tradeName, firstName, localisation, breadcrumbTrade, whatsappUrl } =
+    view;
   const reviewTotal = Number(compactReviews?.data?.total ?? 0);
-  const phoneNumber = String(profile.phone ?? '').replace(/\D/g, '');
+  const phoneNumber = String(profile.phone ?? "").replace(/\D/g, "");
 
   const isSelf = user?.id != null && String(user.id) === String(profile.id);
   const isVisitorView = !isSelf && user?.role !== ROLES.ADMIN;
 
   const canLeaveReview =
-    reviewSubmittedFor !== id && Boolean(user) && user.role !== ROLES.ADMIN && canReviewState.data === true;
+    reviewSubmittedFor !== id &&
+    Boolean(user) &&
+    user.role !== ROLES.ADMIN &&
+    canReviewState.data === true;
 
   const requireAuth = (action) => () => {
     if (!user) {
-      openAuthModal('login');
+      openAuthModal("login");
       return;
     }
     action();
@@ -95,22 +128,26 @@ export function ProfessionalPublicPage() {
 
   const refreshAfterReview = () => {
     setReviewSubmittedFor(id);
-    detail.reload({ silent: true }).catch(() => { });
-    compactReviews.reload({ silent: true }).catch(() => { });
+    detail.reload({ silent: true }).catch(() => {});
+    compactReviews.reload({ silent: true }).catch(() => {});
   };
 
   const step = (offset) =>
-    setOpenIndex((cur) => (cur == null || photos.length === 0 ? null : (cur + offset + photos.length) % photos.length));
+    setOpenIndex((cur) =>
+      cur == null || photos.length === 0
+        ? null
+        : (cur + offset + photos.length) % photos.length,
+    );
   const goPrev = () => step(-1);
   const goNext = () => step(1);
 
   const onNavClick = (sectionId) => {
-    if (sectionId === 'avis') {
+    if (sectionId === "avis") {
       setReviewsOpen(true);
       return;
     }
     if (user) setTabContactOpen(true);
-    else openAuthModal('login');
+    else openAuthModal("login");
   };
 
   return (
@@ -130,7 +167,11 @@ export function ProfessionalPublicPage() {
 
         <section className="min-w-0 space-y-5">
           <ResponsiveSection variant="mobile">
-            <PublicProfileMobileIntro profile={profile} view={view} breadcrumbTrade={breadcrumbTrade} />
+            <PublicProfileMobileIntro
+              profile={profile}
+              view={view}
+              breadcrumbTrade={breadcrumbTrade}
+            />
           </ResponsiveSection>
 
           <RealizationsSection
@@ -197,7 +238,10 @@ export function ProfessionalPublicPage() {
         />
       )}
 
-      <Dialog open={reviewsOpen} onOpenChange={(o) => !o && setReviewsOpen(false)}>
+      <Dialog
+        open={reviewsOpen}
+        onOpenChange={(o) => !o && setReviewsOpen(false)}
+      >
         <DialogContent
           className="max-w-3xl min-h-[50vh] p-5"
           onClose={() => setReviewsOpen(false)}
@@ -223,11 +267,19 @@ export function ProfessionalPublicPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={reviewFormOpen} onOpenChange={(o) => !o && setReviewFormOpen(false)}>
-        <DialogContent className="max-w-2xl min-h-[45vh] p-5" onClose={() => setReviewFormOpen(false)}>
+      <Dialog
+        open={reviewFormOpen}
+        onOpenChange={(o) => !o && setReviewFormOpen(false)}
+      >
+        <DialogContent
+          className="max-w-2xl min-h-[45vh] p-5"
+          onClose={() => setReviewFormOpen(false)}
+        >
           <DialogHeader>
             <DialogTitle>Donner votre avis</DialogTitle>
-            <DialogDescription>Client ou professionnel, votre retour aide à faire leur choix.</DialogDescription>
+            <DialogDescription>
+              Client ou professionnel, votre retour aide à faire leur choix.
+            </DialogDescription>
           </DialogHeader>
           <ReviewForm
             professionalId={profile.id}
@@ -239,12 +291,19 @@ export function ProfessionalPublicPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={tabContactOpen} onOpenChange={(o) => !o && setTabContactOpen(false)}>
-        <DialogContent className="max-w-lg min-h-[45vh] p-5" onClose={() => setTabContactOpen(false)}>
+      <Dialog
+        open={tabContactOpen}
+        onOpenChange={(o) => !o && setTabContactOpen(false)}
+      >
+        <DialogContent
+          className="max-w-lg min-h-[45vh] p-5"
+          onClose={() => setTabContactOpen(false)}
+        >
           <DialogHeader>
             <DialogTitle>Contacter {firstName}</DialogTitle>
             <DialogDescription>
-              Vous pouvez joindre {firstName} directement par téléphone ou WhatsApp.
+              Vous pouvez joindre {firstName} directement par téléphone ou
+              WhatsApp.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3">
@@ -254,7 +313,13 @@ export function ProfessionalPublicPage() {
               </Button>
             )}
             {whatsappUrl && (
-              <Button as="a" href={whatsappUrl} target="_blank" rel="noopener noreferrer" variant="secondary">
+              <Button
+                as="a"
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="secondary"
+              >
                 <MessageCircle size={16} aria-hidden /> WhatsApp
               </Button>
             )}
@@ -263,7 +328,11 @@ export function ProfessionalPublicPage() {
       </Dialog>
 
       {reportOpen && (
-        <ReportProfessionalDialog open onClose={() => setReportOpen(false)} professionalId={profile.id} />
+        <ReportProfessionalDialog
+          open
+          onClose={() => setReportOpen(false)}
+          professionalId={profile.id}
+        />
       )}
 
       <BottomNav

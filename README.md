@@ -38,22 +38,22 @@ Les fonctionnalités hors MVP (paiement, fil social, messagerie avancée) sont d
 
 ### Product et analyse
 
-| Rôle | Membre | Responsabilités |
-|---|---|---|
-| Product Manager | Divin Penzamoy | Vision produit, priorisation, périmètre du MVP, validation du produit livré |
-| Business Analyst | Raymond Jacquinot Fulbert Mavoungou | SPEC et FRD, User Stories, critères d'acceptation |
-| Business Analyst | Biency Pea Engambe | Backlog, tests fonctionnels et recette |
+| Rôle             | Membre                              | Responsabilités                                                             |
+| ---------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| Product Manager  | Divin Penzamoy                      | Vision produit, priorisation, périmètre du MVP, validation du produit livré |
+| Business Analyst | Raymond Jacquinot Fulbert Mavoungou | SPEC et FRD, User Stories, critères d'acceptation                           |
+| Business Analyst | Biency Pea Engambe                  | Backlog, tests fonctionnels et recette                                      |
 
 ### Développement
 
-| Rôle | Membre | User Stories / périmètre |
-|---|---|---|
-| Développeur Full Stack | Joseph Miere Onka 
-| Développeur Full Stack | Prosper Kwon Gee 
-| Développeur Full Stack | Jizreel Salem Mouyedi Mbemba 
-| Développeur Full Stack | Force Espoir Loemba Packa 
-| Développeur Full Stack | Jude Airich Koy 
-| Développeur Full Stack | Ndende Christ 
+| Rôle                   | Membre                       | User Stories / périmètre |
+| ---------------------- | ---------------------------- | ------------------------ |
+| Développeur Full Stack | Joseph Miere Onka            |
+| Développeur Full Stack | Prosper Kwon Gee             |
+| Développeur Full Stack | Jizreel Salem Mouyedi Mbemba |
+| Développeur Full Stack | Force Espoir Loemba Packa    |
+| Développeur Full Stack | Jude Airich Koy              |
+| Développeur Full Stack | Ndende Christ                |
 
 Le détail des User Stories et de leurs critères d'acceptation se trouve dans `docs/ba/`.
 
@@ -167,18 +167,18 @@ Le serveur démarre sur `http://localhost:3000`, avec le serveur de développeme
 
 ## Scripts npm
 
-| Commande | Description |
-| :--- | :--- |
-| `npm run dev` | Démarre le serveur backend et Vite HMR via Nodemon (`server/index.js`) |
-| `npm run build` | Compile l'application React avec Vite pour la production |
-| `npm run start` | Exécute l'application compilée en environnement de production |
-| `npm run test` | Exécute la suite de tests unitaires et d'intégration via Vitest |
-| `npx vitest run` | Variante CI : une seule passe, sans watch |
-| `npm run lint` | Lance la vérification ESLint sur tout le projet |
-| `npm run format` | Applique le formatage Prettier |
-| `npm run prepare` | Initialise les hooks Husky pour la qualité de code |
-| `npm run migrate:up` | Applique les migrations de base de données |
-| `npm run seed:admin` | Crée le compte administrateur initial |
+| Commande             | Description                                                            |
+| :------------------- | :--------------------------------------------------------------------- |
+| `npm run dev`        | Démarre le serveur backend et Vite HMR via Nodemon (`server/index.js`) |
+| `npm run build`      | Compile l'application React avec Vite pour la production               |
+| `npm run start`      | Exécute l'application compilée en environnement de production          |
+| `npm run test`       | Exécute la suite de tests unitaires et d'intégration via Vitest        |
+| `npx vitest run`     | Variante CI : une seule passe, sans watch                              |
+| `npm run lint`       | Lance la vérification ESLint sur tout le projet                        |
+| `npm run format`     | Applique le formatage Prettier                                         |
+| `npm run prepare`    | Initialise les hooks Husky pour la qualité de code                     |
+| `npm run migrate:up` | Applique les migrations de base de données                             |
+| `npm run seed:admin` | Crée le compte administrateur initial                                  |
 
 ## Déploiement sur Vercel
 
@@ -221,13 +221,13 @@ le seul moyen d'activer la démo sur un déploiement déjà en ligne, sans rebui
 
 Variables attendues côté Vercel :
 
-| Variable | Rôle |
-| :--- | :--- |
-| `DATABASE_URL` | Connexion PostgreSQL de production |
-| `SESSION_SECRET` | 32 caractères minimum, sinon le serveur refuse de démarrer |
-| `VITE_USE_MOCKS` | `true` pour proposer le mode démonstration à tous les visiteurs |
-| `CLOUDINARY_*` | Obligatoire : le système de fichiers de Vercel est en lecture seule |
-| `SITE_URL` | Domaine public, pour les balises `canonical` et `og:url` |
+| Variable         | Rôle                                                                |
+| :--------------- | :------------------------------------------------------------------ |
+| `DATABASE_URL`   | Connexion PostgreSQL de production                                  |
+| `SESSION_SECRET` | 32 caractères minimum, sinon le serveur refuse de démarrer          |
+| `VITE_USE_MOCKS` | `true` pour proposer le mode démonstration à tous les visiteurs     |
+| `CLOUDINARY_*`   | Obligatoire : le système de fichiers de Vercel est en lecture seule |
+| `SITE_URL`       | Domaine public, pour les balises `canonical` et `og:url`            |
 
 ## La page d'accueil ne lit rien en base
 

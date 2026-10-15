@@ -1,12 +1,20 @@
-import { cn } from '@/shared/utils';
+import { cn } from "@/shared/utils";
 
-export function FloatingCaption({ title, subtitle, subtitleClassName, icon: Icon, align = 'left', wide = false, className }) {
+export function FloatingCaption({
+  title,
+  subtitle,
+  subtitleClassName,
+  icon: Icon,
+  align = "left",
+  wide = false,
+  className,
+}) {
   return (
     <div
       className={cn(
-        'absolute bottom-2 rounded-sm bg-white/92 px-4 py-3 backdrop-blur-sm',
-        wide ? 'left-2 right-2' : align === 'right' ? 'right-2' : 'left-2',
-        Icon && 'flex items-center gap-3',
+        "absolute bottom-2 rounded-sm bg-white/92 px-4 py-3 backdrop-blur-sm",
+        wide ? "left-2 right-2" : align === "right" ? "right-2" : "left-2",
+        Icon && "flex items-center gap-3",
         className,
       )}
     >
@@ -16,9 +24,18 @@ export function FloatingCaption({ title, subtitle, subtitleClassName, icon: Icon
         </span>
       )}
       <div className="min-w-0">
-        <p className="text-[12px] font-semibold leading-tight text-gray-900">{title}</p>
+        <p className="text-[12px] font-semibold leading-tight text-gray-900">
+          {title}
+        </p>
         {subtitle && (
-          <p className={cn('text-[11px] leading-snug text-gray-500', subtitleClassName)}>{subtitle}</p>
+          <p
+            className={cn(
+              "text-[11px] leading-snug text-gray-500",
+              subtitleClassName,
+            )}
+          >
+            {subtitle}
+          </p>
         )}
       </div>
     </div>

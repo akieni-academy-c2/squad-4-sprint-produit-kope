@@ -1,9 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-
-
-const SHAPES = ['circle', 'ring', 'diamond', 'dot'];
-
+const SHAPES = ["circle", "ring", "diamond", "dot"];
 
 function seeded(seed) {
   let state = (seed % 2147483647) + 1;
@@ -21,10 +18,30 @@ function Shape({ kind, random, tone }) {
 
   const style = { opacity };
 
-  if (kind === 'circle') return <circle cx={cx} cy={cy} r={size / 2} fill={tone} style={style} />;
-  if (kind === 'ring')
-    return <circle cx={cx} cy={cy} r={size / 2} fill="none" stroke={tone} strokeWidth="1.5" style={style} />;
-  if (kind === 'dot') return <circle cx={cx} cy={cy} r={1.5 + random() * 2} fill={tone} style={style} />;
+  if (kind === "circle")
+    return <circle cx={cx} cy={cy} r={size / 2} fill={tone} style={style} />;
+  if (kind === "ring")
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size / 2}
+        fill="none"
+        stroke={tone}
+        strokeWidth="1.5"
+        style={style}
+      />
+    );
+  if (kind === "dot")
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={1.5 + random() * 2}
+        fill={tone}
+        style={style}
+      />
+    );
 
   const half = size / 2;
   return (
@@ -41,8 +58,12 @@ function Shape({ kind, random, tone }) {
   );
 }
 
-
-export function MotifBackdrop({ count = 14, seed = 1, tone = '#fff', className }) {
+export function MotifBackdrop({
+  count = 14,
+  seed = 1,
+  tone = "#fff",
+  className,
+}) {
   const shapes = useMemo(() => {
     const random = seeded(seed);
     return Array.from({ length: count }, (_, index) => ({
@@ -60,7 +81,12 @@ export function MotifBackdrop({ count = 14, seed = 1, tone = '#fff', className }
       className={className}
     >
       {shapes.map((shape) => (
-        <Shape key={shape.key} kind={shape.kind} random={shape.draw} tone={tone} />
+        <Shape
+          key={shape.key}
+          kind={shape.kind}
+          random={shape.draw}
+          tone={tone}
+        />
       ))}
     </svg>
   );

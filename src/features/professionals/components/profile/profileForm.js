@@ -9,25 +9,28 @@ export const DESC_MAX = 500;
  */
 export function extractInitial(profile) {
   return {
-    displayName: profile?.displayName ?? '',
-    tradeId: profile?.tradeId ?? '',
-    description: profile?.description ?? '',
-    yearsExperience: profile?.yearsExperience ?? '',
-    whatsapp: profile?.whatsapp ?? '',
+    displayName: profile?.displayName ?? "",
+    tradeId: profile?.tradeId ?? "",
+    description: profile?.description ?? "",
+    yearsExperience: profile?.yearsExperience ?? "",
+    whatsapp: profile?.whatsapp ?? "",
     cityId: profile?.cityId ?? null,
-    zoneIds: profile?.zones?.map((z) => Number(z.id ?? z))?.filter(Boolean) ?? profile?.zoneIds ?? [],
+    zoneIds:
+      profile?.zones?.map((z) => Number(z.id ?? z))?.filter(Boolean) ??
+      profile?.zoneIds ??
+      [],
   };
 }
 
 export function getFullName(user) {
   return (
-    [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim() ||
     user?.displayName ||
-    'Professionnel'
+    "Professionnel"
   );
 }
 
 export function formatYearsExperience(years) {
-  if (years == null || years === '') return '';
+  if (years == null || years === "") return "";
   return `${years} an(s)`;
 }

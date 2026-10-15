@@ -1,16 +1,22 @@
-import { useState } from 'react';
-import { Lock, LockOpen } from 'lucide-react';
-import { Input } from './Input.jsx';
+import { useState } from "react";
+import { Lock, LockOpen } from "lucide-react";
+import { Input } from "./Input.jsx";
 
-
-export function PasswordInput({ id, value, onChange, error, success, ...rest }) {
+export function PasswordInput({
+  id,
+  value,
+  onChange,
+  error,
+  success,
+  ...rest
+}) {
   const [visible, setVisible] = useState(false);
 
   return (
     <div className="relative">
       <Input
         id={id}
-        type={visible ? 'text' : 'password'}
+        type={visible ? "text" : "password"}
         value={value}
         onChange={onChange}
         error={error}
@@ -20,14 +26,24 @@ export function PasswordInput({ id, value, onChange, error, success, ...rest }) 
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+        aria-label={
+          visible ? "Masquer le mot de passe" : "Afficher le mot de passe"
+        }
         aria-pressed={visible}
         className="absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer"
       >
         {visible ? (
-          <LockOpen size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500" aria-hidden />
+          <LockOpen
+            size={18}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-500"
+            aria-hidden
+          />
         ) : (
-          <Lock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden />
+          <Lock
+            size={18}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            aria-hidden
+          />
         )}
       </button>
     </div>

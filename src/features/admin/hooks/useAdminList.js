@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
-import { useAsyncData } from '@/shared/hooks/useAsyncData.js';
+import { useMemo } from "react";
+import { useAsyncData } from "@/shared/hooks/useAsyncData.js";
 
 export function useAdminList(fetchList) {
-  const { data, loading, error, reload, mutate } = useAsyncData(fetchList, [fetchList]);
+  const { data, loading, error, reload, mutate } = useAsyncData(fetchList, [
+    fetchList,
+  ]);
 
   return useMemo(
     () => ({ data: data ?? null, loading, error, reload, mutate }),

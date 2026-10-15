@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export function toOption(raw) {
-  return typeof raw === 'string' ? { value: raw, label: raw } : raw;
+  return typeof raw === "string" ? { value: raw, label: raw } : raw;
 }
-
 
 export function useListboxNavigation({
   open,
@@ -20,41 +19,41 @@ export function useListboxNavigation({
     const last = itemCount - 1;
 
     switch (event.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         event.preventDefault();
         if (!open) onOpen?.();
         else setActiveIndex((i) => Math.min(i + 1, last));
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         event.preventDefault();
         if (!open) onOpen?.();
         else setActiveIndex((i) => Math.max(i - 1, 0));
         break;
-      case 'Home':
+      case "Home":
         if (open) {
           event.preventDefault();
           setActiveIndex(0);
         }
         break;
-      case 'End':
+      case "End":
         if (open) {
           event.preventDefault();
           setActiveIndex(last);
         }
         break;
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         event.preventDefault();
         if (!open) onOpen?.();
         else if (itemCount > 0) onSelect?.(activeIndex);
         break;
-      case 'Escape':
+      case "Escape":
         if (open) {
           event.preventDefault();
           onClose?.();
         }
         break;
-      case 'Tab':
+      case "Tab":
         if (open) onClose?.();
         break;
       default:
@@ -62,9 +61,14 @@ export function useListboxNavigation({
   };
 }
 
-export function useScrollActiveIntoView({ open, activeIndex, optionId, enabled = true }) {
+export function useScrollActiveIntoView({
+  open,
+  activeIndex,
+  optionId,
+  enabled = true,
+}) {
   useEffect(() => {
     if (!open || !enabled) return;
-    document.getElementById(optionId)?.scrollIntoView?.({ block: 'nearest' });
+    document.getElementById(optionId)?.scrollIntoView?.({ block: "nearest" });
   }, [open, activeIndex, optionId, enabled]);
 }

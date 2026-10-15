@@ -1,37 +1,37 @@
-import { RotateCcw, Star, Clock, Zap, ArrowUpDown } from 'lucide-react';
-import { Button, CustomSelect } from '@/shared/components/ui';
+import { RotateCcw, Star, Clock, Zap, ArrowUpDown } from "lucide-react";
+import { Button, CustomSelect } from "@/shared/components/ui";
 
 const AVAILABLE_OPTIONS = [
-  { value: '', label: 'Disponibilité : tous' },
-  { value: 'true', label: 'Disponibles maintenant' },
-  { value: 'false', label: 'Indisponibles' },
+  { value: "", label: "Disponibilité : tous" },
+  { value: "true", label: "Disponibles maintenant" },
+  { value: "false", label: "Indisponibles" },
 ];
 
 const RATING_OPTIONS = [
-  { value: '', label: 'Note : indifférente' },
-  { value: '3', label: '3 étoiles et plus' },
-  { value: '4', label: '4 étoiles et plus' },
-  { value: '5', label: '5 étoiles uniquement' },
+  { value: "", label: "Note : indifférente" },
+  { value: "3", label: "3 étoiles et plus" },
+  { value: "4", label: "4 étoiles et plus" },
+  { value: "5", label: "5 étoiles uniquement" },
 ];
 
 const EXPERIENCE_OPTIONS = [
-  { value: '', label: 'Expérience : toutes' },
-  { value: '2', label: '2 ans et plus' },
-  { value: '5', label: '5 ans et plus' },
-  { value: '10', label: '10 ans et plus' },
+  { value: "", label: "Expérience : toutes" },
+  { value: "2", label: "2 ans et plus" },
+  { value: "5", label: "5 ans et plus" },
+  { value: "10", label: "10 ans et plus" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'recommended', label: 'Tri recommandé' },
-  { value: 'rating', label: 'Mieux notés' },
-  { value: 'experience', label: "Plus d'expérience" },
+  { value: "recommended", label: "Tri recommandé" },
+  { value: "rating", label: "Mieux notés" },
+  { value: "experience", label: "Plus d'expérience" },
 ];
 
 export function SearchRefineFilters({
   available,
   minRating,
   minExperience,
-  sort = 'recommended',
+  sort = "recommended",
   onChange,
   onSortChange,
   onReset,
@@ -77,8 +77,8 @@ export function SearchRefineFilters({
             Disponibilité
           </p>
           <CustomSelect
-            value={available ?? ''}
-            onChange={handle('available')}
+            value={available ?? ""}
+            onChange={handle("available")}
             options={AVAILABLE_OPTIONS}
             className="mt-2 w-full"
             aria-label="Filtrer par disponibilité"
@@ -91,8 +91,8 @@ export function SearchRefineFilters({
             Note minimale
           </p>
           <CustomSelect
-            value={minRating ?? ''}
-            onChange={handle('minRating')}
+            value={minRating ?? ""}
+            onChange={handle("minRating")}
             options={RATING_OPTIONS}
             className="mt-2 w-full"
             aria-label="Filtrer par note minimale"
@@ -105,8 +105,8 @@ export function SearchRefineFilters({
             Expérience
           </p>
           <CustomSelect
-            value={minExperience ?? ''}
-            onChange={handle('minExperience')}
+            value={minExperience ?? ""}
+            onChange={handle("minExperience")}
             options={EXPERIENCE_OPTIONS}
             className="mt-2 w-full"
             aria-label="Filtrer par expérience minimale"
@@ -115,7 +115,12 @@ export function SearchRefineFilters({
       </div>
 
       <div className="border-t border-gray-100 p-2">
-        <Button size="sm" className="w-full" onClick={() => onApply?.()} disabled={!dirty}>
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => onApply?.()}
+          disabled={!dirty}
+        >
           Appliquer
         </Button>
       </div>

@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { repoPath } from '@test/support/repoRoot.js';
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { repoPath } from "@test/support/repoRoot.js";
 
-const doc = readFileSync(repoPath('docs/data-science/schema-diagram.md'), 'utf8');
+const doc = readFileSync(
+  repoPath("docs/data-science/schema-diagram.md"),
+  "utf8",
+);
 const block = doc.match(/```mermaid\n([\s\S]*?)```/);
 
 const OPEN = /^([A-Z][A-Z0-9_]*)\s*\{$/;
@@ -20,10 +23,10 @@ function parse() {
   let inBlock = false;
   let attributes = 0;
 
-  (block?.[1] ?? '').split('\n').forEach((raw, i) => {
+  (block?.[1] ?? "").split("\n").forEach((raw, i) => {
     const line = raw.trim();
     const n = i + 1;
-    if (!line || line === 'erDiagram') return;
+    if (!line || line === "erDiagram") return;
 
     if (CLOSE.test(line)) {
       if (!inBlock) errors.push(`ligne ${n} : accolade fermante sans bloc`);
@@ -61,7 +64,7 @@ function parse() {
     errors.push(`ligne ${n} : ligne non reconnue - ${line}`);
   });
 
-  if (inBlock) errors.push('bloc d\'attributs jamais refermé');
+  if (inBlock) errors.push("bloc d'attributs jamais refermé");
   for (const [, left, right] of relations)
     if (!drawn.has(left) || !drawn.has(right))
       errors.push(`relation vers une entité non dessinée : ${left} / ${right}`);
@@ -73,47 +76,56 @@ function parse() {
 
 const { drawn, relations, errors, attributes } = parse();
 
-describe('Diagramme relationnel', () => {
-  it('contient un bloc Mermaid', () => {
-    expect(block, 'docs/data-science/schema-diagram.md sans bloc mermaid').not.toBeNull();
+describe("Diagramme relationnel", () => {
+  it("contient un bloc Mermaid", () => {
+    expect(
+      block,
+      "docs/data-science/schema-diagram.md sans bloc mermaid",
+    ).not.toBeNull();
   });
 
-  it('est syntaxiquement valide, sinon le lecteur voit une erreur au rendu', () => {
+  it("est syntaxiquement valide, sinon le lecteur voit une erreur au rendu", () => {
     expect(errors).toEqual([]);
   });
 
-  it('couvre toutes les tables métier de la base', () => {
-    const schema = readFileSync(repoPath('docs/data-science/schema.md'), 'utf8');
+  it("couvre toutes les tables métier de la base", () => {
+    const schema = readFileSync(
+      repoPath("docs/data-science/schema.md"),
+      "utf8",
+    );
     /**
      * La section des vues suit celle des tables. Une vue n'est pas une table,
      * et elle n'a pas sa place dans un diagramme de classes.
      */
-    const section = schema.split('## Tables métier')[1]?.split(/\n## /)[0] ?? '';
+    const section =
+      schema.split("## Tables métier")[1]?.split(/\n## /)[0] ?? "";
     const tables = [...section.matchAll(/^### `([a-z_]+)`/gm)].map((m) => m[1]);
 
     expect(tables.length).toBeGreaterThan(0);
-    expect([...drawn].sort()).toEqual(tables.map((t) => t.toUpperCase()).sort());
+    expect([...drawn].sort()).toEqual(
+      tables.map((t) => t.toUpperCase()).sort(),
+    );
   });
 
-  it('donne un attribut à chaque entité', () => {
+  it("donne un attribut à chaque entité", () => {
     expect(attributes).toBeGreaterThanOrEqual(drawn.size);
   });
 
-  it('exprime les cardinalités plutôt que des liens sans multiplicité', () => {
+  it("exprime les cardinalités plutôt que des liens sans multiplicité", () => {
     expect(relations.length).toBeGreaterThanOrEqual(drawn.size);
   });
 
-  it('propose une version texte couvrant les mêmes entités', () => {
-    const text = doc.split('## Version texte')[1] ?? '';
+  it("propose une version texte couvrant les mêmes entités", () => {
+    const text = doc.split("## Version texte")[1] ?? "";
 
-    expect(text).toContain('```text');
+    expect(text).toContain("```text");
     for (const entity of drawn) expect(text, entity).toContain(entity);
   });
 
-  it('décrit autant de relations en texte que dans le diagramme', () => {
-    const text = doc.split('## Version texte')[1] ?? '';
+  it("décrit autant de relations en texte que dans le diagramme", () => {
+    const text = doc.split("## Version texte")[1] ?? "";
     const rows = text
-      .split('\n')
+      .split("\n")
       .filter((line) => /^ {2}[A-Z_]+\s+\d+(?:\.\.\d+)?\s*[→←]/.test(line));
 
     expect(rows).toHaveLength(relations.length);

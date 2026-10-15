@@ -1,7 +1,15 @@
-import { useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { useState } from "react";
+import { Check, X } from "lucide-react";
 
-export function InlineInput({ value, onChange, onSubmit, onCancel, placeholder, ariaLabel, className = '' }) {
+export function InlineInput({
+  value,
+  onChange,
+  onSubmit,
+  onCancel,
+  placeholder,
+  ariaLabel,
+  className = "",
+}) {
   const [draft, setDraft] = useState(value);
 
   const submit = () => {
@@ -16,8 +24,8 @@ export function InlineInput({ value, onChange, onSubmit, onCancel, placeholder, 
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') submit();
-          if (e.key === 'Escape') onCancel();
+          if (e.key === "Enter") submit();
+          if (e.key === "Escape") onCancel();
         }}
         placeholder={placeholder}
         aria-label={ariaLabel}
@@ -48,7 +56,7 @@ export function PositionBadge({ value, muted = false }) {
     <span
       aria-hidden
       className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-bold ${
-        muted ? 'bg-gray-200 text-gray-400' : 'bg-gray-100 text-gray-600'
+        muted ? "bg-gray-200 text-gray-400" : "bg-gray-100 text-gray-600"
       }`}
     >
       {value}

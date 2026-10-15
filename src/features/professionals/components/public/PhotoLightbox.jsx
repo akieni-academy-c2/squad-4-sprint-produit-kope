@@ -1,6 +1,12 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/Dialog.jsx';
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/shared/components/ui/Button.jsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/Dialog.jsx";
 
 export function PhotoLightbox({ photos, index, onClose, onPrev, onNext }) {
   const photo = photos[index];
@@ -13,15 +19,19 @@ export function PhotoLightbox({ photos, index, onClose, onPrev, onNext }) {
       <DialogContent className="max-w-3xl p-5" onClose={close}>
         <DialogHeader>
           <DialogTitle>
-            {photo.title || photo.caption || `Photo ${index + 1} / ${photos.length}`}
+            {photo.title ||
+              photo.caption ||
+              `Photo ${index + 1} / ${photos.length}`}
           </DialogTitle>
-          {photo.description && <DialogDescription>{photo.description}</DialogDescription>}
+          {photo.description && (
+            <DialogDescription>{photo.description}</DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="relative">
           <img
             src={photo.url || photo.thumbUrl}
-            alt={photo.title || photo.caption || 'Réalisation'}
+            alt={photo.title || photo.caption || "Réalisation"}
             decoding="async"
             className="mx-auto max-h-[65vh] w-auto max-w-full rounded-lg object-contain"
           />
@@ -52,10 +62,18 @@ export function PhotoLightbox({ photos, index, onClose, onPrev, onNext }) {
             Photo {index + 1} / {photos.length}
           </span>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={onPrev} disabled={photos.length < 2}>
+            <Button
+              variant="secondary"
+              onClick={onPrev}
+              disabled={photos.length < 2}
+            >
               Précédente
             </Button>
-            <Button variant="secondary" onClick={onNext} disabled={photos.length < 2}>
+            <Button
+              variant="secondary"
+              onClick={onNext}
+              disabled={photos.length < 2}
+            >
               Suivante
             </Button>
           </div>

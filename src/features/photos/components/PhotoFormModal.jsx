@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Button } from '@/shared/components/ui/Button.jsx';
-import { Input } from '@/shared/components/ui/Input.jsx';
-import { Textarea } from '@/shared/components/ui/Textarea.jsx';
-import { FormField } from '@/shared/components/ui/FormField.jsx';
-import { FileUpload } from '@/shared/components/ui/FileUpload.jsx';
+import { useState } from "react";
+import { Button } from "@/shared/components/ui/Button.jsx";
+import { Input } from "@/shared/components/ui/Input.jsx";
+import { Textarea } from "@/shared/components/ui/Textarea.jsx";
+import { FormField } from "@/shared/components/ui/FormField.jsx";
+import { FileUpload } from "@/shared/components/ui/FileUpload.jsx";
 import {
   Dialog,
   DialogContent,
@@ -11,20 +11,27 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/Dialog.jsx';
-import { addPhotoSchema, validateFrontend } from '@/shared/utils/validators.js';
-import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
+} from "@/shared/components/ui/Dialog.jsx";
+import { addPhotoSchema, validateFrontend } from "@/shared/utils/validators.js";
+import { useFormReadiness } from "@/shared/hooks/useFormReadiness.js";
 
-export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, remaining }) {
+export function PhotoFormModal({
+  open,
+  photo,
+  onClose,
+  onSubmit,
+  submitting,
+  remaining,
+}) {
   const [file, setFile] = useState(null);
-  const [title, setTitle] = useState(photo?.title || photo?.caption || '');
-  const [description, setDescription] = useState(photo?.description || '');
+  const [title, setTitle] = useState(photo?.title || photo?.caption || "");
+  const [description, setDescription] = useState(photo?.description || "");
   const [errors, setErrors] = useState({});
 
   const reset = () => {
     setFile(null);
-    setTitle('');
-    setDescription('');
+    setTitle("");
+    setDescription("");
     setErrors({});
   };
 
@@ -46,7 +53,7 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
       return;
     }
     if (!photo && !file) {
-      setErrors({ file: 'Choisissez une image' });
+      setErrors({ file: "Choisissez une image" });
       return;
     }
     setErrors({});
@@ -58,16 +65,23 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
     else if (res?.errors) setErrors((prev) => ({ ...prev, ...res.errors }));
   };
 
-  const remainingLabel = `${remaining} emplacement${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}.`;
+  const remainingLabel = `${remaining} emplacement${remaining > 1 ? "s" : ""} restant${remaining > 1 ? "s" : ""}.`;
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { if (!o) close(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) close();
+      }}
+    >
       <DialogContent className="max-w-lg p-8" onClose={close}>
         <DialogHeader>
-          <DialogTitle>{photo ? 'Modifier la photo' : 'Ajouter une photo'}</DialogTitle>
+          <DialogTitle>
+            {photo ? "Modifier la photo" : "Ajouter une photo"}
+          </DialogTitle>
           <DialogDescription>
             {photo
-              ? 'Modifiez le titre et la description de cette réalisation. L\'image reste inchangée.'
+              ? "Modifiez le titre et la description de cette réalisation. L'image reste inchangée."
               : `Image, titre et description de votre réalisation · ${remainingLabel}`}
           </DialogDescription>
         </DialogHeader>
@@ -76,7 +90,7 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
           {!photo && (
             <div>
               <FileUpload
-                label={file ? "Changer l'image" : 'Choisir une image'}
+                label={file ? "Changer l'image" : "Choisir une image"}
                 hint="JPG ou PNG · 5 Mo maximum"
                 value={file}
                 onChange={(next) => {
@@ -86,7 +100,11 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
                 capture="environment"
                 disabled={submitting}
               />
-              {errors.file && <p role="alert" className="mt-1 text-xs text-danger-500">{errors.file}</p>}
+              {errors.file && (
+                <p role="alert" className="mt-1 text-xs text-danger-500">
+                  {errors.file}
+                </p>
+              )}
             </div>
           )}
 
@@ -96,7 +114,13 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
             required
             error={errors.title}
             counter={
-              <span className={title.length < 3 || title.length > 100 ? 'text-danger-500 font-semibold' : ''}>
+              <span
+                className={
+                  title.length < 3 || title.length > 100
+                    ? "text-danger-500 font-semibold"
+                    : ""
+                }
+              >
                 {title.length}/100
               </span>
             }
@@ -118,7 +142,13 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
             as="textarea"
             error={errors.description}
             counter={
-              <span className={description.length < 10 || description.length > 500 ? 'text-danger-500 font-semibold' : ''}>
+              <span
+                className={
+                  description.length < 10 || description.length > 500
+                    ? "text-danger-500 font-semibold"
+                    : ""
+                }
+              >
                 {description.length}/500
               </span>
             }
@@ -135,11 +165,22 @@ export function PhotoFormModal({ open, photo, onClose, onSubmit, submitting, rem
           </FormField>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="md" onClick={close} disabled={submitting}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="md"
+              onClick={close}
+              disabled={submitting}
+            >
               Annuler
             </Button>
-            <Button type="submit" size="md" loading={submitting} disabled={!canSubmit}>
-              {photo ? 'Enregistrer' : 'Publier la photo'}
+            <Button
+              type="submit"
+              size="md"
+              loading={submitting}
+              disabled={!canSubmit}
+            >
+              {photo ? "Enregistrer" : "Publier la photo"}
             </Button>
           </DialogFooter>
         </form>

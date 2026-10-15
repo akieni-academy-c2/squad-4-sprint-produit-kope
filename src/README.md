@@ -36,9 +36,9 @@ src/
 Puisque le frontend et le backend partagent la même origine grâce à `vite-express`, tous les appels d'API vers le serveur doivent utiliser des chemins relatifs :
 
 ```javascript
-import { api } from '@/lib/api.js';
+import { api } from "@/lib/api.js";
 
-const data = await api.get('/professionals');
+const data = await api.get("/professionals");
 ```
 
 ---

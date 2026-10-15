@@ -1,40 +1,56 @@
-import { Plus, ShieldCheck, UserPlus, X } from 'lucide-react';
-import { Button } from '@/shared/components/ui';
-import { PhoneInput } from '@/shared/components/ui/PhoneInput.jsx';
-import { useFormReadiness } from '@/shared/hooks/useFormReadiness.js';
-import { PASSWORD_RULES } from '@/shared/hooks/useFieldStatus.js';
-import { createAdminSchema } from '@/shared/utils/validators.js';
+import { Plus, ShieldCheck, UserPlus, X } from "lucide-react";
+import { Button } from "@/shared/components/ui";
+import { PhoneInput } from "@/shared/components/ui/PhoneInput.jsx";
+import { useFormReadiness } from "@/shared/hooks/useFormReadiness.js";
+import { PASSWORD_RULES } from "@/shared/hooks/useFieldStatus.js";
+import { createAdminSchema } from "@/shared/utils/validators.js";
 
 const INPUT_CLASS =
-  'h-9 rounded-sm border border-gray-300 bg-white px-2.5 text-sm outline-none focus:border-primary-500';
+  "h-9 rounded-sm border border-gray-300 bg-white px-2.5 text-sm outline-none focus:border-primary-500";
 
 const FIELDS = [
-  { key: 'firstName', placeholder: 'Prénom', type: 'text', autoFocus: true },
-  { key: 'lastName', placeholder: 'Nom', type: 'text' },
+  { key: "firstName", placeholder: "Prénom", type: "text", autoFocus: true },
+  { key: "lastName", placeholder: "Nom", type: "text" },
 ];
 
 const PASSWORD_FIELD = {
-  key: 'password',
-  placeholder: 'Mot de passe (8 caractères min.)',
-  type: 'password',
+  key: "password",
+  placeholder: "Mot de passe (8 caractères min.)",
+  type: "password",
 };
 
-export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOpen, onCancel }) {
-
+export function CreateAdminForm({
+  draft,
+  error,
+  saving,
+  onChange,
+  onSubmit,
+  onOpen,
+  onCancel,
+}) {
   const { ready } = useFormReadiness(createAdminSchema, draft ?? {}, {
     rules: { password: PASSWORD_RULES },
   });
 
   if (!draft)
     return (
-      <Button hidden variant="secondary" size="sm" className="mt-4" onClick={onOpen}>
+      <Button
+        hidden
+        variant="secondary"
+        size="sm"
+        className="mt-4"
+        onClick={onOpen}
+      >
         <Plus className="h-4 w-4" />
         Nouvel administrateur
       </Button>
     );
 
   return (
-    <form onSubmit={onSubmit} className="mt-4 rounded-lg border border-primary-200 bg-primary-50 p-4">
+    <form
+      onSubmit={onSubmit}
+      className="mt-4 rounded-lg border border-primary-200 bg-primary-50 p-4"
+    >
       <p className="mb-3 flex items-center gap-2 text-sm font-bold text-primary-700">
         <UserPlus className="h-4 w-4" />
         Nouvel administrateur
@@ -54,11 +70,10 @@ export function CreateAdminForm({ draft, error, saving, onChange, onSubmit, onOp
           />
         ))}
 
-
         <PhoneInput
           id="create-admin-phone"
           value={draft.phone}
-          onChange={(value) => onChange('phone', value)}
+          onChange={(value) => onChange("phone", value)}
           aria-label="Téléphone"
           className="sm:col-span-1"
         />

@@ -1,14 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const FOCUSABLE = [
-  'a[href]',
-  'button:not([disabled])',
+  "a[href]",
+  "button:not([disabled])",
   'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
+  "select:not([disabled])",
+  "textarea:not([disabled])",
   '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
+].join(",");
 
 export function useOverlay({ open, onClose, dismissable = true }) {
   const panelRef = useRef(null);
@@ -23,19 +22,21 @@ export function useOverlay({ open, onClose, dismissable = true }) {
     const previouslyFocused = document.activeElement;
     const { body } = document;
     const previousOverflow = body.style.overflow;
-    body.style.overflow = 'hidden';
+    body.style.overflow = "hidden";
 
     const onKeyDown = (event) => {
-      if (event.key === 'Escape' && dismissable) {
+      if (event.key === "Escape" && dismissable) {
         event.stopPropagation();
         onCloseRef.current?.();
         return;
       }
-      if (event.key !== 'Tab') return;
+      if (event.key !== "Tab") return;
 
       const panel = panelRef.current;
       if (!panel) return;
-      const items = [...panel.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+      const items = [...panel.querySelectorAll(FOCUSABLE)].filter(
+        (el) => el.offsetParent !== null,
+      );
       if (items.length === 0) {
         event.preventDefault();
         return;
@@ -52,7 +53,7 @@ export function useOverlay({ open, onClose, dismissable = true }) {
       }
     };
 
-    document.addEventListener('keydown', onKeyDown, true);
+    document.addEventListener("keydown", onKeyDown, true);
     const frame = requestAnimationFrame(() => {
       const target = panelRef.current?.querySelector(FOCUSABLE);
       target?.focus();
@@ -60,7 +61,7 @@ export function useOverlay({ open, onClose, dismissable = true }) {
 
     return () => {
       cancelAnimationFrame(frame);
-      document.removeEventListener('keydown', onKeyDown, true);
+      document.removeEventListener("keydown", onKeyDown, true);
       body.style.overflow = previousOverflow;
       if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
     };

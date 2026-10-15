@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-const SUFFIX = 'KOP';
-
+const SUFFIX = "KOP";
 
 export function usePageTitle(title) {
   useEffect(() => {

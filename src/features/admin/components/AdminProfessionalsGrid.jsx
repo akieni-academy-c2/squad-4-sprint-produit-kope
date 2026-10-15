@@ -1,30 +1,41 @@
-import { useCallback, useState } from 'react';
-import { CustomSelect, DataState, Pagination, SearchInput } from '@/shared/components/ui';
+import { useCallback, useState } from "react";
+import {
+  CustomSelect,
+  DataState,
+  Pagination,
+  SearchInput,
+} from "@/shared/components/ui";
 import {
   AdminFilterField,
   AdminFilterGroup,
   AdminFilterPanel,
   AdminSectionLayout,
-} from './AdminSectionLayout.jsx';
-import { AdminConfirmModal } from './AdminConfirmModal.jsx';
-import { AdminProfessionalCard } from './professionals/AdminProfessionalCard.jsx';
-import { SORT_OPTIONS, STATUS_OPTIONS } from './professionals/professionalFilters.js';
-import { useAdminPage } from '../hooks/useAdminPage.js';
-import { useAdminFilters } from '../hooks/useAdminFilters.js';
-import { useAdminList } from '../hooks/useAdminList.js';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { listPros, setProHidden } from '../services/admin.service.js';
-import { CITIES, DEFAULT_CITY } from '@/shared/lib/constants.js';
+} from "./AdminSectionLayout.jsx";
+import { AdminConfirmModal } from "./AdminConfirmModal.jsx";
+import { AdminProfessionalCard } from "./professionals/AdminProfessionalCard.jsx";
+import {
+  SORT_OPTIONS,
+  STATUS_OPTIONS,
+} from "./professionals/professionalFilters.js";
+import { useAdminPage } from "../hooks/useAdminPage.js";
+import { useAdminFilters } from "../hooks/useAdminFilters.js";
+import { useAdminList } from "../hooks/useAdminList.js";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import { listPros, setProHidden } from "../services/admin.service.js";
+import { CITIES, DEFAULT_CITY } from "@/shared/lib/constants.js";
 
 const PAGE_SIZE = 100;
 
-export function AdminProfessionalsGrid({ rightContainer = null, initialFilters = {} }) {
+export function AdminProfessionalsGrid({
+  rightContainer = null,
+  initialFilters = {},
+}) {
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
   const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
-    query: '',
-    status: '',
-    sort: 'name',
+    query: "",
+    status: "",
+    sort: "name",
     city: DEFAULT_CITY,
     ...initialFilters,
   });
@@ -47,15 +58,19 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
   const apply = async () => {
     if (!confirm) return;
     try {
-      await setProHidden(confirm.item.userId || confirm.item.id, confirm.action === 'hide');
+      await setProHidden(
+        confirm.item.userId || confirm.item.id,
+        confirm.action === "hide",
+      );
       toast({
-        message: confirm.action === 'hide' ? 'Profil masqué.' : 'Profil réactivé.',
-        type: 'success',
+        message:
+          confirm.action === "hide" ? "Profil masqué." : "Profil réactivé.",
+        type: "success",
       });
       setConfirm(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     }
   };
 
@@ -76,8 +91,8 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
           <SearchInput
             id={searchId}
             value={draft.query}
-            onChange={(e) => set('query', e.target.value)}
-            onClear={() => set('query', '')}
+            onChange={(e) => set("query", e.target.value)}
+            onClear={() => set("query", "")}
             placeholder="Nom, métier, téléphone..."
             aria-label="Rechercher un professionnel"
           />
@@ -87,7 +102,7 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
           <CustomSelect
             value={draft.status}
             onChange={(v) => {
-              set('status', v, { immediate: true });
+              set("status", v, { immediate: true });
               setPage(1);
             }}
             options={STATUS_OPTIONS}
@@ -101,7 +116,7 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
             <CustomSelect
               value={draft.city}
               onChange={(v) => {
-                set('city', v, { immediate: true });
+                set("city", v, { immediate: true });
                 setPage(1);
               }}
               options={CITIES.map((c) => ({ value: c, label: c }))}
@@ -114,7 +129,7 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
         <AdminFilterGroup title="Trier par">
           <CustomSelect
             value={draft.sort}
-            onChange={(v) => set('sort', v, { immediate: true })}
+            onChange={(v) => set("sort", v, { immediate: true })}
             options={SORT_OPTIONS}
             className="w-full"
             aria-label="Trier"
@@ -140,7 +155,9 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
               <AdminProfessionalCard
                 key={pro.userId || pro.id}
                 pro={pro}
-                onToggleVisibility={(item, action) => setConfirm({ item, action })}
+                onToggleVisibility={(item, action) =>
+                  setConfirm({ item, action })
+                }
               />
             ))
           )}
@@ -173,14 +190,18 @@ export function AdminProfessionalsGrid({ rightContainer = null, initialFilters =
         open={Boolean(confirm)}
         onCancel={() => setConfirm(null)}
         onConfirm={apply}
-        danger={confirm?.action === 'hide'}
-        title={confirm?.action === 'hide' ? 'Masquer le profil ?' : 'Réactiver le profil ?'}
-        description={
-          confirm?.action === 'hide'
-            ? 'Le profil disparaîtra des recherches et de la fiche publique. Vous pouvez le réactiver à tout moment.'
-            : 'Le profil sera à nouveau visible dans les recherches et sa fiche publique sera rouverte.'
+        danger={confirm?.action === "hide"}
+        title={
+          confirm?.action === "hide"
+            ? "Masquer le profil ?"
+            : "Réactiver le profil ?"
         }
-        confirmLabel={confirm?.action === 'hide' ? 'Masquer' : 'Réactiver'}
+        description={
+          confirm?.action === "hide"
+            ? "Le profil disparaîtra des recherches et de la fiche publique. Vous pouvez le réactiver à tout moment."
+            : "Le profil sera à nouveau visible dans les recherches et sa fiche publique sera rouverte."
+        }
+        confirmLabel={confirm?.action === "hide" ? "Masquer" : "Réactiver"}
       />
     </AdminSectionLayout>
   );

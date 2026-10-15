@@ -1,6 +1,6 @@
-import { ImagePlus } from 'lucide-react';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { FloatingCaption } from '@/shared/components/ui/FloatingCaption.jsx';
+import { ImagePlus } from "lucide-react";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { FloatingCaption } from "@/shared/components/ui/FloatingCaption.jsx";
 
 export function AddPhotoSlot({ slotNumber, slotCount, onClick }) {
   const plural = slotCount > 1;
@@ -18,14 +18,16 @@ export function AddPhotoSlot({ slotNumber, slotCount, onClick }) {
             <span className="flex size-10 items-center justify-center rounded-full bg-primary-50 text-primary-600">
               <ImagePlus size={20} aria-hidden />
             </span>
-            <span className="text-sm font-semibold text-gray-800">Ajouter une photo</span>
+            <span className="text-sm font-semibold text-gray-800">
+              Ajouter une photo
+            </span>
             <span className="text-xs text-gray-500">JPG/PNG · 5 Mo</span>
           </span>
           <FloatingCaption
             wide
             icon={ImagePlus}
             title={`Emplacement ${slotNumber}`}
-            subtitle={`${slotCount} emplacement${plural ? 's' : ''} vide${plural ? 's' : ''} · cliquez pour ouvrir le formulaire`}
+            subtitle={`${slotCount} emplacement${plural ? "s" : ""} vide${plural ? "s" : ""} · cliquez pour ouvrir le formulaire`}
             className="pointer-events-none"
           />
         </span>

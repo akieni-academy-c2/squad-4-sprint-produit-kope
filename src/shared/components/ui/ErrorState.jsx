@@ -1,14 +1,13 @@
-import { TriangleAlert } from 'lucide-react';
-import { Button } from './Button.jsx';
-import { cn } from '@/shared/utils';
-
+import { TriangleAlert } from "lucide-react";
+import { Button } from "./Button.jsx";
+import { cn } from "@/shared/utils";
 
 export function ErrorState({
-  title = 'Erreur de chargement',
+  title = "Erreur de chargement",
   message,
   action,
   onAction,
-  actionLabel = 'Réessayer',
+  actionLabel = "Réessayer",
   className,
   compact = false,
 }) {
@@ -16,8 +15,8 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        'rounded-md border border-gray-200 bg-gray-50/70',
-        compact ? 'px-3 py-2.5' : 'p-5',
+        "rounded-md border border-gray-200 bg-gray-50/70",
+        compact ? "px-3 py-2.5" : "p-5",
         className,
       )}
     >

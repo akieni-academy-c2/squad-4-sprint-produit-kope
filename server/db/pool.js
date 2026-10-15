@@ -1,5 +1,5 @@
-import pg from 'pg';
-import { env } from '../config/env.js';
+import pg from "pg";
+import { env } from "../config/env.js";
 
 pg.types.setTypeParser(20, Number);
 
@@ -12,24 +12,24 @@ export const pool = new pg.Pool({
   keepAliveInitialDelayMillis: 5000,
 });
 
-pool.on('error', (err) => {
-  console.error('Erreur inattendue du pool Postgres', err);
+pool.on("error", (err) => {
+  console.error("Erreur inattendue du pool Postgres", err);
 });
 
 export async function isDatabaseReachable(db = pool) {
-  await db.query('SELECT 1');
+  await db.query("SELECT 1");
   return true;
 }
 
 export async function withTransaction(fn) {
   const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
     const result = await fn(client);
-    await client.query('COMMIT');
+    await client.query("COMMIT");
     return result;
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query("ROLLBACK");
     throw err;
   } finally {
     client.release();

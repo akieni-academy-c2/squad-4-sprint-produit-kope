@@ -1,6 +1,6 @@
-import { useAuthModal } from '@/shared/context/AuthModalContext.jsx';
-import { AUTH_MODAL_MODES } from '@/shared/context/authModalModes.js';
-import { PromoCard } from '@/shared/components/ui/PromoCard.jsx';
+import { useAuthModal } from "@/shared/context/AuthModalContext.jsx";
+import { AUTH_MODAL_MODES } from "@/shared/context/authModalModes.js";
+import { PromoCard } from "@/shared/components/ui/PromoCard.jsx";
 
 export function BecomeProCard({ userId = 1 }) {
   const { open: openModal } = useAuthModal();

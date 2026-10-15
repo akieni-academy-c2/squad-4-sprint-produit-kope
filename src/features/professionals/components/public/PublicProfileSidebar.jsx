@@ -1,29 +1,42 @@
-import { Briefcase, Calendar, MapPin, MapPinned, Star } from 'lucide-react';
-import { Badge } from '@/shared/components/ui/Badge.jsx';
-import { Card } from '@/shared/components/ui/Card.jsx';
-import { Separator } from '@/shared/components/ui/Separator.jsx';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery.js';
-import { formatDateFrShort } from '@/shared/utils';
-import { ReportTrigger } from '../ReportDialog.jsx';
-import { ABOUT_FALLBACK, ABOUT_HEADING, CITY, initialsOf } from './profileView.js';
-import { TagList } from './TagList.jsx';
-import { STICKY_TOP } from '@/shared/lib/constants.js';
+import { Briefcase, Calendar, MapPin, MapPinned, Star } from "lucide-react";
+import { Badge } from "@/shared/components/ui/Badge.jsx";
+import { Card } from "@/shared/components/ui/Card.jsx";
+import { Separator } from "@/shared/components/ui/Separator.jsx";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery.js";
+import { formatDateFrShort } from "@/shared/utils";
+import { ReportTrigger } from "../ReportDialog.jsx";
+import {
+  ABOUT_FALLBACK,
+  ABOUT_HEADING,
+  CITY,
+  initialsOf,
+} from "./profileView.js";
+import { TagList } from "./TagList.jsx";
+import { STICKY_TOP } from "@/shared/lib/constants.js";
 
-
-function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName, priority = false }) {
+function Avatar({
+  src,
+  name,
+  alt = "",
+  wrapperClassName,
+  fallbackClassName,
+  priority = false,
+}) {
   return (
     <div className={`shrink-0 overflow-hidden bg-gray-100 ${wrapperClassName}`}>
       {src ? (
         <img
           src={src}
           alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          fetchPriority={priority ? 'high' : undefined}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
           decoding="async"
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className={`flex h-full w-full items-center justify-center font-extrabold text-primary-700 ${fallbackClassName}`}>
+        <span
+          className={`flex h-full w-full items-center justify-center font-extrabold text-primary-700 ${fallbackClassName}`}
+        >
           {initialsOf(name)}
         </span>
       )}
@@ -31,10 +44,14 @@ function Avatar({ src, name, alt = '', wrapperClassName, fallbackClassName, prio
   );
 }
 
-export function PublicProfileSidebar({ profile, view, isVisitorView, onReportClick }) {
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
+export function PublicProfileSidebar({
+  profile,
+  view,
+  isVisitorView,
+  onReportClick,
+}) {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { tradeName, zones, tags, avg, count, avatarSrc, hasAbout } = view;
-
 
   if (!isDesktop) return null;
 
@@ -53,8 +70,11 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
 
           <div className="min-w-0 flex-1 space-y-1.5">
             <div className="flex flex-wrap items-center gap-1.5">
-              <Badge variant={profile.isAvailable ? 'success' : 'warning'} size="sm">
-                {profile.isAvailable ? 'Disponible' : 'Indisponible'}
+              <Badge
+                variant={profile.isAvailable ? "success" : "warning"}
+                size="sm"
+              >
+                {profile.isAvailable ? "Disponible" : "Indisponible"}
               </Badge>
             </div>
             <div className="min-w-0 space-y-0.5">
@@ -74,11 +94,16 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
           {profile.yearsExperience != null && (
             <div className="flex items-center justify-between gap-3">
               <dt className="flex items-center gap-2 text-gray-500">
-                <Briefcase size={14} className="shrink-0 text-gray-500" aria-hidden />
+                <Briefcase
+                  size={14}
+                  className="shrink-0 text-gray-500"
+                  aria-hidden
+                />
                 Expérience
               </dt>
               <dd className="font-semibold text-gray-900">
-                {profile.yearsExperience} an{profile.yearsExperience > 1 ? 's' : ''}
+                {profile.yearsExperience} an
+                {profile.yearsExperience > 1 ? "s" : ""}
               </dd>
             </div>
           )}
@@ -92,7 +117,9 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
                 <span className="inline-flex items-center gap-1">
                   {avg.toFixed(1)}
                   <span className="font-normal text-gray-500">/ 5</span>
-                  <span className="text-xs font-normal text-gray-500">({count})</span>
+                  <span className="text-xs font-normal text-gray-500">
+                    ({count})
+                  </span>
                 </span>
               ) : (
                 <span className="font-normal text-gray-500">Aucun avis</span>
@@ -103,20 +130,34 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
             <>
               <div className="flex items-center justify-between gap-3">
                 <dt className="flex items-center gap-2 text-gray-500">
-                  <MapPin size={14} className="shrink-0 text-gray-500" aria-hidden />
+                  <MapPin
+                    size={14}
+                    className="shrink-0 text-gray-500"
+                    aria-hidden
+                  />
                   Ville
                 </dt>
                 <dd className="truncate font-semibold text-gray-900">{CITY}</dd>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="flex items-center gap-2 text-gray-500">
-                  <MapPinned size={14} className="shrink-0 text-gray-500" aria-hidden />
+                  <MapPinned
+                    size={14}
+                    className="shrink-0 text-gray-500"
+                    aria-hidden
+                  />
                   Zones
                 </dt>
-                <dd className="truncate font-semibold text-gray-900" title={zones.join(', ')}>
+                <dd
+                  className="truncate font-semibold text-gray-900"
+                  title={zones.join(", ")}
+                >
                   {zones[0]}
                   {zones.length > 1 && (
-                    <span className="font-medium text-gray-500"> +{zones.length - 1}</span>
+                    <span className="font-medium text-gray-500">
+                      {" "}
+                      +{zones.length - 1}
+                    </span>
                   )}
                 </dd>
               </div>
@@ -138,12 +179,16 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
         {hasAbout ? (
           <Card className="space-y-4 p-4 bg-primary-100!">
             {profile.description && (
-              <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">{profile.description}</p>
+              <p className="whitespace-pre-wrap text-sm leading-7 text-gray-700">
+                {profile.description}
+              </p>
             )}
             {(zones.length > 0 || tags.length > 0) && <Separator />}
             {zones.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Zones d'intervention</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Zones d'intervention
+                </p>
                 <div className="flex flex-wrap gap-1.5">
                   {zones.map((zone) => (
                     <Badge key={zone} variant="neutral" size="sm">
@@ -156,7 +201,9 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
             )}
             {tags.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Spécialités</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Spécialités
+                </p>
                 <TagList tags={tags} />
               </div>
             )}
@@ -174,18 +221,28 @@ export function PublicProfileSidebar({ profile, view, isVisitorView, onReportCli
           fallbackClassName="text-sm"
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-gray-900">{profile.displayName}</p>
+          <p className="truncate text-sm font-bold text-gray-900">
+            {profile.displayName}
+          </p>
           <p className="truncate text-xs text-gray-500">{tradeName}</p>
         </div>
         <div className="shrink-0 text-right">
           {count > 0 && (
             <p className="inline-flex items-center gap-1 text-sm font-bold text-gray-900">
-              <Star size={13} className="fill-amber-400 text-amber-400" aria-hidden />
+              <Star
+                size={13}
+                className="fill-amber-400 text-amber-400"
+                aria-hidden
+              />
               {avg.toFixed(1)}
             </p>
           )}
           <p className="text-[11px] text-gray-500">
-            {count > 0 ? `${count} avis` : profile.isAvailable ? 'Disponible' : 'Indisponible'}
+            {count > 0
+              ? `${count} avis`
+              : profile.isAvailable
+                ? "Disponible"
+                : "Indisponible"}
           </p>
         </div>
       </Card>

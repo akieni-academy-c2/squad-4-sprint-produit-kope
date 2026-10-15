@@ -1,19 +1,36 @@
-import { useCallback, useState } from 'react';
-import { CustomSelect, DataState, Pagination, SearchInput } from '@/shared/components/ui';
-import { AdminFilterGroup, AdminFilterPanel, AdminSectionLayout } from './AdminSectionLayout.jsx';
-import { ReportGroup } from './reports/ReportGroup.jsx';
-import { ReportModals } from './reports/ReportModals.jsx';
-import { useAdminPage } from '../hooks/useAdminPage.js';
-import { useAdminFilters } from '../hooks/useAdminFilters.js';
-import { useAdminList } from '../hooks/useAdminList.js';
-import { useAuthContext } from '@/shared/context/AuthContext.jsx';
-import { useNotification } from '@/shared/context/NotificationContext.jsx';
-import { listReports, setReportStatus, setUserBlocked, setUserSuspended } from '../services/admin.service.js';
-import { REPORT_STATUS_OPTIONS } from '@/shared/constants/reports.js';
+import { useCallback, useState } from "react";
+import {
+  CustomSelect,
+  DataState,
+  Pagination,
+  SearchInput,
+} from "@/shared/components/ui";
+import {
+  AdminFilterGroup,
+  AdminFilterPanel,
+  AdminSectionLayout,
+} from "./AdminSectionLayout.jsx";
+import { ReportGroup } from "./reports/ReportGroup.jsx";
+import { ReportModals } from "./reports/ReportModals.jsx";
+import { useAdminPage } from "../hooks/useAdminPage.js";
+import { useAdminFilters } from "../hooks/useAdminFilters.js";
+import { useAdminList } from "../hooks/useAdminList.js";
+import { useAuthContext } from "@/shared/context/AuthContext.jsx";
+import { useNotification } from "@/shared/context/NotificationContext.jsx";
+import {
+  listReports,
+  setReportStatus,
+  setUserBlocked,
+  setUserSuspended,
+} from "../services/admin.service.js";
+import { REPORT_STATUS_OPTIONS } from "@/shared/constants/reports.js";
 
 const PAGE_SIZE = 20;
 
-export function AdminReportsTable({ rightContainer = null, initialFilters = {} }) {
+export function AdminReportsTable({
+  rightContainer = null,
+  initialFilters = {},
+}) {
   const { user: currentUser } = useAuthContext();
   const { toast } = useNotification();
   const [page, changePage, setPage] = useAdminPage();
@@ -22,13 +39,19 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
   const [unsuspend, setUnsuspend] = useState(null);
   const [saving, setSaving] = useState(false);
   const { draft, applied, dirty, set, submit, reset } = useAdminFilters({
-    query: '',
-    status: '',
+    query: "",
+    status: "",
     ...initialFilters,
   });
 
   const fetchList = useCallback(
-    () => listReports({ page, pageSize: PAGE_SIZE, status: applied.status || undefined, query: applied.query }),
+    () =>
+      listReports({
+        page,
+        pageSize: PAGE_SIZE,
+        status: applied.status || undefined,
+        query: applied.query,
+      }),
     [page, applied.status, applied.query],
   );
   const { data, loading, error, reload } = useAdminList(fetchList);
@@ -36,15 +59,21 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
   const apply = async () => {
     if (!confirm) return;
     try {
-      await setReportStatus(confirm.item.id, confirm.action === 'resolve' ? 'resolved' : 'dismissed');
+      await setReportStatus(
+        confirm.item.id,
+        confirm.action === "resolve" ? "resolved" : "dismissed",
+      );
       toast({
-        message: confirm.action === 'resolve' ? 'Signalement marqué comme traité.' : 'Signalement rejeté.',
-        type: 'success',
+        message:
+          confirm.action === "resolve"
+            ? "Signalement marqué comme traité."
+            : "Signalement rejeté.",
+        type: "success",
       });
       setConfirm(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     }
   };
 
@@ -53,11 +82,11 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
     setSaving(true);
     try {
       await setUserBlocked(currentUser?.id, unblock.id, false);
-      toast({ message: 'Compte débloqué.', type: 'success' });
+      toast({ message: "Compte débloqué.", type: "success" });
       setUnblock(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     } finally {
       setSaving(false);
     }
@@ -68,11 +97,14 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
     setSaving(true);
     try {
       await setUserSuspended(currentUser?.id, unsuspend.id, false);
-      toast({ message: 'Suspension levée, le compte est à nouveau actif.', type: 'success' });
+      toast({
+        message: "Suspension levée, le compte est à nouveau actif.",
+        type: "success",
+      });
       setUnsuspend(null);
       reload();
     } catch (err) {
-      toast({ message: err?.message || 'Erreur.', type: 'error' });
+      toast({ message: err?.message || "Erreur.", type: "error" });
     } finally {
       setSaving(false);
     }
@@ -98,8 +130,8 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
           <SearchInput
             id={searchId}
             value={draft.query}
-            onChange={(e) => set('query', e.target.value)}
-            onClear={() => set('query', '')}
+            onChange={(e) => set("query", e.target.value)}
+            onClear={() => set("query", "")}
             placeholder="Professionnel, auteur ou contenu..."
             aria-label="Rechercher un signalement"
           />
@@ -109,7 +141,7 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
           <CustomSelect
             value={draft.status}
             onChange={(v) => {
-              set('status', v, { immediate: true });
+              set("status", v, { immediate: true });
               setPage(1);
             }}
             options={REPORT_STATUS_OPTIONS}
@@ -134,8 +166,12 @@ export function AdminReportsTable({ rightContainer = null, initialFilters = {} }
               <ReportGroup
                 key={group.professionalId}
                 group={group}
-                onResolveReport={(item) => setConfirm({ item, action: 'resolve' })}
-                onDismissReport={(item) => setConfirm({ item, action: 'dismiss' })}
+                onResolveReport={(item) =>
+                  setConfirm({ item, action: "resolve" })
+                }
+                onDismissReport={(item) =>
+                  setConfirm({ item, action: "dismiss" })
+                }
                 onUnblock={({ professionalId, professionalName }) =>
                   setUnblock({ id: professionalId, name: professionalName })
                 }

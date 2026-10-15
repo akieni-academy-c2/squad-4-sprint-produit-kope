@@ -1,4 +1,4 @@
-import { env } from '../config/env.js';
+import { env } from "../config/env.js";
 
 const cloudBase =
   env.CLOUDINARY_CLOUD_NAME &&
@@ -6,5 +6,7 @@ const cloudBase =
 
 export function uploadUrl(relativePath) {
   if (!relativePath) return null;
-  return cloudBase ? `${cloudBase}/${relativePath}` : `/uploads/${relativePath}`;
+  return cloudBase
+    ? `${cloudBase}/${relativePath}`
+    : `/uploads/${relativePath}`;
 }

@@ -1,12 +1,11 @@
-import { Button, Modal } from '@/shared/components/ui';
-
+import { Button, Modal } from "@/shared/components/ui";
 
 export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = 'Confirmer',
-  cancelLabel = 'Annuler',
+  confirmLabel = "Confirmer",
+  cancelLabel = "Annuler",
   danger = false,
   saving = false,
   onCancel,
@@ -25,7 +24,11 @@ export function ConfirmDialog({
           <Button variant="secondary" onClick={onCancel} disabled={saving}>
             {cancelLabel}
           </Button>
-          <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm} loading={saving}>
+          <Button
+            variant={danger ? "danger" : "primary"}
+            onClick={onConfirm}
+            loading={saving}
+          >
             {confirmLabel}
           </Button>
         </>

@@ -1,7 +1,6 @@
-import { useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { sectionFromPathname, sectionHref } from '@/shared/lib/constants';
-
+import { useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { sectionFromPathname, sectionHref } from "@/shared/lib/constants";
 
 export function useSectionNav(base, sections, rootId) {
   const { pathname } = useLocation();
