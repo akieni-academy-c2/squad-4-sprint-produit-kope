@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   BarChart3,
   Flag,
@@ -58,14 +58,7 @@ const FILTERED_SECTIONS = new Set([
 ]);
 
 export function AdminDashboardPage() {
-  const [pendingFilters, setPendingFilters] = useState(null);
-
-  const openSection = useCallback((id, filters = {}) => {
-    setPendingFilters(
-      Object.keys(filters).length ? { section: id, filters } : null,
-    );
-    return id;
-  }, []);
+  const [searchParams] = useSearchParams();
 
   return (
     <DashboardShell
@@ -75,22 +68,17 @@ export function AdminDashboardPage() {
       filteredSections={FILTERED_SECTIONS}
       navAriaLabel="Sections d'administration"
       className="container-kop page-padding pb-24 lg:pb-8"
-      onNavigate={(id, filters) => {
-        openSection(id, filters);
-        return id;
-      }}
-      renderSection={(active, rightContainer) => {
+      renderSection={(active, rightContainer, sectionLink) => {
         const section = active || "overview";
-        const sectionFilters =
-          pendingFilters?.section === section ? pendingFilters.filters : {};
-        const mountKey = `${section}:${JSON.stringify(sectionFilters)}`;
+        const sectionFilters = Object.fromEntries(searchParams);
+        const mountKey = `${section}:${searchParams.toString()}`;
 
         return (
           <>
             <h2 className="mb-4 text-lg font-bold text-gray-900">
               {TITLES[section]}
             </h2>
-            {section === "overview" && <AdminStats onNavigate={openSection} />}
+            {section === "overview" && <AdminStats sectionLink={sectionLink} />}
             {section === "professionals" && (
               <AdminProfessionalsGrid
                 key={mountKey}

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@/shared/components/ui/Link.jsx";
 import {
   ArrowRight,
   Ban,
@@ -9,6 +8,7 @@ import {
   Phone,
   Star,
 } from "lucide-react";
+import { Link } from "@/shared/components/ui/Link.jsx";
 import {
   Badge,
   DataState,
@@ -24,13 +24,13 @@ import { formatPhoneFR } from "@/shared/utils";
 
 const RECENT_COUNT = 4;
 
-function TodoCard({ label, value, hint, onClick }) {
+function TodoCard({ label, value, hint, href }) {
   const pending = Number(value ?? 0) > 0;
+  const Wrapper = href ? Link : "button";
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Wrapper
+      {...(href ? { href } : { type: "button" })}
       className={cn(
         "flex items-start justify-between gap-3 rounded-[14px] border p-4 text-left transition focus-visible:outline-2 focus-visible:outline-amber-600",
         pending
@@ -52,7 +52,7 @@ function TodoCard({ label, value, hint, onClick }) {
       >
         {value ?? 0}
       </span>
-    </button>
+    </Wrapper>
   );
 }
 
@@ -152,7 +152,7 @@ function RecentProfessionals({ items, onOpenAll }) {
   );
 }
 
-export function AdminOverview({ stats, onNavigate = () => {} }) {
+export function AdminOverview({ stats, sectionLink }) {
   const avg = Number(stats?.ratingAverage ?? 0);
   const visibleReviews = Math.max(
     0,
@@ -177,21 +177,19 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
             label="Signalements en attente"
             value={stats?.reportsPending}
             hint="Ouvrir la file de modération"
-            onClick={() => onNavigate("reports", { status: "pending" })}
+            href={sectionLink("reports", { status: "pending" })}
           />
           <TodoCard
             label="Profils incomplets"
             value={stats?.incomplete}
             hint="À compléter avant publication"
-            onClick={() =>
-              onNavigate("professionals", { status: "incomplete" })
-            }
+            href={sectionLink("professionals", { status: "incomplete" })}
           />
           <TodoCard
             label="Avis masqués"
             value={stats?.reviewsHidden}
             hint="À rétablir ou à confirmer"
-            onClick={() => onNavigate("reviews", { hidden: "true" })}
+            href={sectionLink("reviews", { hidden: "true" })}
           />
         </div>
       </section>
@@ -202,13 +200,13 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
             label="Utilisateurs"
             value={stats?.users}
             hint={`${stats?.clients ?? 0} clients · ${stats?.professionals ?? 0} professionnels`}
-            onClick={() => onNavigate("users")}
+            href={sectionLink("users")}
           />
           <KpiCard
             label="Professionnels"
             value={stats?.professionals}
             hint={`${stats?.published ?? 0} publiés · ${stats?.hidden ?? 0} masqués`}
-            onClick={() => onNavigate("professionals")}
+            href={sectionLink("professionals")}
           />
           <KpiCard
             label="Comptes bloqués"
@@ -216,7 +214,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
             hint={`${stats?.usersSuspended ?? 0} suspendu${(stats?.usersSuspended ?? 0) > 1 ? "s" : ""}`}
             tone={Number(stats?.usersBlocked) > 0 ? "danger" : "default"}
             icon={<Ban size={12} aria-hidden />}
-            onClick={() => onNavigate("users", { blocked: "true" })}
+            href={sectionLink("users", { blocked: "true" })}
           />
         </div>
         <PublicationRate stats={stats} />
@@ -230,20 +228,20 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
             hint="À statuer"
             tone={Number(stats?.reportsPending) > 0 ? "danger" : "default"}
             icon={<Flag size={12} aria-hidden />}
-            onClick={() => onNavigate("reports", { status: "pending" })}
+            href={sectionLink("reports", { status: "pending" })}
           />
           <KpiCard
             label="Avis masqués"
             value={stats?.reviewsHidden}
             hint={`sur ${stats?.reviews ?? 0} avis`}
             icon={<EyeOff size={12} aria-hidden />}
-            onClick={() => onNavigate("reviews", { hidden: "true" })}
+            href={sectionLink("reviews", { hidden: "true" })}
           />
           <KpiCard
             label="Profils masqués"
             value={stats?.hidden}
             hint="Retirés des recherches"
-            onClick={() => onNavigate("professionals", { status: "hidden" })}
+            href={sectionLink("professionals", { status: "hidden" })}
           />
         </div>
       </Group>
@@ -255,7 +253,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
               label="Clients"
               value={stats?.clients}
               hint={`sur ${stats?.users ?? 0} utilisateurs`}
-              onClick={() => onNavigate("users", { role: "client" })}
+              href={sectionLink("users", { role: "client" })}
             />
             <KpiCard
               label="Demandes de contact"
@@ -267,7 +265,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
               value={stats?.reviews}
               hint={`${visibleReviews} visibles`}
               icon={<Star size={12} aria-hidden />}
-              onClick={() => onNavigate("reviews")}
+              href={sectionLink("reviews")}
             />
             <KpiCard
               label="Note moyenne"
@@ -281,7 +279,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
         <Group title="Derniers professionnels inscrits">
           <RecentProfessionals
             items={recentProfessionals}
-            onOpenAll={() => onNavigate("professionals")}
+            href={sectionLink("professionals")}
           />
         </Group>
       </div>
@@ -289,7 +287,7 @@ export function AdminOverview({ stats, onNavigate = () => {} }) {
   );
 }
 
-export function AdminStats({ onNavigate }) {
+export function AdminStats({ sectionLink }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -323,7 +321,7 @@ export function AdminStats({ onNavigate }) {
 
   return (
     <DataState loading={loading} error={error}>
-      <AdminOverview stats={stats} onNavigate={onNavigate} />
+      <AdminOverview stats={stats} sectionLink={sectionLink} />
     </DataState>
   );
 }

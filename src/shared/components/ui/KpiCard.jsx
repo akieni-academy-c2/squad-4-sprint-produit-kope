@@ -1,3 +1,4 @@
+import { Link } from "@/shared/components/ui/Link.jsx";
 import { cn } from "@/shared/utils";
 
 export function KpiCard({
@@ -5,16 +6,24 @@ export function KpiCard({
   value,
   hint,
   onClick,
+  href,
   tone = "default",
   icon = null,
   footer = null,
 }) {
-  const clickable = typeof onClick === "function";
-  const Wrapper = clickable ? "button" : "div";
+  const asLink = href != null;
+  const clickable = asLink || typeof onClick === "function";
+  const Wrapper = asLink ? Link : clickable ? "button" : "div";
+
+  const interaction = asLink
+    ? { href, ...(typeof onClick === "function" ? { onClick } : {}) }
+    : clickable
+      ? { type: "button", onClick }
+      : {};
 
   return (
     <Wrapper
-      {...(clickable ? { type: "button", onClick } : {})}
+      {...interaction}
       className={cn(
         "rounded-[18px] border bg-white p-4",
         clickable &&

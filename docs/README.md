@@ -33,31 +33,31 @@ Trois lectures selon ce que vous venez faire :
 Un terme, une définition. Chaque entrée signale les mots voisins qui désignent
 autre chose : c'est là que se logent la plupart des erreurs d'interprétation.
 
-**Publié** — profil visible dans l'annuaire public. Ce n'est pas une colonne :
+**Publié** - profil visible dans l'annuaire public. Ce n'est pas une colonne :
 c'est ce que renvoie la vue `published_professionals`, qui exclut les profils
 incomplets, masqués et sanctionnés. À ne pas confondre avec « actif », synonyme
 courant : un compte actif peut être non publié.
 
-**Profil incomplet** — profil qui ne satisfait pas l'ensemble des conditions de
+**Profil incomplet** - profil qui ne satisfait pas l'ensemble des conditions de
 publication. Il existe en base et n'apparaît nulle part.
 
-**Masqué** — `professionals.is_hidden`, retrait volontaire par un administrateur.
+**Masqué** - `professionals.is_hidden`, retrait volontaire par un administrateur.
 Distinct de **bloqué** et **suspendu**, qui sont des sanctions automatiques et non
 un choix.
 
-**Bloqué / suspendu** — sanctions automatiques au-delà de 3 puis 5 signalements
+**Bloqué / suspendu** - sanctions automatiques au-delà de 3 puis 5 signalements
 recevables, seuils réglés par `AUTO_BLOCK_REPORTS_THRESHOLD` et
 `AUTO_SUSPEND_REPORTS_THRESHOLD`. Colonnes `blocked_at` et `suspended_at`. Un
 compte sanctionné **reste dans les tables** : il n'est jamais supprimé.
 
-**Artisan** — compte dont le rôle est `professional` **et** qui possède une ligne
+**Artisan** - compte dont le rôle est `professional` **et** qui possède une ligne
 dans `professionals`. Un compte avec le rôle mais sans profil n'est pas un artisan
 pour l'annuaire.
 
-**Signalement** — deux tables distinctes : `account_reports` vise un compte,
+**Signalement** - deux tables distinctes : `account_reports` vise un compte,
 `review_reports` vise un avis. Les confondre fausse tout comptage.
 
-**Grain** — ce que représente une ligne d'une table. Sans lui, un `count(*)` n'a
+**Grain** - ce que représente une ligne d'une table. Sans lui, un `count(*)` n'a
 pas de sens interprétable : ces lignes sont des comptes, des photos ou des
 signalements selon la table, jamais des « éléments ».
 

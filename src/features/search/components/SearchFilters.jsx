@@ -6,12 +6,8 @@ import { FormField } from "@/shared/components/ui/FormField.jsx";
 import { CustomSelect } from "@/shared/components/ui/CustomSelect.jsx";
 import { SearchInput } from "@/shared/components/ui/SearchInput.jsx";
 import { useReferenceData } from "@/features/reference/hooks/useReferenceData.js";
-import { useDelayedFlag } from "@/shared/hooks/useDelayedFlag.js";
-import { Skeleton } from "@/shared/components/ui/Skeleton.jsx";
 import { ROUTES } from "@/shared/lib/constants.js";
 import { cn } from "@/shared/utils";
-
-const SKELETON_DELAY_MS = 200;
 
 export function SearchFilters({
   initial = {},
@@ -22,7 +18,7 @@ export function SearchFilters({
 }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { trades, zones, cities, loading } = useReferenceData();
+  const { trades, zones, cities } = useReferenceData();
   const [keyword, setKeyword] = useState(initial.keyword || "");
 
   const trade = initial.trade ?? params.get("trade") ?? "";
@@ -60,18 +56,6 @@ export function SearchFilters({
   const home = variant === "home";
   const sheet = variant === "sheet";
 
-  const showSkeleton = useDelayedFlag(loading, SKELETON_DELAY_MS);
-
-  if (showSkeleton && !dense)
-    return (
-      <div className="space-y-3 py-2" aria-busy="true">
-        <Skeleton className="h-11 w-full" />
-        <Skeleton className="h-11 w-full" />
-        <Skeleton className="h-11 w-full" />
-        <Skeleton className="h-11 w-40" />
-      </div>
-    );
-
   if (dense)
     return (
       <form
@@ -86,87 +70,78 @@ export function SearchFilters({
           <h2 className="text-sm font-bold text-gray-900">Recherche</h2>
         </div>
 
-        <div className="space-y-4 p-2" aria-busy={showSkeleton || undefined}>
-          {showSkeleton ? (
-            <>
-              <Skeleton className="h-11 w-full" />
-              <Skeleton className="h-11 w-full" />
-              <Skeleton className="h-11 w-full" />
-              <Skeleton className="h-11 w-full" />
-            </>
-          ) : (
-            <>
-              <SearchInput
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Nom du professionnel ou métier"
-                aria-label="Recherche par mot-clé"
+        <div className="space-y-4 p-2">
+          <>
+            <SearchInput
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Nom du professionnel ou métier"
+              aria-label="Recherche par mot-clé"
+            />
+
+            <div>
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                <Wrench className="h-3 w-3" aria-hidden />
+                Métier
+              </p>
+              <CustomSelect
+                id="sf-trade-sb"
+                value={tradeValue}
+                onChange={setTradeValue}
+                options={[
+                  { value: "", label: "Tous les métiers" },
+                  ...trades.map((t) => ({
+                    value: String(t.id),
+                    label: t.name,
+                  })),
+                ]}
+                className="mt-2 w-full"
+                aria-label="Filtrer par métier"
               />
+            </div>
 
-              <div>
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
-                  <Wrench className="h-3 w-3" aria-hidden />
-                  Métier
-                </p>
-                <CustomSelect
-                  id="sf-trade-sb"
-                  value={tradeValue}
-                  onChange={setTradeValue}
-                  options={[
-                    { value: "", label: "Tous les métiers" },
-                    ...trades.map((t) => ({
-                      value: String(t.id),
-                      label: t.name,
-                    })),
-                  ]}
-                  className="mt-2 w-full"
-                  aria-label="Filtrer par métier"
-                />
-              </div>
+            <div>
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                <Building2 className="h-3 w-3" aria-hidden />
+                Ville
+              </p>
+              <CustomSelect
+                id="sf-city-sb"
+                value={cityValue}
+                onChange={(value) => {
+                  setCityValue(value);
+                  setZoneValue("");
+                }}
+                options={[
+                  { value: "", label: "Toutes les villes" },
+                  ...cities.map((c) => ({
+                    value: String(c.id),
+                    label: c.name,
+                  })),
+                ]}
+                className="mt-2 w-full"
+                aria-label="Filtrer par ville"
+              />
+            </div>
 
-              <div>
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
-                  <Building2 className="h-3 w-3" aria-hidden />
-                  Ville
-                </p>
-                <CustomSelect
-                  id="sf-city-sb"
-                  value={cityValue}
-                  onChange={(value) => {
-                    setCityValue(value);
-                    setZoneValue("");
-                  }}
-                  options={[
-                    { value: "", label: "Toutes les villes" },
-                    ...cities.map((c) => ({
-                      value: String(c.id),
-                      label: c.name,
-                    })),
-                  ]}
-                  className="mt-2 w-full"
-                  aria-label="Filtrer par ville"
-                />
-              </div>
-
-              <div>
-                <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
-                  <MapPin className="h-3 w-3" aria-hidden />
-                  Zone
-                </p>
-                <CustomSelect
-                  id="sf-zone-sb"
-                  value={zoneValue}
-                  onChange={setZoneValue}
-                  options={[
-                    { value: "", label: "Toutes les zones" },
-                    ...zoneOptions,
-                  ]}
-                  className="mt-2 w-full"
-                  aria-label="Filtrer par zone"
-                />
-              </div>
-            </>
-          )}
+            <div>
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                <MapPin className="h-3 w-3" aria-hidden />
+                Zone
+              </p>
+              <CustomSelect
+                id="sf-zone-sb"
+                value={zoneValue}
+                onChange={setZoneValue}
+                options={[
+                  { value: "", label: "Toutes les zones" },
+                  ...zoneOptions,
+                ]}
+                className="mt-2 w-full"
+                aria-label="Filtrer par zone"
+              />
+            </div>
+          </>
         </div>
 
         <div className="border-t border-gray-100 p-2">

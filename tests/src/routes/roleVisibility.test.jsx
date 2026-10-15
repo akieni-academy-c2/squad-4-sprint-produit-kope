@@ -225,7 +225,14 @@ describe("Redirection de /", () => {
     ).toContain("ACCUEIL");
   });
 
-  it("n'affiche rien avant la fin du chargement de session", () => {
+  /**
+   * La home est la page d'atterrissage. La faire attendre la réponse de l'API de
+   * session donnait un écran vide, le temps que l'appel atteigne la base et
+   * revienne - plusieurs secondes en pratique. Elle s'affiche donc dès le premier
+   * rendu ; la redirection d'un visiteur connecté n'a lieu qu'une fois la session
+   * connue, ce qui n'est observable que pour lui.
+   */
+  it("affiche la page d'accueil pendant le chargement de session", () => {
     connectAs("client");
     authState.loading = true;
 
@@ -235,6 +242,19 @@ describe("Redirection de /", () => {
           <p>ACCUEIL</p>
         </HomeRoute>,
       ),
-    ).toBe("");
+    ).toContain("ACCUEIL");
+  });
+
+  it("redirige un visiteur connecté dès que la session est connue", () => {
+    connectAs("client");
+    authState.loading = false;
+
+    expect(
+      render(
+        <HomeRoute>
+          <p>ACCUEIL</p>
+        </HomeRoute>,
+      ),
+    ).not.toContain("ACCUEIL");
   });
 });

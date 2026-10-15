@@ -6,6 +6,11 @@ import { RoleRoute } from "./RoleRoute.jsx";
 import { ROLES, ROUTES } from "@/shared/lib/constants.js";
 import { Skeleton } from "@/shared/components/ui/Skeleton.jsx";
 
+const HomePlaceholder = lazy(() =>
+  import("@/pages/HomePlaceholder.jsx").then((m) => ({
+    default: m.HomePlaceholder,
+  })),
+);
 const HomePage = lazy(() =>
   import("@/pages/HomePage.jsx").then((m) => ({ default: m.HomePage })),
 );
@@ -71,8 +76,18 @@ function PageSkeleton() {
   );
 }
 
-function page(element) {
-  return <Suspense fallback={<PageSkeleton />}>{element}</Suspense>;
+/**
+ * La page d'accueil ne lit rien en base : ses sections sont statiques. Lui
+ * afficher le squelette générique - trois barres grises là où le hero occupe
+ * toute la largeur - déformait la mise en page. Elle attend donc un placeholder
+ * calqué sur son hero, seul à ne pas correspondre à l'écran réel.
+ * @param {import("react").ReactElement} element page à charger
+ * @param {import("react").ReactNode} [fallback] attente affichée pendant le
+ *   chargement du morceau
+ * @returns {import("react").ReactElement} la page sous suspense
+ */
+function page(element, fallback = <PageSkeleton />) {
+  return <Suspense fallback={fallback}>{element}</Suspense>;
 }
 
 function protectedPage(role, Component) {
@@ -94,7 +109,12 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     children: [
-      { index: true, element: <HomeRoute>{page(<HomePage />)}</HomeRoute> },
+      {
+        index: true,
+        element: (
+          <HomeRoute>{page(<HomePage />, <HomePlaceholder />)}</HomeRoute>
+        ),
+      },
       { path: ROUTES.HOW_IT_WORKS, element: page(<HowItWorksPage />) },
       { path: ROUTES.SEARCH, element: page(<SearchPage />) },
       { path: ROUTES.TERMS, element: page(<TermsPage />) },
